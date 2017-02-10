@@ -1,5 +1,23 @@
 find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
 
+set(codegen_style_SRC
+    SourceFiles/codegen/style/generator.cpp
+    SourceFiles/codegen/style/main.cpp
+    SourceFiles/codegen/style/module.cpp
+    SourceFiles/codegen/style/options.cpp
+    SourceFiles/codegen/style/parsed_file.cpp
+    SourceFiles/codegen/style/processor.cpp
+    SourceFiles/codegen/style/structure_types.cpp
+)
+
+add_executable(codegen_style ${codegen_style_SRC})
+
+custom_command(codegen_palette
+    COMMAND codegen_style color.palette
+    OUTPUTS
+        ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.h
+        ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp)
+
 set(APP_SRC
     SourceFiles/apiwrap.cpp
     SourceFiles/app.cpp
@@ -321,12 +339,5 @@ endif()
 ## codegen/numbers/parsed_file.cpp
 ## codegen/numbers/processor.cpp
 ## 
-## codegen/style/generator.cpp
-## codegen/style/main.cpp
-## codegen/style/module.cpp
-## codegen/style/options.cpp
-## codegen/style/parsed_file.cpp
-## codegen/style/processor.cpp
-## codegen/style/structure_types.cpp
 
 
