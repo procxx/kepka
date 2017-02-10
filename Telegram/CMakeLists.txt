@@ -276,14 +276,17 @@ if (LINUX)
     )
 endif()
 
-include_directories(SourceFiles/core)
-
 ##======================
 ## Telegram
 ##======================
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles")
+
 add_executable(Telegram ${APP_SRC} ${PLAT_SRC})
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets)
+
+set_target_properties(Telegram PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "SourceFiles/stdafx.h")
+cotire(Telegram)
 
 ##======================
 
@@ -302,6 +305,7 @@ endif()
 ##======================
 
 #add_executable(Updater ${UPD_SRC})
+#cotire(Updater)
 
 
 
