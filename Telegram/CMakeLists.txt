@@ -276,6 +276,8 @@ if (LINUX)
     )
 endif()
 
+include_directories(SourceFiles/core)
+
 ##======================
 ## Telegram
 ##======================
