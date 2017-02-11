@@ -47,14 +47,89 @@ qt5_use_modules(codegen_numbers Core)
 
 ##======================
 
+set(MetaLang_SRC
+    SourceFiles/_other/mlmain.cpp
+    SourceFiles/_other/genlang.cpp
+)
+
+add_executable(MetaLang ${MetaLang_SRC})
+target_link_libraries(MetaLang codegen_common Qt5::Core)
+#qt5_use_modules(codegen_numbers Core)
+
+##======================
+
+#-w<(PRODUCT_DIR)/../.. -- wtf is that
 add_custom_command(
     COMMENT "Generating palette"
-    COMMAND codegen_style ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
+    COMMAND
+        codegen_style -I${CMAKE_CURRENT_SOURCE_DIR}/Resources -I${CMAKE_CURRENT_SOURCE_DIR}
+        -o${CMAKE_CURRENT_BINARY_DIR}/styles -w${CMAKE_SOURCE_DIR}
+        colors.palette
     OUTPUT
         styles/palette.h
         styles/palette.cpp
     WORKING_DIRECTORY styles
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette)
+
+add_custom_command(
+    COMMENT "Generating numbers"
+    COMMAND
+        codegen_numbers -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
+    OUTPUT
+        numbers.h
+        numbers.cpp
+    WORKING_DIRECTORY .
+    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt)
+
+add_custom_command(
+    COMMENT "Generating langs"
+    COMMAND
+        MetaLang
+            -lang_in ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
+            -lang_out ${CMAKE_CURRENT_BINARY_DIR}/lang_auto
+    OUTPUT
+        lang_auto.h
+        lang_auto.cpp
+    WORKING_DIRECTORY .
+    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings)
+
+##========
+
+list(APPEND style_files
+    Resources/basic.style
+    SourceFiles/boxes/boxes.style
+    SourceFiles/dialogs/dialogs.style
+    SourceFiles/history/history.style
+    SourceFiles/intro/intro.style
+    SourceFiles/media/player/media_player.style
+    SourceFiles/media/view/mediaview.style
+    SourceFiles/overview/overview.style
+    SourceFiles/profile/profile.style
+    SourceFiles/settings/settings.style
+    SourceFiles/stickers/stickers.style
+    SourceFiles/ui/widgets/widgets.style
+    SourceFiles/window/window.style
+)
+
+foreach (src ${style_files})
+#      '-w<(PRODUCT_DIR)/../..',
+    get_filename_component(src_file ${src} NAME)
+    add_custom_command(
+        COMMENT "Generating ${src_file}"
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.h
+            ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.cpp
+        COMMAND
+            codegen_style -I${CMAKE_CURRENT_SOURCE_DIR}/Resources -I${CMAKE_CURRENT_SOURCE_DIR}
+            -I${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles
+            -o${CMAKE_CURRENT_BINARY_DIR}/styles -w${CMAKE_SOURCE_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/${src}
+        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src})
+
+    list(APPEND style_sources
+        ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.cpp)
+
+endforeach()
 
 ##======================
 ## Main app
@@ -62,6 +137,9 @@ add_custom_command(
 
 set(APP_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/numbers.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/lang_auto.cpp
+    ${style_sources}
 
     SourceFiles/apiwrap.cpp
     SourceFiles/app.cpp
