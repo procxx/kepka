@@ -1,4 +1,21 @@
-find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+
+##======================
+## Codegen Tools
+##======================
+
+set(codegen_common_SRC
+    SourceFiles/codegen/common/basic_tokenized_file.cpp
+    SourceFiles/codegen/common/checked_utf8_string.cpp
+    SourceFiles/codegen/common/clean_file.cpp
+    SourceFiles/codegen/common/cpp_file.cpp
+    SourceFiles/codegen/common/logging.cpp
+)
+
+add_library(codegen_common STATIC ${codegen_common_SRC})
+qt5_use_modules(codegen_common Core)
+
+##======================
 
 set(codegen_style_SRC
     SourceFiles/codegen/style/generator.cpp
@@ -11,14 +28,41 @@ set(codegen_style_SRC
 )
 
 add_executable(codegen_style ${codegen_style_SRC})
+target_link_libraries(codegen_style codegen_common Qt5::Core Qt5::Gui)
+qt5_use_modules(codegen_style Core Gui)
 
-custom_command(codegen_palette
-    COMMAND codegen_style color.palette
-    OUTPUTS
-        ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.h
-        ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp)
+##======================
+
+set(codegen_numbers_SRC
+    SourceFiles/codegen/numbers/generator.cpp
+    SourceFiles/codegen/numbers/main.cpp
+    SourceFiles/codegen/numbers/options.cpp
+    SourceFiles/codegen/numbers/parsed_file.cpp
+    SourceFiles/codegen/numbers/processor.cpp
+)
+
+add_executable(codegen_numbers ${codegen_numbers_SRC})
+target_link_libraries(codegen_numbers codegen_common Qt5::Core)
+qt5_use_modules(codegen_numbers Core)
+
+##======================
+
+add_custom_command(
+    COMMENT "Generating palette"
+    COMMAND codegen_style ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
+    OUTPUT
+        styles/palette.h
+        styles/palette.cpp
+    WORKING_DIRECTORY styles
+    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette)
+
+##======================
+## Main app
+##======================
 
 set(APP_SRC
+    ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
+
     SourceFiles/apiwrap.cpp
     SourceFiles/app.cpp
     SourceFiles/application.cpp
@@ -252,7 +296,7 @@ set(APP_SRC
     SourceFiles/window/window_theme_warning.cpp
 )
 
-set (PLAT_SRC )
+set(PLAT_SRC)
 
 if (APPLE)
     set(PLAT_SRC ${PLAT_SRC}
@@ -302,6 +346,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles")
 
 add_executable(Telegram ${APP_SRC} ${PLAT_SRC})
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets)
+qt5_use_modules(Telegram Core Widgets)
 
 set_target_properties(Telegram PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "SourceFiles/stdafx.h")
 cotire(Telegram)
@@ -324,20 +369,4 @@ endif()
 
 #add_executable(Updater ${UPD_SRC})
 #cotire(Updater)
-
-
-
-## codegen/common/basic_tokenized_file.cpp
-## codegen/common/checked_utf8_string.cpp
-## codegen/common/clean_file.cpp
-## codegen/common/cpp_file.cpp
-## codegen/common/logging.cpp
-## 
-## codegen/numbers/generator.cpp
-## codegen/numbers/main.cpp
-## codegen/numbers/options.cpp
-## codegen/numbers/parsed_file.cpp
-## codegen/numbers/processor.cpp
-## 
-
 
