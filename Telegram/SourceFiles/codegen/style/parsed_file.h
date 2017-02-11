@@ -23,7 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <memory>
 #include <string>
 #include <functional>
-#include <QImage>
+#include <QtGui/QImage>
 #include "codegen/common/basic_tokenized_file.h"
 #include "codegen/style/options.h"
 #include "codegen/style/module.h"
