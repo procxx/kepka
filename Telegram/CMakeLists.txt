@@ -135,6 +135,11 @@ endforeach()
 ## Main app
 ##======================
 
+# @fixme hardcoded path before I figure a way to include private Qt headers or remove
+# this dependency on QtGui/private/qfontengine_p.h from sources
+include_directories(/usr/local/opt/qt5/lib/QtGui.framework/Versions/5/Headers/5.7.0/QtGui)
+include_directories(/usr/local/opt/qt5/lib/QtCore.framework/Versions/5/Headers/5.7.0/QtCore)
+
 set(APP_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/numbers.cpp
