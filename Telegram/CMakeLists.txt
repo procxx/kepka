@@ -442,7 +442,7 @@ include_directories(ThirdParty/minizip)
 ## Telegram
 ##======================
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles")
+include_directories(SourceFiles SourceFiles/core)
 
 add_executable(Telegram ${APP_SRC} ${PLAT_SRC} ${THIRD_PARTY_SRC})
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
