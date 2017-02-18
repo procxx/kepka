@@ -421,14 +421,31 @@ if (LINUX)
     )
 endif()
 
+set(THIRD_PARTY_SRC)
+
+if (APPLE)
+    list(APPEND THIRD_PARTY_SRC
+        ThirdParty/SPMediaKeyTap/SPMediaKeyTap.m
+        ThirdParty/SPMediaKeyTap/SPInvocationGrabbing/NSObject+SPInvocationGrabbing.m
+    )
+    include_directories(ThirdParty/SPMediaKeyTap)
+endif()
+
+list(APPEND THIRD_PARTY_SRC
+    ThirdParty/minizip/ioapi.c
+    ThirdParty/minizip/zip.c
+    ThirdParty/minizip/unzip.c
+)
+include_directories(ThirdParty/minizip)
+
 ##======================
 ## Telegram
 ##======================
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles")
 
-add_executable(Telegram ${APP_SRC} ${PLAT_SRC})
-target_link_libraries(Telegram Qt5::Core Qt5::Widgets)
+add_executable(Telegram ${APP_SRC} ${PLAT_SRC} ${THIRD_PARTY_SRC})
+target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES})
 qt5_use_modules(Telegram Core Widgets)
 
