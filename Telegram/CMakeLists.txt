@@ -96,19 +96,19 @@ add_custom_command(
 ##========
 
 list(APPEND style_files
-    Resources/basic.style
-    SourceFiles/boxes/boxes.style
-    SourceFiles/dialogs/dialogs.style
-    SourceFiles/history/history.style
-    SourceFiles/intro/intro.style
-    SourceFiles/media/player/media_player.style
-    SourceFiles/media/view/mediaview.style
-    SourceFiles/overview/overview.style
-    SourceFiles/profile/profile.style
-    SourceFiles/settings/settings.style
-    SourceFiles/stickers/stickers.style
-    SourceFiles/ui/widgets/widgets.style
-    SourceFiles/window/window.style
+    Resources/basic
+    SourceFiles/boxes/boxes
+    SourceFiles/dialogs/dialogs
+    SourceFiles/history/history
+    SourceFiles/intro/intro
+    SourceFiles/media/player/media_player
+    SourceFiles/media/view/mediaview
+    SourceFiles/overview/overview
+    SourceFiles/profile/profile
+    SourceFiles/settings/settings
+    SourceFiles/stickers/stickers
+    SourceFiles/ui/widgets/widgets
+    SourceFiles/window/window
 )
 
 foreach (src ${style_files})
@@ -123,8 +123,8 @@ foreach (src ${style_files})
             codegen_style -I${CMAKE_CURRENT_SOURCE_DIR}/Resources -I${CMAKE_CURRENT_SOURCE_DIR}
             -I${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles
             -o${CMAKE_CURRENT_BINARY_DIR}/styles -w${CMAKE_SOURCE_DIR}
-            ${CMAKE_CURRENT_SOURCE_DIR}/${src}
-        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src})
+            ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
+        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style)
 
     list(APPEND style_sources
         ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.cpp)
