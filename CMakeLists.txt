@@ -11,6 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(OpenAL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(LibLZMA REQUIRED)
 
 #find_package(PortAudio REQUIRED)
 #find_package(Opus REQUIRED)
@@ -30,7 +31,8 @@ endif()
 # ZLIB_LIBRARIES
 # OPENSSL_LIBRARIES
 
-include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
+    ${LIBLZMA_INCLUDE_DIRS})
 
 add_subdirectory(Telegram)
 #target_link_libraries(publisher Qt5::Widgets Qt5::DBus)

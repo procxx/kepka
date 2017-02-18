@@ -429,6 +429,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles")
 
 add_executable(Telegram ${APP_SRC} ${PLAT_SRC})
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets)
+target_link_libraries(Telegram ${LIBLZMA_LIBRARIES})
 qt5_use_modules(Telegram Core Widgets)
 
 set_target_properties(Telegram PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "SourceFiles/stdafx.h")
