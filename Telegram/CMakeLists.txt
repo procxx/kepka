@@ -1,4 +1,4 @@
-find_package(Qt5 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5 5.6 COMPONENTS Core Gui Widgets REQUIRED)
 
 ##======================
 ## Codegen Tools
