@@ -2,6 +2,18 @@ find_package(Qt5Core 5.6 REQUIRED)
 find_package(Qt5Gui 5.6 REQUIRED)
 find_package(Qt5Widgets 5.6 REQUIRED)
 
+include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
+
+
+# defines
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+        add_definitions(-DQ_OS_LINUX64)
+    else()
+        add_definitions(-DQ_OS_LINUX32)
+    endif()
+endif()
+
 ##======================
 ## Codegen Tools
 ##======================
