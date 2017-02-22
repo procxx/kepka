@@ -10,6 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(OpenAL REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(LibZip REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(LibLZMA REQUIRED)
 find_package(GTK3 3.0 REQUIRED gtk)
