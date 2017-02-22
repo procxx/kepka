@@ -40,9 +40,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <unistd.h>
 #ifdef MAC_USE_BREAKPAD
-#include "client/mac/handler/exception_handler.h"
+//#include "client/mac/handler/exception_handler.h"
 #else // MAC_USE_BREAKPAD
-#include "client/crashpad_client.h"
+//#include "client/crashpad_client.h"
 #endif // else for MAC_USE_BREAKPAD
 
 #elif defined Q_OS_LINUX64 || defined Q_OS_LINUX32 // Q_OS_MAC
@@ -985,17 +985,17 @@ namespace internal {
 #endif // !_DEBUG
 		internal::SetSignalHandlers = false;
 #else // MAC_USE_BREAKPAD
-		crashpad::CrashpadClient crashpad_client;
+		//crashpad::CrashpadClient crashpad_client;
 		std::string handler = (cExeDir() + cExeName() + qsl("/Contents/Helpers/crashpad_handler")).toUtf8().constData();
 		std::string database = QFile::encodeName(dumpspath).constData();
-		if (crashpad_client.StartHandler(base::FilePath(handler),
+		/*if (crashpad_client.StartHandler(base::FilePath(handler),
 		                                 base::FilePath(database),
 		                                 std::string(),
 		                                 ProcessAnnotations,
 		                                 std::vector<std::string>(),
 		                                 false)) {
 			crashpad_client.UseHandler();
-		}
+		}*/
 #endif // else for MAC_USE_BREAKPAD
 #elif defined Q_OS_LINUX64 || defined Q_OS_LINUX32
 		internal::BreakpadExceptionHandler = new google_breakpad::ExceptionHandler(
