@@ -457,9 +457,20 @@ include_directories(ThirdParty/minizip)
 
 include_directories(SourceFiles SourceFiles/core)
 
+include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
+    ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
+    ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS} )
+
+link_directories(${GTK3_LIBRARY_DIRS})
+
+# Shut up for testbuilding, remove me
+include_directories(/usr/local/opt/openal-soft/include)
+add_definitions(-Wno-switch)
+# End remove me
+
 add_executable(Telegram ${APP_SRC} ${PLAT_SRC} ${THIRD_PARTY_SRC})
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
-target_link_libraries(Telegram ${LIBLZMA_LIBRARIES})
+target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
 qt5_use_modules(Telegram Core Widgets)
 
 set_target_properties(Telegram PROPERTIES COTIRE_CXX_PREFIX_HEADER_INIT "SourceFiles/stdafx.h")
