@@ -8,6 +8,8 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Needs OpenAL-SOFT
+# Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
 find_package(OpenAL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(LibZip REQUIRED)
