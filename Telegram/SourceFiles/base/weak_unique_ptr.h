@@ -46,14 +46,15 @@ public:
 private:
 	template <typename Child> friend class weak_unique_ptr;
 
-	std::shared_ptr<enable_weak_from_this *> getGuarded() {
+	std::shared_ptr<enable_weak_from_this *> getGuarded() const {
 		if (!_guarded) {
-			_guarded = std::make_shared<enable_weak_from_this *>(static_cast<enable_weak_from_this *>(this));
+			_guarded = std::make_shared<enable_weak_from_this *>(
+			    const_cast<enable_weak_from_this *>(static_cast<const enable_weak_from_this *>(this)));
 		}
 		return _guarded;
 	}
 
-	std::shared_ptr<enable_weak_from_this *> _guarded;
+	mutable std::shared_ptr<enable_weak_from_this *> _guarded;
 };
 
 template <typename T> class weak_unique_ptr {
