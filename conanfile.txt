@@ -1,0 +1,5 @@
+[requires]
+openal-soft/1.17.2@hilborn/stable
+
+[generators]
+cmake
