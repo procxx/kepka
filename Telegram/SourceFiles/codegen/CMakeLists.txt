@@ -1,0 +1,5 @@
+add_subdirectory(common)
+add_subdirectory(emoji)
+add_subdirectory(lang)
+add_subdirectory(numbers)
+add_subdirectory(style)
