@@ -91,6 +91,7 @@ void DownloadPathState::paintEvent(QPaintEvent *e) {
 		case State::Clearing: return lang(lng_download_path_clearing);
 		case State::Cleared: return lang(lng_download_path_cleared);
 		case State::ClearFailed: return lang(lng_download_path_clear_failed);
+		case State::Empty: case State::Exists: assert(false); // temp
 		}
 		return QString();
 	})();

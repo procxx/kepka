@@ -96,6 +96,7 @@ QSize readGeneratedSize(const IconMask *mask, DBIScale scale) {
 			case dbisOneAndQuarter: return QSize(pxAdjust(width, 5), pxAdjust(height, 5));
 			case dbisOneAndHalf: return QSize(pxAdjust(width, 6), pxAdjust(height, 6));
 			case dbisTwo: return QSize(width * 2, height * 2);
+			case dbisAuto: case dbisScaleCount: assert(false); // temp
 			}
 		} else {
 			Unexpected("Bad data in generated icon!");

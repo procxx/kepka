@@ -1458,6 +1458,7 @@ namespace {
 			i = peersData.insert(id, newData);
 		}
 		switch (restriction) {
+		case PeerData::NotLoaded: assert(false); // temp
 		case PeerData::MinimalLoaded: {
 			if (i.value()->loadedStatus == PeerData::NotLoaded) {
 				return nullptr;
