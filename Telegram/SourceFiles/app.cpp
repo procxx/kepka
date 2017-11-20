@@ -1468,6 +1468,7 @@ namespace {
 				return nullptr;
 			}
 		} break;
+		case PeerData::NotLoaded: break;
 		}
 		return i.value();
 	}

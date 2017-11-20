@@ -595,6 +595,7 @@ public:
 					auto &link = links[lnkIndex - maxLnkIndex - 1];
 					ClickHandlerPtr handler;
 					switch (link.type) {
+					case EntityInTextInvalid: case EntityInTextBold: case EntityInTextItalic: assert(false); // temp
 					case EntityInTextCustomUrl: handler = MakeShared<HiddenUrlClickHandler>(link.data); break;
 					case EntityInTextEmail:
 					case EntityInTextUrl: handler = MakeShared<UrlClickHandler>(link.data, link.displayStatus == LinkDisplayedFull); break;
