@@ -39,6 +39,7 @@ QString scaleLabel(DBIScale scale) {
 	case dbisOneAndQuarter: return qsl("125%");
 	case dbisOneAndHalf: return qsl("150%");
 	case dbisTwo: return qsl("200%");
+	case dbisAuto: case dbisScaleCount: assert(false); // temp
 	}
 	return QString();
 }
@@ -74,6 +75,7 @@ void ScaleWidget::onAutoChanged() {
 			case dbisOneAndQuarter: newScale = dbisOne; break;
 			case dbisOneAndHalf: newScale = dbisOneAndQuarter; break;
 			case dbisTwo: newScale = dbisOneAndHalf; break;
+			case dbisAuto: case dbisScaleCount: assert(false); // temp
 			}
 		}
 	}

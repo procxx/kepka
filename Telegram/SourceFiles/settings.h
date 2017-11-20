@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <cassert>
+
 void InitFromCommandLine(int argc, char *argv[]);
 
 extern bool gDebug;
@@ -144,6 +146,8 @@ T convertScale(T v) {
 		case dbisOneAndQuarter: return qRound(float64(v) * 1.25 - 0.01);
 		case dbisOneAndHalf: return qRound(float64(v) * 1.5 - 0.01);
 		case dbisTwo: return v * 2;
+		case dbisAuto: case dbisOne: return v;
+		case dbisScaleCount: assert(false); // temp
 	}
 	return v;
 }

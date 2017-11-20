@@ -43,6 +43,7 @@ QString getButtonText(MediaOverviewType type, int count) {
 	case OverviewFiles: return lng_profile_files(lt_count, count);
 	case OverviewVoiceFiles: return lng_profile_audios(lt_count, count);
 	case OverviewLinks: return lng_profile_shared_links(lt_count, count);
+	case OverviewChatPhotos: case OverviewCount: return QString(); // temp
 	}
 	return QString();
 }
