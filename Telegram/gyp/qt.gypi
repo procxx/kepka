@@ -27,14 +27,11 @@
               [ 'build_macold', {
                 'qt_version%': '5.3.2',
               }, {
-                'qt_version%': '5.6.2',
+                'qt_version%': '<!(rpm -qa --queryformat "%{VERSION}" qt5-qtbase)',
               }]
             ],
           },
           'qt_libs': [
-            'qwebp',
-            'Qt5PrintSupport',
-            'Qt5PlatformSupport',
             'Qt5Network',
             'Qt5Widgets',
             'Qt5Gui',
@@ -44,7 +41,7 @@
             [ 'build_macold', {
               'linux_path_qt%': '/usr/local/macold/Qt-<(qt_version)',
             }, {
-              'linux_path_qt%': '../../../qt',
+              'linux_path_qt%': '<!(rpm --eval "%{_qt5_libdir}")',
             }]
           ]
         },
@@ -84,17 +81,11 @@
             ],
           }],
           [ 'build_linux', {
-            'qt_lib_prefix': 'lib',
-            'qt_lib_debug_postfix': '.a',
-            'qt_lib_release_postfix': '.a',
+            'qt_lib_prefix': '',
+            'qt_lib_debug_postfix': '',
+            'qt_lib_release_postfix': '',
             'qt_libs': [
-              'qxcb',
-              'Qt5XcbQpa',
-              'qconnmanbearer',
-              'qgenericbearer',
-              'qnmbearer',
               '<@(qt_libs)',
-              'Qt5DBus',
               'Qt5Core',
             ],
           }],
@@ -120,7 +111,6 @@
         'qt_loc': '<(qt_loc_unix)',
       }],
     ],
-
     # If you need moc sources include a line in your 'sources':
     # '<!@(python <(DEPTH)/list_sources.py [sources] <(qt_moc_list_sources_arg))'
     # where [sources] contains all your source files
@@ -173,21 +163,20 @@
   },
 
   'include_dirs': [
-    '<(qt_loc)/include',
-    '<(qt_loc)/include/QtCore',
-    '<(qt_loc)/include/QtGui',
-    '<(qt_loc)/include/QtDBus',
-    '<(qt_loc)/include/QtCore/<(qt_version)',
-    '<(qt_loc)/include/QtGui/<(qt_version)',
-    '<(qt_loc)/include/QtCore/<(qt_version)/QtCore',
-    '<(qt_loc)/include/QtGui/<(qt_version)/QtGui',
+    '<!(rpm --eval "%{_includedir}")/qt5',
+    '<!(rpm --eval "%{_includedir}")/qt5/QtCore',
+    '<!(rpm --eval "%{_includedir}")/qt5/QtGui',
+    '<!(rpm --eval "%{_includedir}")/qt5/QtCore/<(qt_version)',
+    '<!(rpm --eval "%{_includedir}")/qt5/QtGui/<(qt_version)',
+    '<!(rpm --eval "%{_includedir}")/qt5/QtCore/<(qt_version)/QtCore',
+    '<!(rpm --eval "%{_includedir}")/qt5/QtGui/<(qt_version)/QtGui',
   ],
   'library_dirs': [
-    '<(qt_loc)/lib',
-    '<(qt_loc)/plugins',
-    '<(qt_loc)/plugins/bearer',
-    '<(qt_loc)/plugins/platforms',
-    '<(qt_loc)/plugins/imageformats',
+    '<(qt_loc)',
+    '<(qt_loc)/qt5/plugins',
+    '<(qt_loc)/qt5/plugins/bearer',
+    '<(qt_loc)/qt5/plugins/platforms',
+    '<(qt_loc)/qt5/plugins/imageformats',
   ],
   'defines': [
     'QT_WIDGETS_LIB',
@@ -198,42 +187,17 @@
   'conditions': [
     [ 'build_linux', {
       'library_dirs': [
-        '<(qt_loc)/plugins/platforminputcontexts',
+        '<(qt_loc)/qt5/plugins/platforminputcontexts',
       ],
       'libraries': [
         '<@(qt_libs_release)',
-        'z',
-        'pcre16',
-        'harfbuzz',
-        'icuuc',
-        'icutu',
-        'icui18n',
-        'png16',
-        'jpeg',
-        'xcb',
-        'xcb-shm',
-        'xcb-xfixes',
-        'xcb-render',
-        'X11',
-        'X11-xcb',
-        'GL',
-        'dbus-1',
-        'dl',
-        'gthread-2.0',
-        'glib-2.0',
-        'pthread',
-        'ssl',
         'crypto',
-        'Xi',
-        'Xext',
-        'SM',
-        'ICE',
-        'fontconfig',
-        'expat',
-        'freetype',
+        '-lX11',
+        '-lglib-2.0',
+        '-lpthread',
       ],
       'include_dirs': [
-        '<(qt_loc)/mkspecs/linux-g++',
+        '<(qt_loc)/qt5/mkspecs/linux-g++',
       ],
       'ldflags': [
         '-pthread',

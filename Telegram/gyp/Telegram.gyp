@@ -31,7 +31,6 @@
       'src_loc': '../SourceFiles',
       'res_loc': '../Resources',
       'submodules_loc': '../ThirdParty',
-      'minizip_loc': '<(submodules_loc)/minizip',
       'sp_media_key_tap_loc': '<(submodules_loc)/SPMediaKeyTap',
       'emoji_suggestions_loc': '<(submodules_loc)/emoji_suggestions',
       'style_files': [
@@ -80,31 +79,24 @@
       'codegen.gyp:codegen_lang',
       'codegen.gyp:codegen_numbers',
       'codegen.gyp:codegen_style',
-      'tests/tests.gyp:tests',
-      'utils.gyp:Updater',
-      '../ThirdParty/libtgvoip/libtgvoip.gyp:libtgvoip',
     ],
 
     'defines': [
-      'AL_LIBTYPE_STATIC',
-      'AL_ALEXT_PROTOTYPES',
       'TGVOIP_USE_CXX11_LIB',
       '__STDC_FORMAT_MACROS',
       'TDESKTOP_DISABLE_AUTOUPDATE',
       'TDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME',
       'TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION',
       'TDESKTOP_DISABLE_CRASH_REPORTS',
+      'TDESKTOP_DISABLE_UNITY_INTEGRATION',
     ],
 
     'include_dirs': [
       '<(src_loc)',
       '<(SHARED_INTERMEDIATE_DIR)',
-      '<(libs_loc)/breakpad/src',
-      '<(minizip_loc)',
       '<(sp_media_key_tap_loc)',
       '<(emoji_suggestions_loc)',
       '<(submodules_loc)/GSL/include',
-      '<(submodules_loc)/variant/include',
     ],
     'sources': [
       '<@(qrc_files)',
