@@ -1,9 +1,6 @@
-find_package(Qt5Core 5.6 REQUIRED)
-find_package(Qt5Gui 5.6 REQUIRED)
-find_package(Qt5Widgets 5.6 REQUIRED)
+find_package(Qt5 5.6 COMPONENTS Core Gui Widgets REQUIRED)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Gui_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS})
-
 
 # defines
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
