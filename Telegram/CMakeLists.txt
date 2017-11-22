@@ -109,6 +109,8 @@ add_custom_target(scheme_output
 list(APPEND style_files
     Resources/basic
     SourceFiles/boxes/boxes
+    SourceFiles/calls/calls
+    SourceFiles/chat_helpers/chat_helpers
     SourceFiles/dialogs/dialogs
     SourceFiles/history/history
     SourceFiles/intro/intro
@@ -117,7 +119,6 @@ list(APPEND style_files
     SourceFiles/overview/overview
     SourceFiles/profile/profile
     SourceFiles/settings/settings
-    SourceFiles/chat_helpers/chat_helpers
     SourceFiles/ui/widgets/widgets
     SourceFiles/window/window
 )
