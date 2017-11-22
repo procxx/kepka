@@ -494,8 +494,8 @@ list(APPEND THIRD_PARTY_SRC
     ThirdParty/minizip/zip.c
     ThirdParty/minizip/unzip.c
 )
-include_directories(ThirdParty/minizip)
 
+include_directories(ThirdParty) # For minizip/ but we use fully-qualified include path to avoid ambiguity
 include_directories(ThirdParty/GSL/include ThirdParty/variant/include ThirdParty/emoji_suggestions)
 
 ##======================
