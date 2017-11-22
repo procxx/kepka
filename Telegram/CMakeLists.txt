@@ -72,15 +72,22 @@ add_custom_command(
     OUTPUT
         emoji.cpp
         emoji.h
+        emoji_suggestions_data.cpp
+        emoji_suggestions_data.h
     COMMAND
-        codegen_emoji -o${CMAKE_CURRENT_BINARY_DIR} -w${CMAKE_SOURCE_DIR}
+        codegen_emoji ${CMAKE_CURRENT_SOURCE_DIR}/Resources/emoji_autocomplete.json -o ${CMAKE_CURRENT_BINARY_DIR}
     WORKING_DIRECTORY .
     DEPENDS
         codegen_emoji
     VERBATIM
 )
 add_custom_target(emoji_output
-    DEPENDS emoji.h emoji.cpp)
+    DEPENDS
+        emoji.h
+        emoji.cpp
+        emoji_suggestions_data.cpp
+        emoji_suggestions_data.h
+)
 
 add_custom_command(
     COMMENT "Generating scheme"
