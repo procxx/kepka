@@ -10,6 +10,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+# Ignore automoc-ing generated files (@tbd?)
+cmake_policy(SET CMP0071 OLD)
 
 # Needs OpenAL-SOFT
 # Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
