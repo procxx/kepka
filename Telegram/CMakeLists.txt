@@ -515,7 +515,7 @@ include_directories(/usr/local/opt/openal-soft/include)
 add_definitions(-Wno-switch)
 # End remove me
 if (WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32  -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
 endif()
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
@@ -559,6 +559,10 @@ set_target_properties(Telegram
         COTIRE_ADD_UNITY_BUILD FALSE
 )
 cotire(Telegram)
+
+# See https://github.com/sakra/cotire/blob/master/MANUAL.md#objective-c
+# ObjC and ObjC++ files cannot be cotired, so they have to include appropriate Qt and Tg
+# headers themselves, this applies to macOS platform sources.
 
 ##======================
 
