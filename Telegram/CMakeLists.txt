@@ -486,6 +486,8 @@ include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
     ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
     ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS})
 
+include_directories(ThirdParty/GSL/include ThirdParty/variant/include ThirdParty/emoji_suggestions)
+
 link_directories(${GTK3_LIBRARY_DIRS})
 
 # Shut up for testbuilding, remove me
