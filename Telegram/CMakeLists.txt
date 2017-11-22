@@ -435,6 +435,7 @@ if (APPLE)
         SourceFiles/platform/mac/specific_mac_p.mm
         SourceFiles/platform/mac/window_title_mac.mm
     )
+    set(tg_RESOURCES Resources/qrc/telegram_mac.qrc)
 endif()
 if (WIN32)
     set(PLAT_SRC ${PLAT_SRC}
@@ -448,6 +449,7 @@ if (WIN32)
         SourceFiles/platform/win/windows_dlls.cpp
         SourceFiles/platform/win/windows_event_filter.cpp
     )
+    set(tg_RESOURCES Resources/qrc/telegram_wnd.qrc)
 endif()
 if (WINRT)
     set(PLAT_SRC ${PLAT_SRC}
@@ -465,7 +467,17 @@ if (LINUX)
         SourceFiles/platform/linux/notifications_manager_linux.cpp
         SourceFiles/platform/linux/specific_linux.cpp
     )
+    set(tg_RESOURCES Resources/qrc/telegram_linux.qrc)
 endif()
+
+list(APPEND tg_RESOURCES
+    Resources/qrc/telegram.qrc
+    Resources/qrc/telegram_sounds.qrc
+    Resources/qrc/telegram_emoji.qrc
+    Resources/qrc/telegram_emoji_large.qrc
+)
+
+qt5_add_resources(tg_RESOURCES_RCC ${tg_RESOURCES})
 
 set(THIRD_PARTY_SRC)
 
@@ -522,6 +534,8 @@ add_executable(Telegram ${GUI_TYPE}
     ${APP_SRC}
     ${PLAT_SRC}
     ${THIRD_PARTY_SRC}
+    ${tg_RESOURCES}
+    ${tg_RESOURCES_RCC}
     ${APPLE_BUNDLE_SRC}
 )
 target_link_libraries(Telegram tg_boxes)
