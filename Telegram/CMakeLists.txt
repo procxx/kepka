@@ -517,7 +517,6 @@ add_executable(Telegram
 target_link_libraries(Telegram tg_boxes)
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
-qt5_use_modules(Telegram Core Widgets)
 
 add_dependencies(Telegram boxes_styles_output)
 

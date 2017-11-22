@@ -40,4 +40,3 @@ if (NOT OPENSSL_FOUND)
 endif()
 
 add_subdirectory(Telegram)
-#target_link_libraries(publisher Qt5::Widgets Qt5::DBus)
