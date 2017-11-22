@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/telegramdesktop/libtgvoip
+	branch = tdesktop
+	commit = 651594b3cef23051ca7370ddd14d7c23377d6341
+	parent = 5e31fcb2406d6d8ce1d6d61199bacbc06014c2d3
+	cmdver = 0.3.1
