@@ -508,17 +508,34 @@ endif()
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
 
-add_executable(Telegram
+if (APPLE)
+    set(GUI_TYPE MACOSX_BUNDLE)
+    set(MACOSX_BUNDLE_ICON_FILE Icon.iconset)
+    set_source_files_properties("Telegram/Images.xcassets/${MACOSX_BUNDLE_ICON_FILE}"
+        PROPERTIES
+            MACOSX_PACKAGE_LOCATION Resources)
+    set(APPLE_BUNDLE_SRC "Telegram/Images.xcassets/${MACOSX_BUNDLE_ICON_FILE}")
+endif()
+
+add_executable(Telegram ${GUI_TYPE}
     SourceFiles/stdafx.cpp
     ${APP_SRC}
     ${PLAT_SRC}
     ${THIRD_PARTY_SRC}
+    ${APPLE_BUNDLE_SRC}
 )
 target_link_libraries(Telegram tg_boxes)
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
 
 add_dependencies(Telegram boxes_styles_output)
+
+if (APPLE)
+    set_target_properties(Telegram
+        PROPERTIES
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Telegram.plist
+    )
+endif()
 
 set_target_properties(Telegram
     PROPERTIES
