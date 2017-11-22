@@ -31,3 +31,4 @@ add_library(tg_boxes STATIC
     stickers_box.cpp
     username_box.cpp
 )
+add_dependencies(tg_boxes boxes_styles_output)

@@ -36,6 +36,8 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
 )
+add_custom_target(palette_output
+    DEPENDS styles/palette.h styles/palette.cpp)
 
 add_custom_command(
     COMMENT "Generating numbers"
@@ -48,6 +50,8 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
 )
+add_custom_target(numbers_output
+    DEPENDS numbers.h numbers.cpp)
 
 add_custom_command(
     COMMENT "Generating langs"
@@ -60,6 +64,8 @@ add_custom_command(
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
 )
+add_custom_target(lang_output
+    DEPENDS lang_auto.h lang_auto.cpp)
 
 add_custom_command(
     COMMENT "Generating emoji"
@@ -73,9 +79,11 @@ add_custom_command(
         codegen_emoji
     VERBATIM
 )
+add_custom_target(emoji_output
+    DEPENDS emoji.h emoji.cpp)
 
 add_custom_command(
-    COMMENT "Generating schema"
+    COMMENT "Generating scheme"
     OUTPUT
         scheme.cpp
         scheme.h
@@ -86,6 +94,8 @@ add_custom_command(
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     VERBATIM
 )
+add_custom_target(scheme_output
+    DEPENDS scheme.h scheme.cpp)
 
 ##========
 
@@ -120,7 +130,13 @@ foreach (src ${style_files})
             ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
         DEPENDS
             ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
-        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style)
+        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
+    )
+    add_custom_target(${src_file}_styles_output
+        DEPENDS
+            ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.h
+            ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.cpp
+    )
 
     list(APPEND style_sources
         ${CMAKE_CURRENT_BINARY_DIR}/styles/style_${src_file}.cpp)
