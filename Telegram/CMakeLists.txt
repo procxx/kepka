@@ -541,7 +541,6 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 # Disable a single annoying warning about c++17
 target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
 
-target_link_libraries(Telegram tg_boxes)
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
 
