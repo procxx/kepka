@@ -1,0 +1,215 @@
+language: cpp
+sudo: false
+
+common_sources: &all_sources
+  - ubuntu-toolchain-r-test
+  - llvm-toolchain-trusty
+  - llvm-toolchain-trusty-3.9
+  - llvm-toolchain-trusty-4.0
+  - llvm-toolchain-trusty-5.0
+
+matrix:
+  include:
+
+    # 1/ Linux Clang Builds
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'clang-3.5']
+      env: COMPILER='clang++-3.5' VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'clang-3.6']
+      env: COMPILER='clang++-3.6' VALGRIND=1
+
+# Travis's containers do not seem to have Clang 3.7 in apt, no matter what sources I add.
+#    - os: linux
+#      compiler: clang
+#      addons:
+#        apt:
+#          sources: *all_sources
+#          packages: ['valgrind', 'clang-3.7']
+#      env: COMPILER='clang++-3.7' VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'clang-3.8']
+      env: COMPILER='clang++-3.8' VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              sources: *all_sources
+              packages: ['clang-3.9', 'valgrind']
+      env: COMPILER='clang++-3.9' VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              sources: *all_sources
+              packages: ['clang-4.0', 'valgrind']
+      env: COMPILER='clang++-4.0' VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              sources: *all_sources
+              packages: ['clang-5.0', 'valgrind']
+      env: COMPILER='clang++-5.0' VALGRIND=1
+
+    # 2/ Linux GCC Builds
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+         sources: ['ubuntu-toolchain-r-test']
+         packages: ['valgrind', 'g++-4.8']
+      env: COMPILER='g++-4.8' VALGRIND=1
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'g++-4.9']
+      env: COMPILER='g++-4.9' VALGRIND=1
+
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'g++-5']
+      env: COMPILER='g++-5' VALGRIND=1
+
+    - os: linux
+      compiler: gcc
+      addons: &gcc6
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'g++-6']
+      env: COMPILER='g++-6' VALGRIND=1
+
+    - os: linux
+      compiler: gcc
+      addons: &gcc7
+        apt:
+          sources: *all_sources
+          packages: ['valgrind', 'g++-7']
+      env: COMPILER='g++-7' VALGRIND=1
+
+    # 3b/ Linux C++14 Clang builds
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              packages: ['clang-3.8', 'valgrind', 'libstdc++-6-dev']
+              sources:
+                  - ubuntu-toolchain-r-test
+                  - llvm-toolchain-trusty
+      env: COMPILER='clang++-3.8' CPP14=1 VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              sources: *all_sources
+              packages: ['clang-3.9', 'valgrind', 'libstdc++-6-dev']
+      env: COMPILER='clang++-3.9' CPP14=1 VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              sources: *all_sources
+              packages: ['clang-4.0', 'valgrind', 'libstdc++-6-dev']
+      env: COMPILER='clang++-4.0' CPP14=1 VALGRIND=1
+
+    - os: linux
+      compiler: clang
+      addons:
+          apt:
+              sources: *all_sources
+              packages: ['clang-5.0', 'valgrind', 'libstdc++-6-dev']
+      env: COMPILER='clang++-5.0' CPP14=1 VALGRIND=1
+
+
+    # 4a/ Linux C++14 GCC builds
+    - os: linux
+      compiler: gcc
+      addons: *gcc6
+      env: COMPILER='g++-6' CPP14=1 VALGRIND=1
+
+    - os: linux
+      compiler: gcc
+      addons: *gcc7
+      env: COMPILER='g++-7' CPP14=1 VALGRIND=1
+
+    # 5/ OSX Clang Builds
+    - os: osx
+      osx_image: xcode7.3
+      compiler: clang
+      env: COMPILER='clang++'
+
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      env: COMPILER='clang++'
+
+    - os: osx
+      osx_image: xcode9
+      compiler: clang
+      env: COMPILER='clang++'
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang
+      env: COMPILER='clang++'
+
+    - os: osx
+      osx_image: xcode9.1
+      compiler: clang
+      env: COMPILER='clang++' USE_CPP14=1
+
+install:
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
+      mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+      export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      which cmake || brew install cmake
+    fi
+
+before_script:
+  - export CXX=${COMPILER}
+  - cd ${TRAVIS_BUILD_DIR}
+  # Regenerate single header file, so it is tested in the examples...
+  - python scripts/generateSingleHeader.py
+
+  # Use Debug builds for running Valgrind and building examples
+  - cmake -H. -BBuild-Debug -DCMAKE_BUILD_TYPE=Debug -Wdev -DUSE_CPP14=${CPP14} -DUSE_VALGRIND=${VALGRIND} -DBUILD_EXAMPLES=ON
+  # Check that we don't miscompile with optimalizations...
+  - cmake -H. -BBuild-Release -DCMAKE_BUILD_TYPE=Release -Wdev -DUSE_CPP14=${CPP14}
+
+script:
+  - cd Build-Debug
+  - make -j 2
+  - ctest -V -j 2
+  - cd ../Build-Release
+  - make -j 2
+  - ctest -V -j 2
