@@ -415,7 +415,7 @@ set(APP_SRC
     SourceFiles/observer_peer.cpp
     SourceFiles/overviewwidget.cpp
     SourceFiles/passcodewidget.cpp
-    SourceFiles/qt_functions.cpp
+    # SourceFiles/qt_functions.cpp
     SourceFiles/qt_static_plugins.cpp
     SourceFiles/settings.cpp
     SourceFiles/shortcuts.cpp
