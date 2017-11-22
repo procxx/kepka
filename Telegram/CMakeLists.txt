@@ -15,6 +15,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     endif()
 endif()
 
+find_program(CCACHE ccache)
+if (CCACHE)
+    message(STATUS "Enabling ccache")
+    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+endif()
+
 ##======================
 ## Codegen Tools
 ##======================
