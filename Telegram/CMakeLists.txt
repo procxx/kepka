@@ -441,7 +441,12 @@ if (WIN32)
     add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS -D_CRT_SECURE_NO_WARNINGS -DWIN32  -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
 endif()
 
-add_executable(Telegram ${APP_SRC} ${PLAT_SRC} ${THIRD_PARTY_SRC})
+add_executable(Telegram
+    SourceFiles/stdafx.cpp
+    ${APP_SRC}
+    ${PLAT_SRC}
+    ${THIRD_PARTY_SRC}
+)
 target_link_libraries(Telegram tg_boxes)
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
