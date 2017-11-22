@@ -154,7 +154,7 @@ endforeach()
 ## Main app
 ##======================
 
-add_subdirectory(SourceFiles/boxes)
+#add_subdirectory(SourceFiles/boxes) - see comment in that dir
 
 set(APP_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
@@ -170,6 +170,38 @@ set(APP_SRC
     SourceFiles/base/runtime_composer.cpp
     SourceFiles/base/task_queue.cpp
     SourceFiles/base/timer.cpp
+
+    SourceFiles/boxes/about_box.cpp
+    SourceFiles/boxes/abstract_box.cpp
+    SourceFiles/boxes/add_contact_box.cpp
+    SourceFiles/boxes/autolock_box.cpp
+    SourceFiles/boxes/background_box.cpp
+    SourceFiles/boxes/calendar_box.cpp
+    SourceFiles/boxes/change_phone_box.cpp
+    SourceFiles/boxes/confirm_box.cpp
+    SourceFiles/boxes/confirm_phone_box.cpp
+    SourceFiles/boxes/connection_box.cpp
+    SourceFiles/boxes/download_path_box.cpp
+    SourceFiles/boxes/edit_color_box.cpp
+    SourceFiles/boxes/edit_participant_box.cpp
+    SourceFiles/boxes/edit_privacy_box.cpp
+    SourceFiles/boxes/language_box.cpp
+    SourceFiles/boxes/local_storage_box.cpp
+    SourceFiles/boxes/mute_settings_box.cpp
+    SourceFiles/boxes/notifications_box.cpp
+    SourceFiles/boxes/passcode_box.cpp
+    SourceFiles/boxes/peer_list_box.cpp
+    SourceFiles/boxes/peer_list_controllers.cpp
+    SourceFiles/boxes/photo_crop_box.cpp
+    SourceFiles/boxes/rate_call_box.cpp
+    SourceFiles/boxes/report_box.cpp
+    SourceFiles/boxes/self_destruction_box.cpp
+    SourceFiles/boxes/send_files_box.cpp
+    SourceFiles/boxes/sessions_box.cpp
+    SourceFiles/boxes/share_box.cpp
+    SourceFiles/boxes/sticker_set_box.cpp
+    SourceFiles/boxes/stickers_box.cpp
+    SourceFiles/boxes/username_box.cpp
 
     SourceFiles/chat_helpers/bot_keyboard.cpp
     SourceFiles/chat_helpers/emoji_list_widget.cpp
@@ -474,6 +506,8 @@ target_link_libraries(Telegram tg_boxes)
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
 qt5_use_modules(Telegram Core Widgets)
+
+add_dependencies(Telegram boxes_styles_output)
 
 set_target_properties(Telegram
     PROPERTIES

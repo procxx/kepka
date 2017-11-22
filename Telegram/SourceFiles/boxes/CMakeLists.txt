@@ -1,3 +1,5 @@
+# Unused: cotire PCH needs more rigid structure.
+# To do: get rid of the PCH requirement for more flexible build structure.
 add_library(tg_boxes STATIC
     about_box.cpp
     abstract_box.cpp
