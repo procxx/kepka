@@ -1,4 +1,7 @@
-find_package(Qt5 5.6 COMPONENTS Core Gui Widgets REQUIRED)
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Core_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt5Gui_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
