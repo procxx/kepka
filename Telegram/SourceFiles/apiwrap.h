@@ -21,6 +21,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/timer.h"
+#include <QtCore/QObject>
+#include "mtproto/rpc_sender.h"
+#include "mtproto/core_types.h"
 #include "core/single_timer.h"
 #include "mtproto/sender.h"
 #include "base/flat_map.h"
