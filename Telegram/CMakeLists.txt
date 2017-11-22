@@ -521,7 +521,6 @@ endif()
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
 
 if (APPLE)
-    set(GUI_TYPE MACOSX_BUNDLE)
     set(MACOSX_BUNDLE_ICON_FILE Icon.iconset)
     set_source_files_properties("Telegram/Images.xcassets/${MACOSX_BUNDLE_ICON_FILE}"
         PROPERTIES
@@ -529,7 +528,7 @@ if (APPLE)
     set(APPLE_BUNDLE_SRC "Telegram/Images.xcassets/${MACOSX_BUNDLE_ICON_FILE}")
 endif()
 
-add_executable(Telegram ${GUI_TYPE}
+add_executable(Telegram WIN32 MACOSX_BUNDLE
     SourceFiles/stdafx.cpp
     ${APP_SRC}
     ${PLAT_SRC}
