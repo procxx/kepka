@@ -496,8 +496,10 @@ include_directories(/usr/local/opt/openal-soft/include)
 add_definitions(-Wno-switch)
 # End remove me
 if (WIN32)
-    add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS -D_CRT_SECURE_NO_WARNINGS -DWIN32  -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32  -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
 endif()
+
+add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
 
 add_executable(Telegram
     SourceFiles/stdafx.cpp
