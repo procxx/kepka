@@ -669,6 +669,10 @@ set_target_properties(Telegram
 )
 cotire(Telegram)
 
+# See https://github.com/sakra/cotire/blob/master/MANUAL.md#objective-c
+# ObjC and ObjC++ files cannot be cotired, so they have to include appropriate Qt and Tg
+# headers themselves, this applies to macOS platform sources.
+
 ##======================
 
 # if (APPLE)
