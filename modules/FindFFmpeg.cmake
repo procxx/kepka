@@ -6,12 +6,15 @@
 #  FFMPEG_LIBRARY_DIR    - the directory containing the libraries
 #  FFMPEG_LIBRARIES  - link these to use FFMPEG
 #  FFMPEG_SWSCALE_FOUND  - FFMPEG also has SWSCALE
+#  FFMPEG_SWRESAMPLE_FOUND  - FFMPEG also has SWRESAMPLE
 #
 
 SET( FFMPEG_HEADERS avformat.h avcodec.h avutil.h avdevice.h )
 SET( FFMPEG_PATH_SUFFIXES libavformat libavcodec libavutil libavdevice )
 SET( FFMPEG_SWS_HEADERS swscale.h )
 SET( FFMPEG_SWS_PATH_SUFFIXES libswscale )
+SET( FFMPEG_SWR_HEADERS swresample.h )
+SET( FFMPEG_SWR_PATH_SUFFIXES libswresample )
 SET( FFMPEG_PP_HEADERS postproc.h )
 SET( FFMPEG_PP_PATH_SUFFIXES libpostproc )
 
@@ -19,8 +22,8 @@ if( $ENV{FFMPEGDIR} )
     SET( FFMPEG_LIBRARIES avformat-52.lib avcodec-51.lib avutil-49.lib avdevice-52.lib )
     SET( FFMPEG_SWS_LIBRARIES swscale-0.lib )
     SET( FFMPEG_PP_LIBRARIES postproc-0.lib )
-    SET( FFMPEG_LIBRARY_DIR $ENV{FFMPEGDIR}\\lib )
-    SET( FFMPEG_INCLUDE_PATHS $ENV{FFMPEGDIR}\\include )
+    SET( FFMPEG_LIBRARY_DIR $ENV{FFMPEGDIR}/lib )
+    SET( FFMPEG_INCLUDE_PATHS $ENV{FFMPEGDIR}/include )
 
     # check to see if we can find swscale
     SET( TMP_ TMP-NOTFOUND )
@@ -32,6 +35,7 @@ if( $ENV{FFMPEGDIR} )
 else( $ENV{FFMPEGDIR} )
     SET( FFMPEG_LIBRARIES avformat avcodec avutil avdevice )
     SET( FFMPEG_SWS_LIBRARIES swscale )
+    SET( FFMPEG_SWR_LIBRARIES swresample )
     SET( FFMPEG_PP_LIBRARIES postproc )
     INCLUDE(FindPkgConfig)
     if ( PKG_CONFIG_FOUND )
@@ -40,6 +44,7 @@ else( $ENV{FFMPEGDIR} )
         pkg_check_modules( AVUTIL libavutil )
         pkg_check_modules( AVDEVICE libavdevice )
         pkg_check_modules( SWSCALE libswscale )
+        pkg_check_modules( SWRESAMPLE libswresample )
         pkg_check_modules( POSTPROC libpostproc )
     endif ( PKG_CONFIG_FOUND )
 
@@ -52,6 +57,8 @@ else( $ENV{FFMPEGDIR} )
                                 ${AVUTIL_INCLUDE_DIRS}
                                 ${AVDEVICE_INCLUDE_DIRS} )
 endif( $ENV{FFMPEGDIR} )
+
+SET( FFMPEG_SWSCALE_FOUND ${SWSCALE_FOUND} )
 
 # add in swscale if found
 IF ( SWSCALE_FOUND )
@@ -66,6 +73,22 @@ IF ( SWSCALE_FOUND )
     SET( FFMPEG_LIBRARIES       ${FFMPEG_LIBRARIES}
                                 ${FFMPEG_SWS_LIBRARIES} )
 ENDIF ( SWSCALE_FOUND )
+
+SET( FFMPEG_SWRESAMPLE_FOUND ${SWRESAMPLE_FOUND} )
+
+# add in swresample if found
+IF ( SWRESAMPLE_FOUND )
+    SET( FFMPEG_LIBRARY_DIR     ${FFMPEG_LIBRARY_DIR}
+                                ${SWRESAMPLE_LIBRARY_DIRS} )
+    SET( FFMPEG_INCLUDE_PATHS   ${FFMPEG_INCLUDE_PATHS}
+                                ${SWRESAMPLE_INCLUDE_DIRS} )
+    SET( FFMPEG_HEADERS         ${FFMPEG_HEADERS}
+                                ${FFMPEG_SWR_HEADERS} )
+    SET( FFMPEG_PATH_SUFFIXES   ${FFMPEG_PATH_SUFFIXES}
+                                ${FFMPEG_SWR_PATH_SUFFIXES} )
+    SET( FFMPEG_LIBRARIES       ${FFMPEG_LIBRARIES}
+                                ${FFMPEG_SWR_LIBRARIES} )
+ENDIF ( SWRESAMPLE_FOUND )
 
 # add in postproc if found
 IF ( POSTPROC_FOUND )
@@ -124,10 +147,8 @@ ENDIF( NOT WIN32 )
 LIST( LENGTH FFMPEG_HEADERS LIST_SIZE_ )
 
 SET( FFMPEG_FOUND FALSE )
-SET( FFMPEG_SWSCALE_FOUND FALSE )
 SET( FFMPEG_POSTPROC_FOUND FALSE )
 IF ( ${INC_SUCCESS} EQUAL ${LIST_SIZE_} )
     SET( FFMPEG_FOUND TRUE )
-    SET( FFMPEG_SWSCALE_FOUND ${SWSCALE_FOUND} )
     SET( FFMPEG_POSTPROC_FOUND ${POSTPROC_FOUND} )
 ENDIF ( ${INC_SUCCESS} EQUAL ${LIST_SIZE_} )
