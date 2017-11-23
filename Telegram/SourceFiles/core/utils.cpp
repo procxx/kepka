@@ -308,7 +308,7 @@ namespace ThirdParty {
 		av_lockmgr_register(nullptr);
 
 		CRYPTO_cleanup_all_ex_data();
-		FIPS_mode_set(0);
+		// FIPS_mode_set(0);
 		ENGINE_cleanup();
 		CONF_modules_unload(1);
 		ERR_remove_state(0);
