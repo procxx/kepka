@@ -585,7 +585,8 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
 
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets Qt5::Network) # crashpad::crashpad_client)
-target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY} ${FFMPEG_LIBRARIES} ${ICONV_LIBRARIES})
+target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES}
+    ${OPENAL_LIBRARY} ${FFMPEG_LIBRARIES} ${ICONV_LIBRARIES} ${OPUS_LIB})
 target_link_libraries(Telegram tgvoip)
 
 add_dependencies(Telegram boxes_styles_output)
@@ -597,8 +598,13 @@ if (APPLE)
     )
     find_library(COREFOUNDATION_LIB CoreFoundation)
     find_library(COREAUDIO_LIB CoreAudio)
+    find_library(AUDIOUNIT_LIB AudioUnit)
+    find_library(AUDIOTOOLBOX_LIB AudioToolbox)
     find_library(COCOA_LIB Cocoa)
-    target_link_libraries(Telegram ${COREFOUNDATION_LIB} ${COREAUDIO_LIB} ${COCOA_LIB})
+    find_library(CARBON_LIB Carbon)
+    find_library(IOKIT_LIB IOKit)
+    target_link_libraries(Telegram ${COREFOUNDATION_LIB} ${COCOA_LIB} ${CARBON_LIB}
+        ${COREAUDIO_LIB} ${AUDIOUNIT_LIB} ${AUDIOTOOLBOX_LIB} ${IOKIT_LIB})
 endif()
 
 set_target_properties(Telegram
