@@ -1139,5 +1139,19 @@ namespace internal {
 			internal::ProcessAnnotationRefs.erase(key);
 		}
 	}
-
 }
+
+#ifdef TDESKTOP_DISABLE_CRASH_REPORTS
+
+namespace SignalHandlers {
+	dump::~dump() {
+	}
+	const dump &operator<<(const dump &stream, const char *str) {
+		return stream;
+	}
+	const dump &operator<<(const dump &stream, double num) {
+		return stream;
+	}
+}
+
+#endif // TDESKTOP_DISABLE_CRASH_REPORTS
