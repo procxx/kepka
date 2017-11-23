@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <iconv.h>
 
+#ifdef BULLSHIT
+
 #ifdef iconv_open
 #undef iconv_open
 #endif // iconv_open
@@ -43,3 +45,5 @@ size_t iconv(iconv_t cd, char** inbuf, size_t *inbytesleft, char** outbuf, size_
 int iconv_close(iconv_t cd) {
 	return libiconv_close(cd);
 }
+
+#endif // BULLSHIT
