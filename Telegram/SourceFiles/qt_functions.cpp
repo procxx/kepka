@@ -31,6 +31,8 @@
 **
 ****************************************************************************/
 
+#include <private/qtextengine_p.h>
+
 /* TODO: find a dynamic library with these symbols. */
 
 /* Debian maintainer: this function is taken from qfiledialog.cpp */
