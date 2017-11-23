@@ -1,6 +1,7 @@
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Network REQUIRED)
 
 include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Core_PRIVATE_INCLUDE_DIRS})
 include_directories(${Qt5Gui_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
@@ -211,8 +212,16 @@ set(APP_SRC
     SourceFiles/boxes/stickers_box.cpp
     SourceFiles/boxes/username_box.cpp
 
+    SourceFiles/calls/calls_box_controller.cpp
+    SourceFiles/calls/calls_call.cpp
+    SourceFiles/calls/calls_emoji_fingerprint.cpp
+    SourceFiles/calls/calls_instance.cpp
+    SourceFiles/calls/calls_panel.cpp
+    SourceFiles/calls/calls_top_bar.cpp
+
     SourceFiles/chat_helpers/bot_keyboard.cpp
     SourceFiles/chat_helpers/emoji_list_widget.cpp
+    SourceFiles/chat_helpers/emoji_suggestions_widget.cpp
     SourceFiles/chat_helpers/field_autocomplete.cpp
     SourceFiles/chat_helpers/gifs_list_widget.cpp
     SourceFiles/chat_helpers/message_field.cpp
@@ -232,17 +241,27 @@ set(APP_SRC
     SourceFiles/data/data_drafts.cpp
 
     SourceFiles/dialogs/dialogs_indexed_list.cpp
+    SourceFiles/dialogs/dialogs_inner_widget.cpp
     SourceFiles/dialogs/dialogs_layout.cpp
     SourceFiles/dialogs/dialogs_list.cpp
     SourceFiles/dialogs/dialogs_row.cpp
+    SourceFiles/dialogs/dialogs_search_from_controllers.cpp
+    SourceFiles/dialogs/dialogs_widget.cpp
 
+    SourceFiles/history/history.cpp
+    SourceFiles/history/history_admin_log_filter.cpp
+    SourceFiles/history/history_admin_log_inner.cpp
+    SourceFiles/history/history_admin_log_item.cpp
+    SourceFiles/history/history_admin_log_section.cpp
     SourceFiles/history/history_drag_area.cpp
-    SourceFiles/history/history_item.cpp
     SourceFiles/history/history_inner_widget.cpp
+    SourceFiles/history/history_item.cpp
     SourceFiles/history/history_location_manager.cpp
     SourceFiles/history/history_media_types.cpp
     SourceFiles/history/history_message.cpp
+    SourceFiles/history/history_service.cpp
     SourceFiles/history/history_service_layout.cpp
+    SourceFiles/history/history_widget.cpp
 
     SourceFiles/inline_bots/inline_bot_layout_internal.cpp
     SourceFiles/inline_bots/inline_bot_layout_item.cpp
@@ -257,8 +276,16 @@ set(APP_SRC
     SourceFiles/intro/introstart.cpp
     SourceFiles/intro/introwidget.cpp
 
+    SourceFiles/lang/lang_cloud_manager.cpp
+    SourceFiles/lang/lang_file_parser.cpp
+    SourceFiles/lang/lang_instance.cpp
+    SourceFiles/lang/lang_keys.cpp
+    SourceFiles/lang/lang_tag.cpp
+    SourceFiles/lang/lang_translator.cpp
+
     SourceFiles/media/player/media_player_button.cpp
     SourceFiles/media/player/media_player_cover.cpp
+    SourceFiles/media/player/media_player_float.cpp
     SourceFiles/media/player/media_player_instance.cpp
     SourceFiles/media/player/media_player_list.cpp
     SourceFiles/media/player/media_player_panel.cpp
@@ -268,11 +295,13 @@ set(APP_SRC
     SourceFiles/media/view/media_clip_controller.cpp
     SourceFiles/media/view/media_clip_playback.cpp
     SourceFiles/media/view/media_clip_volume_controller.cpp
+
     SourceFiles/media/media_audio.cpp
     SourceFiles/media/media_audio_capture.cpp
     SourceFiles/media/media_audio_ffmpeg_loader.cpp
     SourceFiles/media/media_audio_loader.cpp
     SourceFiles/media/media_audio_loaders.cpp
+    SourceFiles/media/media_audio_track.cpp
     SourceFiles/media/media_child_ffmpeg_loader.cpp
     SourceFiles/media/media_clip_ffmpeg.cpp
     SourceFiles/media/media_clip_implementation.cpp
@@ -280,19 +309,22 @@ set(APP_SRC
     SourceFiles/media/media_clip_reader.cpp
 
     SourceFiles/mtproto/auth_key.cpp
+    SourceFiles/mtproto/config_loader.cpp
     SourceFiles/mtproto/connection.cpp
     SourceFiles/mtproto/connection_abstract.cpp
     SourceFiles/mtproto/connection_auto.cpp
     SourceFiles/mtproto/connection_http.cpp
     SourceFiles/mtproto/connection_tcp.cpp
     SourceFiles/mtproto/core_types.cpp
-    SourceFiles/mtproto/dcenter.cpp
     SourceFiles/mtproto/dc_options.cpp
+    SourceFiles/mtproto/dcenter.cpp
     SourceFiles/mtproto/facade.cpp
-    SourceFiles/mtproto/rpc_sender.cpp
     SourceFiles/mtproto/mtp_instance.cpp
+    SourceFiles/mtproto/rpc_sender.cpp
     SourceFiles/mtproto/rsa_public_key.cpp
     SourceFiles/mtproto/session.cpp
+    SourceFiles/mtproto/special_config_request.cpp
+    SourceFiles/mtproto/type_utils.cpp
 
     SourceFiles/overview/overview_layout.cpp
 
@@ -306,6 +338,7 @@ set(APP_SRC
     SourceFiles/profile/profile_block_settings.cpp
     SourceFiles/profile/profile_block_shared_media.cpp
     SourceFiles/profile/profile_block_widget.cpp
+    SourceFiles/profile/profile_channel_controllers.cpp
     SourceFiles/profile/profile_common_groups_section.cpp
     SourceFiles/profile/profile_cover.cpp
     SourceFiles/profile/profile_cover_drop_area.cpp
@@ -376,6 +409,7 @@ set(APP_SRC
     SourceFiles/ui/widgets/scroll_area.cpp
     SourceFiles/ui/widgets/shadow.cpp
     SourceFiles/ui/widgets/tooltip.cpp
+
     SourceFiles/ui/abstract_button.cpp
     SourceFiles/ui/animation.cpp
     SourceFiles/ui/countryinput.cpp
@@ -383,6 +417,13 @@ set(APP_SRC
     SourceFiles/ui/images.cpp
     SourceFiles/ui/special_buttons.cpp
     SourceFiles/ui/twidget.cpp
+
+    SourceFiles/window/themes/window_theme.cpp
+    SourceFiles/window/themes/window_theme_editor.cpp
+    SourceFiles/window/themes/window_theme_editor_block.cpp
+    SourceFiles/window/themes/window_theme_preview.cpp
+    SourceFiles/window/themes/window_theme_warning.cpp
+
     SourceFiles/window/main_window.cpp
     SourceFiles/window/notifications_manager.cpp
     SourceFiles/window/notifications_manager_default.cpp
@@ -393,11 +434,7 @@ set(APP_SRC
     SourceFiles/window/window_controller.cpp
     SourceFiles/window/window_main_menu.cpp
     SourceFiles/window/window_slide_animation.cpp
-    SourceFiles/window/themes/window_theme.cpp
-    SourceFiles/window/themes/window_theme_editor.cpp
-    SourceFiles/window/themes/window_theme_editor_block.cpp
-    SourceFiles/window/themes/window_theme_preview.cpp
-    SourceFiles/window/themes/window_theme_warning.cpp
+
     SourceFiles/apiwrap.cpp
     SourceFiles/app.cpp
     SourceFiles/application.cpp
@@ -415,7 +452,7 @@ set(APP_SRC
     SourceFiles/observer_peer.cpp
     SourceFiles/overviewwidget.cpp
     SourceFiles/passcodewidget.cpp
-    # SourceFiles/qt_functions.cpp
+    SourceFiles/qt_functions.cpp
     SourceFiles/qt_static_plugins.cpp
     SourceFiles/settings.cpp
     SourceFiles/shortcuts.cpp
@@ -506,9 +543,12 @@ include_directories(SourceFiles SourceFiles/core)
 
 include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
     ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
-    ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS})
+    ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS}
+    ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR})
+    # ${FFMPEG_INCLUDE_DIR}) -- this doesn't work, wtf?
 
 link_directories(${GTK3_LIBRARY_DIRS})
+link_directories(${FFMPEG_LIBRARY_DIR})
 
 # Shut up for testbuilding, remove me
 include_directories(/usr/local/opt/openal-soft/include)
@@ -541,8 +581,8 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 # Disable a single annoying warning about c++17
 target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
 
-target_link_libraries(Telegram Qt5::Core Qt5::Widgets) # crashpad::crashpad_client)
-target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY})
+target_link_libraries(Telegram Qt5::Core Qt5::Widgets Qt5::Network) # crashpad::crashpad_client)
+target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY} ${FFMPEG_LIBRARIES} ${ICONV_LIBRARIES})
 
 add_dependencies(Telegram boxes_styles_output)
 
@@ -551,6 +591,10 @@ if (APPLE)
         PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Telegram.plist
     )
+    find_library(COREFOUNDATION_LIB CoreFoundation)
+    find_library(COREAUDIO_LIB CoreAudio)
+    find_library(COCOA_LIB Cocoa)
+    target_link_libraries(Telegram ${COREFOUNDATION_LIB} ${COREAUDIO_LIB} ${COCOA_LIB})
 endif()
 
 set_target_properties(Telegram
@@ -566,15 +610,15 @@ cotire(Telegram)
 
 ##======================
 
-if (APPLE)
-    set(UPD_SRC SourceFiles/_other/updater_osx.m)
-endif()
-if (WIN32)
-    set(UPD_SRC SourceFiles/_other/updater.cpp)
-endif()
-if (LINUX)
-    set(UPD_SRC SourceFiles/_other/updater_linux.cpp)
-endif()
+# if (APPLE)
+#     set(UPD_SRC SourceFiles/_other/updater_osx.m)
+# endif()
+# if (WIN32)
+#     set(UPD_SRC SourceFiles/_other/updater.cpp)
+# endif()
+# if (LINUX)
+#     set(UPD_SRC SourceFiles/_other/updater_linux.cpp)
+# endif()
 
 ##======================
 ## Updater
