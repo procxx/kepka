@@ -171,6 +171,7 @@ set(APP_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/lang_auto.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/scheme.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/emoji.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/emoji_suggestions_data.cpp
     ${style_sources}
 
     SourceFiles/base/observer.cpp
@@ -530,6 +531,8 @@ list(APPEND THIRD_PARTY_SRC
     ThirdParty/minizip/ioapi.c
     ThirdParty/minizip/zip.c
     ThirdParty/minizip/unzip.c
+
+    ThirdParty/emoji_suggestions/emoji_suggestions.cpp
 )
 
 include_directories(ThirdParty) # For minizip/ but we use fully-qualified include path to avoid ambiguity
