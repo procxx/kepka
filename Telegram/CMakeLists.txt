@@ -533,7 +533,8 @@ list(APPEND THIRD_PARTY_SRC
 )
 
 include_directories(ThirdParty) # For minizip/ but we use fully-qualified include path to avoid ambiguity
-include_directories(ThirdParty/GSL/include ThirdParty/variant/include ThirdParty/emoji_suggestions)
+include_directories(ThirdParty/GSL/include ThirdParty/variant/include
+    ThirdParty/emoji_suggestions ThirdParty/libtgvoip)
 
 ##======================
 ## Telegram
@@ -549,6 +550,8 @@ include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
 
 link_directories(${GTK3_LIBRARY_DIRS})
 link_directories(${FFMPEG_LIBRARY_DIR})
+
+add_subdirectory(ThirdParty/libtgvoip)
 
 # Shut up for testbuilding, remove me
 include_directories(/usr/local/opt/openal-soft/include)
@@ -583,6 +586,7 @@ target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
 
 target_link_libraries(Telegram Qt5::Core Qt5::Widgets Qt5::Network) # crashpad::crashpad_client)
 target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${OPENSSL_LIBRARIES} ${ZLIB_LIBRARIES} ${OPENAL_LIBRARY} ${FFMPEG_LIBRARIES} ${ICONV_LIBRARIES})
+target_link_libraries(Telegram tgvoip)
 
 add_dependencies(Telegram boxes_styles_output)
 
