@@ -556,6 +556,7 @@ include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
 add_subdirectory(ThirdParty/libtgvoip)
 
 # Shut up for testbuilding, remove me
+include_directories(/usr/local/opt/openal-soft/include)
 add_definitions(-Wno-switch)
 # End remove me
 if (WIN32)
