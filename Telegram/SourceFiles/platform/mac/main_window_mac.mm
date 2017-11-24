@@ -162,7 +162,7 @@ void MainWindow::Private::setWindowBadge(const QString &str) {
 }
 
 void MainWindow::Private::initCustomTitle(NSWindow *window, NSView *view) {
-	[window setStyleMask:[window styleMask] | NSFullSizeContentViewWindowMask];
+	[window setStyleMask:[window styleMask] | NSWindowStyleMaskFullSizeContentView];
 	[window setTitlebarAppearsTransparent:YES];
 	auto inner = [window contentLayoutRect];
 	auto full = [view frame];
@@ -198,7 +198,7 @@ void MainWindow::Private::enableShadow(WId winId) {
 
 bool MainWindow::Private::filterNativeEvent(void *event) {
 	NSEvent *e = static_cast<NSEvent*>(event);
-	if (e && [e type] == NSSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
+	if (e && [e type] == NSEventTypeSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
 #ifndef OS_MAC_STORE
 		// If event tap is not installed, handle events that reach the app instead
 		if (![SPMediaKeyTap usesGlobalMediaKeyTap]) {
@@ -226,7 +226,7 @@ MainWindow::MainWindow()
 void MainWindow::closeWithoutDestroy() {
 	NSWindow *nsWindow = [reinterpret_cast<NSView*>(winId()) window];
 
-	auto isFullScreen = (([nsWindow styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask);
+	auto isFullScreen = (([nsWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 	if (isFullScreen) {
 		_hideAfterFullScreenTimer.callOnce(kHideAfterFullscreenTimeoutMs);
 		[nsWindow toggleFullScreen:nsWindow];
