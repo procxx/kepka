@@ -55,3 +55,7 @@ xcuserdata
 /Linux/
 /Telegram/Makefile
 *.*~
+
+_build_
+_conan_build_
+
