@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(telegram-desktop)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cotire/CMake;${PROJECT_SOURCE_DIR}/modules/")
 include(cotire)
 
@@ -13,12 +16,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Ignore automoc-ing generated files (@tbd?)
 cmake_policy(SET CMP0071 OLD)
 
-# Needs OpenAL-SOFT
-# Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
-find_package(OpenAL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(LibZip REQUIRED)
-find_package(OpenSSL REQUIRED)
 find_package(LibLZMA REQUIRED)
 find_package(GTK3 3.0 REQUIRED gtk)
 find_package(FFmpeg REQUIRED)
@@ -27,8 +26,8 @@ find_package(Iconv REQUIRED)
 find_library(OPUS_LIB opus)
 find_path(OPUS_INCLUDE_DIR opus.h PATHS /usr/local/include/opus)
 
-include_directories(${GTK3_INCLUDE_DIRS})
-link_directories(${GTK3_LIBRARY_DIRS})
+# include_directories(${GTK3_INCLUDE_DIRS})
+# link_directories(${GTK3_LIBRARY_DIRS})
 
 if (NOT FFMPEG_SWSCALE_FOUND)
     message(FATAL_ERROR "FFmpeg swscale is required")
