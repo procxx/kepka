@@ -613,8 +613,15 @@ if (APPLE)
     find_library(COCOA_LIB Cocoa)
     find_library(CARBON_LIB Carbon)
     find_library(IOKIT_LIB IOKit)
-    target_link_libraries(Telegram ${COREFOUNDATION_LIB} ${COCOA_LIB} ${CARBON_LIB}
-        ${COREAUDIO_LIB} ${AUDIOUNIT_LIB} ${AUDIOTOOLBOX_LIB} ${IOKIT_LIB})
+    target_link_libraries(Telegram
+        ${COREFOUNDATION_LIB}
+        ${COCOA_LIB}
+        ${CARBON_LIB}
+        ${COREAUDIO_LIB}
+        ${AUDIOUNIT_LIB}
+        ${AUDIOTOOLBOX_LIB}
+        ${IOKIT_LIB}
+    )
 endif()
 
 set_target_properties(Telegram
