@@ -545,7 +545,7 @@ include_directories(ThirdParty/GSL/include ThirdParty/variant/include
 
 include_directories(SourceFiles SourceFiles/core)
 
-include_directories(${ZLIB_INCLUDE_DIRS}
+include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
     ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
     ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS}
     ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR})
@@ -557,7 +557,6 @@ include_directories(${ZLIB_INCLUDE_DIRS}
 add_subdirectory(ThirdParty/libtgvoip)
 
 # Shut up for testbuilding, remove me
-# include_directories(/usr/local/opt/openal-soft/include)
 add_definitions(-Wno-switch)
 # End remove me
 if (WIN32)
@@ -587,12 +586,19 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 # Disable a single annoying warning about c++17
 target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
 
-target_link_libraries(Telegram Qt5::Core Qt5::Widgets Qt5::Network) # crashpad::crashpad_client)
-target_link_libraries(Telegram ${LIBLZMA_LIBRARIES} ${ZLIB_LIBRARIES}
-    ${FFMPEG_LIBRARIES} ${ICONV_LIBRARIES} ${OPUS_LIB})
-target_link_libraries(Telegram tgvoip)
-
-target_link_libraries(Telegram ${CONAN_LIBS})
+target_link_libraries(Telegram
+    Qt5::Core
+    Qt5::Widgets
+    Qt5::Network
+    tgvoip
+    ${LIBLZMA_LIBRARIES}
+    ${ZLIB_LIBRARIES}
+    ${OPENAL_LIBRARY}
+    ${FFMPEG_LIBRARIES}
+    ${ICONV_LIBRARIES}
+    ${OPUS_LIB}
+    ${CONAN_LIBS}
+) # crashpad::crashpad_client)
 
 add_dependencies(Telegram boxes_styles_output)
 

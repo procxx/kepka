@@ -16,6 +16,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Ignore automoc-ing generated files (@tbd?)
 cmake_policy(SET CMP0071 OLD)
 
+# Needs OpenAL-SOFT
+# Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
+find_package(OpenAL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(LibZip REQUIRED)
 find_package(LibLZMA REQUIRED)
