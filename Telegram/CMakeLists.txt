@@ -547,11 +547,10 @@ include_directories(SourceFiles SourceFiles/core)
 
 include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
     ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
-    ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS} ${GTK3_INCLUDE_DIRS}
+    ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS}
     ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR})
     # ${FFMPEG_INCLUDE_DIR}) -- this doesn't work, wtf?
 
-# link_directories(${GTK3_LIBRARY_DIRS})
 # link_directories(${FFMPEG_LIBRARY_DIR})
 
 add_subdirectory(ThirdParty/libtgvoip)
