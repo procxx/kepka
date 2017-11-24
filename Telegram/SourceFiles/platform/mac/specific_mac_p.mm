@@ -177,7 +177,7 @@ ApplicationDelegate *_sharedDelegate = nil;
 }
 
 - (void) mediaKeyTap:(SPMediaKeyTap*)keyTap receivedMediaKeyEvent:(NSEvent*)e {
-	if (e && [e type] == NSSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
+	if (e && [e type] == NSEventTypeSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
 		objc_handleMediaKeyEvent(e);
 	}
 }
@@ -256,7 +256,7 @@ void objc_showOverAll(WId winId, bool canFocus) {
 	NSWindow *wnd = [reinterpret_cast<NSView *>(winId) window];
 	[wnd setLevel:NSPopUpMenuWindowLevel];
 	if (!canFocus) {
-		[wnd setStyleMask:NSUtilityWindowMask | NSNonactivatingPanelMask];
+		[wnd setStyleMask:NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskNonactivatingPanel];
 		[wnd setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace|NSWindowCollectionBehaviorStationary|NSWindowCollectionBehaviorFullScreenAuxiliary|NSWindowCollectionBehaviorIgnoresCycle];
 	}
 }
