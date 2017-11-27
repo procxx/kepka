@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(telegram-desktop)
 
-if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake) 
+if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
 else()
@@ -27,7 +27,6 @@ find_package(ZLIB REQUIRED)
 find_package(LibZip REQUIRED)
 find_package(LibLZMA REQUIRED)
 find_package(FFmpeg REQUIRED)
-
 #@todo Turn into find_package(Opus REQUIRED)
 find_library(OPUS_LIB opus)
 find_path(OPUS_INCLUDE_DIR opus/opus.h)
