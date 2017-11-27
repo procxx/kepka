@@ -9,7 +9,7 @@
 
 
 #include "MediaStreamItf.h"
-#include "opus.h"
+#include <opus/opus.h>
 #include "threading.h"
 #include "BlockingQueue.h"
 #include "BufferPool.h"
