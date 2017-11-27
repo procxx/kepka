@@ -1,6 +1,5 @@
 find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)
 
-include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 
 # defines
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -605,6 +604,7 @@ target_link_libraries(Telegram
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
+    Qt5::GuiPrivate
     tgvoip
     ${LIBLZMA_LIBRARIES}
     ${ZLIB_LIBRARIES}
