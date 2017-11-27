@@ -49,9 +49,11 @@ QString getButtonText(MediaOverviewType type, int count) {
 
 } // namespace
 
-SharedMediaWidget::SharedMediaWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_shared_media))
-, _history(App::history(peer))
-, _migrated(_history->migrateFrom()) {
+SharedMediaWidget::SharedMediaWidget(QWidget *parent, PeerData *peer)
+	: BlockWidget(parent, peer, lang(lng_profile_shared_media))
+	, _history(App::history(peer))
+	, _migrated(_history->migrateFrom())
+{
 	auto observeEvents = Notify::PeerUpdate::Flag::SharedMediaChanged
 		| Notify::PeerUpdate::Flag::UserCommonChatsChanged;
 	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
