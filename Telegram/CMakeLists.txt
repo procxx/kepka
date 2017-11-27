@@ -566,11 +566,25 @@ endif()
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
 
 if (APPLE)
-    set(MACOSX_BUNDLE_ICON_FILE Icon.iconset)
-    set_source_files_properties("Telegram/Images.xcassets/${MACOSX_BUNDLE_ICON_FILE}"
+    set(MACOSX_BUNDLE_ICON_FILE Icon.icns)
+
+    add_custom_command(
+        COMMENT "Generating icon file"
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
+        COMMAND
+            iconutil -c icns -o ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset/
+        WORKING_DIRECTORY .
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset
+        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset
+    )
+    add_custom_target(iconset_output
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE})
+
+    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
         PROPERTIES
             MACOSX_PACKAGE_LOCATION Resources)
-    set(APPLE_BUNDLE_SRC "Telegram/Images.xcassets/${MACOSX_BUNDLE_ICON_FILE}")
+    set(APPLE_BUNDLE_SRC ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE})
 endif()
 
 add_executable(Telegram WIN32 MACOSX_BUNDLE
@@ -603,6 +617,8 @@ target_link_libraries(Telegram
 add_dependencies(Telegram boxes_styles_output)
 
 if (APPLE)
+    add_dependencies(Telegram iconset_output)
+
     set_target_properties(Telegram
         PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Telegram.plist
