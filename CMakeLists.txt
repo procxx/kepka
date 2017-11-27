@@ -27,7 +27,6 @@ find_package(ZLIB REQUIRED)
 find_package(LibZip REQUIRED)
 find_package(LibLZMA REQUIRED)
 find_package(FFmpeg REQUIRED)
-find_package(Iconv REQUIRED)
 
 #@todo Turn into find_package(Opus REQUIRED)
 find_library(OPUS_LIB opus)

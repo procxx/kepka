@@ -464,7 +464,6 @@ set(PLAT_SRC)
 if (APPLE)
     set(PLAT_SRC ${PLAT_SRC}
         SourceFiles/platform/mac/file_utilities_mac.mm
-        SourceFiles/platform/mac/mac_iconv_helper.c
         SourceFiles/platform/mac/mac_utilities.mm
         SourceFiles/platform/mac/main_window_mac.mm
         SourceFiles/platform/mac/notifications_manager_mac.mm
