@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+// @todo replace this with std::experimental::observer_ptr
+
 namespace base {
 
 class enable_weak_from_this;
