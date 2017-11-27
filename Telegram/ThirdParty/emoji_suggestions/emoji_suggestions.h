@@ -25,7 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Ui {
 namespace Emoji {
 
-using small = unsigned char;
+using smallchar = unsigned char;
 using medium = unsigned short;
 using utf16char = unsigned short;
 

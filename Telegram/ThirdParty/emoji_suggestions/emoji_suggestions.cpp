@@ -159,7 +159,7 @@ private:
 
 	class UsedWordGuard {
 	public:
-		UsedWordGuard(std::vector<small> &map, int index);
+        UsedWordGuard(std::vector<smallchar> &map, int index);
 		UsedWordGuard(const UsedWordGuard &other) = delete;
 		UsedWordGuard(UsedWordGuard &&other);
 		UsedWordGuard &operator=(const UsedWordGuard &other) = delete;
@@ -168,16 +168,16 @@ private:
 		~UsedWordGuard();
 
 	private:
-		std::vector<small> &_map;
+        std::vector<smallchar> &_map;
 		int _index = 0;
-		small _guarded = 0;
+        smallchar _guarded = 0;
 
 	};
-	std::vector<small> _currentItemWordsUsedMap;
+    std::vector<smallchar> _currentItemWordsUsedMap;
 
 };
 
-Completer::UsedWordGuard::UsedWordGuard(std::vector<small> &map, int index) : _map(map), _index(index) {
+Completer::UsedWordGuard::UsedWordGuard(std::vector<smallchar> &map, int index) : _map(map), _index(index) {
 	Expects(_map.size() > _index);
 	if (!_map[_index]) {
 		_guarded = _map[_index] = 1;
@@ -297,7 +297,7 @@ void Completer::initWordsTracking() {
 			maxWordsCount = wordsCount;
 		}
 	}
-	_currentItemWordsUsedMap = std::vector<small>(maxWordsCount, 0);
+    _currentItemWordsUsedMap = std::vector<smallchar>(maxWordsCount, 0);
 }
 
 void Completer::filterInitialList() {

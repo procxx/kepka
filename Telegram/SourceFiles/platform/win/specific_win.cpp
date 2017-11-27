@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
 #include "platform/win/specific_win.h"
 
 #include "platform/win/main_window_win.h"
@@ -33,35 +34,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "passcodewidget.h"
 #include "base/task_queue.h"
 
-#include <Shobjidl.h>
-#include <shellapi.h>
-
-#include <roapi.h>
-#include <wrl\client.h>
-#include <wrl\implements.h>
-#include <windows.ui.notifications.h>
-
 #pragma warning(push)
 #pragma warning(disable:4091)
 #include <dbghelp.h>
 #include <shlobj.h>
 #pragma warning(pop)
 
-#include <Shlwapi.h>
-#include <Strsafe.h>
-#include <Windowsx.h>
-#include <WtsApi32.h>
 
-#include <SDKDDKVer.h>
-
-#include <sal.h>
-#include <Psapi.h>
 #include <strsafe.h>
-#include <ObjBase.h>
-#include <propvarutil.h>
-#include <functiondiscoverykeys.h>
-#include <intsafe.h>
-#include <guiddef.h>
 
 #include <qpa/qplatformnativeinterface.h>
 

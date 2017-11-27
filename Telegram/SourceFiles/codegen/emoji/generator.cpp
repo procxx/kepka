@@ -806,9 +806,9 @@ bool Generator::writeReplacements() {
 	QMap<QChar, QVector<int>> byCharIndices;
 	suggestionsSource_->stream() << "\
 struct ReplacementStruct {\n\
-	small emojiSize;\n\
-	small replacementSize;\n\
-	small wordsCount;\n\
+    smallchar emojiSize;\n\
+    smallchar replacementSize;\n\
+    smallchar wordsCount;\n\
 };\n\
 \n\
 const utf16char ReplacementData[] = {";
@@ -833,7 +833,7 @@ const utf16char ReplacementData[] = {";
 	}
 	suggestionsSource_->stream() << " };\n\
 \n\
-const small ReplacementWordLengths[] = {";
+const smallchar ReplacementWordLengths[] = {";
 	startBinary();
 	for (auto &replace : replaces_.list) {
 		auto wordLengths = QStringList();
@@ -846,7 +846,7 @@ const small ReplacementWordLengths[] = {";
 const ReplacementStruct ReplacementInitData[] = {\n";
 	for (auto &replace : replaces_.list) {
 		suggestionsSource_->stream() << "\
-	{ small(" << replace.id.size() << "), small(" << replace.replacement.size() << "), small(" << replace.words.size() << ") },\n";
+    { smallchar(" << replace.id.size() << "), smallchar(" << replace.replacement.size() << "), smallchar(" << replace.words.size() << ") },\n";
 	}
 	suggestionsSource_->stream() << "};\n\
 \n\
