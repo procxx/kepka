@@ -454,7 +454,6 @@ set(APP_SRC
     SourceFiles/overviewwidget.cpp
     SourceFiles/passcodewidget.cpp
     SourceFiles/qt_functions.cpp
-    SourceFiles/qt_static_plugins.cpp
     SourceFiles/settings.cpp
     SourceFiles/shortcuts.cpp
     SourceFiles/structs.cpp
@@ -557,10 +556,15 @@ add_subdirectory(ThirdParty/libtgvoip)
 
 # Shut up for testbuilding, remove me
 include_directories(/usr/local/opt/openal-soft/include)
-add_definitions(-Wno-switch)
+
+if(NOT WIN32)
+    add_definitions(-Wno-switch)
+endif()
+
 # End remove me
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
+    list(APPEND APP_SRC Resources/winrc/Telegram.rc)
 endif()
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
@@ -588,7 +592,6 @@ if (APPLE)
 endif()
 
 add_executable(Telegram WIN32 MACOSX_BUNDLE
-    SourceFiles/stdafx.cpp
     ${APP_SRC}
     ${PLAT_SRC}
     ${THIRD_PARTY_SRC}
@@ -598,7 +601,11 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 )
 
 # Disable a single annoying warning about c++17
-target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
+if(NOT WIN32)
+    target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
+else()
+    target_compile_options(Telegram PRIVATE /std:c++14)
+endif()
 
 target_link_libraries(Telegram
     Qt5::Core
@@ -609,7 +616,10 @@ target_link_libraries(Telegram
     ${ZLIB_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${FFMPEG_LIBRARIES}
+    ${SWRESAMPLE_LIBRARIES}
+    ${SWSCALE_LIBRARIES}
     ${ICONV_LIBRARIES}
+    ${OPENSSL_LIBRARIES}
     ${OPUS_LIB}
     ${CONAN_LIBS}
 ) # crashpad::crashpad_client)
@@ -639,6 +649,10 @@ if (APPLE)
         ${AUDIOTOOLBOX_LIB}
         ${IOKIT_LIB}
     )
+endif()
+
+if(WIN32)
+    target_link_libraries(Telegram winmm imm32 ws2_32 kernel32 user32 gdi32 winspool comdlg32 advapi32 shell32 ole32 oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi Gdiplus Strmiids)
 endif()
 
 set_target_properties(Telegram
