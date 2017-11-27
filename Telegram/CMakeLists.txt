@@ -1,11 +1,6 @@
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)
 
-include_directories(${Qt5Core_INCLUDE_DIRS} ${Qt5Core_PRIVATE_INCLUDE_DIRS})
-include_directories(${Qt5Gui_INCLUDE_DIRS} ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
-include_directories(${Qt5Widgets_INCLUDE_DIRS} ${Qt5Widgets_PRIVATE_INCLUDE_DIRS})
+include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 
 # defines
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
