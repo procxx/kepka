@@ -33,7 +33,7 @@ AudioUnitIO::AudioUnitIO(){
 	inBufferList.mBuffers[0].mData=malloc(10240);
 	inBufferList.mBuffers[0].mDataByteSize=10240;
 	inBufferList.mNumberBuffers=1;
-	
+
 	OSStatus status;
 	AudioComponentDescription desc;
 	AudioComponent inputComponent;
@@ -44,7 +44,7 @@ AudioUnitIO::AudioUnitIO(){
 	desc.componentManufacturer = kAudioUnitManufacturer_Apple;
 	inputComponent = AudioComponentFindNext(NULL, &desc);
 	status = AudioComponentInstanceNew(inputComponent, &unit);
-	
+
 	UInt32 flag=1;
 #if TARGET_OS_IPHONE
 	status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, kOutputBus, &flag, sizeof(flag));
@@ -52,7 +52,7 @@ AudioUnitIO::AudioUnitIO(){
 	status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, kInputBus, &flag, sizeof(flag));
 	CHECK_AU_ERROR(status, "Error enabling AudioUnit input");
 #endif
-	
+
 #if TARGET_OS_IPHONE
 	flag=ServerConfig::GetSharedInstance()->GetBoolean("use_ios_vpio_agc", true) ? 1 : 0;
 #else
@@ -60,7 +60,7 @@ AudioUnitIO::AudioUnitIO(){
 #endif
 	status=AudioUnitSetProperty(unit, kAUVoiceIOProperty_VoiceProcessingEnableAGC, kAudioUnitScope_Global, kInputBus, &flag, sizeof(flag));
 	CHECK_AU_ERROR(status, "Error disabling AGC");
-	
+
 	AudioStreamBasicDescription audioFormat;
 	audioFormat.mSampleRate			= 48000;
 	audioFormat.mFormatID			= kAudioFormatLinearPCM;
@@ -77,28 +77,28 @@ AudioUnitIO::AudioUnitIO(){
 #endif
 	audioFormat.mFramesPerPacket	= 1;
 	audioFormat.mChannelsPerFrame	= 1;
-	
+
 	status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, kOutputBus, &audioFormat, sizeof(audioFormat));
 	CHECK_AU_ERROR(status, "Error setting output format");
 	status = AudioUnitSetProperty(unit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, kInputBus, &audioFormat, sizeof(audioFormat));
 	CHECK_AU_ERROR(status, "Error setting input format");
-	
+
 	AURenderCallbackStruct callbackStruct;
-	
+
 	callbackStruct.inputProc = AudioUnitIO::BufferCallback;
 	callbackStruct.inputProcRefCon = this;
 	status = AudioUnitSetProperty(unit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Global, kOutputBus, &callbackStruct, sizeof(callbackStruct));
 	CHECK_AU_ERROR(status, "Error setting output buffer callback");
 	status = AudioUnitSetProperty(unit, kAudioOutputUnitProperty_SetInputCallback, kAudioUnitScope_Global, kInputBus, &callbackStruct, sizeof(callbackStruct));
 	CHECK_AU_ERROR(status, "Error setting input buffer callback");
-	
+
 #if TARGET_OS_OSX
 	CFRunLoopRef theRunLoop = NULL;
 	AudioObjectPropertyAddress propertyAddress = { kAudioHardwarePropertyRunLoop,
 		kAudioObjectPropertyScopeGlobal,
 		kAudioObjectPropertyElementMaster };
 	status = AudioObjectSetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, sizeof(CFRunLoopRef), &theRunLoop);
-	
+
 	propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
 	propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
 	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
@@ -143,7 +143,7 @@ void AudioUnitIO::Release(){
 }
 
 void AudioUnitIO::Configure(uint32_t sampleRate, uint32_t bitsPerSample, uint32_t channels){
-	
+
 }
 
 OSStatus AudioUnitIO::BufferCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData){
@@ -236,9 +236,9 @@ void AudioUnitIO::SetCurrentDevice(bool input, std::string deviceID){
 		AudioUnitUninitialize(unit);
 	}
 	UInt32 size=sizeof(AudioDeviceID);
-	AudioDeviceID device=NULL;
+	AudioDeviceID device=0;
 	OSStatus status;
-	
+
 	if(deviceID=="default"){
 		AudioObjectPropertyAddress propertyAddress;
 		propertyAddress.mSelector = input ? kAudioHardwarePropertyDefaultInputDevice : kAudioHardwarePropertyDefaultOutputDevice;
@@ -281,7 +281,7 @@ void AudioUnitIO::SetCurrentDevice(bool input, std::string deviceID){
 			return;
 		}
 	}
- 
+
 	status=AudioUnitSetProperty(unit,
 							  kAudioOutputUnitProperty_CurrentDevice,
 							  kAudioUnitScope_Global,
@@ -289,13 +289,13 @@ void AudioUnitIO::SetCurrentDevice(bool input, std::string deviceID){
 							  &device,
 							  size);
 	CHECK_AU_ERROR(status, "Error setting input device");
-	
+
 	if(input)
 		currentInputDevice=deviceID;
 	else
 		currentOutputDevice=deviceID;
-	
-	
+
+
 	/*AudioObjectPropertyAddress propertyAddress = {
 		kAudioDevicePropertyBufferFrameSize,
 		kAudioObjectPropertyScopeGlobal,
