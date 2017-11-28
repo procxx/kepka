@@ -547,12 +547,12 @@ add_subdirectory(ThirdParty/libtgvoip)
 
 # Shut up for testbuilding, remove me
 include_directories(/usr/local/opt/openal-soft/include)
+# End remove me
 
 if(NOT WIN32)
     add_definitions(-Wno-switch)
 endif()
 
-# End remove me
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
     list(APPEND APP_SRC Resources/winrc/Telegram.rc)
@@ -594,7 +594,10 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 # Disable a single annoying warning about c++17
 if(NOT WIN32)
     target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
-else()
+endif()
+
+# Enable C++14 support for msvc (@todo this should be done in cmake)
+if(WIN32)
     target_compile_options(Telegram PRIVATE /std:c++14)
 endif()
 
