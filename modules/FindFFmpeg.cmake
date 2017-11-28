@@ -17,6 +17,7 @@
 #   - AVUTIL
 #   - POSTPROC
 #   - SWSCALE
+#   - SWRESAMPLE
 # the following variables will be defined
 #  <component>_FOUND        - System has <component>
 #  <component>_INCLUDE_DIRS - Include directory necessary for using the <component> headers
@@ -113,12 +114,12 @@ if (NOT FFMPEG_LIBRARIES)
   # Check if the required components were found and add their stuff to the FFMPEG_* vars.
   foreach (_component ${FFmpeg_FIND_COMPONENTS})
     if (${_component}_FOUND)
-      # message(STATUS "Required component ${_component} present.")
+      message(STATUS "Found ffmpeg component ${_component}.")
       set(FFMPEG_LIBRARIES   ${FFMPEG_LIBRARIES}   ${${_component}_LIBRARIES})
       set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
       list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
     else ()
-      # message(STATUS "Required component ${_component} missing.")
+      message(STATUS "Missing ffmpeg component ${_component}.")
     endif ()
   endforeach ()
 
