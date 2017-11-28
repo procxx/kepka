@@ -540,10 +540,8 @@ include_directories(SourceFiles SourceFiles/core)
 include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
     ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
     ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS}
-    ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR})
-    # ${FFMPEG_INCLUDE_DIR}) -- this doesn't work, wtf?
-
-# link_directories(${FFMPEG_LIBRARY_DIR})
+    ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR}
+    ${FFMPEG_INCLUDE_DIRS})
 
 add_subdirectory(ThirdParty/libtgvoip)
 
@@ -599,6 +597,8 @@ if(NOT WIN32)
 else()
     target_compile_options(Telegram PRIVATE /std:c++14)
 endif()
+
+target_compile_definitions(Telegram PRIVATE ${FFMPEG_DEFINITIONS})
 
 target_link_libraries(Telegram
     Qt5::Core
