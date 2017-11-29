@@ -36,7 +36,7 @@ extern "C" {
 #include "application.h"
 #include "platform/platform_specific.h"
 
-uint64 _SharedMemoryLocation[4] = { 0x00, 0x01, 0x02, 0x03 };
+uint64_t _SharedMemoryLocation[4] = { 0x00, 0x01, 0x02, 0x03 };
 
 #ifdef Q_OS_WIN
 #elif defined Q_OS_MAC
@@ -50,14 +50,14 @@ uint64 _SharedMemoryLocation[4] = { 0x00, 0x01, 0x02, 0x03 };
 // Base types compile-time check
 static_assert(sizeof(char) == 1, "Basic types size check failed");
 static_assert(sizeof(uchar) == 1, "Basic types size check failed");
-static_assert(sizeof(int16) == 2, "Basic types size check failed");
-static_assert(sizeof(uint16) == 2, "Basic types size check failed");
-static_assert(sizeof(int32) == 4, "Basic types size check failed");
-static_assert(sizeof(uint32) == 4, "Basic types size check failed");
-static_assert(sizeof(int64) == 8, "Basic types size check failed");
-static_assert(sizeof(uint64) == 8, "Basic types size check failed");
-static_assert(sizeof(float32) == 4, "Basic types size check failed");
-static_assert(sizeof(float64) == 8, "Basic types size check failed");
+static_assert(sizeof(int16_t) == 2, "Basic types size check failed");
+static_assert(sizeof(uint16_t) == 2, "Basic types size check failed");
+static_assert(sizeof(int32_t) == 4, "Basic types size check failed");
+static_assert(sizeof(uint32_t) == 4, "Basic types size check failed");
+static_assert(sizeof(int64_t) == 8, "Basic types size check failed");
+static_assert(sizeof(uint64_t) == 8, "Basic types size check failed");
+static_assert(sizeof(float) == 4, "Basic types size check failed");
+static_assert(sizeof(double) == 8, "Basic types size check failed");
 static_assert(sizeof(mtpPrime) == 4, "Basic types size check failed");
 static_assert(sizeof(MTPint) == 4, "Basic types size check failed");
 static_assert(sizeof(MTPlong) == 8, "Basic types size check failed");
@@ -69,10 +69,10 @@ static_assert(sizeof(MTPdouble) == 8, "Basic types size check failed");
 
 namespace {
 	QReadWriteLock unixtimeLock;
-	volatile int32 unixtimeDelta = 0;
+	volatile int32_t unixtimeDelta = 0;
 	volatile bool unixtimeWasSet = false;
-    volatile uint64 _msgIdStart, _msgIdLocal = 0, _msgIdMsStart;
-	int32 _reqId = 0;
+    volatile uint64_t _msgIdStart, _msgIdLocal = 0, _msgIdMsStart;
+	int32_t _reqId = 0;
 
 	void _initMsgIdConstants() {
 #ifdef Q_OS_WIN
@@ -84,12 +84,12 @@ namespace {
 #else
 		timespec ts;
 		clock_gettime(CLOCK_REALTIME, &ts);
-		_msgIdMsStart = 1000000000 * uint64(ts.tv_sec) + uint64(ts.tv_nsec);
+		_msgIdMsStart = 1000000000 * uint64_t(ts.tv_sec) + uint64_t(ts.tv_nsec);
 #endif
 
-		uint32 msgIdRand;
-		memset_rand(&msgIdRand, sizeof(uint32));
-		_msgIdStart = (((uint64)((uint32)unixtime()) << 32) | (uint64)msgIdRand);
+		uint32_t msgIdRand;
+		memset_rand(&msgIdRand, sizeof(uint32_t));
+		_msgIdStart = (((uint64_t)((uint32_t)unixtime()) << 32) | (uint64_t)msgIdRand);
 	}
 }
 
@@ -106,7 +106,7 @@ void unixtimeInit() {
 	_initMsgIdConstants();
 }
 
-void unixtimeSet(int32 serverTime, bool force) {
+void unixtimeSet(int32_t serverTime, bool force) {
 	{
 		QWriteLocker locker(&unixtimeLock);
 		if (force) {
@@ -204,10 +204,10 @@ namespace {
 		return 0;
 	}
 
-	float64 _msFreq;
-	float64 _msgIdCoef;
+	double _msFreq;
+	double _msgIdCoef;
 	TimeMs _msStart = 0, _msAddToMsStart = 0, _msAddToUnixtime = 0;
-	int32 _timeStart = 0;
+	int32_t _timeStart = 0;
 
 	class _MsInitializer {
 	public:
@@ -215,30 +215,30 @@ namespace {
 #ifdef Q_OS_WIN
 			LARGE_INTEGER li;
 			QueryPerformanceFrequency(&li);
-            _msFreq = 1000. / float64(li.QuadPart);
+            _msFreq = 1000. / double(li.QuadPart);
 
 			// 0xFFFF0000L istead of 0x100000000L to make msgId grow slightly slower, than unixtime and we had time to reconfigure
-			_msgIdCoef = float64(0xFFFF0000L) / float64(li.QuadPart);
+			_msgIdCoef = double(0xFFFF0000L) / double(li.QuadPart);
 
 			QueryPerformanceCounter(&li);
 			_msStart = li.QuadPart;
 #elif defined Q_OS_MAC
             mach_timebase_info_data_t tb = { 0, 0 };
             mach_timebase_info(&tb);
-            _msFreq = (float64(tb.numer) / tb.denom) / 1000000.;
+            _msFreq = (double(tb.numer) / tb.denom) / 1000000.;
 
-            _msgIdCoef = _msFreq * (float64(0xFFFF0000L) / 1000.);
+            _msgIdCoef = _msFreq * (double(0xFFFF0000L) / 1000.);
 
             _msStart = mach_absolute_time();
 #else
             timespec ts;
             clock_gettime(CLOCK_MONOTONIC, &ts);
             //_msFreq = 1 / 1000000.;
-            _msgIdCoef = float64(0xFFFF0000L) / 1000000000.;
+            _msgIdCoef = double(0xFFFF0000L) / 1000000000.;
             _msStart = 1000LL * static_cast<TimeMs>(ts.tv_sec) + (static_cast<TimeMs>(ts.tv_nsec) / 1000000LL);
 #endif
 			_timeStart = myunixtime();
-			srand((uint32)(_msStart & 0xFFFFFFFFL));
+			srand((uint32_t)(_msStart & 0xFFFFFFFFL));
 		}
 	};
 
@@ -356,19 +356,19 @@ TimeMs getms(bool checked) {
 #endif
 }
 
-uint64 msgid() {
+uint64_t msgid() {
 #ifdef Q_OS_WIN
     LARGE_INTEGER li;
     QueryPerformanceCounter(&li);
-    uint64 result = _msgIdStart + (uint64)floor((li.QuadPart - _msgIdMsStart) * _msgIdCoef);
+    uint64_t result = _msgIdStart + (uint64_t)floor((li.QuadPart - _msgIdMsStart) * _msgIdCoef);
 #elif defined Q_OS_MAC
-    uint64 msCount = mach_absolute_time();
-    uint64 result = _msgIdStart + (uint64)floor((msCount - _msgIdMsStart) * _msgIdCoef);
+    uint64_t msCount = mach_absolute_time();
+    uint64_t result = _msgIdStart + (uint64_t)floor((msCount - _msgIdMsStart) * _msgIdCoef);
 #else
     timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    uint64 msCount = 1000000000 * uint64(ts.tv_sec) + uint64(ts.tv_nsec);
-    uint64 result = _msgIdStart + (uint64)floor((msCount - _msgIdMsStart) * _msgIdCoef);
+    uint64_t msCount = 1000000000 * uint64_t(ts.tv_sec) + uint64_t(ts.tv_nsec);
+    uint64_t result = _msgIdStart + (uint64_t)floor((msCount - _msgIdMsStart) * _msgIdCoef);
 #endif
 
 	result &= ~0x03L;
@@ -376,7 +376,7 @@ uint64 msgid() {
 	return result + (_msgIdLocal += 4);
 }
 
-int32 reqid() {
+int32_t reqid() {
 	QWriteLocker locker(&unixtimeLock);
 	if (_reqId == INT_MAX) {
 		_reqId = 0;
@@ -387,14 +387,14 @@ int32 reqid() {
 // crc32 hash, taken somewhere from the internet
 
 namespace {
-	uint32 _crc32Table[256];
+	uint32_t _crc32Table[256];
 	class _Crc32Initializer {
 	public:
 		_Crc32Initializer() {
-			uint32 poly = 0x04c11db7;
-			for (uint32 i = 0; i < 256; ++i) {
+			uint32_t poly = 0x04c11db7;
+			for (uint32_t i = 0; i < 256; ++i) {
 				_crc32Table[i] = reflect(i, 8) << 24;
-				for (uint32 j = 0; j < 8; ++j) {
+				for (uint32_t j = 0; j < 8; ++j) {
 					_crc32Table[i] = (_crc32Table[i] << 1) ^ (_crc32Table[i] & (1 << 31) ? poly : 0);
 				}
 				_crc32Table[i] = reflect(_crc32Table[i], 32);
@@ -402,8 +402,8 @@ namespace {
 		}
 
 	private:
-		uint32 reflect(uint32 val, char ch) {
-			uint32 result = 0;
+		uint32_t reflect(uint32_t val, char ch) {
+			uint32_t result = 0;
 			for (int i = 1; i < (ch + 1); ++i) {
 				if (val & 1) {
 					result |= 1 << (ch - i);
@@ -415,39 +415,39 @@ namespace {
 	};
 }
 
-int32 hashCrc32(const void *data, uint32 len) {
+int32_t hashCrc32(const void *data, uint32_t len) {
 	static _Crc32Initializer _crc32Initializer;
 
 	const uchar *buf = (const uchar *)data;
 
-	uint32 crc(0xffffffff);
-    for (uint32 i = 0; i < len; ++i) {
+	uint32_t crc(0xffffffff);
+    for (uint32_t i = 0; i < len; ++i) {
 		crc = (crc >> 8) ^ _crc32Table[(crc & 0xFF) ^ buf[i]];
 	}
 
     return crc ^ 0xffffffff;
 }
 
-int32 *hashSha1(const void *data, uint32 len, void *dest) {
-	return (int32*)SHA1((const uchar*)data, (size_t)len, (uchar*)dest);
+int32_t *hashSha1(const void *data, uint32_t len, void *dest) {
+	return (int32_t*)SHA1((const uchar*)data, (size_t)len, (uchar*)dest);
 }
 
-int32 *hashSha256(const void *data, uint32 len, void *dest) {
-	return (int32*)SHA256((const uchar*)data, (size_t)len, (uchar*)dest);
+int32_t *hashSha256(const void *data, uint32_t len, void *dest) {
+	return (int32_t*)SHA256((const uchar*)data, (size_t)len, (uchar*)dest);
 }
 
 // md5 hash, taken somewhere from the internet
 
 namespace {
 
-	inline void _md5_decode(uint32 *output, const uchar *input, uint32 len) {
-		for (uint32 i = 0, j = 0; j < len; i++, j += 4) {
-			output[i] = ((uint32)input[j]) | (((uint32)input[j + 1]) << 8) | (((uint32)input[j + 2]) << 16) | (((uint32)input[j + 3]) << 24);
+	inline void _md5_decode(uint32_t *output, const uchar *input, uint32_t len) {
+		for (uint32_t i = 0, j = 0; j < len; i++, j += 4) {
+			output[i] = ((uint32_t)input[j]) | (((uint32_t)input[j + 1]) << 8) | (((uint32_t)input[j + 2]) << 16) | (((uint32_t)input[j + 3]) << 24);
 		}
 	}
 
-	inline void _md5_encode(uchar *output, const uint32 *input, uint32 len) {
-		for (uint32 i = 0, j = 0; j < len; i++, j += 4) {
+	inline void _md5_encode(uchar *output, const uint32_t *input, uint32_t len) {
+		for (uint32_t i = 0, j = 0; j < len; i++, j += 4) {
 			output[j + 0] = (input[i]) & 0xFF;
 			output[j + 1] = (input[i] >> 8) & 0xFF;
 			output[j + 2] = (input[i] >> 16) & 0xFF;
@@ -455,39 +455,39 @@ namespace {
 		}
 	}
 
-	inline uint32 _md5_rotate_left(uint32 x, int n) {
+	inline uint32_t _md5_rotate_left(uint32_t x, int n) {
 		return (x << n) | (x >> (32 - n));
 	}
 
-	inline uint32 _md5_F(uint32 x, uint32 y, uint32 z) {
+	inline uint32_t _md5_F(uint32_t x, uint32_t y, uint32_t z) {
 		return (x & y) | (~x & z);
 	}
 
-	inline uint32 _md5_G(uint32 x, uint32 y, uint32 z) {
+	inline uint32_t _md5_G(uint32_t x, uint32_t y, uint32_t z) {
 		return (x & z) | (y & ~z);
 	}
 
-	inline uint32 _md5_H(uint32 x, uint32 y, uint32 z) {
+	inline uint32_t _md5_H(uint32_t x, uint32_t y, uint32_t z) {
 		return x ^ y ^ z;
 	}
 
-	inline uint32 _md5_I(uint32 x, uint32 y, uint32 z) {
+	inline uint32_t _md5_I(uint32_t x, uint32_t y, uint32_t z) {
 		return y ^ (x | ~z);
 	}
 
-	inline void _md5_FF(uint32 &a, uint32 b, uint32 c, uint32 d, uint32 x, uint32 s, uint32 ac) {
+	inline void _md5_FF(uint32_t &a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, uint32_t s, uint32_t ac) {
 		a = _md5_rotate_left(a + _md5_F(b, c, d) + x + ac, s) + b;
 	}
 
-	inline void _md5_GG(uint32 &a, uint32 b, uint32 c, uint32 d, uint32 x, uint32 s, uint32 ac) {
+	inline void _md5_GG(uint32_t &a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, uint32_t s, uint32_t ac) {
 		a = _md5_rotate_left(a + _md5_G(b, c, d) + x + ac, s) + b;
 	}
 
-	inline void _md5_HH(uint32 &a, uint32 b, uint32 c, uint32 d, uint32 x, uint32 s, uint32 ac) {
+	inline void _md5_HH(uint32_t &a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, uint32_t s, uint32_t ac) {
 		a = _md5_rotate_left(a + _md5_H(b, c, d) + x + ac, s) + b;
 	}
 
-	inline void _md5_II(uint32 &a, uint32 b, uint32 c, uint32 d, uint32 x, uint32 s, uint32 ac) {
+	inline void _md5_II(uint32_t &a, uint32_t b, uint32_t c, uint32_t d, uint32_t x, uint32_t s, uint32_t ac) {
 		a = _md5_rotate_left(a + _md5_I(b, c, d) + x + ac, s) + b;
 	}
 
@@ -498,13 +498,13 @@ namespace {
 	};
 }
 
-HashMd5::HashMd5(const void *input, uint32 length) : _finalized(false) {
+HashMd5::HashMd5(const void *input, uint32_t length) : _finalized(false) {
 	init();
 	if (input && length > 0) feed(input, length);
 }
 
-void HashMd5::feed(const void *input, uint32 length) {
-	uint32 index = _count[0] / 8 % _md5_block_size;
+void HashMd5::feed(const void *input, uint32_t length) {
+	uint32_t index = _count[0] / 8 % _md5_block_size;
 
 	const uchar *buf = (const uchar *)input;
 
@@ -513,9 +513,9 @@ void HashMd5::feed(const void *input, uint32 length) {
 	}
 	_count[1] += (length >> 29);
 
-	uint32 firstpart = 64 - index;
+	uint32_t firstpart = 64 - index;
 
-	uint32 i;
+	uint32_t i;
 
 	if (length >= firstpart) {
 		memcpy(&_buffer[index], buf, firstpart);
@@ -533,9 +533,9 @@ void HashMd5::feed(const void *input, uint32 length) {
 	memcpy(&_buffer[index], &buf[i], length - i);
 }
 
-int32 *HashMd5::result() {
+int32_t *HashMd5::result() {
 	if (!_finalized) finalize();
-	return (int32*)_digest;
+	return (int32_t*)_digest;
 }
 
 void HashMd5::init() {
@@ -553,7 +553,7 @@ void HashMd5::finalize() {
 		uchar bits[8];
 		_md5_encode(bits, _count, 8);
 
-		uint32 index = _count[0] / 8 % 64, paddingLen = (index < 56) ? (56 - index) : (120 - index);
+		uint32_t index = _count[0] / 8 % 64, paddingLen = (index < 56) ? (56 - index) : (120 - index);
 		feed(_md5_padding, paddingLen);
 		feed(bits, 8);
 
@@ -564,7 +564,7 @@ void HashMd5::finalize() {
 }
 
 void HashMd5::transform(const uchar *block) {
-	uint32 a = _state[0], b = _state[1], c = _state[2], d = _state[3], x[16];
+	uint32_t a = _state[0], b = _state[1], c = _state[2], d = _state[3], x[16];
 	_md5_decode(x, block, _md5_block_size);
 
 	_md5_FF(a, b, c, d, x[0] , 7 , 0xd76aa478);
@@ -641,14 +641,14 @@ void HashMd5::transform(const uchar *block) {
 	_state[3] += d;
 }
 
-int32 *hashMd5(const void *data, uint32 len, void *dest) {
+int32_t *hashMd5(const void *data, uint32_t len, void *dest) {
 	HashMd5 md5(data, len);
 	memcpy(dest, md5.result(), 16);
 
-	return (int32*)dest;
+	return (int32_t*)dest;
 }
 
-char *hashMd5Hex(const int32 *hashmd5, void *dest) {
+char *hashMd5Hex(const int32_t *hashmd5, void *dest) {
 	char *md5To = (char*)dest;
 	const uchar *res = (const uchar*)hashmd5;
 
@@ -661,7 +661,7 @@ char *hashMd5Hex(const int32 *hashmd5, void *dest) {
 	return md5To;
 }
 
-void memset_rand(void *data, uint32 len) {
+void memset_rand(void *data, uint32_t len) {
 	Assert(_sslInited);
 	RAND_bytes((uchar*)data, len);
 }
@@ -669,11 +669,11 @@ void memset_rand(void *data, uint32 len) {
 namespace {
 	QMap<QString, QString> fastRusEng;
 	QHash<QChar, QString> fastLetterRusEng;
-	QMap<uint32, QString> fastDoubleLetterRusEng;
+	QMap<uint32_t, QString> fastDoubleLetterRusEng;
 	QHash<QChar, QChar> fastRusKeyboardSwitch;
 }
 
-QString translitLetterRusEng(QChar letter, QChar next, int32 &toSkip) {
+QString translitLetterRusEng(QChar letter, QChar next, int32_t &toSkip) {
 	if (fastDoubleLetterRusEng.isEmpty()) {
 		fastDoubleLetterRusEng.insert((QString::fromUtf8("Ы").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("Y"));
 		fastDoubleLetterRusEng.insert((QString::fromUtf8("и").at(0).unicode() << 16) | QString::fromUtf8("я").at(0).unicode(), qsl("ia"));
@@ -682,7 +682,7 @@ QString translitLetterRusEng(QChar letter, QChar next, int32 &toSkip) {
 		fastDoubleLetterRusEng.insert((QString::fromUtf8("ы").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("y"));
 		fastDoubleLetterRusEng.insert((QString::fromUtf8("ь").at(0).unicode() << 16) | QString::fromUtf8("е").at(0).unicode(), qsl("ye"));
 	}
-	QMap<uint32, QString>::const_iterator i = fastDoubleLetterRusEng.constFind((letter.unicode() << 16) | next.unicode());
+	QMap<uint32_t, QString>::const_iterator i = fastDoubleLetterRusEng.constFind((letter.unicode() << 16) | next.unicode());
 	if (i != fastDoubleLetterRusEng.cend()) {
 		toSkip = 2;
 		return i.value();
@@ -795,7 +795,7 @@ QString translitRusEng(const QString &rus) {
 	QString result;
 	result.reserve(rus.size() * 2);
 
-	int32 toSkip = 0;
+	int32_t toSkip = 0;
 	for (QString::const_iterator i = rus.cbegin(), e = rus.cend(); i != e; i += toSkip) {
 		result += translitLetterRusEng(*i, (i + 1 == e) ? ' ' : *(i + 1), toSkip);
 	}

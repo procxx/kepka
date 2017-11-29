@@ -43,7 +43,7 @@ public:
 	Row *getRow(PeerId peerId) const {
 		return _rowByPeer.value(peerId);
 	}
-	Row *rowAtY(int32 y, int32 h) const {
+	Row *rowAtY(int32_t y, int32_t h) const {
 		auto i = cfind(y, h);
 		if (i == cend() || (*i)->pos() != ((y > 0) ? (y / h) : 0)) {
 			return nullptr;

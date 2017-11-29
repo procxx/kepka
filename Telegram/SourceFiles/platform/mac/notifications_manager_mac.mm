@@ -62,7 +62,7 @@ NSImage *qt_mac_create_nsimage(const QPixmap &pm);
 @interface NotificationDelegate : NSObject<NSUserNotificationCenterDelegate> {
 }
 
-- (id) initWithManager:(base::weak_unique_ptr<Manager>)manager managerId:(uint64)managerId;
+- (id) initWithManager:(base::weak_unique_ptr<Manager>)manager managerId:(uint64_t)managerId;
 - (void) userNotificationCenter:(NSUserNotificationCenter*)center didActivateNotification:(NSUserNotification*)notification;
 - (BOOL) userNotificationCenter:(NSUserNotificationCenter*)center shouldPresentNotification:(NSUserNotification*)notification;
 
@@ -70,11 +70,11 @@ NSImage *qt_mac_create_nsimage(const QPixmap &pm);
 
 @implementation NotificationDelegate {
 	base::weak_unique_ptr<Manager> _manager;
-	uint64 _managerId;
+	uint64_t _managerId;
 
 }
 
-- (id) initWithManager:(base::weak_unique_ptr<Manager>)manager managerId:(uint64)managerId {
+- (id) initWithManager:(base::weak_unique_ptr<Manager>)manager managerId:(uint64_t)managerId {
 	if (self = [super init]) {
 		_manager = manager;
 		_managerId = managerId;
@@ -186,7 +186,7 @@ private:
 
 	void clearingThreadLoop();
 
-	const uint64 _managerId = 0;
+	const uint64_t _managerId = 0;
 	QString _managerIdString;
 
 	NotificationDelegate *_delegate = nullptr;
@@ -208,7 +208,7 @@ private:
 };
 
 Manager::Private::Private(Manager *manager)
-: _managerId(rand_value<uint64>())
+: _managerId(rand_value<uint64_t>())
 , _managerIdString(QString::number(_managerId))
 , _delegate([[NotificationDelegate alloc] initWithManager:manager managerId:_managerId]) {
 	updateDelegate();

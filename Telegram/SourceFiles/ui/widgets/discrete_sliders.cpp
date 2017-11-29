@@ -186,7 +186,7 @@ void SettingsSlider::resizeSections(int newWidth) {
 	if (!count) return;
 
 	auto sectionsWidth = newWidth - (count - 1) * _st.barSkip;
-	auto sectionWidth = sectionsWidth / float64(count);
+	auto sectionWidth = sectionsWidth / double(count);
 	auto skip = 0;
 	auto x = 0.;
 	enumerateSections([this, &x, &skip, sectionWidth](Section &section) {
@@ -246,7 +246,7 @@ void SettingsSlider::paintEvent(QPaintEvent *e) {
 
 	p.setFont(_st.labelFont);
 	enumerateSections([this, &p, activeLeft, ms, clip](Section &section) {
-		auto active = 1. - snap(qAbs(activeLeft - section.left) / float64(section.width), 0., 1.);
+		auto active = 1. - snap(qAbs(activeLeft - section.left) / double(section.width), 0., 1.);
 		if (section.ripple) {
 			auto color = anim::color(_st.rippleBg, _st.rippleBgActive, active);
 			section.ripple->paint(p, section.left, 0, width(), ms, &color);

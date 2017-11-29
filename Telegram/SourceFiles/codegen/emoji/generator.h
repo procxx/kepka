@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <QtCore/QString>
 #include <QtCore/QSet>
@@ -30,8 +31,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace codegen {
 namespace emoji {
-
-using uint32 = unsigned int;
 
 class Generator {
 public:
@@ -66,7 +65,7 @@ private:
 	void startBinary();
 	bool writeStringBinary(common::CppFile *source, const QString &string);
 	void writeIntBinary(common::CppFile *source, int data);
-	void writeUintBinary(common::CppFile *source, uint32 data);
+	void writeUintBinary(common::CppFile *source, uint32_t data);
 
 	const common::ProjectInfo &project_;
 	int colorsCount_ = 0;

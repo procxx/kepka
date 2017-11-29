@@ -43,7 +43,7 @@ inline auto PaintUserpicCallback(PeerData *peer) {
 	};
 }
 
-using PeerListRowId = uint64;
+using PeerListRowId = uint64_t;
 class PeerListRow {
 public:
 	PeerListRow(not_null<PeerData*> peer);
@@ -139,7 +139,7 @@ public:
 	void stopLastRipple();
 	void paintRipple(Painter &p, TimeMs ms, int x, int y, int outerWidth);
 	void paintUserpic(Painter &p, TimeMs ms, int x, int y, int outerWidth);
-	float64 checkedRatio();
+	double checkedRatio();
 
 	void setNameFirstChars(const OrderedSet<QChar> &nameFirstChars) {
 		_nameFirstChars = nameFirstChars;

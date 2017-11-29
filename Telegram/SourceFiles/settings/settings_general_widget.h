@@ -48,7 +48,7 @@ private slots:
 
 	void onChecking();
 	void onLatest();
-	void onDownloading(qint64 ready, qint64 total);
+	void onDownloading(int64_t ready, int64_t total);
 	void onReady();
 	void onFailed();
 
@@ -62,7 +62,7 @@ private:
 		Ready
 	};
 	void setState(State state, bool force = false);
-	void setDownloadProgress(qint64 ready, qint64 total);
+	void setDownloadProgress(int64_t ready, int64_t total);
 
 	object_ptr<Ui::LinkButton> _check;
 	object_ptr<Ui::LinkButton> _restart;

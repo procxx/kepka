@@ -83,9 +83,9 @@ QByteArray FlatTextarea::serializeTagsList(const TagList &tags) {
 	{
 		QDataStream stream(&tagsSerialized, QIODevice::WriteOnly);
 		stream.setVersion(QDataStream::Qt_5_1);
-		stream << qint32(tags.size());
+		stream << int32_t(tags.size());
 		for_const (auto &tag, tags) {
-			stream << qint32(tag.offset) << qint32(tag.length) << tag.id;
+			stream << int32_t(tag.offset) << int32_t(tag.length) << tag.id;
 		}
 	}
 	return tagsSerialized;
@@ -100,7 +100,7 @@ FlatTextarea::TagList FlatTextarea::deserializeTagsList(QByteArray data, int tex
 	QDataStream stream(data);
 	stream.setVersion(QDataStream::Qt_5_1);
 
-	qint32 tagCount = 0;
+	int32_t tagCount = 0;
 	stream >> tagCount;
 	if (stream.status() != QDataStream::Ok) {
 		return result;
@@ -110,7 +110,7 @@ FlatTextarea::TagList FlatTextarea::deserializeTagsList(QByteArray data, int tex
 	}
 
 	for (int i = 0; i < tagCount; ++i) {
-		qint32 offset = 0, length = 0;
+		int32_t offset = 0, length = 0;
 		QString id;
 		stream >> offset >> length >> id;
 		if (stream.status() != QDataStream::Ok) {
@@ -226,16 +226,16 @@ void FlatTextarea::finishPlaceholder() {
 	update();
 }
 
-void FlatTextarea::setMaxLength(int32 maxLength) {
+void FlatTextarea::setMaxLength(int32_t maxLength) {
 	_maxLength = maxLength;
 }
 
-void FlatTextarea::setMinHeight(int32 minHeight) {
+void FlatTextarea::setMinHeight(int32_t minHeight) {
 	_minHeight = minHeight;
 	heightAutoupdated();
 }
 
-void FlatTextarea::setMaxHeight(int32 maxHeight) {
+void FlatTextarea::setMaxHeight(int32_t maxHeight) {
 	_maxHeight = maxHeight;
 	heightAutoupdated();
 }
@@ -319,7 +319,7 @@ QRect FlatTextarea::getTextRect() const {
 	return rect().marginsRemoved(_st.textMrg + st::textRectMargins);
 }
 
-int32 FlatTextarea::fakeMargin() const {
+int32_t FlatTextarea::fakeMargin() const {
 	return _fakeMargin;
 }
 
@@ -467,7 +467,7 @@ QString FlatTextarea::getInlineBotQuery(UserData **outInlineBot, QString *outInl
 QString FlatTextarea::getMentionHashtagBotCommandPart(bool &start) const {
 	start = false;
 
-	int32 pos = textCursor().position();
+	int32_t pos = textCursor().position();
 	if (textCursor().anchor() != pos) return QString();
 
 	// check mention / hashtag / bot command
@@ -477,7 +477,7 @@ QString FlatTextarea::getMentionHashtagBotCommandPart(bool &start) const {
 		QTextFragment fr(iter.fragment());
 		if (!fr.isValid()) continue;
 
-		int32 p = fr.position(), e = (p + fr.length());
+		int32_t p = fr.position(), e = (p + fr.length());
 		if (p >= pos || e < pos) continue;
 
 		QTextCharFormat f = fr.charFormat();
@@ -519,7 +519,7 @@ QString FlatTextarea::getMentionHashtagBotCommandPart(bool &start) const {
 
 void FlatTextarea::insertTag(const QString &text, QString tagId) {
 	auto cursor = textCursor();
-	int32 pos = cursor.position();
+	int32_t pos = cursor.position();
 
 	auto doc = document();
 	auto block = doc->findBlock(pos);
@@ -586,7 +586,7 @@ void FlatTextarea::setTagMimeProcessor(std::unique_ptr<TagMimeProcessor> &&proce
 }
 
 void FlatTextarea::getSingleEmojiFragment(QString &text, QTextFragment &fragment) const {
-	int32 end = textCursor().position(), start = end - 1;
+	int32_t end = textCursor().position(), start = end - 1;
 	if (textCursor().anchor() != end) return;
 
 	if (start < 0) start = 0;
@@ -600,7 +600,7 @@ void FlatTextarea::getSingleEmojiFragment(QString &text, QTextFragment &fragment
 			QTextFragment fr(iter.fragment());
 			if (!fr.isValid()) continue;
 
-			int32 p = fr.position(), e = (p + fr.length());
+			int32_t p = fr.position(), e = (p + fr.length());
 			if (p >= end || e <= start) {
 				continue;
 			}
@@ -718,7 +718,7 @@ QString FlatTextarea::getTextPart(int start, int end, TagList *outTagsList, bool
 	QTextBlock from = full ? doc->begin() : doc->findBlock(start), till = (end < 0) ? doc->end() : doc->findBlock(end);
 	if (till.isValid()) till = till.next();
 
-	int32 possibleLen = 0;
+	int32_t possibleLen = 0;
 	for (QTextBlock b = from; b != till; b = b.next()) {
 		possibleLen += b.length();
 	}
@@ -734,7 +734,7 @@ QString FlatTextarea::getTextPart(int start, int end, TagList *outTagsList, bool
 			QTextFragment fragment(iter.fragment());
 			if (!fragment.isValid()) continue;
 
-			int32 p = full ? 0 : fragment.position(), e = full ? 0 : (p + fragment.length());
+			int32_t p = full ? 0 : fragment.position(), e = full ? 0 : (p + fragment.length());
 			if (!full) {
 				tillFragmentEnd = (e <= end);
 				if (p == end) {
@@ -1013,7 +1013,7 @@ int processInsertedTags(style::color textFg, QTextDocument *document, int change
 
 			QTextCharFormat format;
 			format.setAnchor(true);
-			format.setAnchorName(tagId + '/' + QString::number(rand_value<uint32>()));
+			format.setAnchorName(tagId + '/' + QString::number(rand_value<uint32_t>()));
 			format.setForeground(st::defaultTextPalette.linkFg);
 			c.mergeCharFormat(format);
 
@@ -1223,7 +1223,7 @@ void FlatTextarea::onDocumentContentsChange(int position, int charsRemoved, int 
 	if (_maxLength >= 0) {
 		QTextCursor c(document()->docHandle(), 0);
 		c.movePosition(QTextCursor::End);
-		int32 fullSize = c.position(), toRemove = fullSize - _maxLength;
+		int32_t fullSize = c.position(), toRemove = fullSize - _maxLength;
 		if (toRemove > 0) {
 			if (toRemove > insertLength) {
 				if (insertLength) {
@@ -1342,7 +1342,7 @@ void FlatTextarea::updatePlaceholder() {
 QMimeData *FlatTextarea::createMimeDataFromSelection() const {
 	QMimeData *result = new QMimeData();
 	QTextCursor c(textCursor());
-	int32 start = c.selectionStart(), end = c.selectionEnd();
+	int32_t start = c.selectionStart(), end = c.selectionEnd();
 	if (end > start) {
 		TagList tags;
 		result->setText(getTextPart(start, end, &tags));
@@ -1691,7 +1691,7 @@ QRect FlatInput::placeholderRect() const {
 void FlatInput::correctValue(const QString &was, QString &now) {
 }
 
-void FlatInput::phPrepare(Painter &p, float64 placeholderFocused) {
+void FlatInput::phPrepare(Painter &p, double placeholderFocused) {
 	p.setFont(_st.font);
 	p.setPen(anim::pen(_st.phColor, _st.phFocusColor, placeholderFocused));
 }
@@ -2034,7 +2034,7 @@ QSize InputArea::minimumSizeHint() const {
 	return geometry().size();
 }
 
-QString InputArea::getText(int32 start, int32 end) const {
+QString InputArea::getText(int32_t start, int32_t end) const {
 	if (end >= 0 && end <= start) return QString();
 
 	if (start < 0) start = 0;
@@ -2044,7 +2044,7 @@ QString InputArea::getText(int32 start, int32 end) const {
 	QTextBlock from = full ? doc->begin() : doc->findBlock(start), till = (end < 0) ? doc->end() : doc->findBlock(end);
 	if (till.isValid()) till = till.next();
 
-	int32 possibleLen = 0;
+	int32_t possibleLen = 0;
 	for (QTextBlock b = from; b != till; b = b.next()) {
 		possibleLen += b.length();
 	}
@@ -2059,7 +2059,7 @@ QString InputArea::getText(int32 start, int32 end) const {
 			QTextFragment fragment(iter.fragment());
 			if (!fragment.isValid()) continue;
 
-			int32 p = full ? 0 : fragment.position(), e = full ? 0 : (p + fragment.length());
+			int32_t p = full ? 0 : fragment.position(), e = full ? 0 : (p + fragment.length());
 			if (!full) {
 				if (p >= end || e <= start) {
 					continue;
@@ -2153,7 +2153,7 @@ QVariant InputArea::Inner::loadResource(int type, const QUrl &name) {
 }
 
 void InputArea::processDocumentContentsChange(int position, int charsAdded) {
-	int32 replacePosition = -1, replaceLen = 0;
+	int32_t replacePosition = -1, replaceLen = 0;
 	EmojiPtr emoji = nullptr;
 
 	// Tilde formatting.
@@ -2166,7 +2166,7 @@ void InputArea::processDocumentContentsChange(int position, int charsAdded) {
 	QTextCursor c(_inner->textCursor());
 	c.joinPreviousEditBlock();
 	while (true) {
-		int32 start = position, end = position + charsAdded;
+		int32_t start = position, end = position + charsAdded;
 		QTextBlock from = doc->findBlock(start), till = doc->findBlock(end);
 		if (till.isValid()) till = till.next();
 
@@ -2175,7 +2175,7 @@ void InputArea::processDocumentContentsChange(int position, int charsAdded) {
 				QTextFragment fragment(iter.fragment());
 				if (!fragment.isValid()) continue;
 
-				int32 fp = fragment.position(), fe = fp + fragment.length();
+				int32_t fp = fragment.position(), fe = fp + fragment.length();
 				if (fp >= end || fe <= start) {
 					continue;
 				}
@@ -2187,7 +2187,7 @@ void InputArea::processDocumentContentsChange(int position, int charsAdded) {
 				QString t(fragment.text());
 				const QChar *ch = t.constData(), *e = ch + t.size();
 				for (; ch != e; ++ch, ++fp) {
-					int32 emojiLen = 0;
+					int32_t emojiLen = 0;
 					emoji = Ui::Emoji::Find(ch, e, &emojiLen);
 					if (emoji) {
 						if (replacePosition >= 0) {
@@ -2258,7 +2258,7 @@ void InputArea::onDocumentContentsChange(int position, int charsRemoved, int cha
 		QTextCursor c(_inner->document()->docHandle(), 0);
 		c.movePosition(QTextCursor::End);
 		if (position + charsAdded > c.position()) {
-			int32 toSubstract = position + charsAdded - c.position();
+			int32_t toSubstract = position + charsAdded - c.position();
 			if (charsRemoved >= toSubstract) {
 				charsAdded -= toSubstract;
 				charsRemoved -= toSubstract;
@@ -2270,7 +2270,7 @@ void InputArea::onDocumentContentsChange(int position, int charsRemoved, int cha
 	if (_maxLength >= 0) {
 		QTextCursor c(_inner->document()->docHandle(), 0);
 		c.movePosition(QTextCursor::End);
-		int32 fullSize = c.position(), toRemove = fullSize - _maxLength;
+		int32_t fullSize = c.position(), toRemove = fullSize - _maxLength;
 		if (toRemove > 0) {
 			if (toRemove > charsAdded) {
 				if (charsAdded) {
@@ -2367,7 +2367,7 @@ void InputArea::startPlaceholderAnimation() {
 QMimeData *InputArea::Inner::createMimeDataFromSelection() const {
 	QMimeData *result = new QMimeData();
 	QTextCursor c(textCursor());
-	int32 start = c.selectionStart(), end = c.selectionEnd();
+	int32_t start = c.selectionStart(), end = c.selectionEnd();
 	if (end > start) {
 		result->setText(f()->getText(start, end));
 	}
@@ -2775,7 +2775,7 @@ QSize InputField::minimumSizeHint() const {
 	return geometry().size();
 }
 
-QString InputField::getText(int32 start, int32 end) const {
+QString InputField::getText(int32_t start, int32_t end) const {
 	if (end >= 0 && end <= start) return QString();
 
 	if (start < 0) start = 0;
@@ -2785,7 +2785,7 @@ QString InputField::getText(int32 start, int32 end) const {
 	QTextBlock from = full ? doc->begin() : doc->findBlock(start), till = (end < 0) ? doc->end() : doc->findBlock(end);
 	if (till.isValid()) till = till.next();
 
-	int32 possibleLen = 0;
+	int32_t possibleLen = 0;
 	for (QTextBlock b = from; b != till; b = b.next()) {
 		possibleLen += b.length();
 	}
@@ -2800,7 +2800,7 @@ QString InputField::getText(int32 start, int32 end) const {
 			QTextFragment fragment(iter.fragment());
 			if (!fragment.isValid()) continue;
 
-			int32 p = full ? 0 : fragment.position(), e = full ? 0 : (p + fragment.length());
+			int32_t p = full ? 0 : fragment.position(), e = full ? 0 : (p + fragment.length());
 			if (!full) {
 				if (p >= end || e <= start) {
 					continue;
@@ -2893,7 +2893,7 @@ QVariant InputField::Inner::loadResource(int type, const QUrl &name) {
 }
 
 void InputField::processDocumentContentsChange(int position, int charsAdded) {
-	int32 replacePosition = -1, replaceLen = 0;
+	int32_t replacePosition = -1, replaceLen = 0;
 	EmojiPtr emoji = nullptr;
 	bool newlineFound = false;
 
@@ -2907,7 +2907,7 @@ void InputField::processDocumentContentsChange(int position, int charsAdded) {
 	QTextCursor c(_inner->textCursor());
 	c.joinPreviousEditBlock();
 	while (true) {
-		int32 start = position, end = position + charsAdded;
+		int32_t start = position, end = position + charsAdded;
 		QTextBlock from = doc->findBlock(start), till = doc->findBlock(end);
 		if (till.isValid()) till = till.next();
 
@@ -2916,7 +2916,7 @@ void InputField::processDocumentContentsChange(int position, int charsAdded) {
 				QTextFragment fragment(iter.fragment());
 				if (!fragment.isValid()) continue;
 
-				int32 fp = fragment.position(), fe = fp + fragment.length();
+				int32_t fp = fragment.position(), fe = fp + fragment.length();
 				if (fp >= end || fe <= start) {
 					continue;
 				}
@@ -3023,7 +3023,7 @@ void InputField::onDocumentContentsChange(int position, int charsRemoved, int ch
 		QTextCursor c(_inner->document()->docHandle(), 0);
 		c.movePosition(QTextCursor::End);
 		if (position + charsAdded > c.position()) {
-			int32 toSubstract = position + charsAdded - c.position();
+			int32_t toSubstract = position + charsAdded - c.position();
 			if (charsRemoved >= toSubstract) {
 				charsAdded -= toSubstract;
 				charsRemoved -= toSubstract;
@@ -3035,7 +3035,7 @@ void InputField::onDocumentContentsChange(int position, int charsRemoved, int ch
 	if (_maxLength >= 0) {
 		QTextCursor c(_inner->document()->docHandle(), 0);
 		c.movePosition(QTextCursor::End);
-		int32 fullSize = c.position(), toRemove = fullSize - _maxLength;
+		int32_t fullSize = c.position(), toRemove = fullSize - _maxLength;
 		if (toRemove > 0) {
 			if (toRemove > charsAdded) {
 				if (charsAdded) {
@@ -3615,7 +3615,7 @@ void MaskedInputField::placeholderAdditionalPrepare(Painter &p, TimeMs ms) {
 
 void MaskedInputField::keyPressEvent(QKeyEvent *e) {
 	QString wasText(_oldtext);
-	int32 wasCursor(_oldcursor);
+	int32_t wasCursor(_oldcursor);
 
 	bool shift = e->modifiers().testFlag(Qt::ShiftModifier), alt = e->modifiers().testFlag(Qt::AltModifier);
 	bool ctrl = e->modifiers().testFlag(Qt::ControlModifier) || e->modifiers().testFlag(Qt::MetaModifier), ctrlGood = true;
@@ -3626,7 +3626,7 @@ void MaskedInputField::keyPressEvent(QKeyEvent *e) {
 	}
 
 	QString newText(text());
-	int32 newCursor(cursorPosition());
+	int32_t newCursor(cursorPosition());
 	if (wasText == newText && wasCursor == newCursor) { // call correct manually
 		correctValue(wasText, wasCursor, newText, newCursor);
 		_oldtext = newText;
@@ -3651,7 +3651,7 @@ void MaskedInputField::keyPressEvent(QKeyEvent *e) {
 
 void MaskedInputField::onTextEdited() {
 	QString wasText(_oldtext), newText(text());
-	int32 wasCursor(_oldcursor), newCursor(cursorPosition());
+	int32_t wasCursor(_oldcursor), newCursor(cursorPosition());
 
 	correctValue(wasText, wasCursor, newText, newCursor);
 	_oldtext = newText;
@@ -3693,7 +3693,7 @@ void CountryCodeInput::codeSelected(const QString &code) {
 	emit changed();
 }
 
-void CountryCodeInput::correctValue(const QString &was, int32 wasCursor, QString &now, int32 &nowCursor) {
+void CountryCodeInput::correctValue(const QString &was, int32_t wasCursor, QString &now, int32_t &nowCursor) {
 	QString newText, addToNumber;
 	int oldPos(nowCursor), newPos(-1), oldLen(now.length()), start = 0, digits = 5;
 	newText.reserve(oldLen + 1);
@@ -3760,7 +3760,7 @@ void PhonePartInput::keyPressEvent(QKeyEvent *e) {
 	}
 }
 
-void PhonePartInput::correctValue(const QString &was, int32 wasCursor, QString &now, int32 &nowCursor) {
+void PhonePartInput::correctValue(const QString &was, int32_t wasCursor, QString &now, int32_t &nowCursor) {
 	QString newText;
 	int oldPos(nowCursor), newPos(-1), oldLen(now.length()), digitCount = 0;
 	for (int i = 0; i < oldLen; ++i) {
@@ -3868,7 +3868,7 @@ PortInput::PortInput(QWidget *parent, const style::InputField &st, base::lambda<
 	}
 }
 
-void PortInput::correctValue(const QString &was, int32 wasCursor, QString &now, int32 &nowCursor) {
+void PortInput::correctValue(const QString &was, int32_t wasCursor, QString &now, int32_t &nowCursor) {
 	QString newText;
 	newText.reserve(now.size());
 	auto newPos = nowCursor;
@@ -3909,7 +3909,7 @@ void UsernameInput::paintAdditionalPlaceholder(Painter &p, TimeMs ms) {
 	}
 }
 
-void UsernameInput::correctValue(const QString &was, int32 wasCursor, QString &now, int32 &nowCursor) {
+void UsernameInput::correctValue(const QString &was, int32_t wasCursor, QString &now, int32_t &nowCursor) {
 	auto newPos = nowCursor;
 	auto from = 0, len = now.size();
 	for (; from < len; ++from) {
@@ -3920,7 +3920,7 @@ void UsernameInput::correctValue(const QString &was, int32 wasCursor, QString &n
 	}
 	len -= from;
 	if (len > MaxUsernameLength) len = MaxUsernameLength + (now.at(from) == '@' ? 1 : 0);
-	for (int32 to = from + len; to > from;) {
+	for (int32_t to = from + len; to > from;) {
 		--to;
 		if (!now.at(to).isSpace()) {
 			break;
@@ -3935,7 +3935,7 @@ PhoneInput::PhoneInput(QWidget *parent, const style::InputField &st, base::lambd
 	if (phone.isEmpty()) {
 		clearText();
 	} else {
-		int32 pos = phone.size();
+		int32_t pos = phone.size();
 		correctValue(QString(), 0, phone, pos);
 	}
 }
@@ -3954,7 +3954,7 @@ void PhoneInput::clearText() {
 		}
 	}
 	setText(phone);
-	int32 pos = phone.size();
+	int32_t pos = phone.size();
 	correctValue(QString(), 0, phone, pos);
 }
 
@@ -3975,7 +3975,7 @@ void PhoneInput::paintAdditionalPlaceholder(Painter &p, TimeMs ms) {
 	}
 }
 
-void PhoneInput::correctValue(const QString &was, int32 wasCursor, QString &now, int32 &nowCursor) {
+void PhoneInput::correctValue(const QString &was, int32_t wasCursor, QString &now, int32_t &nowCursor) {
 	auto digits = now;
 	digits.replace(QRegularExpression(qsl("[^\\d]")), QString());
 	_pattern = phoneNumberParse(digits);
@@ -4052,7 +4052,7 @@ void PhoneInput::correctValue(const QString &was, int32 wasCursor, QString &now,
 		newText = QString();
 		newPos = 0;
 	}
-	int32 newlen = newText.size();
+	int32_t newlen = newText.size();
 	while (newlen > 0 && newText.at(newlen - 1).isSpace()) {
 		--newlen;
 	}

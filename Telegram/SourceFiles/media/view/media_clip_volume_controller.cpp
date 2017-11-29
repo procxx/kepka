@@ -31,7 +31,7 @@ VolumeController::VolumeController(QWidget *parent) : TWidget(parent) {
 	setMouseTracking(true);
 }
 
-void VolumeController::setVolume(float64 volume) {
+void VolumeController::setVolume(double volume) {
 	_volume = volume;
 	update();
 }
@@ -39,10 +39,10 @@ void VolumeController::setVolume(float64 volume) {
 void VolumeController::paintEvent(QPaintEvent *e) {
 	Painter p(this);
 
-	int32 top = st::mediaviewVolumeIconTop;
-	int32 left = (width() - st::mediaviewVolumeIcon.width()) / 2;
-	int32 mid = left + qRound(st::mediaviewVolumeIcon.width() * _volume);
-	int32 right = left + st::mediaviewVolumeIcon.width();
+	int32_t top = st::mediaviewVolumeIconTop;
+	int32_t left = (width() - st::mediaviewVolumeIcon.width()) / 2;
+	int32_t mid = left + qRound(st::mediaviewVolumeIcon.width() * _volume);
+	int32_t right = left + st::mediaviewVolumeIcon.width();
 
 	if (mid > left) {
 		p.setClipRect(rtlrect(left, top, mid - left, st::mediaviewVolumeIcon.height(), width()));
@@ -68,8 +68,8 @@ void VolumeController::mouseMoveEvent(QMouseEvent *e) {
 	}
 	int delta = e->pos().x() - _downCoord;
 	int left = (width() - st::mediaviewVolumeIcon.width()) / 2;
-	float64 startFrom = snap((_downCoord - left) / float64(st::mediaviewVolumeIcon.width()), 0., 1.);
-	float64 add = delta / float64(4 * st::mediaviewVolumeIcon.width());
+	double startFrom = snap((_downCoord - left) / double(st::mediaviewVolumeIcon.width()), 0., 1.);
+	double add = delta / double(4 * st::mediaviewVolumeIcon.width());
 	auto newVolume = snap(startFrom + add, 0., 1.);
 	changeVolume(newVolume);
 }
@@ -77,11 +77,11 @@ void VolumeController::mouseMoveEvent(QMouseEvent *e) {
 void VolumeController::mousePressEvent(QMouseEvent *e) {
 	_downCoord = snap(e->pos().x(), 0, width());
 	int left = (width() - st::mediaviewVolumeIcon.width()) / 2;
-	auto newVolume = snap((_downCoord - left) / float64(st::mediaviewVolumeIcon.width()), 0., 1.);
+	auto newVolume = snap((_downCoord - left) / double(st::mediaviewVolumeIcon.width()), 0., 1.);
 	changeVolume(newVolume);
 }
 
-void VolumeController::changeVolume(float64 newVolume) {
+void VolumeController::changeVolume(double newVolume) {
 	if (newVolume != _volume) {
 		setVolume(newVolume);
 		emit volumeChanged(_volume);

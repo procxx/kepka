@@ -217,13 +217,13 @@ QByteArray DcOptions::serialize() const {
 
 	ReadLocker lock(this);
 
-	auto size = sizeof(qint32);
+	auto size = sizeof(int32_t);
 	for (auto &item : _data) {
 		if (isTemporaryDcId(item.first)) {
 			continue;
 		}
-		size += sizeof(qint32) + sizeof(qint32) + sizeof(qint32); // id + flags + port
-		size += sizeof(qint32) + item.second.ip.size();
+		size += sizeof(int32_t) + sizeof(int32_t) + sizeof(int32_t); // id + flags + port
+		size += sizeof(int32_t) + item.second.ip.size();
 	}
 
 	auto count = 0;
@@ -240,7 +240,7 @@ QByteArray DcOptions::serialize() const {
 	for (auto &keysInDc : _cdnPublicKeys) {
 		for (auto &entry : keysInDc.second) {
 			publicKeys.push_back({ keysInDc.first, entry.second.getN(), entry.second.getE() });
-			size += sizeof(qint32) + Serialize::bytesSize(publicKeys.back().n) + Serialize::bytesSize(publicKeys.back().e);
+			size += sizeof(int32_t) + Serialize::bytesSize(publicKeys.back().n) + Serialize::bytesSize(publicKeys.back().e);
 		}
 	}
 
@@ -249,18 +249,18 @@ QByteArray DcOptions::serialize() const {
 	{
 		QDataStream stream(&result, QIODevice::WriteOnly);
 		stream.setVersion(QDataStream::Qt_5_1);
-		stream << qint32(_data.size());
+		stream << int32_t(_data.size());
 		for (auto &item : _data) {
 			if (isTemporaryDcId(item.first)) {
 				continue;
 			}
-			stream << qint32(item.second.id) << qint32(item.second.flags) << qint32(item.second.port);
-			stream << qint32(item.second.ip.size());
+			stream << int32_t(item.second.id) << int32_t(item.second.flags) << int32_t(item.second.port);
+			stream << int32_t(item.second.ip.size());
 			stream.writeRawData(item.second.ip.data(), item.second.ip.size());
 		}
-		stream << qint32(publicKeys.size());
+		stream << int32_t(publicKeys.size());
 		for (auto &key : publicKeys) {
-			stream << qint32(key.dcId) << Serialize::bytes(key.n) << Serialize::bytes(key.e);
+			stream << int32_t(key.dcId) << Serialize::bytes(key.n) << Serialize::bytes(key.e);
 		}
 	}
 	return result;
@@ -269,7 +269,7 @@ QByteArray DcOptions::serialize() const {
 void DcOptions::constructFromSerialized(const QByteArray &serialized) {
 	QDataStream stream(serialized);
 	stream.setVersion(QDataStream::Qt_5_1);
-	auto count = qint32(0);
+	auto count = int32_t(0);
 	stream >> count;
 	if (stream.status() != QDataStream::Ok) {
 		LOG(("MTP Error: Bad data for DcOptions::constructFromSerialized()"));
@@ -279,7 +279,7 @@ void DcOptions::constructFromSerialized(const QByteArray &serialized) {
 	WriteLocker lock(this);
 	_data.clear();
 	for (auto i = 0; i != count; ++i) {
-		qint32 id = 0, flags = 0, port = 0, ipSize = 0;
+		int32_t id = 0, flags = 0, port = 0, ipSize = 0;
 		stream >> id >> flags >> port >> ipSize;
 
 		// https://stackoverflow.com/questions/1076714/max-length-for-client-ip-address
@@ -302,7 +302,7 @@ void DcOptions::constructFromSerialized(const QByteArray &serialized) {
 
 	// Read CDN config
 	if (!stream.atEnd()) {
-		auto count = qint32(0);
+		auto count = int32_t(0);
 		stream >> count;
 		if (stream.status() != QDataStream::Ok) {
 			LOG(("MTP Error: Bad data for CDN config in DcOptions::constructFromSerialized()"));
@@ -310,7 +310,7 @@ void DcOptions::constructFromSerialized(const QByteArray &serialized) {
 		}
 
 		for (auto i = 0; i != count; ++i) {
-			qint32 dcId = 0;
+			int32_t dcId = 0;
 			base::byte_vector n, e;
 			stream >> dcId >> Serialize::bytes(n) >> Serialize::bytes(e);
 			if (stream.status() != QDataStream::Ok) {
@@ -382,9 +382,9 @@ bool DcOptions::hasCDNKeysForDc(DcId dcId) const {
 }
 
 bool DcOptions::getDcRSAKey(DcId dcId, const QVector<MTPlong> &fingerprints, internal::RSAPublicKey *result) const {
-	auto findKey = [&fingerprints, &result](const std::map<uint64, internal::RSAPublicKey> &keys) {
+	auto findKey = [&fingerprints, &result](const std::map<uint64_t, internal::RSAPublicKey> &keys) {
 		for_const (auto &fingerprint, fingerprints) {
-			auto it = keys.find(static_cast<uint64>(fingerprint.v));
+			auto it = keys.find(static_cast<uint64_t>(fingerprint.v));
 			if (it != keys.cend()) {
 				*result = it->second;
 				return true;

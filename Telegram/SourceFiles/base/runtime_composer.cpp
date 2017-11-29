@@ -21,7 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/runtime_composer.h"
 
 struct RuntimeComposerMetadatasMap {
-	QMap<uint64, RuntimeComposerMetadata*> data;
+	QMap<uint64_t, RuntimeComposerMetadata*> data;
 	~RuntimeComposerMetadatasMap() {
 		for_const (const RuntimeComposerMetadata *p, data) {
 			delete p;
@@ -29,7 +29,7 @@ struct RuntimeComposerMetadatasMap {
 	}
 };
 
-const RuntimeComposerMetadata *GetRuntimeComposerMetadata(uint64 mask) {
+const RuntimeComposerMetadata *GetRuntimeComposerMetadata(uint64_t mask) {
 	static RuntimeComposerMetadatasMap RuntimeComposerMetadatas;
 	static QMutex RuntimeComposerMetadatasMutex;
 

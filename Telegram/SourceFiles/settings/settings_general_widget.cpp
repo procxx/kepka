@@ -49,7 +49,7 @@ UpdateStateRow::UpdateStateRow(QWidget *parent) : TWidget(parent)
 
 	Sandbox::connect(SIGNAL(updateChecking()), this, SLOT(onChecking()));
 	Sandbox::connect(SIGNAL(updateLatest()), this, SLOT(onLatest()));
-	Sandbox::connect(SIGNAL(updateProgress(qint64, qint64)), this, SLOT(onDownloading(qint64, qint64)));
+	Sandbox::connect(SIGNAL(updateProgress(int64_t, int64_t)), this, SLOT(onDownloading(int64_t, int64_t)));
 	Sandbox::connect(SIGNAL(updateFailed()), this, SLOT(onFailed()));
 	Sandbox::connect(SIGNAL(updateReady()), this, SLOT(onReady()));
 
@@ -124,7 +124,7 @@ void UpdateStateRow::setState(State state, bool force) {
 	}
 }
 
-void UpdateStateRow::setDownloadProgress(qint64 ready, qint64 total) {
+void UpdateStateRow::setDownloadProgress(int64_t ready, int64_t total) {
 	auto readyTenthMb = (ready * 10 / (1024 * 1024)), totalTenthMb = (total * 10 / (1024 * 1024));
 	auto readyStr = QString::number(readyTenthMb / 10) + '.' + QString::number(readyTenthMb % 10);
 	auto totalStr = QString::number(totalTenthMb / 10) + '.' + QString::number(totalTenthMb % 10);
@@ -143,7 +143,7 @@ void UpdateStateRow::onLatest() {
 	setState(State::Latest);
 }
 
-void UpdateStateRow::onDownloading(qint64 ready, qint64 total) {
+void UpdateStateRow::onDownloading(int64_t ready, int64_t total) {
 	setState(State::Download);
 	setDownloadProgress(ready, total);
 }

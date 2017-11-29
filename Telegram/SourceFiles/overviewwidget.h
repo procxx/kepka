@@ -62,7 +62,7 @@ public:
 	void activate();
 
 	void clear();
-	int32 itemTop(const FullMsgId &msgId) const;
+	int32_t itemTop(const FullMsgId &msgId) const;
 
 	bool preloadLocal();
 	void preloadMore();
@@ -75,9 +75,9 @@ public:
 	void dragActionCancel();
 
 	void touchScrollUpdated(const QPoint &screenPos);
-	QPoint mapMouseToItem(QPoint p, MsgId itemId, int32 itemIndex);
+	QPoint mapMouseToItem(QPoint p, MsgId itemId, int32_t itemIndex);
 
-	int32 resizeToWidth(int32 nwidth, int32 scrollTop, int32 minHeight, bool force = false); // returns new scroll top
+	int32_t resizeToWidth(int32_t nwidth, int32_t scrollTop, int32_t minHeight, bool force = false); // returns new scroll top
 	void dropResizeIndex();
 
 	PeerData *peer() const;
@@ -148,23 +148,23 @@ private:
 	bool itemMigrated(MsgId msgId) const;
 	ChannelId itemChannel(MsgId msgId) const;
 	MsgId itemMsgId(MsgId msgId) const;
-	int32 migratedIndexSkip() const;
+	int32_t migratedIndexSkip() const;
 
-	void fixItemIndex(int32 &current, MsgId msgId) const;
-	bool itemHasPoint(MsgId msgId, int32 index, int32 x, int32 y) const;
-	int32 itemHeight(MsgId msgId, int32 index) const;
-	void moveToNextItem(MsgId &msgId, int32 &index, MsgId upTo, int32 delta) const;
+	void fixItemIndex(int32_t &current, MsgId msgId) const;
+	bool itemHasPoint(MsgId msgId, int32_t index, int32_t x, int32_t y) const;
+	int32_t itemHeight(MsgId msgId, int32_t index) const;
+	void moveToNextItem(MsgId &msgId, int32_t &index, MsgId upTo, int32_t delta) const;
 
-	void updateDragSelection(MsgId dragSelFrom, int32 dragSelFromIndex, MsgId dragSelTo, int32 dragSelToIndex, bool dragSelecting);
+	void updateDragSelection(MsgId dragSelFrom, int32_t dragSelFromIndex, MsgId dragSelTo, int32_t dragSelToIndex, bool dragSelecting);
 
-	void repaintItem(MsgId itemId, int32 itemIndex);
+	void repaintItem(MsgId itemId, int32_t itemIndex);
 
 	void touchResetSpeed();
 	void touchUpdateSpeed();
-	void touchDeaccelerate(int32 elapsed);
+	void touchDeaccelerate(int32_t elapsed);
 
 	void applyDragSelection();
-	void addSelectionRange(int32 selFrom, int32 selTo, History *history);
+	void addSelectionRange(int32_t selFrom, int32_t selTo, History *history);
 
 	void recountMargins();
 	int countHeight();
@@ -182,7 +182,7 @@ private:
 	ChannelId _channel;
 
 	bool _selMode = false;
-	TextSelection itemSelectedValue(int32 index) const;
+	TextSelection itemSelectedValue(int32_t index) const;
 
 	int _rowsLeft = 0;
 	int _rowWidth = 0;
@@ -191,19 +191,19 @@ private:
 	Items _items;
 	typedef QMap<HistoryItem*, Overview::Layout::ItemBase*> LayoutItems;
 	LayoutItems _layoutItems;
-	typedef QMap<int32, Overview::Layout::Date*> LayoutDates;
+	typedef QMap<int32_t, Overview::Layout::Date*> LayoutDates;
 	LayoutDates _layoutDates;
 	Overview::Layout::ItemBase *layoutPrepare(HistoryItem *item);
 	Overview::Layout::AbstractItem *layoutPrepare(const QDate &date, bool month);
-	int32 setLayoutItem(int32 index, Overview::Layout::AbstractItem *item, int32 top);
+	int32_t setLayoutItem(int32_t index, Overview::Layout::AbstractItem *item, int32_t top);
 
 	object_ptr<Ui::FlatInput> _search;
 	object_ptr<Ui::CrossButton> _cancelSearch;
 	QVector<MsgId> _results;
-	int32 _itemsToBeLoaded;
+	int32_t _itemsToBeLoaded;
 
 	// photos
-	int32 _photosInRow = 1;
+	int32_t _photosInRow = 1;
 
 	QTimer _searchTimer;
 	QString _searchQuery;
@@ -257,7 +257,7 @@ private:
 	int _dragItemIndex = -1;
 	MsgId _mousedItem = 0;
 	int _mousedItemIndex = -1;
-	uint16 _dragSymbol;
+	uint16_t _dragSymbol;
 	bool _dragWasInactive = false;
 
 	ClickHandlerPtr _contextMenuLnk;
@@ -294,7 +294,7 @@ public:
 
 	void clear();
 
-	void scrollBy(int32 add);
+	void scrollBy(int32_t add);
 	void scrollReset();
 
 	bool paintTopBar(Painter &p, int decreaseWidth);
@@ -307,11 +307,11 @@ public:
 	void updateTopBarSelection();
 	bool contentOverlapped(const QRect &globalRect);
 
-	int32 lastWidth() const;
-	int32 lastScrollTop() const;
-	int32 countBestScroll() const;
+	int32_t lastWidth() const;
+	int32_t lastScrollTop() const;
+	int32_t countBestScroll() const;
 
-	void fastShow(bool back = false, int32 lastScrollTop = -1);
+	void fastShow(bool back = false, int32_t lastScrollTop = -1);
 	bool hasTopBarShadow() const {
 		return true;
 	}
@@ -383,7 +383,7 @@ private:
 	bool _noDropResizeIndex = false;
 
 	object_ptr<Ui::DropdownMenu> _mediaType;
-	int32 _mediaTypeMask = 0;
+	int32_t _mediaTypeMask = 0;
 
 	QString _header;
 
@@ -391,10 +391,10 @@ private:
 	Window::SlideDirection _showDirection;
 	QPixmap _cacheUnder, _cacheOver;
 
-	int32 _scrollSetAfterShow = 0;
+	int32_t _scrollSetAfterShow = 0;
 
 	QTimer _scrollTimer;
-	int32 _scrollDelta = 0;
+	int32_t _scrollDelta = 0;
 
 	object_ptr<Ui::PlainShadow> _topShadow;
 	bool _inGrab = false;

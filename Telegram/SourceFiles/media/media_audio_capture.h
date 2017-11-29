@@ -45,8 +45,8 @@ signals:
 	void start();
 	void stop(bool needResult);
 
-	void done(QByteArray data, VoiceWaveform waveform, qint32 samples);
-	void updated(quint16 level, qint32 samples);
+	void done(QByteArray data, VoiceWaveform waveform, int32_t samples);
+	void updated(uint16_t level, int32_t samples);
 	void error();
 
 private:
@@ -70,8 +70,8 @@ public:
 
 signals:
 	void error();
-	void updated(quint16 level, qint32 samples);
-	void done(QByteArray data, VoiceWaveform waveform, qint32 samples);
+	void updated(uint16_t level, int32_t samples);
+	void done(QByteArray data, VoiceWaveform waveform, int32_t samples);
 
 public slots:
 	void onInit();
@@ -81,7 +81,7 @@ public slots:
 	void onTimeout();
 
 private:
-	void processFrame(int32 offset, int32 framesize);
+	void processFrame(int32_t offset, int32_t framesize);
 
 	void writeFrame(AVFrame *frame);
 

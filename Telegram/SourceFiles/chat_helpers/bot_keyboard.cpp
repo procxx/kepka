@@ -60,7 +60,7 @@ int BotKeyboard::Style::buttonRadius() const {
 	return st::buttonRadius;
 }
 
-void BotKeyboard::Style::paintButtonBg(Painter &p, const QRect &rect, float64 howMuchOver) const {
+void BotKeyboard::Style::paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const {
 	App::roundRect(p, rect, st::botKbBg, BotKeyboardCorners);
 }
 

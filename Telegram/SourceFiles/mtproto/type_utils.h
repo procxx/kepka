@@ -47,7 +47,7 @@ namespace base {\
 }
 
 // we use the same flags field for some additional client side flags
-enum class MTPDmessage_ClientFlag : int32 {
+enum class MTPDmessage_ClientFlag : int32_t {
 	// message has links for "shared links" indexing
 	f_has_text_links = (1 << 30),
 
@@ -83,7 +83,7 @@ enum class MTPDmessage_ClientFlag : int32 {
 };
 DEFINE_MTP_CLIENT_FLAGS(MTPDmessage)
 
-enum class MTPDreplyKeyboardMarkup_ClientFlag : int32 {
+enum class MTPDreplyKeyboardMarkup_ClientFlag : int32_t {
 	// none (zero) markup
 	f_zero = (1 << 30),
 
@@ -101,7 +101,7 @@ enum class MTPDreplyKeyboardMarkup_ClientFlag : int32 {
 };
 DEFINE_MTP_CLIENT_FLAGS(MTPDreplyKeyboardMarkup)
 
-enum class MTPDstickerSet_ClientFlag : int32 {
+enum class MTPDstickerSet_ClientFlag : int32_t {
 	// old value for sticker set is not yet loaded flag
 	f_not_loaded__old = (1 << 31),
 

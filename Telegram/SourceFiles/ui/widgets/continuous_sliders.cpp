@@ -54,12 +54,12 @@ void ContinuousSlider::setMoveByWheel(bool move) {
 	}
 }
 
-void ContinuousSlider::setValue(float64 value) {
+void ContinuousSlider::setValue(double value) {
 	_value = value;
 	update();
 }
 
-void ContinuousSlider::setFadeOpacity(float64 opacity) {
+void ContinuousSlider::setFadeOpacity(double opacity) {
 	_fadeOpacity = opacity;
 	update();
 }
@@ -70,11 +70,11 @@ void ContinuousSlider::mouseMoveEvent(QMouseEvent *e) {
 	}
 }
 
-float64 ContinuousSlider::computeValue(const QPoint &pos) const {
+double ContinuousSlider::computeValue(const QPoint &pos) const {
 	auto seekRect = myrtlrect(getSeekRect());
 	auto result = isHorizontal() ?
-		(pos.x() - seekRect.x()) / float64(seekRect.width()) :
-		(1. - (pos.y() - seekRect.y()) / float64(seekRect.height()));
+		(pos.x() - seekRect.x()) / double(seekRect.width()) :
+		(1. - (pos.y() - seekRect.y()) / double(seekRect.height()));
 	return snap(result, 0., 1.);
 }
 
@@ -156,7 +156,7 @@ QRect FilledSlider::getSeekRect() const {
 	return QRect(0, 0, width(), height());
 }
 
-float64 FilledSlider::getOverDuration() const {
+double FilledSlider::getOverDuration() const {
 	return _st.duration;
 }
 
@@ -204,7 +204,7 @@ QRect MediaSlider::getSeekRect() const {
 		: QRect(0, _st.seekSize.height() / 2, width(), height() - _st.seekSize.width());
 }
 
-float64 MediaSlider::getOverDuration() const {
+double MediaSlider::getOverDuration() const {
 	return _st.duration;
 }
 

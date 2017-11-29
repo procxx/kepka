@@ -122,7 +122,7 @@ protected:
 		return _radial && _radial->animating();
 	}
 
-	virtual float64 dataProgress() const = 0;
+	virtual double dataProgress() const = 0;
 	virtual bool dataFinished() const = 0;
 	virtual bool dataLoaded() const = 0;
 	virtual bool iconAnimated() const {
@@ -182,7 +182,7 @@ public:
 	Photo(PhotoData *photo, HistoryItem *parent);
 
 	void initDimensions() override;
-	int32 resizeGetHeight(int32 width) override;
+	int32_t resizeGetHeight(int32_t width) override;
 	void paint(Painter &p, const QRect &clip, TextSelection selection, const PaintContext *context) override;
 	void getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const override;
 
@@ -209,7 +209,7 @@ public:
 	Video(DocumentData *video, HistoryItem *parent);
 
 	void initDimensions() override;
-	int32 resizeGetHeight(int32 width) override;
+	int32_t resizeGetHeight(int32_t width) override;
 	void paint(Painter &p, const QRect &clip, TextSelection selection, const PaintContext *context) override;
 	void getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const override;
 
@@ -219,7 +219,7 @@ public:
 	void invalidateCache() override;
 
 protected:
-	float64 dataProgress() const override {
+	double dataProgress() const override {
 		return _data->progress();
 	}
 	bool dataFinished() const override {
@@ -257,7 +257,7 @@ public:
 	void getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const override;
 
 protected:
-	float64 dataProgress() const override {
+	double dataProgress() const override {
 		return _data->progress();
 	}
 	bool dataFinished() const override {
@@ -298,7 +298,7 @@ public:
 	}
 
 protected:
-	float64 dataProgress() const override {
+	double dataProgress() const override {
 		return _data->progress();
 	}
 	bool dataFinished() const override {
@@ -323,8 +323,8 @@ private:
 
 	Text _name;
 	QString _date, _ext;
-	int32 _datew, _extw;
-	int32 _thumbw, _colorIndex;
+	int32_t _datew, _extw;
+	int32_t _thumbw, _colorIndex;
 
 	bool withThumb() const {
 		return !_data->song() && !_data->thumb->isNull() && _data->thumb->width() && _data->thumb->height() && !documentIsExecutableName(_data->name);
@@ -338,7 +338,7 @@ public:
 	Link(HistoryMedia *media, HistoryItem *parent);
 
 	void initDimensions() override;
-	int32 resizeGetHeight(int32 width) override;
+	int32_t resizeGetHeight(int32_t width) override;
 	void paint(Painter &p, const QRect &clip, TextSelection selection, const PaintContext *context) override;
 	void getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const override;
 
@@ -357,7 +357,7 @@ private:
 		}
 		LinkEntry(const QString &url, const QString &text);
 		QString text;
-		int32 width;
+		int32_t width;
 		TextClickHandlerPtr lnk;
 	};
 	QVector<LinkEntry> _links;

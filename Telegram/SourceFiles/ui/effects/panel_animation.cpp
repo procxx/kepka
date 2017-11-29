@@ -22,16 +22,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Ui {
 
-void RoundShadowAnimation::start(int frameWidth, int frameHeight, float64 devicePixelRatio) {
+void RoundShadowAnimation::start(int frameWidth, int frameHeight, double devicePixelRatio) {
 	Assert(!started());
 	_frameWidth = frameWidth;
 	_frameHeight = frameHeight;
 	_frame = QImage(_frameWidth, _frameHeight, QImage::Format_ARGB32_Premultiplied);
 	_frame.setDevicePixelRatio(devicePixelRatio);
 	_frameIntsPerLine = (_frame.bytesPerLine() >> 2);
-	_frameInts = reinterpret_cast<uint32*>(_frame.bits());
+	_frameInts = reinterpret_cast<uint32_t*>(_frame.bits());
 	_frameIntsPerLineAdded = _frameIntsPerLine - _frameWidth;
-	Assert(_frame.depth() == static_cast<int>(sizeof(uint32) << 3));
+	Assert(_frame.depth() == static_cast<int>(sizeof(uint32_t) << 3));
 	Assert(_frame.bytesPerLine() == (_frameIntsPerLine << 2));
 	Assert(_frameIntsPerLineAdded >= 0);
 }
@@ -109,7 +109,7 @@ void RoundShadowAnimation::paintCorner(Corner &corner, int left, int top) {
 	auto frameIntsPerLineAdd = _frameIntsPerLine - corner.width;
 	for (auto y = 0; y != corner.height; ++y) {
 		for (auto x = 0; x != corner.width; ++x) {
-			auto alpha = static_cast<uint32>(*mask) + 1;
+			auto alpha = static_cast<uint32_t>(*mask) + 1;
 			*frameInts = anim::unshifted(anim::shifted(*frameInts) * alpha);
 			++frameInts;
 			mask += bytesPerPixel;
@@ -133,7 +133,7 @@ void RoundShadowAnimation::paintShadow(int left, int top, int right, int bottom)
 void RoundShadowAnimation::paintShadowCorner(int left, int top, const QImage &image) {
 	auto imageWidth = image.width();
 	auto imageHeight = image.height();
-	auto imageInts = reinterpret_cast<const uint32*>(image.constBits());
+	auto imageInts = reinterpret_cast<const uint32_t*>(image.constBits());
 	auto imageIntsPerLine = (image.bytesPerLine() >> 2);
 	auto imageIntsPerLineAdded = imageIntsPerLine - imageWidth;
 	if (left < 0) {
@@ -171,7 +171,7 @@ void RoundShadowAnimation::paintShadowCorner(int left, int top, const QImage &im
 
 void RoundShadowAnimation::paintShadowVertical(int left, int top, int bottom, const QImage &image) {
 	auto imageWidth = image.width();
-	auto imageInts = reinterpret_cast<const uint32*>(image.constBits());
+	auto imageInts = reinterpret_cast<const uint32_t*>(image.constBits());
 	if (left < 0) {
 		auto shift = -base::take(left);
 		imageWidth -= shift;
@@ -199,7 +199,7 @@ void RoundShadowAnimation::paintShadowVertical(int left, int top, int bottom, co
 
 void RoundShadowAnimation::paintShadowHorizontal(int left, int right, int top, const QImage &image) {
 	auto imageHeight = image.height();
-	auto imageInts = reinterpret_cast<const uint32*>(image.constBits());
+	auto imageInts = reinterpret_cast<const uint32_t*>(image.constBits());
 	auto imageIntsPerLine = (image.bytesPerLine() >> 2);
 	if (top < 0) {
 		auto shift = -base::take(top);
@@ -300,7 +300,7 @@ void PanelAnimation::createFadeMask() {
 	auto finalAlpha = qRound(_st.fadeOpacity * 255);
 	Assert(finalAlpha >= 0 && finalAlpha < 256);
 	auto result = QImage(cIntRetinaFactor(), resultHeight, QImage::Format_ARGB32_Premultiplied);
-	auto ints = reinterpret_cast<uint32*>(result.bits());
+	auto ints = reinterpret_cast<uint32_t*>(result.bits());
 	auto intsPerLineAdded = (result.bytesPerLine() >> 2) - cIntRetinaFactor();
 	auto up = (_origin == PanelAnimation::Origin::BottomLeft || _origin == PanelAnimation::Origin::BottomRight);
 	auto from = up ? resultHeight : 0, to = resultHeight - from, delta = up ? -1 : 1;
@@ -309,7 +309,7 @@ void PanelAnimation::createFadeMask() {
 	_fadeFirst = QBrush(QColor(_st.fadeBg->c.red(), _st.fadeBg->c.green(), _st.fadeBg->c.blue(), (_st.fadeBg->c.alpha() * fadeFirstAlpha) >> 8));
 	_fadeLast = QBrush(QColor(_st.fadeBg->c.red(), _st.fadeBg->c.green(), _st.fadeBg->c.blue(), (_st.fadeBg->c.alpha() * fadeLastAlpha) >> 8));
 	for (auto y = from; y != to; y += delta) {
-		auto alpha = static_cast<uint32>(finalAlpha * y) / resultHeight;
+		auto alpha = static_cast<uint32_t>(finalAlpha * y) / resultHeight;
 		auto value = (0xFFU << 24) | (alpha << 16) | (alpha << 8) | alpha;
 		for (auto x = 0; x != cIntRetinaFactor(); ++x) {
 			*ints++ = value;
@@ -361,7 +361,7 @@ void PanelAnimation::start() {
 	checkCorner(_bottomRight);
 }
 
-void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, float64 dt, float64 opacity) {
+void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, double dt, double opacity) {
 	Assert(started());
 	Assert(dt >= 0.);
 
@@ -460,15 +460,15 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, float
 	if (opacity == 1.) {
 		// Fill above the frame top with transparent.
 		auto fillTopInts = (_frameInts + outerTop * _frameIntsPerLine + outerLeft);
-		auto fillWidth = (outerRight - outerLeft) * sizeof(uint32);
+		auto fillWidth = (outerRight - outerLeft) * sizeof(uint32_t);
 		for (auto fillTop = frameTop - outerTop; fillTop != 0; --fillTop) {
 			memset(fillTopInts, 0, fillWidth);
 			fillTopInts += _frameIntsPerLine;
 		}
 
 		// Fill to the left and to the right of the frame with transparent.
-		auto fillLeft = (frameLeft - outerLeft) * sizeof(uint32);
-		auto fillRight = (outerRight - frameRight) * sizeof(uint32);
+		auto fillLeft = (frameLeft - outerLeft) * sizeof(uint32_t);
+		auto fillRight = (outerRight - frameRight) * sizeof(uint32_t);
 		if (fillLeft || fillRight) {
 			auto fillInts = _frameInts + frameTop * _frameIntsPerLine;
 			for (auto y = frameTop; y != frameBottom; ++y) {
@@ -492,7 +492,7 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, float
 
 	// Debug
 	//frameInts = _frameInts;
-	//auto pattern = anim::shifted((static_cast<uint32>(0xFF) << 24) | (static_cast<uint32>(0xFF) << 16) | (static_cast<uint32>(0xFF) << 8) | static_cast<uint32>(0xFF));
+	//auto pattern = anim::shifted((static_cast<uint32_t>(0xFF) << 24) | (static_cast<uint32_t>(0xFF) << 16) | (static_cast<uint32_t>(0xFF) << 8) | static_cast<uint32_t>(0xFF));
 	//for (auto y = 0; y != _finalHeight; ++y) {
 	//	for (auto x = 0; x != _finalWidth; ++x) {
 	//		auto source = *frameInts;

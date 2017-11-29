@@ -83,8 +83,8 @@ QRegularExpression CreateRegExp(const QString &expression) {
 	return QRegularExpression(expression, QRegularExpression::UseUnicodePropertiesOption);
 }
 
-QSet<int32> CreateValidProtocols() {
-	auto result = QSet<int32>();
+QSet<int32_t> CreateValidProtocols() {
+	auto result = QSet<int32_t>();
 	auto addOne = [&result](const QString &string) {
 		result.insert(hashCrc32(string.constData(), string.size() * sizeof(QChar)));
 	};
@@ -96,8 +96,8 @@ QSet<int32> CreateValidProtocols() {
 	return result;
 }
 
-QSet<int32> CreateValidTopDomains() {
-	auto result = QSet<int32>();
+QSet<int32_t> CreateValidTopDomains() {
+	auto result = QSet<int32_t>();
 	auto addOne = [&result](const QString &string) {
 		result.insert(hashCrc32(string.constData(), string.size() * sizeof(QChar)));
 	};
@@ -422,7 +422,7 @@ QSet<int32> CreateValidTopDomains() {
 }
 
 // accent char list taken from https://github.com/aristus/accent-folding
-inline QChar RemoveOneAccent(uint32 code) {
+inline QChar RemoveOneAccent(uint32_t code) {
 	switch (code) {
 	case 7834: return QChar(97);
 	case 193: return QChar(97);
@@ -1300,13 +1300,13 @@ QStringList PrepareSearchWords(const QString &query, const QRegularExpression *S
 	return result;
 }
 
-bool CutPart(TextWithEntities &sending, TextWithEntities &left, int32 limit) {
+bool CutPart(TextWithEntities &sending, TextWithEntities &left, int32_t limit) {
 	if (left.text.isEmpty() || !limit) return false;
 
-	int32 currentEntity = 0, goodEntity = currentEntity, entityCount = left.entities.size();
+	int32_t currentEntity = 0, goodEntity = currentEntity, entityCount = left.entities.size();
 	bool goodInEntity = false, goodCanBreakEntity = false;
 
-	int32 s = 0, half = limit / 2, goodLevel = 0;
+	int32_t s = 0, half = limit / 2, goodLevel = 0;
 	for (const QChar *start = left.text.constData(), *ch = start, *end = left.text.constEnd(), *good = ch; ch != end; ++ch, ++s) {
 		while (currentEntity < entityCount && ch >= start + left.entities[currentEntity].offset() + left.entities[currentEntity].length()) {
 			++currentEntity;
@@ -1316,7 +1316,7 @@ bool CutPart(TextWithEntities &sending, TextWithEntities &left, int32 limit) {
 			bool inEntity = (currentEntity < entityCount) && (ch > start + left.entities[currentEntity].offset()) && (ch < start + left.entities[currentEntity].offset() + left.entities[currentEntity].length());
 			EntityInTextType entityType = (currentEntity < entityCount) ? left.entities[currentEntity].type() : EntityInTextInvalid;
 			bool canBreakEntity = (entityType == EntityInTextPre || entityType == EntityInTextCode);
-			int32 noEntityLevel = inEntity ? 0 : 1;
+			int32_t noEntityLevel = inEntity ? 0 : 1;
 
 			auto markGoodAsLevel = [&](int newLevel) {
 				if (goodLevel > newLevel) {
@@ -1409,7 +1409,7 @@ bool CutPart(TextWithEntities &sending, TextWithEntities &left, int32 limit) {
 	return true;
 }
 
-bool textcmdStartsLink(const QChar *start, int32 len, int32 commandOffset) {
+bool textcmdStartsLink(const QChar *start, int32_t len, int32_t commandOffset) {
 	if (commandOffset + 2 < len) {
 		if (*(start + commandOffset + 1) == TextCommandLinkIndex) {
 			return (*(start + commandOffset + 2) != 0);
@@ -1419,7 +1419,7 @@ bool textcmdStartsLink(const QChar *start, int32 len, int32 commandOffset) {
 	return false;
 }
 
-bool checkTagStartInCommand(const QChar *start, int32 len, int32 tagStart, int32 &commandOffset, bool &commandIsLink, bool &inLink) {
+bool checkTagStartInCommand(const QChar *start, int32_t len, int32_t tagStart, int32_t &commandOffset, bool &commandIsLink, bool &inLink) {
 	bool inCommand = false;
 	const QChar *commandEnd = start + commandOffset;
 	while (commandOffset < len && tagStart > commandOffset) { // skip commands, evaluating are we in link or not
@@ -1769,7 +1769,7 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 }
 
 // Some code is duplicated in flattextarea.cpp!
-void ParseEntities(TextWithEntities &result, int32 flags, bool rich) {
+void ParseEntities(TextWithEntities &result, int32_t flags, bool rich) {
 	if (flags & TextParseMarkdown) { // parse markdown entities (bold, italic, code and pre)
 		ParseMarkdown(result, rich);
 	}
@@ -1782,10 +1782,10 @@ void ParseEntities(TextWithEntities &result, int32 flags, bool rich) {
 	int existingEntityIndex = 0, existingEntitiesCount = result.entities.size();
 	int existingEntityEnd = 0;
 
-	int32 len = result.text.size(), commandOffset = rich ? 0 : len;
+	int32_t len = result.text.size(), commandOffset = rich ? 0 : len;
 	bool inLink = false, commandIsLink = false;
 	const QChar *start = result.text.constData(), *end = start + result.text.size();
-	for (int32 offset = 0, matchOffset = offset, mentionSkip = 0; offset < len;) {
+	for (int32_t offset = 0, matchOffset = offset, mentionSkip = 0; offset < len;) {
 		if (commandOffset <= offset) {
 			for (commandOffset = offset; commandOffset < len; ++commandOffset) {
 				if (*(start + commandOffset) == TextCommand) {
@@ -1802,8 +1802,8 @@ void ParseEntities(TextWithEntities &result, int32 flags, bool rich) {
 		auto mBotCommand = withBotCommands ? RegExpBotCommand().match(result.text, matchOffset) : QRegularExpressionMatch();
 
 		EntityInTextType lnkType = EntityInTextUrl;
-		int32 lnkStart = 0, lnkLength = 0;
-		int32 domainStart = mDomain.hasMatch() ? mDomain.capturedStart() : INT_MAX,
+		int32_t lnkStart = 0, lnkLength = 0;
+		int32_t domainStart = mDomain.hasMatch() ? mDomain.capturedStart() : INT_MAX,
 			domainEnd = mDomain.hasMatch() ? mDomain.capturedEnd() : INT_MAX,
 			explicitDomainStart = mExplicitDomain.hasMatch() ? mExplicitDomain.capturedStart() : INT_MAX,
 			explicitDomainEnd = mExplicitDomain.hasMatch() ? mExplicitDomain.capturedEnd() : INT_MAX,
@@ -1980,7 +1980,7 @@ void ParseEntities(TextWithEntities &result, int32 flags, bool rich) {
 QString ApplyEntities(const TextWithEntities &text) {
 	if (text.entities.isEmpty()) return text.text;
 
-	QMultiMap<int32, QString> closingTags;
+	QMultiMap<int32_t, QString> closingTags;
 	QMap<EntityInTextType, QString> tags;
 	tags.insert(EntityInTextCode, qsl("`"));
 	tags.insert(EntityInTextPre, qsl("```"));
@@ -1989,7 +1989,7 @@ QString ApplyEntities(const TextWithEntities &text) {
 	constexpr auto kLargestOpenCloseLength = 6;
 
 	QString result;
-	int32 size = text.text.size();
+	int32_t size = text.text.size();
 	const QChar *b = text.text.constData(), *already = b, *e = b + size;
 	auto entity = text.entities.cbegin(), end = text.entities.cend();
 	auto skipTillRelevantAndGetTag = [&entity, &end, size, &tags] {
@@ -2112,7 +2112,7 @@ void ReplaceStringWithChar(const QLatin1String &from, QChar to, TextWithEntities
 	if (length < s) result.text.resize(length);
 }
 
-void PrepareForSending(TextWithEntities &result, int32 flags) {
+void PrepareForSending(TextWithEntities &result, int32_t flags) {
 	ApplyServerCleaning(result);
 
 	if (flags) {

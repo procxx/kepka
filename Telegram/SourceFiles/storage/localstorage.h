@@ -34,7 +34,7 @@ namespace Local {
 
 struct StoredAuthSession {
 	AuthSessionData data;
-	float64 dialogsWidthRatio;
+	double dialogsWidthRatio;
 };
 
 void start();
@@ -87,9 +87,9 @@ enum ReadMapState {
 	ReadMapPassNeeded = 2,
 };
 ReadMapState readMap(const QByteArray &pass);
-int32 oldMapVersion();
+int32_t oldMapVersion();
 
-int32 oldSettingsVersion();
+int32_t oldSettingsVersion();
 
 struct MessageDraft {
 	MessageDraft(MsgId msgId = 0, TextWithTags textWithTags = TextWithTags(), bool previewCancelled = false)
@@ -113,26 +113,26 @@ FileLocation readFileLocation(MediaKey location, bool check = true);
 void writeImage(const StorageKey &location, const ImagePtr &img);
 void writeImage(const StorageKey &location, const StorageImageSaved &jpeg, bool overwrite = true);
 TaskId startImageLoad(const StorageKey &location, mtpFileLoader *loader);
-int32 hasImages();
-qint64 storageImagesSize();
+int32_t hasImages();
+int64_t storageImagesSize();
 
 void writeStickerImage(const StorageKey &location, const QByteArray &data, bool overwrite = true);
 TaskId startStickerImageLoad(const StorageKey &location, mtpFileLoader *loader);
 bool willStickerImageLoad(const StorageKey &location);
 bool copyStickerImage(const StorageKey &oldLocation, const StorageKey &newLocation);
-int32 hasStickers();
-qint64 storageStickersSize();
+int32_t hasStickers();
+int64_t storageStickersSize();
 
 void writeAudio(const StorageKey &location, const QByteArray &data, bool overwrite = true);
 TaskId startAudioLoad(const StorageKey &location, mtpFileLoader *loader);
 bool copyAudio(const StorageKey &oldLocation, const StorageKey &newLocation);
-int32 hasAudios();
-qint64 storageAudiosSize();
+int32_t hasAudios();
+int64_t storageAudiosSize();
 
 void writeWebFile(const QString &url, const QByteArray &data, bool overwrite = true);
 TaskId startWebFileLoad(const QString &url, webFileLoader *loader);
-int32 hasWebFiles();
-qint64 storageWebFilesSize();
+int32_t hasWebFiles();
+int64_t storageWebFilesSize();
 
 void countVoiceWaveform(DocumentData *document);
 
@@ -148,16 +148,16 @@ void readFeaturedStickers();
 void readRecentStickers();
 void readFavedStickers();
 void readArchivedStickers();
-int32 countStickersHash(bool checkOutdatedInfo = false);
-int32 countRecentStickersHash();
-int32 countFavedStickersHash();
-int32 countFeaturedStickersHash();
+int32_t countStickersHash(bool checkOutdatedInfo = false);
+int32_t countRecentStickersHash();
+int32_t countFavedStickersHash();
+int32_t countFeaturedStickersHash();
 
 void writeSavedGifs();
 void readSavedGifs();
-int32 countSavedGifsHash();
+int32_t countSavedGifsHash();
 
-void writeBackground(int32 id, const QImage &img);
+void writeBackground(int32_t id, const QImage &img);
 bool readBackground();
 
 void writeTheme(const QString &pathRelative, const QString &pathAbsolute, const QByteArray &content, const Window::Theme::Cached &cache);
@@ -181,8 +181,8 @@ void writeReportSpamStatuses();
 void makeBotTrusted(UserData *bot);
 bool isBotTrusted(UserData *bot);
 
-bool encrypt(const void *src, void *dst, uint32 len, const void *key128);
-bool decrypt(const void *src, void *dst, uint32 len, const void *key128);
+bool encrypt(const void *src, void *dst, uint32_t len, const void *key128);
+bool decrypt(const void *src, void *dst, uint32_t len, const void *key128);
 
 namespace internal {
 

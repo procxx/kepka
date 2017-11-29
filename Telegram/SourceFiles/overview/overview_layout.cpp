@@ -220,7 +220,7 @@ void Photo::initDimensions() {
 	_minh = _maxw;
 }
 
-int32 Photo::resizeGetHeight(int32 width) {
+int32_t Photo::resizeGetHeight(int32_t width) {
 	width = qMin(width, _maxw);
 	if (width != _width || width != _height) {
 		_width = qMin(width, _maxw);
@@ -238,7 +238,7 @@ void Photo::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 	if ((good && !_goodLoaded) || _pix.width() != _width * cIntRetinaFactor()) {
 		_goodLoaded = good;
 
-		int32 size = _width * cIntRetinaFactor();
+		int32_t size = _width * cIntRetinaFactor();
 		if (_goodLoaded || _data->thumb->loaded()) {
 			auto img = (_data->loaded() ? _data->full : (_data->medium->loaded() ? _data->medium : _data->thumb))->pix().toImage();
 			if (!_goodLoaded) {
@@ -320,7 +320,7 @@ void Video::initDimensions() {
 	_minh = _maxw;
 }
 
-int32 Video::resizeGetHeight(int32 width) {
+int32_t Video::resizeGetHeight(int32_t width) {
 	_width = qMin(width, _maxw);
 	_height = _width;
 	return _height;
@@ -376,9 +376,9 @@ void Video::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 
 	if (!selected && !context->selecting && !loaded) {
 		if (clip.intersects(QRect(0, _height - st::normalFont->height, _width, st::normalFont->height))) {
-			int32 statusX = st::msgDateImgPadding.x(), statusY = _height - st::normalFont->height - st::msgDateImgPadding.y();
-			int32 statusW = st::normalFont->width(_status.text()) + 2 * st::msgDateImgPadding.x();
-			int32 statusH = st::normalFont->height + 2 * st::msgDateImgPadding.y();
+			int32_t statusX = st::msgDateImgPadding.x(), statusY = _height - st::normalFont->height - st::msgDateImgPadding.y();
+			int32_t statusW = st::normalFont->width(_status.text()) + 2 * st::msgDateImgPadding.x();
+			int32_t statusH = st::normalFont->height + 2 * st::msgDateImgPadding.y();
 			statusX = _width - statusW + statusX;
 			p.fillRect(rtlrect(statusX - st::msgDateImgPadding.x(), statusY - st::msgDateImgPadding.y(), statusW, statusH, _width), selected ? st::msgDateImgBgSelected : st::msgDateImgBg);
 			p.setFont(st::normalFont);
@@ -387,9 +387,9 @@ void Video::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 		}
 	}
 	if (clip.intersects(QRect(0, 0, _width, st::normalFont->height))) {
-		int32 statusX = st::msgDateImgPadding.x(), statusY = st::msgDateImgPadding.y();
-		int32 statusW = st::normalFont->width(_duration) + 2 * st::msgDateImgPadding.x();
-		int32 statusH = st::normalFont->height + 2 * st::msgDateImgPadding.y();
+		int32_t statusX = st::msgDateImgPadding.x(), statusY = st::msgDateImgPadding.y();
+		int32_t statusW = st::normalFont->width(_duration) + 2 * st::msgDateImgPadding.x();
+		int32_t statusH = st::normalFont->height + 2 * st::msgDateImgPadding.y();
 		p.fillRect(rtlrect(statusX - st::msgDateImgPadding.x(), statusY - st::msgDateImgPadding.y(), statusW, statusH, _width), selected ? st::msgDateImgBgSelected : st::msgDateImgBg);
 		p.setFont(st::normalFont);
 		p.setPen(st::msgDateImgFg);
@@ -530,13 +530,13 @@ void Voice::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 		}
 	}
 	bool showPause = updateStatusText();
-	int32 nameVersion = _parent->fromOriginal()->nameVersion;
+	int32_t nameVersion = _parent->fromOriginal()->nameVersion;
 	if (nameVersion > _nameVersion) {
 		updateName();
 	}
 	bool radial = isRadialAnimation(context->ms);
 
-	int32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = -1;
+	int32_t nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = -1;
 
 	nameleft = _st.songPadding.left() + _st.songThumbSize + _st.songPadding.right();
 	nameright = _st.songPadding.left();
@@ -581,7 +581,7 @@ void Voice::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 		icon->paintInCenter(p, inner);
 	}
 
-	int32 namewidth = _width - nameleft - nameright;
+	int32_t namewidth = _width - nameleft - nameright;
 
 	if (clip.intersects(rtlrect(nameleft, nametop, namewidth, st::semiboldFont->height, _width))) {
 		p.setPen(st::historyFileNameInFg);
@@ -591,14 +591,14 @@ void Voice::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 	if (clip.intersects(rtlrect(nameleft, statustop, namewidth, st::normalFont->height, _width))) {
 		p.setFont(st::normalFont);
 		p.setPen(selected ? st::mediaInFgSelected : st::mediaInFg);
-		int32 unreadx = nameleft;
+		int32_t unreadx = nameleft;
 		if (_status.size() == FileStatusSizeLoaded || _status.size() == FileStatusSizeReady) {
 			p.setTextPalette(selected ? st::mediaInPaletteSelected : st::mediaInPalette);
 			_details.drawLeftElided(p, nameleft, statustop, namewidth, _width);
 			p.restoreTextPalette();
 			unreadx += _details.maxWidth();
 		} else {
-			int32 statusw = st::normalFont->width(_status.text());
+			int32_t statusw = st::normalFont->width(_status.text());
 			p.drawTextLeft(nameleft, statustop, _width, _status.text(), statusw);
 			unreadx += statusw;
 		}
@@ -617,7 +617,7 @@ void Voice::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 void Voice::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const {
 	bool loaded = _data->loaded();
 
-	int32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = 0;
+	int32_t nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = 0;
 
 	nameleft = _st.songPadding.left() + _st.songThumbSize + _st.songPadding.right();
 	nameright = _st.songPadding.left();
@@ -659,7 +659,7 @@ void Voice::updateName() {
 
 bool Voice::updateStatusText() {
 	bool showPause = false;
-	int32 statusSize = 0, realDuration = 0;
+	int32_t statusSize = 0, realDuration = 0;
 	if (_data->status == FileDownloadFailed || _data->status == FileUploadFailed) {
 		statusSize = FileStatusSizeFailed;
 	} else if (_data->loaded()) {
@@ -698,7 +698,7 @@ Document::Document(DocumentData *document, HistoryItem *parent, const style::Ove
 
 	if (withThumb()) {
 		_data->thumb->load();
-		int32 tw = convertScale(_data->thumb->width()), th = convertScale(_data->thumb->height());
+		int32_t tw = convertScale(_data->thumb->width()), th = convertScale(_data->thumb->height());
 		if (tw > th) {
 			_thumbw = (tw * _st.fileThumbSize) / th;
 		} else {
@@ -739,7 +739,7 @@ void Document::paint(Painter &p, const QRect &clip, TextSelection selection, con
 	bool showPause = updateStatusText();
 	bool radial = isRadialAnimation(context->ms);
 
-	int32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = -1;
+	int32_t nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = -1;
 	bool wthumb = withThumb();
 
 	auto isSong = (_data->song() != nullptr);
@@ -887,7 +887,7 @@ void Document::paint(Painter &p, const QRect &clip, TextSelection selection, con
 void Document::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const {
 	bool loaded = _data->loaded() || Local::willStickerImageLoad(_data->mediaKey());
 
-	int32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = 0;
+	int32_t nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = 0;
 	bool wthumb = withThumb();
 
 	if (_data->song()) {
@@ -939,7 +939,7 @@ void Document::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoin
 
 bool Document::updateStatusText() {
 	bool showPause = false;
-	int32 statusSize = 0, realDuration = 0;
+	int32_t statusSize = 0, realDuration = 0;
 	if (_data->status == FileDownloadFailed || _data->status == FileUploadFailed) {
 		statusSize = FileStatusSizeFailed;
 	} else if (_data->status == FileUploading) {
@@ -979,7 +979,7 @@ Link::Link(HistoryMedia *media, HistoryItem *parent) : ItemBase(parent) {
 
 	auto text = textWithEntities.text;
 	auto &entities = textWithEntities.entities;
-	int32 from = 0, till = text.size(), lnk = entities.size();
+	int32_t from = 0, till = text.size(), lnk = entities.size();
 	for_const (auto &entity, entities) {
 		auto type = entity.type();
 		if (type != EntityInTextUrl && type != EntityInTextCustomUrl && type != EntityInTextEmail) {
@@ -1000,7 +1000,7 @@ Link::Link(HistoryMedia *media, HistoryItem *parent) : ItemBase(parent) {
 			++lnk;
 			break;
 		}
-		int32 afterLinkStart = entity.offset() + entity.length();
+		int32_t afterLinkStart = entity.offset() + entity.length();
 		if (till > afterLinkStart) {
 			if (!QRegularExpression(qsl("^[,.\\s_=+\\-;:`'\"\\(\\)\\[\\]\\{\\}<>*&^%\\$#@!\\\\/]+$")).match(text.mid(afterLinkStart, till - afterLinkStart)).hasMatch()) {
 				++lnk;
@@ -1040,10 +1040,10 @@ Link::Link(HistoryMedia *media, HistoryItem *parent) : ItemBase(parent) {
 		till = text.size();
 	}
 	if (till > from) {
-		TextParseOptions opts = { TextParseMultiline, int32(st::linksMaxWidth), 3 * st::normalFont->height, Qt::LayoutDirectionAuto };
+		TextParseOptions opts = { TextParseMultiline, int32_t(st::linksMaxWidth), 3 * st::normalFont->height, Qt::LayoutDirectionAuto };
 		_text.setText(st::defaultTextStyle, text.mid(from, till - from), opts);
 	}
-	int32 tw = 0, th = 0;
+	int32_t tw = 0, th = 0;
 	if (_page && _page->photo) {
 		if (!_page->photo->loaded()) _page->photo->thumb->load(false, false);
 
@@ -1104,13 +1104,13 @@ void Link::initDimensions() {
 		_minh += qMin(3 * st::normalFont->height, _text.countHeight(_maxw - st::linksPhotoSize - st::linksPhotoPadding));
 	}
 	_minh += _links.size() * st::normalFont->height;
-	_minh = qMax(_minh, int32(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
+	_minh = qMax(_minh, int32_t(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
 }
 
-int32 Link::resizeGetHeight(int32 width) {
+int32_t Link::resizeGetHeight(int32_t width) {
 	_width = qMin(width, _maxw);
-	int32 w = _width - st::linksPhotoSize - st::linksPhotoPadding;
-	for (int32 i = 0, l = _links.size(); i < l; ++i) {
+	int32_t w = _width - st::linksPhotoSize - st::linksPhotoPadding;
+	for (int32_t i = 0, l = _links.size(); i < l; ++i) {
 		_links.at(i).lnk->setFullDisplayed(w >= _links.at(i).width);
 	}
 
@@ -1122,12 +1122,12 @@ int32 Link::resizeGetHeight(int32 width) {
 		_height += qMin(3 * st::normalFont->height, _text.countHeight(_width - st::linksPhotoSize - st::linksPhotoPadding));
 	}
 	_height += _links.size() * st::normalFont->height;
-	_height = qMax(_height, int32(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
+	_height = qMax(_height, int32_t(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
 	return _height;
 }
 
 void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const PaintContext *context) {
-	int32 left = st::linksPhotoSize + st::linksPhotoPadding, top = st::linksMargin.top() + st::linksBorder, w = _width - left;
+	int32_t left = st::linksPhotoSize + st::linksPhotoPadding, top = st::linksMargin.top() + st::linksBorder, w = _width - left;
 	if (clip.intersects(rtlrect(0, top, st::linksPhotoSize, st::linksPhotoSize, _width))) {
 		if (_page && _page->photo) {
 			QPixmap pix;
@@ -1143,7 +1143,7 @@ void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const P
 			auto roundRadius = _page->document->isRoundVideo() ? ImageRoundRadius::Ellipse : ImageRoundRadius::Small;
 			p.drawPixmapLeft(0, top, _width, _page->document->thumb->pixSingle(_pixw, _pixh, st::linksPhotoSize, st::linksPhotoSize, roundRadius));
 		} else {
-			int32 index = _letter.isEmpty() ? 0 : (_letter.at(0).unicode() % 4);
+			int32_t index = _letter.isEmpty() ? 0 : (_letter.at(0).unicode() % 4);
 			switch (index) {
 			case 0: App::roundRect(p, rtlrect(0, top, st::linksPhotoSize, st::linksPhotoSize, _width), st::msgFile1Bg, Doc1Corners); break;
 			case 1: App::roundRect(p, rtlrect(0, top, st::linksPhotoSize, st::linksPhotoSize, _width), st::msgFile2Bg, Doc2Corners); break;
@@ -1182,7 +1182,7 @@ void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const P
 	}
 	p.setFont(st::msgFont);
 	if (!_text.isEmpty()) {
-		int32 h = qMin(st::normalFont->height * 3, _text.countHeight(w));
+		int32_t h = qMin(st::normalFont->height * 3, _text.countHeight(w));
 		if (clip.intersects(rtlrect(left, top, w, h, _width))) {
 			_text.drawLeftElided(p, left, top, w, _width, 3);
 		}
@@ -1190,7 +1190,7 @@ void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const P
 	}
 
 	p.setPen(st::windowActiveTextFg);
-	for (int32 i = 0, l = _links.size(); i < l; ++i) {
+	for (int32_t i = 0, l = _links.size(); i < l; ++i) {
 		if (clip.intersects(rtlrect(left, top, qMin(w, _links.at(i).width), st::normalFont->height, _width))) {
 			p.setFont(ClickHandler::showAsActive(_links.at(i).lnk) ? st::normalFont->underline() : st::normalFont);
 			p.drawTextLeft(left, top, _width, (w < _links.at(i).width) ? st::normalFont->elided(_links.at(i).text, w) : _links.at(i).text);
@@ -1205,7 +1205,7 @@ void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const P
 }
 
 void Link::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const {
-	int32 left = st::linksPhotoSize + st::linksPhotoPadding, top = st::linksMargin.top() + st::linksBorder, w = _width - left;
+	int32_t left = st::linksPhotoSize + st::linksPhotoPadding, top = st::linksMargin.top() + st::linksBorder, w = _width - left;
 	if (rtlrect(0, top, st::linksPhotoSize, st::linksPhotoSize, _width).contains(point)) {
 		link = _photol;
 		return;
@@ -1224,7 +1224,7 @@ void Link::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint po
 	if (!_text.isEmpty()) {
 		top += qMin(st::normalFont->height * 3, _text.countHeight(w));
 	}
-	for (int32 i = 0, l = _links.size(); i < l; ++i) {
+	for (int32_t i = 0, l = _links.size(); i < l; ++i) {
 		if (rtlrect(left, top, qMin(w, _links.at(i).width), st::normalFont->height, _width).contains(point)) {
 			link = _links.at(i).lnk;
 			return;

@@ -45,9 +45,9 @@ enum TextCommands {
 };
 
 struct TextParseOptions {
-	int32 flags;
-	int32 maxw;
-	int32 maxh;
+	int32_t flags;
+	int32_t maxw;
+	int32_t maxh;
 	Qt::LayoutDirection dir;
 };
 extern const TextParseOptions _defaultOptions, _textPlainOptions;
@@ -61,13 +61,13 @@ enum class TextSelectType {
 struct TextSelection {
 	constexpr TextSelection() : from(0), to(0) {
 	}
-	constexpr TextSelection(uint16 from, uint16 to) : from(from), to(to) {
+	constexpr TextSelection(uint16_t from, uint16_t to) : from(from), to(to) {
 	}
 	constexpr bool empty() const {
 		return from == to;
 	}
-	uint16 from : 16;
-	uint16 to : 16;
+	uint16_t from : 16;
+	uint16_t to : 16;
 };
 inline bool operator==(TextSelection a, TextSelection b) {
 	return a.from == b.from && a.to == b.to;
@@ -84,8 +84,8 @@ typedef QMap<QChar, TextCustomTag> TextCustomTagsMap;
 class ITextBlock;
 class Text {
 public:
-	Text(int32 minResizeWidth = QFIXED_MAX);
-	Text(const style::TextStyle &st, const QString &text, const TextParseOptions &options = _defaultOptions, int32 minResizeWidth = QFIXED_MAX, bool richText = false);
+	Text(int32_t minResizeWidth = QFIXED_MAX);
+	Text(const style::TextStyle &st, const QString &text, const TextParseOptions &options = _defaultOptions, int32_t minResizeWidth = QFIXED_MAX, bool richText = false);
 	Text(const Text &other);
 	Text(Text &&other);
 	Text &operator=(const Text &other);
@@ -98,32 +98,32 @@ public:
 	void setRichText(const style::TextStyle &st, const QString &text, TextParseOptions options = _defaultOptions, const TextCustomTagsMap &custom = TextCustomTagsMap());
 	void setMarkedText(const style::TextStyle &st, const TextWithEntities &textWithEntities, const TextParseOptions &options = _defaultOptions);
 
-	void setLink(uint16 lnkIndex, const ClickHandlerPtr &lnk);
+	void setLink(uint16_t lnkIndex, const ClickHandlerPtr &lnk);
 	bool hasLinks() const;
 
 	bool hasSkipBlock() const;
-	void setSkipBlock(int32 width, int32 height);
+	void setSkipBlock(int32_t width, int32_t height);
 	void removeSkipBlock();
 
-	int32 maxWidth() const {
+	int32_t maxWidth() const {
 		return _maxWidth.ceil().toInt();
 	}
-	int32 minHeight() const {
+	int32_t minHeight() const {
 		return _minHeight;
 	}
 
-	void draw(Painter &p, int32 left, int32 top, int32 width, style::align align = style::al_left, int32 yFrom = 0, int32 yTo = -1, TextSelection selection = { 0, 0 }, bool fullWidthSelection = true) const;
-	void drawElided(Painter &p, int32 left, int32 top, int32 width, int32 lines = 1, style::align align = style::al_left, int32 yFrom = 0, int32 yTo = -1, int32 removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const;
-	void drawLeft(Painter &p, int32 left, int32 top, int32 width, int32 outerw, style::align align = style::al_left, int32 yFrom = 0, int32 yTo = -1, TextSelection selection = { 0, 0 }) const {
+	void draw(Painter &p, int32_t left, int32_t top, int32_t width, style::align align = style::al_left, int32_t yFrom = 0, int32_t yTo = -1, TextSelection selection = { 0, 0 }, bool fullWidthSelection = true) const;
+	void drawElided(Painter &p, int32_t left, int32_t top, int32_t width, int32_t lines = 1, style::align align = style::al_left, int32_t yFrom = 0, int32_t yTo = -1, int32_t removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const;
+	void drawLeft(Painter &p, int32_t left, int32_t top, int32_t width, int32_t outerw, style::align align = style::al_left, int32_t yFrom = 0, int32_t yTo = -1, TextSelection selection = { 0, 0 }) const {
 		draw(p, rtl() ? (outerw - left - width) : left, top, width, align, yFrom, yTo, selection);
 	}
-	void drawLeftElided(Painter &p, int32 left, int32 top, int32 width, int32 outerw, int32 lines = 1, style::align align = style::al_left, int32 yFrom = 0, int32 yTo = -1, int32 removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const {
+	void drawLeftElided(Painter &p, int32_t left, int32_t top, int32_t width, int32_t outerw, int32_t lines = 1, style::align align = style::al_left, int32_t yFrom = 0, int32_t yTo = -1, int32_t removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const {
 		drawElided(p, rtl() ? (outerw - left - width) : left, top, width, lines, align, yFrom, yTo, removeFromEnd, breakEverywhere, selection);
 	}
-	void drawRight(Painter &p, int32 right, int32 top, int32 width, int32 outerw, style::align align = style::al_left, int32 yFrom = 0, int32 yTo = -1, TextSelection selection = { 0, 0 }) const {
+	void drawRight(Painter &p, int32_t right, int32_t top, int32_t width, int32_t outerw, style::align align = style::al_left, int32_t yFrom = 0, int32_t yTo = -1, TextSelection selection = { 0, 0 }) const {
 		draw(p, rtl() ? right : (outerw - right - width), top, width, align, yFrom, yTo, selection);
 	}
-	void drawRightElided(Painter &p, int32 right, int32 top, int32 width, int32 outerw, int32 lines = 1, style::align align = style::al_left, int32 yFrom = 0, int32 yTo = -1, int32 removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const {
+	void drawRightElided(Painter &p, int32_t right, int32_t top, int32_t width, int32_t outerw, int32_t lines = 1, style::align align = style::al_left, int32_t yFrom = 0, int32_t yTo = -1, int32_t removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const {
 		drawElided(p, rtl() ? right : (outerw - right - width), top, width, lines, align, yFrom, yTo, removeFromEnd, breakEverywhere, selection);
 	}
 
@@ -146,7 +146,7 @@ public:
 		ClickHandlerPtr link;
 		bool uponSymbol = false;
 		bool afterSymbol = false;
-		uint16 symbol = 0;
+		uint16_t symbol = 0;
 	};
 	StateResult getState(QPoint point, int width, StateRequest request = StateRequest()) const;
 	StateResult getStateLeft(QPoint point, int width, int outerw, StateRequest request = StateRequest()) const {
@@ -181,20 +181,20 @@ public:
 	TextWithEntities originalTextWithEntities(TextSelection selection = AllTextSelection, ExpandLinksMode mode = ExpandLinksShortened) const;
 	QString originalText(TextSelection selection = AllTextSelection, ExpandLinksMode mode = ExpandLinksShortened) const;
 
-	bool lastDots(int32 dots, int32 maxdots = 3) { // hack for typing animation
+	bool lastDots(int32_t dots, int32_t maxdots = 3) { // hack for typing animation
 		if (_text.size() < maxdots) return false;
 
-		int32 nowDots = 0, from = _text.size() - maxdots, to = _text.size();
-		for (int32 i = from; i < to; ++i) {
+		int32_t nowDots = 0, from = _text.size() - maxdots, to = _text.size();
+		for (int32_t i = from; i < to; ++i) {
 			if (_text.at(i) == QChar('.')) {
 				++nowDots;
 			}
 		}
 		if (nowDots == dots) return false;
-		for (int32 j = from; j < from + dots; ++j) {
+		for (int32_t j = from; j < from + dots; ++j) {
 			_text[j] = QChar('.');
 		}
-		for (int32 j = from + dots; j < to; ++j) {
+		for (int32_t j = from + dots; j < to; ++j) {
 			_text[j] = QChar(' ');
 		}
 		return true;
@@ -207,8 +207,8 @@ private:
 	using TextBlocks = std::vector<std::unique_ptr<ITextBlock>>;
 	using TextLinks = QVector<ClickHandlerPtr>;
 
-	uint16 countBlockEnd(const TextBlocks::const_iterator &i, const TextBlocks::const_iterator &e) const;
-	uint16 countBlockLength(const Text::TextBlocks::const_iterator &i, const Text::TextBlocks::const_iterator &e) const;
+	uint16_t countBlockEnd(const TextBlocks::const_iterator &i, const TextBlocks::const_iterator &e) const;
+	uint16_t countBlockLength(const Text::TextBlocks::const_iterator &i, const Text::TextBlocks::const_iterator &e) const;
 
 	// Template method for originalText(), originalTextWithEntities().
 	template <typename AppendPartCallback, typename ClickHandlerStartCallback, typename ClickHandlerFinishCallback, typename FlagsChangeCallback>
@@ -228,7 +228,7 @@ private:
 
 	QFixed _minResizeWidth;
 	QFixed _maxWidth = 0;
-	int32 _minHeight = 0;
+	int32_t _minHeight = 0;
 
 	QString _text;
 	const style::TextStyle *_st = nullptr;
@@ -243,12 +243,12 @@ private:
 
 };
 inline TextSelection snapSelection(int from, int to) {
-	return { static_cast<uint16>(snap(from, 0, 0xFFFF)), static_cast<uint16>(snap(to, 0, 0xFFFF)) };
+	return { static_cast<uint16_t>(snap(from, 0, 0xFFFF)), static_cast<uint16_t>(snap(to, 0, 0xFFFF)) };
 }
-inline TextSelection shiftSelection(TextSelection selection, uint16 byLength) {
+inline TextSelection shiftSelection(TextSelection selection, uint16_t byLength) {
 	return snapSelection(int(selection.from) + byLength, int(selection.to) + byLength);
 }
-inline TextSelection unshiftSelection(TextSelection selection, uint16 byLength) {
+inline TextSelection unshiftSelection(TextSelection selection, uint16_t byLength) {
 	return snapSelection(int(selection.from) - int(byLength), int(selection.to) - int(byLength));
 }
 inline TextSelection shiftSelection(TextSelection selection, const Text &byText) {
@@ -290,7 +290,7 @@ inline bool chReplacedBySpace(QChar ch) {
 	return (/*code >= 0x00 && */ch <= 0x02) || (ch >= 0x07 && ch <= 0x09) || (ch >= 0x0b && ch <= 0x1f) ||
 		(ch == 819) || (ch == 831) || (ch == 778) || (ch >= 8232 && ch <= 8237);
 }
-inline int32 chMaxDiacAfterSymbol() {
+inline int32_t chMaxDiacAfterSymbol() {
 	return 2;
 }
 inline bool chIsNewline(QChar ch) {

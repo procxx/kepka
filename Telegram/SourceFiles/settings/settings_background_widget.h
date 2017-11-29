@@ -47,7 +47,7 @@ signals:
 private:
 	void checkNonDefaultTheme();
 
-	float64 radialProgress() const;
+	double radialProgress() const;
 	bool radialLoading() const;
 	QRect radialRect() const;
 	void radialStart();

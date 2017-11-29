@@ -218,7 +218,7 @@ void SpecialConfigRequest::handleResponse(const QByteArray &bytes) {
 	for (auto &entry : config.vip_port_list.v) {
 		Assert(entry.type() == mtpc_ipPort);
 		auto &ipPort = entry.c_ipPort();
-		auto ip = *reinterpret_cast<const uint32*>(&ipPort.vipv4.v);
+		auto ip = *reinterpret_cast<const uint32_t*>(&ipPort.vipv4.v);
 		auto ipString = qsl("%1.%2.%3.%4").arg((ip >> 24) & 0xFF).arg((ip >> 16) & 0xFF).arg((ip >> 8) & 0xFF).arg(ip & 0xFF);
 		_callback(config.vdc_id.v, ipString.toStdString(), ipPort.vport.v);
 	}

@@ -243,7 +243,7 @@ public:
 		}
 
 		auto size = fileInfo.uncompressed_size;
-		if (size > static_cast<uint32>(fileSizeLimit)) {
+		if (size > static_cast<uint32_t>(fileSizeLimit)) {
 			if (_error == UNZ_OK) _error = -1;
 			LOG(("Error: current file is too large (should be less than %1, got %2) in a zip file.").arg(fileSizeLimit).arg(size));
 			return QByteArray();

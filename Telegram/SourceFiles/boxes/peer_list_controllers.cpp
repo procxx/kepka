@@ -717,7 +717,7 @@ void AddBotToGroupBoxController::shareBotGame(not_null<PeerData*> chat) {
 		}
 		auto history = App::historyLoaded(chat);
 		auto afterRequestId = history ? history->sendRequestId : 0;
-		auto randomId = rand_value<uint64>();
+		auto randomId = rand_value<uint64_t>();
 		auto gameShortName = bot->botInfo->shareGameShortName;
 		auto inputGame = MTP_inputGameShortName(
 			bot->inputUser,
@@ -764,7 +764,7 @@ void AddBotToGroupBoxController::addBotToGroup(not_null<PeerData*> chat) {
 				auto request = MTPmessages_StartBot(
 					bot->inputUser,
 					chat->input,
-					MTP_long(rand_value<uint64>()),
+					MTP_long(rand_value<uint64_t>()),
 					MTP_string(info->startGroupToken));
 				auto done = App::main()->rpcDone(
 					&MainWidget::sentUpdatesReceived);

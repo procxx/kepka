@@ -40,7 +40,7 @@ public:
 	bool usingHttpWait() override;
 	bool needHttpWait() override;
 
-	int32 debugState() const override;
+	int32_t debugState() const override;
 
 	QString transport() const override;
 
@@ -57,7 +57,7 @@ public slots:
 
 protected:
 
-	void socketPacket(const char *packet, uint32 length) override;
+	void socketPacket(const char *packet, uint32_t length) override;
 
 private:
 
@@ -82,9 +82,9 @@ private:
 	Requests requests;
 
 	QString _addrTcp, _addrHttp;
-	int32 _portTcp, _portHttp;
+	int32_t _portTcp, _portHttp;
 	MTPDdcOption::Flags _flagsTcp, _flagsHttp;
-	int32 _tcpTimeout;
+	int32_t _tcpTimeout;
 	QTimer tcpTimeoutTimer;
 
 };

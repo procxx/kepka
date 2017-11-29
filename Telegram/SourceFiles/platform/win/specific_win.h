@@ -75,7 +75,7 @@ TimeMs psIdleTime();
 QStringList psInitLogs();
 void psClearInitLogs();
 
-void psActivateProcess(uint64 pid = 0);
+void psActivateProcess(uint64_t pid = 0);
 QString psLocalServerPrefix();
 QString psAppDataPath();
 QString psAppDataPathOld();

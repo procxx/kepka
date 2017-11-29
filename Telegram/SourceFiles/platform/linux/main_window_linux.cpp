@@ -45,13 +45,13 @@ QByteArray _trayPixbufData;
 QList<QPair<GtkWidget*, QObject*> > _trayItems;
 #endif // !TDESKTOP_DISABLE_GTK_INTEGRATION
 
-int32 _trayIconSize = 22;
+int32_t _trayIconSize = 22;
 bool _trayIconMuted = true;
-int32 _trayIconCount = 0;
+int32_t _trayIconCount = 0;
 QImage _trayIconImageBack, _trayIconImage;
 
 #ifndef TDESKTOP_DISABLE_GTK_INTEGRATION
-void _trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32 activate_time, gpointer popup_menu) {
+void _trayIconPopup(GtkStatusIcon *status_icon, guint button, guint32_t activate_time, gpointer popup_menu) {
 	Libs::gtk_menu_popup(Libs::gtk_menu_cast(popup_menu), NULL, NULL, Libs::gtk_status_icon_position_menu, status_icon, button, activate_time);
 }
 
@@ -83,7 +83,7 @@ gboolean _trayIconResized(GtkStatusIcon *status_icon, gint size, gpointer popup_
 #endif // !TDESKTOP_DISABLE_GTK_INTEGRATION
 
 QImage _trayIconImageGen() {
-	int32 counter = App::histories().unreadBadge(), counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
+	int32_t counter = App::histories().unreadBadge(), counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
 	bool muted = App::histories().unreadOnlyMuted();
 	if (_trayIconImage.isNull() || _trayIconImage.width() != _trayIconSize || muted != _trayIconMuted || counterSlice != _trayIconCount) {
 		if (_trayIconImageBack.isNull() || _trayIconImageBack.width() != _trayIconSize) {
@@ -91,9 +91,9 @@ QImage _trayIconImageGen() {
 			_trayIconImageBack = _trayIconImageBack.convertToFormat(QImage::Format_ARGB32);
 			int w = _trayIconImageBack.width(), h = _trayIconImageBack.height(), perline = _trayIconImageBack.bytesPerLine();
 			uchar *bytes = _trayIconImageBack.bits();
-			for (int32 y = 0; y < h; ++y) {
-				for (int32 x = 0; x < w; ++x) {
-					int32 srcoff = y * perline + x * 4;
+			for (int32_t y = 0; y < h; ++y) {
+				for (int32_t x = 0; x < w; ++x) {
+					int32_t srcoff = y * perline + x * 4;
 					bytes[srcoff + QT_RED  ] = qMax(bytes[srcoff + QT_RED  ], uchar(224));
 					bytes[srcoff + QT_GREEN] = qMax(bytes[srcoff + QT_GREEN], uchar(165));
 					bytes[srcoff + QT_BLUE ] = qMax(bytes[srcoff + QT_BLUE ], uchar(44));
@@ -103,7 +103,7 @@ QImage _trayIconImageGen() {
 		_trayIconImage = _trayIconImageBack;
 		if (counter > 0) {
 			QPainter p(&_trayIconImage);
-			int32 layerSize = -16;
+			int32_t layerSize = -16;
 			if (_trayIconSize >= 48) {
 				layerSize = -32;
 			} else if (_trayIconSize >= 36) {
@@ -121,7 +121,7 @@ QImage _trayIconImageGen() {
 }
 
 QString _trayIconImageFile() {
-	int32 counter = App::histories().unreadBadge(), counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
+	int32_t counter = App::histories().unreadBadge(), counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
 	bool muted = App::histories().unreadOnlyMuted();
 
 	QString name = cWorkingDir() + qsl("tdata/ticons/ico%1_%2_%3.png").arg(muted ? "mute" : "").arg(_trayIconSize).arg(counterSlice);
@@ -145,9 +145,9 @@ void loadPixbuf(QImage image) {
 	int w = image.width(), h = image.height(), perline = image.bytesPerLine(), s = image.byteCount();
 	_trayPixbufData.resize(w * h * 4);
 	uchar *result = (uchar*)_trayPixbufData.data(), *bytes = image.bits();
-	for (int32 y = 0; y < h; ++y) {
-		for (int32 x = 0; x < w; ++x) {
-			int32 offset = (y * w + x) * 4, srcoff = y * perline + x * 4;
+	for (int32_t y = 0; y < h; ++y) {
+		for (int32_t x = 0; x < w; ++x) {
+			int32_t offset = (y * w + x) * 4, srcoff = y * perline + x * 4;
 			result[offset + GTK_RED  ] = bytes[srcoff + QT_RED  ];
 			result[offset + GTK_GREEN] = bytes[srcoff + QT_GREEN];
 			result[offset + GTK_BLUE ] = bytes[srcoff + QT_BLUE ];
@@ -160,7 +160,7 @@ void loadPixbuf(QImage image) {
 }
 
 void _trayMenuCallback(GtkMenu *menu, gpointer data) {
-	for (int32 i = 0, l = _trayItems.size(); i < l; ++i) {
+	for (int32_t i = 0, l = _trayItems.size(); i < l; ++i) {
 		if ((void*)_trayItems.at(i).first == (void*)menu) {
 			QMetaObject::invokeMethod(_trayItems.at(i).second, "triggered");
 		}
@@ -226,7 +226,7 @@ void MainWindow::psTrayMenuUpdated() {
 		const QList<QAction*> &actions = trayIconMenu->actions();
 		if (_trayItems.isEmpty()) {
 			DEBUG_LOG(("Creating tray menu!"));
-			for (int32 i = 0, l = actions.size(); i != l; ++i) {
+			for (int32_t i = 0, l = actions.size(); i != l; ++i) {
 				GtkWidget *item = Libs::gtk_menu_item_new_with_label(actions.at(i)->text().toUtf8());
 				Libs::gtk_menu_shell_append(Libs::gtk_menu_shell_cast(_trayMenu), item);
 				Libs::g_signal_connect_helper(item, "activate", G_CALLBACK(_trayMenuCallback), this);
@@ -237,7 +237,7 @@ void MainWindow::psTrayMenuUpdated() {
 			}
 		} else {
 			DEBUG_LOG(("Updating tray menu!"));
-			for (int32 i = 0, l = actions.size(); i != l; ++i) {
+			for (int32_t i = 0, l = actions.size(); i != l; ++i) {
 				if (i < _trayItems.size()) {
 					Libs::gtk_menu_item_set_label(reinterpret_cast<GtkMenuItem*>(_trayItems.at(i).first), actions.at(i)->text().toUtf8());
 					Libs::gtk_widget_set_sensitive(_trayItems.at(i).first, actions.at(i)->isEnabled());
@@ -380,7 +380,7 @@ void MainWindow::updateIconCounters() {
 			QByteArray path = QFile::encodeName(iconFile.absoluteFilePath());
 			icon = QIcon(path.constData());
 		} else {
-			int32 counter = App::histories().unreadBadge();
+			int32_t counter = App::histories().unreadBadge();
 			bool muted = App::histories().unreadOnlyMuted();
 
 			auto &bg = (muted ? st::trayCounterBgMute : st::trayCounterBg);

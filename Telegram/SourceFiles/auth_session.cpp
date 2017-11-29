@@ -45,30 +45,30 @@ AuthSessionData::Variables::Variables()
 }
 
 QByteArray AuthSessionData::serialize() const {
-	auto size = sizeof(qint32) * 8;
+	auto size = sizeof(int32_t) * 8;
 	for (auto i = _variables.soundOverrides.cbegin(), e = _variables.soundOverrides.cend(); i != e; ++i) {
 		size += Serialize::stringSize(i.key()) + Serialize::stringSize(i.value());
 	}
-	size += _variables.groupStickersSectionHidden.size() * sizeof(quint64);
+	size += _variables.groupStickersSectionHidden.size() * sizeof(uint64_t);
 
 	auto result = QByteArray();
 	result.reserve(size);
 	{
 		QDataStream stream(&result, QIODevice::WriteOnly);
 		stream.setVersion(QDataStream::Qt_5_1);
-		stream << static_cast<qint32>(_variables.selectorTab);
-		stream << qint32(_variables.lastSeenWarningSeen ? 1 : 0);
-		stream << qint32(_variables.tabbedSelectorSectionEnabled ? 1 : 0);
-		stream << qint32(_variables.soundOverrides.size());
+		stream << static_cast<int32_t>(_variables.selectorTab);
+		stream << int32_t(_variables.lastSeenWarningSeen ? 1 : 0);
+		stream << int32_t(_variables.tabbedSelectorSectionEnabled ? 1 : 0);
+		stream << int32_t(_variables.soundOverrides.size());
 		for (auto i = _variables.soundOverrides.cbegin(), e = _variables.soundOverrides.cend(); i != e; ++i) {
 			stream << i.key() << i.value();
 		}
-		stream << qint32(_variables.tabbedSelectorSectionTooltipShown);
-		stream << qint32(_variables.floatPlayerColumn);
-		stream << qint32(_variables.floatPlayerCorner);
-		stream << qint32(_variables.groupStickersSectionHidden.size());
+		stream << int32_t(_variables.tabbedSelectorSectionTooltipShown);
+		stream << int32_t(_variables.floatPlayerColumn);
+		stream << int32_t(_variables.floatPlayerCorner);
+		stream << int32_t(_variables.groupStickersSectionHidden.size());
 		for (auto peerId : _variables.groupStickersSectionHidden) {
-			stream << quint64(peerId);
+			stream << uint64_t(peerId);
 		}
 	}
 	return result;
@@ -81,12 +81,12 @@ void AuthSessionData::constructFromSerialized(const QByteArray &serialized) {
 
 	QDataStream stream(serialized);
 	stream.setVersion(QDataStream::Qt_5_1);
-	qint32 selectorTab = static_cast<qint32>(ChatHelpers::SelectorTab::Emoji);
-	qint32 lastSeenWarningSeen = 0;
-	qint32 tabbedSelectorSectionEnabled = 1;
-	qint32 tabbedSelectorSectionTooltipShown = 0;
-	qint32 floatPlayerColumn = static_cast<qint32>(Window::Column::Second);
-	qint32 floatPlayerCorner = static_cast<qint32>(RectPart::TopRight);
+	int32_t selectorTab = static_cast<int32_t>(ChatHelpers::SelectorTab::Emoji);
+	int32_t lastSeenWarningSeen = 0;
+	int32_t tabbedSelectorSectionEnabled = 1;
+	int32_t tabbedSelectorSectionTooltipShown = 0;
+	int32_t floatPlayerColumn = static_cast<int32_t>(Window::Column::Second);
+	int32_t floatPlayerCorner = static_cast<int32_t>(RectPart::TopRight);
 	QMap<QString, QString> soundOverrides;
 	OrderedSet<PeerId> groupStickersSectionHidden;
 	stream >> selectorTab;
@@ -95,7 +95,7 @@ void AuthSessionData::constructFromSerialized(const QByteArray &serialized) {
 		stream >> tabbedSelectorSectionEnabled;
 	}
 	if (!stream.atEnd()) {
-		auto count = qint32(0);
+		auto count = int32_t(0);
 		stream >> count;
 		if (stream.status() == QDataStream::Ok) {
 			for (auto i = 0; i != count; ++i) {
@@ -112,11 +112,11 @@ void AuthSessionData::constructFromSerialized(const QByteArray &serialized) {
 		stream >> floatPlayerColumn >> floatPlayerCorner;
 	}
 	if (!stream.atEnd()) {
-		auto count = qint32(0);
+		auto count = int32_t(0);
 		stream >> count;
 		if (stream.status() == QDataStream::Ok) {
 			for (auto i = 0; i != count; ++i) {
-				quint64 peerId;
+				uint64_t peerId;
 				stream >> peerId;
 				groupStickersSectionHidden.insert(peerId);
 			}

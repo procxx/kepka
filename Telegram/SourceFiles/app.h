@@ -34,7 +34,7 @@ using PhotoItems = QHash<PhotoData*, HistoryItemsMap>;
 using DocumentItems = QHash<DocumentData*, HistoryItemsMap>;
 using WebPageItems = QHash<WebPageData*, HistoryItemsMap>;
 using GameItems = QHash<GameData*, HistoryItemsMap>;
-using SharedContactItems = QHash<int32, HistoryItemsMap>;
+using SharedContactItems = QHash<int32_t, HistoryItemsMap>;
 using GifItems = QHash<Media::Clip::Reader*, HistoryItem*>;
 
 using PhotosData = QHash<PhotoId, PhotoData*>;
@@ -53,8 +53,8 @@ namespace App {
 	QString formatPhone(QString phone);
 
 	TimeId onlineForSort(UserData *user, TimeId now);
-	int32 onlineWillChangeIn(UserData *user, TimeId now);
-	int32 onlineWillChangeIn(TimeId online, TimeId now);
+	int32_t onlineWillChangeIn(UserData *user, TimeId now);
+	int32_t onlineWillChangeIn(TimeId online, TimeId now);
 	QString onlineText(UserData *user, TimeId now, bool precise = false);
 	QString onlineText(TimeId online, TimeId now, bool precise = false);
 	bool onlineColorUse(UserData *user, TimeId now);
@@ -82,7 +82,7 @@ namespace App {
 	void feedUserLink(MTPint userId, const MTPContactLink &myLink, const MTPContactLink &foreignLink);
 
 	ImagePtr image(const MTPPhotoSize &size);
-	StorageImageLocation imageLocation(int32 w, int32 h, const MTPFileLocation &loc);
+	StorageImageLocation imageLocation(int32_t w, int32_t h, const MTPFileLocation &loc);
 	StorageImageLocation imageLocation(const MTPPhotoSize &size);
 
 	PhotoData *feedPhoto(const MTPPhoto &photo, const PreparedPhotoThumbs &thumbs);
@@ -143,13 +143,13 @@ namespace App {
 	PeerData *peerByName(const QString &username);
 	QString peerName(const PeerData *peer, bool forDialogs = false);
 	PhotoData *photo(const PhotoId &photo);
-	PhotoData *photoSet(const PhotoId &photo, PhotoData *convert, const uint64 &access, int32 date, const ImagePtr &thumb, const ImagePtr &medium, const ImagePtr &full);
+	PhotoData *photoSet(const PhotoId &photo, PhotoData *convert, const uint64_t &access, int32_t date, const ImagePtr &thumb, const ImagePtr &medium, const ImagePtr &full);
 	DocumentData *document(const DocumentId &document);
-	DocumentData *documentSet(const DocumentId &document, DocumentData *convert, const uint64 &access, int32 version, int32 date, const QVector<MTPDocumentAttribute> &attributes, const QString &mime, const ImagePtr &thumb, int32 dc, int32 size, const StorageImageLocation &thumbLocation);
+	DocumentData *documentSet(const DocumentId &document, DocumentData *convert, const uint64_t &access, int32_t version, int32_t date, const QVector<MTPDocumentAttribute> &attributes, const QString &mime, const ImagePtr &thumb, int32_t dc, int32_t size, const StorageImageLocation &thumbLocation);
 	WebPageData *webPage(const WebPageId &webPage);
-	WebPageData *webPageSet(const WebPageId &webPage, WebPageData *convert, const QString &type, const QString &url, const QString &displayUrl, const QString &siteName, const QString &title, const TextWithEntities &description, PhotoData *photo, DocumentData *doc, int32 duration, const QString &author, int32 pendingTill);
+	WebPageData *webPageSet(const WebPageId &webPage, WebPageData *convert, const QString &type, const QString &url, const QString &displayUrl, const QString &siteName, const QString &title, const TextWithEntities &description, PhotoData *photo, DocumentData *doc, int32_t duration, const QString &author, int32_t pendingTill);
 	GameData *game(const GameId &game);
-	GameData *gameSet(const GameId &game, GameData *convert, const uint64 &accessHash, const QString &shortName, const QString &title, const QString &description, PhotoData *photo, DocumentData *doc);
+	GameData *gameSet(const GameId &game, GameData *convert, const uint64_t &accessHash, const QString &shortName, const QString &title, const QString &description, PhotoData *photo, DocumentData *doc);
 	LocationData *location(const LocationCoords &coords);
 	void forgetMedia();
 
@@ -157,7 +157,7 @@ namespace App {
 
 	Histories &histories();
 	not_null<History*> history(const PeerId &peer);
-	History *historyFromDialog(const PeerId &peer, int32 unreadCnt, int32 maxInboxRead, int32 maxOutboxRead);
+	History *historyFromDialog(const PeerId &peer, int32_t unreadCnt, int32_t maxInboxRead, int32_t maxOutboxRead);
 	History *historyLoaded(const PeerId &peer);
 	HistoryItem *histItemById(ChannelId channelId, MsgId itemId);
 	inline not_null<History*> history(const PeerData *peer) {
@@ -182,12 +182,12 @@ namespace App {
 	void historyRegDependency(HistoryItem *dependent, HistoryItem *dependency);
 	void historyUnregDependency(HistoryItem *dependent, HistoryItem *dependency);
 
-	void historyRegRandom(uint64 randomId, const FullMsgId &itemId);
-	void historyUnregRandom(uint64 randomId);
-	FullMsgId histItemByRandom(uint64 randomId);
-	void historyRegSentData(uint64 randomId, const PeerId &peerId, const QString &text);
-	void historyUnregSentData(uint64 randomId);
-	void histSentDataByItem(uint64 randomId, PeerId &peerId, QString &text);
+	void historyRegRandom(uint64_t randomId, const FullMsgId &itemId);
+	void historyUnregRandom(uint64_t randomId);
+	FullMsgId histItemByRandom(uint64_t randomId);
+	void historyRegSentData(uint64_t randomId, const PeerId &peerId, const QString &text);
+	void historyUnregSentData(uint64_t randomId);
+	void histSentDataByItem(uint64_t randomId, PeerId &peerId, QString &text);
 
 	void hoveredItem(HistoryItem *item);
 	HistoryItem *hoveredItem();
@@ -206,7 +206,7 @@ namespace App {
 	const style::font &monofont();
 	const QPixmap &emoji();
 	const QPixmap &emojiLarge();
-	const QPixmap &emojiSingle(EmojiPtr emoji, int32 fontHeight);
+	const QPixmap &emojiSingle(EmojiPtr emoji, int32_t fontHeight);
 
 	void clearHistories();
 
@@ -252,17 +252,17 @@ namespace App {
 	void unregGameItem(GameData *data, HistoryItem *item);
 	const GameItems &gameItems();
 
-	void regSharedContactItem(int32 userId, HistoryItem *item);
-	void unregSharedContactItem(int32 userId, HistoryItem *item);
+	void regSharedContactItem(int32_t userId, HistoryItem *item);
+	void unregSharedContactItem(int32_t userId, HistoryItem *item);
 	const SharedContactItems &sharedContactItems();
-	QString phoneFromSharedContact(int32 userId);
+	QString phoneFromSharedContact(int32_t userId);
 
 	void regGifItem(Media::Clip::Reader *reader, HistoryItem *item);
 	void unregGifItem(Media::Clip::Reader *reader);
 	void stopRoundVideoPlayback();
 	void stopGifItems();
 
-	void regMuted(PeerData *peer, int32 changeIn);
+	void regMuted(PeerData *peer, int32_t changeIn);
 	void unregMuted(PeerData *peer);
 	void updateMuted();
 
@@ -276,23 +276,23 @@ namespace App {
 	void complexLocationRect(Painter &p, QRect rect, ImageRoundRadius radius, ImageRoundCorners corners);
 
 	QImage *cornersMask(ImageRoundRadius radius);
-	void roundRect(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color bg, RoundCorners index, const style::color *shadow = nullptr, RectParts parts = RectPart::Full);
+	void roundRect(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color bg, RoundCorners index, const style::color *shadow = nullptr, RectParts parts = RectPart::Full);
 	inline void roundRect(Painter &p, const QRect &rect, style::color bg, RoundCorners index, const style::color *shadow = nullptr, RectParts parts = RectPart::Full) {
 		return roundRect(p, rect.x(), rect.y(), rect.width(), rect.height(), bg, index, shadow, parts);
 	}
-	void roundShadow(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color shadow, RoundCorners index, RectParts parts = RectPart::Full);
+	void roundShadow(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color shadow, RoundCorners index, RectParts parts = RectPart::Full);
 	inline void roundShadow(Painter &p, const QRect &rect, style::color shadow, RoundCorners index, RectParts parts = RectPart::Full) {
 		return roundShadow(p, rect.x(), rect.y(), rect.width(), rect.height(), shadow, index, parts);
 	}
-	void roundRect(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color bg, ImageRoundRadius radius, RectParts parts = RectPart::Full);
+	void roundRect(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color bg, ImageRoundRadius radius, RectParts parts = RectPart::Full);
 	inline void roundRect(Painter &p, const QRect &rect, style::color bg, ImageRoundRadius radius, RectParts parts = RectPart::Full) {
 		return roundRect(p, rect.x(), rect.y(), rect.width(), rect.height(), bg, radius, parts);
 	}
 
 	struct WallPaper {
-		WallPaper(int32 id, ImagePtr thumb, ImagePtr full) : id(id), thumb(thumb), full(full) {
+		WallPaper(int32_t id, ImagePtr thumb, ImagePtr full) : id(id), thumb(thumb), full(full) {
 		}
-		int32 id;
+		int32_t id;
 		ImagePtr thumb;
 		ImagePtr full;
 	};

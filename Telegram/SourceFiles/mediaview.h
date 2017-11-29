@@ -62,8 +62,8 @@ public:
 	void showPhoto(PhotoData *photo, PeerData *context);
 	void showDocument(DocumentData *doc, HistoryItem *context);
 	void moveToScreen();
-	bool moveToNext(int32 delta);
-	void preloadData(int32 delta);
+	bool moveToNext(int32_t delta);
+	void preloadData(int32_t delta);
 
 	void leaveToChildEvent(QEvent *e, QWidget *child) override { // e -- from enterEvent() of child TWidget
 		updateOverState(OverNone);
@@ -131,7 +131,7 @@ private slots:
 	void onVideoPauseResume();
 	void onVideoSeekProgress(TimeMs positionMs);
 	void onVideoSeekFinished(TimeMs positionMs);
-	void onVideoVolumeChanged(float64 volume);
+	void onVideoVolumeChanged(double volume);
 	void onVideoToggleFullScreen();
 	void onVideoPlayProgress(const AudioMsgId &audioId);
 
@@ -187,7 +187,7 @@ private:
 	void changingMsgId(HistoryItem *row, MsgId newId);
 
 	// Radial animation interface.
-	float64 radialProgress() const;
+	double radialProgress() const;
 	bool radialLoading() const;
 	QRect radialRect() const;
 	void radialStart();
@@ -215,14 +215,14 @@ private:
 	void zoomIn();
 	void zoomOut();
 	void zoomReset();
-	void zoomUpdate(int32 &newZoom);
+	void zoomUpdate(int32_t &newZoom);
 
-	void paintDocRadialLoading(Painter &p, bool radial, float64 radialOpacity);
+	void paintDocRadialLoading(Painter &p, bool radial, double radialOpacity);
 	void paintThemePreview(Painter &p, QRect clip);
 
 	void updateOverRect(OverState state);
 	bool updateOverState(OverState newState);
-	float64 overLevel(OverState control) const;
+	double overLevel(OverState control) const;
 
 	MsgId getMsgIdFromOverview(not_null<History*> history, int index) const;
 
@@ -256,13 +256,13 @@ private:
 	int _x = 0, _y = 0, _w = 0, _h = 0;
 	int _xStart = 0, _yStart = 0;
 	int _zoom = 0; // < 0 - out, 0 - none, > 0 - in
-	float64 _zoomToScreen = 0.; // for documents
+	double _zoomToScreen = 0.; // for documents
 	QPoint _mStart;
 	bool _pressed = false;
-	int32 _dragging = 0;
+	int32_t _dragging = 0;
 	QPixmap _current;
 	Media::Clip::ReaderPointer _gif;
-	int32 _full = -1; // -1 - thumb, 0 - medium, 1 - full
+	int32_t _full = -1; // -1 - thumb, 0 - medium, 1 - full
 
 	// Video without audio stream playback information.
 	bool _videoIsSilent = false;
@@ -270,7 +270,7 @@ private:
 	bool _videoStopped = false;
 	TimeMs _videoPositionMs = 0;
 	TimeMs _videoDurationMs = 0;
-	int32 _videoFrequencyMs = 1000; // 1000 ms per second.
+	int32_t _videoFrequencyMs = 1000; // 1000 ms per second.
 
 	bool fileShown() const;
 	bool gifShown() const;
@@ -368,7 +368,7 @@ private:
 	int _verticalWheelDelta = 0;
 
 	bool _themePreviewShown = false;
-	uint64 _themePreviewId = 0;
+	uint64_t _themePreviewId = 0;
 	QRect _themePreviewRect;
 	std::unique_ptr<Window::Theme::Preview> _themePreview;
 	object_ptr<Ui::RoundButton> _themeApply = { nullptr };

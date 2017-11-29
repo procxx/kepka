@@ -98,7 +98,7 @@ void Loaders::clearFromVideoQueue() {
 void Loaders::onInit() {
 }
 
-void Loaders::onStart(const AudioMsgId &audio, qint64 position) {
+void Loaders::onStart(const AudioMsgId &audio, int64_t position) {
 	auto type = audio.type();
 	clear(type);
 	{
@@ -136,7 +136,7 @@ void Loaders::onLoad(const AudioMsgId &audio) {
 	loadData(audio, 0);
 }
 
-void Loaders::loadData(AudioMsgId audio, qint64 position) {
+void Loaders::loadData(AudioMsgId audio, int64_t position) {
 	auto err = SetupNoErrorStarted;
 	auto type = audio.type();
 	auto l = setupLoader(audio, err, position);
@@ -153,7 +153,7 @@ void Loaders::loadData(AudioMsgId audio, qint64 position) {
 	auto errAtStart = started;
 
 	QByteArray samples;
-	int64 samplesCount = 0;
+	int64_t samplesCount = 0;
 	if (l->holdsSavedDecodedSamples()) {
 		l->takeSavedDecodedSamples(&samples, &samplesCount);
 	}
@@ -291,7 +291,7 @@ void Loaders::loadData(AudioMsgId audio, qint64 position) {
 	}
 }
 
-AudioPlayerLoader *Loaders::setupLoader(const AudioMsgId &audio, SetupError &err, qint64 &position) {
+AudioPlayerLoader *Loaders::setupLoader(const AudioMsgId &audio, SetupError &err, int64_t &position) {
 	err = SetupErrorAtStart;
 	QMutexLocker lock(internal::audioPlayerMutex());
 	if (!mixer()) return nullptr;

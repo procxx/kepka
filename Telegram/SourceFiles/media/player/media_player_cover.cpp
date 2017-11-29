@@ -90,14 +90,14 @@ CoverWidget::CoverWidget(QWidget *parent) : TWidget(parent)
 	_playback->setInLoadingStateChangedCallback([this](bool loading) {
 		_playbackSlider->setDisabled(loading);
 	});
-	_playback->setValueChangedCallback([this](float64 value) {
+	_playback->setValueChangedCallback([this](double value) {
 		_playbackSlider->setValue(value);
 	});
-	_playbackSlider->setChangeProgressCallback([this](float64 value) {
+	_playbackSlider->setChangeProgressCallback([this](double value) {
 		_playback->setValue(value, false);
 		handleSeekProgress(value);
 	});
-	_playbackSlider->setChangeFinishedCallback([this](float64 value) {
+	_playbackSlider->setChangeFinishedCallback([this](double value) {
 		_playback->setValue(value, false);
 		handleSeekFinished(value);
 	});
@@ -151,7 +151,7 @@ void CoverWidget::setCloseCallback(ButtonCallback &&callback) {
 	_close->setClickedCallback(std::move(callback));
 }
 
-void CoverWidget::handleSeekProgress(float64 progress) {
+void CoverWidget::handleSeekProgress(double progress) {
 	if (!_lastDurationMs) return;
 
 	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
@@ -162,7 +162,7 @@ void CoverWidget::handleSeekProgress(float64 progress) {
 	}
 }
 
-void CoverWidget::handleSeekFinished(float64 progress) {
+void CoverWidget::handleSeekFinished(double progress) {
 	if (!_lastDurationMs) return;
 
 	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
@@ -274,7 +274,7 @@ void CoverWidget::handleSongUpdate(const TrackState &state) {
 
 void CoverWidget::updateTimeText(const TrackState &state) {
 	QString time;
-	qint64 position = 0, length = 0, display = 0;
+	int64_t position = 0, length = 0, display = 0;
 	auto frequency = state.frequency;
 	if (!IsStoppedOrStopping(state.state)) {
 		display = position = state.position;

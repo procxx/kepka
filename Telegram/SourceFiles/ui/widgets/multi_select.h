@@ -45,17 +45,17 @@ public:
 		SkipAnimation,
 	};
 	using PaintRoundImage = base::lambda<void(Painter &p, int x, int y, int outerWidth, int size)>;
-	void addItem(uint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage, AddItemWay way = AddItemWay::Default);
-	void addItemInBunch(uint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage);
+	void addItem(uint64_t itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage, AddItemWay way = AddItemWay::Default);
+	void addItemInBunch(uint64_t itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage);
 	void finishItemsBunch();
-	void setItemText(uint64 itemId, const QString &text);
+	void setItemText(uint64_t itemId, const QString &text);
 
-	void setItemRemovedCallback(base::lambda<void(uint64 itemId)> callback);
-	void removeItem(uint64 itemId);
+	void setItemRemovedCallback(base::lambda<void(uint64_t itemId)> callback);
+	void removeItem(uint64_t itemId);
 
 	int getItemsCount() const;
-	QVector<uint64> getItems() const;
-	bool hasItem(uint64 itemId) const;
+	QVector<uint64_t> getItems() const;
+	bool hasItem(uint64_t itemId) const;
 
 	class Item;
 
@@ -95,14 +95,14 @@ public:
 
 	void addItemInBunch(std::unique_ptr<Item> item);
 	void finishItemsBunch(AddItemWay way);
-	void setItemText(uint64 itemId, const QString &text);
+	void setItemText(uint64_t itemId, const QString &text);
 
-	void setItemRemovedCallback(base::lambda<void(uint64 itemId)> callback);
-	void removeItem(uint64 itemId);
+	void setItemRemovedCallback(base::lambda<void(uint64_t itemId)> callback);
+	void removeItem(uint64_t itemId);
 
 	int getItemsCount() const;
-	QVector<uint64> getItems() const;
-	bool hasItem(uint64 itemId) const;
+	QVector<uint64_t> getItems() const;
+	bool hasItem(uint64_t itemId) const;
 
 	void setResizedCallback(base::lambda<void(int heightDelta)> callback);
 
@@ -153,7 +153,7 @@ private:
 
 	ScrollCallback _scrollCallback;
 
-	std::set<uint64> _idsMap;
+	std::set<uint64_t> _idsMap;
 	std::vector<std::unique_ptr<Item>> _items;
 	std::set<std::unique_ptr<Item>> _removingItems;
 
@@ -172,7 +172,7 @@ private:
 
 	base::lambda<void(const QString &query)> _queryChangedCallback;
 	base::lambda<void(bool ctrlShiftEnter)> _submittedCallback;
-	base::lambda<void(uint64 itemId)> _itemRemovedCallback;
+	base::lambda<void(uint64_t itemId)> _itemRemovedCallback;
 	base::lambda<void(int heightDelta)> _resizedCallback;
 
 };
@@ -180,9 +180,9 @@ private:
 
 class MultiSelect::Item {
 public:
-	Item(const style::MultiSelectItem &st, uint64 id, const QString &text, style::color color, PaintRoundImage &&paintRoundImage);
+	Item(const style::MultiSelectItem &st, uint64_t id, const QString &text, style::color color, PaintRoundImage &&paintRoundImage);
 
-	uint64 id() const {
+	uint64_t id() const {
 		return _id;
 	}
 	int getWidth() const {
@@ -223,16 +223,16 @@ public:
 private:
 	void setOver(bool over);
 	void paintOnce(Painter &p, int x, int y, int outerWidth, TimeMs ms);
-	void paintDeleteButton(Painter &p, int x, int y, int outerWidth, float64 overOpacity);
+	void paintDeleteButton(Painter &p, int x, int y, int outerWidth, double overOpacity);
 	bool paintCached(Painter &p, int x, int y, int outerWidth);
 	void prepareCache();
 	void setVisibleAnimated(bool visible);
 
 	const style::MultiSelectItem &_st;
 
-	uint64 _id;
+	uint64_t _id;
 	struct SlideAnimation {
-		SlideAnimation(base::lambda<void()> updateCallback, int fromX, int toX, int y, float64 duration)
+		SlideAnimation(base::lambda<void()> updateCallback, int fromX, int toX, int y, double duration)
 			: fromX(fromX)
 			, toX(toX)
 			, y(y) {

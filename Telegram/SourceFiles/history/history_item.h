@@ -84,7 +84,7 @@ struct HistoryTextState {
 	HistoryCursorState cursor = HistoryDefaultCursorState;
 	ClickHandlerPtr link;
 	bool afterSymbol = false;
-	uint16 symbol = 0;
+	uint16_t symbol = 0;
 };
 
 struct HistoryStateRequest {
@@ -103,8 +103,8 @@ enum InfoDisplayType {
 };
 
 struct HistoryMessageVia : public RuntimeComponent<HistoryMessageVia> {
-	void create(int32 userId);
-	void resize(int32 availw) const;
+	void create(int32_t userId);
+	void resize(int32_t availw) const;
 
 	UserData *_bot = nullptr;
 	mutable QString _text;
@@ -309,7 +309,7 @@ public:
 		}
 
 	protected:
-		virtual void paintButtonBg(Painter &p, const QRect &rect, float64 howMuchOver) const = 0;
+		virtual void paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const = 0;
 		virtual void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth, HistoryMessageReplyMarkup::Button::Type type) const = 0;
 		virtual void paintButtonLoading(Painter &p, const QRect &rect) const = 0;
 		virtual int minButtonWidth(HistoryMessageReplyMarkup::Button::Type type) const = 0;
@@ -353,7 +353,7 @@ private:
 		Text text = { 1 };
 		QRect rect;
 		int characters = 0;
-		float64 howMuchOver = 0.;
+		double howMuchOver = 0.;
 		HistoryMessageReplyMarkup::Button::Type type;
 		ReplyMarkupClickHandlerPtr link;
 		mutable QSharedPointer<Ui::RippleAnimation> ripple;
@@ -471,8 +471,8 @@ private:
 
 namespace internal {
 
-TextSelection unshiftSelection(TextSelection selection, uint16 byLength);
-TextSelection shiftSelection(TextSelection selection, uint16 byLength);
+TextSelection unshiftSelection(TextSelection selection, uint16_t byLength);
+TextSelection shiftSelection(TextSelection selection, uint16_t byLength);
 inline TextSelection unshiftSelection(TextSelection selection, const Text &byText) {
 	return ::internal::unshiftSelection(selection, byText.length());
 }
@@ -635,7 +635,7 @@ public:
 	bool hasOutLayout() const {
 		return out() && !isPost();
 	}
-	virtual int32 viewsCount() const {
+	virtual int32_t viewsCount() const {
 		return hasViews() ? 1 : -1;
 	}
 
@@ -669,7 +669,7 @@ public:
 	}
 	virtual void updateReplyMarkup(const MTPReplyMarkup *markup) {
 	}
-	virtual int32 addToOverview(AddToOverviewMethod method) {
+	virtual int32_t addToOverview(AddToOverviewMethod method) {
 		return 0;
 	}
 	virtual void eraseFromOverview() {
@@ -705,7 +705,7 @@ public:
 		return { QString(), EntitiesInText() };
 	}
 
-	virtual void drawInfo(Painter &p, int32 right, int32 bottom, int32 width, bool selected, InfoDisplayType type) const {
+	virtual void drawInfo(Painter &p, int32_t right, int32_t bottom, int32_t width, bool selected, InfoDisplayType type) const {
 	}
 	virtual ClickHandlerPtr fastShareLink() const {
 		return ClickHandlerPtr();
@@ -715,7 +715,7 @@ public:
 	}
 	virtual void drawFastShare(Painter &p, int left, int top, int outerWidth) const {
 	}
-	virtual void setViewsCount(int32 count) {
+	virtual void setViewsCount(int32_t count) {
 	}
 	virtual void setId(MsgId newId);
 
@@ -967,7 +967,7 @@ protected:
 	int _indexInBlock = -1;
 	MTPDmessage::Flags _flags = 0;
 
-	mutable int32 _authorNameVersion = 0;
+	mutable int32_t _authorNameVersion = 0;
 
 	HistoryItem *previousItem() const {
 		if (_block && _indexInBlock >= 0) {

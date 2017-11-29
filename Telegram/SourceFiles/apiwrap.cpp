@@ -121,7 +121,7 @@ void ApiWrap::addLocalChangelogs(int oldAppVersion) {
 	}
 }
 
-void ApiWrap::applyUpdates(const MTPUpdates &updates, uint64 sentMessageRandomId) {
+void ApiWrap::applyUpdates(const MTPUpdates &updates, uint64_t sentMessageRandomId) {
 	App::main()->feedUpdates(updates, sentMessageRandomId);
 }
 
@@ -796,7 +796,7 @@ void ApiWrap::unblockParticipant(PeerData *peer, UserData *user) {
 	}
 }
 
-void ApiWrap::scheduleStickerSetRequest(uint64 setId, uint64 access) {
+void ApiWrap::scheduleStickerSetRequest(uint64_t setId, uint64_t access) {
 	if (!_stickerSetRequests.contains(setId)) {
 		_stickerSetRequests.insert(setId, qMakePair(access, 0));
 	}
@@ -1274,7 +1274,7 @@ PeerData *ApiWrap::notifySettingReceived(MTPInputNotifyPeer notifyPeer, const MT
 	return requestedPeer;
 }
 
-void ApiWrap::gotStickerSet(uint64 setId, const MTPmessages_StickerSet &result) {
+void ApiWrap::gotStickerSet(uint64_t setId, const MTPmessages_StickerSet &result) {
 	_stickerSetRequests.remove(setId);
 	Stickers::FeedSetFull(result);
 }
@@ -1302,13 +1302,13 @@ void ApiWrap::clearWebPageRequests() {
 
 void ApiWrap::resolveWebPages() {
 	auto ids = QVector<MTPint>(); // temp_req_id = -1
-	using IndexAndMessageIds = QPair<int32, QVector<MTPint>>;
+	using IndexAndMessageIds = QPair<int32_t, QVector<MTPint>>;
 	using MessageIdsByChannel = QMap<ChannelData*, IndexAndMessageIds>;
 	MessageIdsByChannel idsByChannel; // temp_req_id = -index - 2
 
 	auto &items = App::webPageItems();
 	ids.reserve(_webPagesPending.size());
-	int32 t = unixtime(), m = INT_MAX;
+	int32_t t = unixtime(), m = INT_MAX;
 	for (auto i = _webPagesPending.begin(); i != _webPagesPending.cend(); ++i) {
 		if (i.value() > 0) continue;
 		if (i.key()->pendingTill <= t) {
@@ -1405,13 +1405,13 @@ void ApiWrap::gotWebPages(ChannelData *channel, const MTPmessages_Messages &msgs
 	}
 
 	if (!v) return;
-	QMap<uint64, int32> msgsIds; // copied from feedMsgs
-	for (int32 i = 0, l = v->size(); i < l; ++i) {
+	QMap<uint64_t, int32_t> msgsIds; // copied from feedMsgs
+	for (int32_t i = 0, l = v->size(); i < l; ++i) {
 		const auto &msg(v->at(i));
 		switch (msg.type()) {
-		case mtpc_message: msgsIds.insert((uint64(uint32(msg.c_message().vid.v)) << 32) | uint64(i), i); break;
-		case mtpc_messageEmpty: msgsIds.insert((uint64(uint32(msg.c_messageEmpty().vid.v)) << 32) | uint64(i), i); break;
-		case mtpc_messageService: msgsIds.insert((uint64(uint32(msg.c_messageService().vid.v)) << 32) | uint64(i), i); break;
+		case mtpc_message: msgsIds.insert((uint64_t(uint32_t(msg.c_message().vid.v)) << 32) | uint64_t(i), i); break;
+		case mtpc_messageEmpty: msgsIds.insert((uint64_t(uint32_t(msg.c_messageEmpty().vid.v)) << 32) | uint64_t(i), i); break;
+		case mtpc_messageService: msgsIds.insert((uint64_t(uint32_t(msg.c_messageService().vid.v)) << 32) | uint64_t(i), i); break;
 		}
 	}
 

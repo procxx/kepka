@@ -410,7 +410,7 @@ HistoryService::HistoryService(not_null<History*> history, const MTPDmessageServ
 	createFromMtp(message);
 }
 
-HistoryService::HistoryService(not_null<History*> history, MsgId msgId, QDateTime date, const PreparedText &message, MTPDmessage::Flags flags, int32 from, PhotoData *photo) :
+HistoryService::HistoryService(not_null<History*> history, MsgId msgId, QDateTime date, const PreparedText &message, MTPDmessage::Flags flags, int32_t from, PhotoData *photo) :
 	HistoryItem(history, msgId, flags, date, from) {
 	setServiceText(message);
 	if (photo) {
@@ -721,10 +721,10 @@ void HistoryService::removeMedia() {
 	}
 }
 
-int32 HistoryService::addToOverview(AddToOverviewMethod method) {
+int32_t HistoryService::addToOverview(AddToOverviewMethod method) {
 	if (!indexInOverview()) return 0;
 
-	int32 result = 0;
+	int32_t result = 0;
 	if (auto media = getMedia()) {
 		result |= media->addToOverview(method);
 	}

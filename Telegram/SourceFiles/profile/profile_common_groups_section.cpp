@@ -196,7 +196,7 @@ int InnerWidget::resizeGetHeight(int newWidth) {
 	auto contentLeftMax = st::profileCommonGroupsLeftMax;
 	auto widthWithMin = st::windowMinWidth;
 	auto widthWithMax = st::profileCommonGroupsWidthMax + 2 * contentLeftMax;
-	_contentLeft = anim::interpolate(contentLeftMax, contentLeftMin, qMax(widthWithMax - newWidth, 0) / float64(widthWithMax - widthWithMin));
+	_contentLeft = anim::interpolate(contentLeftMax, contentLeftMin, qMax(widthWithMax - newWidth, 0) / double(widthWithMax - widthWithMin));
 	_contentWidth = qMin(newWidth - 2 * _contentLeft, st::profileCommonGroupsWidthMax);
 
 	auto newHeight = _contentTop;

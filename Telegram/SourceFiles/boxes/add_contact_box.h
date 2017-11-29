@@ -84,7 +84,7 @@ private:
 	bool _retrying = false;
 	bool _invertOrder = false;
 
-	uint64 _contactId = 0;
+	uint64_t _contactId = 0;
 
 	mtpRequestId _addRequest = 0;
 	QString _sentName;
@@ -185,7 +185,7 @@ private:
 	std::shared_ptr<Ui::RadioenumGroup<Privacy>> _privacyGroup;
 	object_ptr<Ui::Radioenum<Privacy>> _public;
 	object_ptr<Ui::Radioenum<Privacy>> _private;
-	int32 _aboutPublicWidth, _aboutPublicHeight;
+	int32_t _aboutPublicWidth, _aboutPublicHeight;
 	Text _aboutPublic, _aboutPrivate;
 
 	object_ptr<Ui::UsernameInput> _link;

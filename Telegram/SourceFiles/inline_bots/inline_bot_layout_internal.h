@@ -62,7 +62,7 @@ public:
 	Gif(not_null<Context*> context, Result *result);
 	Gif(not_null<Context*> context, DocumentData *doc, bool hasDeleteButton);
 
-	void setPosition(int32 position) override;
+	void setPosition(int32_t position) override;
 	void initDimensions() override;
 
 	bool isFullLine() const override {
@@ -92,7 +92,7 @@ private:
 	Media::Clip::ReaderPointer _gif;
 	ClickHandlerPtr _delete;
 	mutable QPixmap _thumb;
-	void prepareThumb(int32 width, int32 height, const QSize &frame) const;
+	void prepareThumb(int32_t width, int32_t height, const QSize &frame) const;
 
 	void ensureAnimation() const;
 	bool isRadialAnimation(TimeMs ms) const;
@@ -139,7 +139,7 @@ private:
 
 	mutable QPixmap _thumb;
 	mutable bool _thumbLoaded = false;
-	void prepareThumb(int32 width, int32 height, const QSize &frame) const;
+	void prepareThumb(int32_t width, int32_t height, const QSize &frame) const;
 
 };
 
@@ -194,7 +194,7 @@ private:
 	QString _duration;
 	int _durationWidth = 0;
 
-	void prepareThumb(int32 width, int32 height) const;
+	void prepareThumb(int32_t width, int32_t height) const;
 
 };
 
@@ -278,11 +278,11 @@ private:
 	// 0x7FFFFFF0 will contain status for not yet downloaded file
 	// 0x7FFFFFF1 will contain status for already downloaded file
 	// 0x7FFFFFF2 will contain status for failed to download / upload file
-	mutable int32 _statusSize;
+	mutable int32_t _statusSize;
 	mutable QString _statusText;
 
 	// duration = -1 - no duration, duration = -2 - "GIF" duration
-	void setStatusSize(int32 newSize, int32 fullSize, int32 duration, qint64 realDuration) const;
+	void setStatusSize(int32_t newSize, int32_t fullSize, int32_t duration, int64_t realDuration) const;
 
 };
 
@@ -321,7 +321,7 @@ private:
 	mutable QPixmap _thumb;
 	Text _title, _description;
 	QString _thumbLetter, _urlText;
-	int32 _urlWidth;
+	int32_t _urlWidth;
 
 	void prepareThumb(int width, int height) const;
 
@@ -331,7 +331,7 @@ class Game : public ItemBase {
 public:
 	Game(not_null<Context*> context, Result *result);
 
-	void setPosition(int32 position) override;
+	void setPosition(int32_t position) override;
 	void initDimensions() override;
 
 	void paint(Painter &p, const QRect &clip, const PaintContext *context) const override;
@@ -340,7 +340,7 @@ public:
 private:
 	void countFrameSize();
 
-	void prepareThumb(int32 width, int32 height) const;
+	void prepareThumb(int32_t width, int32_t height) const;
 
 	bool isRadialAnimation(TimeMs ms) const;
 	void step_radial(TimeMs ms, bool timer);

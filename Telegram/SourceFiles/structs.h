@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-using MediaKey = QPair<uint64, uint64>;
+using MediaKey = QPair<uint64_t, uint64_t>;
 
-inline uint64 mediaMix32To64(int32 a, int32 b) {
-	return (uint64(*reinterpret_cast<uint32*>(&a)) << 32) | uint64(*reinterpret_cast<uint32*>(&b));
+inline uint64_t mediaMix32To64(int32_t a, int32_t b) {
+	return (uint64_t(*reinterpret_cast<uint32_t*>(&a)) << 32) | uint64_t(*reinterpret_cast<uint32_t*>(&b));
 }
 
 enum LocationType {
@@ -36,11 +36,11 @@ enum LocationType {
 };
 
 // Old method, should not be used anymore.
-//inline MediaKey mediaKey(LocationType type, int32 dc, const uint64 &id) {
+//inline MediaKey mediaKey(LocationType type, int32_t dc, const uint64_t &id) {
 //	return MediaKey(mediaMix32To64(type, dc), id);
 //}
 // New method when version was introduced, type is not relevant anymore (all files are Documents).
-inline MediaKey mediaKey(LocationType type, int32 dc, const uint64 &id, int32 version) {
+inline MediaKey mediaKey(LocationType type, int32_t dc, const uint64_t &id, int32_t version) {
 	return (version > 0) ? MediaKey(mediaMix32To64(version, dc), id) : MediaKey(mediaMix32To64(type, dc), id);
 }
 
@@ -48,12 +48,12 @@ inline StorageKey mediaKey(const MTPDfileLocation &location) {
 	return storageKey(location.vdc_id.v, location.vvolume_id.v, location.vlocal_id.v);
 }
 
-typedef int32 UserId;
-typedef int32 ChatId;
-typedef int32 ChannelId;
+typedef int32_t UserId;
+typedef int32_t ChatId;
+typedef int32_t ChannelId;
 static const ChannelId NoChannel = 0;
 
-typedef int32 MsgId;
+typedef int32_t MsgId;
 struct FullMsgId {
 	FullMsgId() = default;
 	FullMsgId(ChannelId channel, MsgId msg) : channel(channel), msg(msg) {
@@ -62,12 +62,12 @@ struct FullMsgId {
 	MsgId msg = 0;
 };
 
-typedef uint64 PeerId;
-static const uint64 PeerIdMask         = 0xFFFFFFFFULL;
-static const uint64 PeerIdTypeMask     = 0x300000000ULL;
-static const uint64 PeerIdUserShift    = 0x000000000ULL;
-static const uint64 PeerIdChatShift    = 0x100000000ULL;
-static const uint64 PeerIdChannelShift = 0x200000000ULL;
+typedef uint64_t PeerId;
+static const uint64_t PeerIdMask         = 0xFFFFFFFFULL;
+static const uint64_t PeerIdTypeMask     = 0x300000000ULL;
+static const uint64_t PeerIdUserShift    = 0x000000000ULL;
+static const uint64_t PeerIdChatShift    = 0x100000000ULL;
+static const uint64_t PeerIdChannelShift = 0x200000000ULL;
 inline bool peerIsUser(const PeerId &id) {
 	return (id & PeerIdTypeMask) == PeerIdUserShift;
 }
@@ -78,13 +78,13 @@ inline bool peerIsChannel(const PeerId &id) {
 	return (id & PeerIdTypeMask) == PeerIdChannelShift;
 }
 inline PeerId peerFromUser(UserId user_id) {
-	return PeerIdUserShift | uint64(uint32(user_id));
+	return PeerIdUserShift | uint64_t(uint32_t(user_id));
 }
 inline PeerId peerFromChat(ChatId chat_id) {
-	return PeerIdChatShift | uint64(uint32(chat_id));
+	return PeerIdChatShift | uint64_t(uint32_t(chat_id));
 }
 inline PeerId peerFromChannel(ChannelId channel_id) {
-	return PeerIdChannelShift | uint64(uint32(channel_id));
+	return PeerIdChannelShift | uint64_t(uint32_t(channel_id));
 }
 inline PeerId peerFromUser(const MTPint &user_id) {
 	return peerFromUser(user_id.v);
@@ -95,8 +95,8 @@ inline PeerId peerFromChat(const MTPint &chat_id) {
 inline PeerId peerFromChannel(const MTPint &channel_id) {
 	return peerFromChannel(channel_id.v);
 }
-inline int32 peerToBareInt(const PeerId &id) {
-	return int32(uint32(id & PeerIdMask));
+inline int32_t peerToBareInt(const PeerId &id) {
+	return int32_t(uint32_t(id & PeerIdMask));
 }
 inline UserId peerToUser(const PeerId &id) {
 	return peerIsUser(id) ? peerToBareInt(id) : 0;
@@ -164,12 +164,12 @@ inline TimeId dateFromMessage(const MTPmessage &msg) {
 	return 0;
 }
 
-using PhotoId = uint64;
-using VideoId = uint64;
-using AudioId = uint64;
-using DocumentId = uint64;
-using WebPageId = uint64;
-using GameId = uint64;
+using PhotoId = uint64_t;
+using VideoId = uint64_t;
+using AudioId = uint64_t;
+using DocumentId = uint64_t;
+using WebPageId = uint64_t;
+using GameId = uint64_t;
 static const WebPageId CancelledWebPageId = 0xFFFFFFFFFFFFFFFFULL;
 
 inline bool operator==(const FullMsgId &a, const FullMsgId &b) {
@@ -342,8 +342,8 @@ public:
 	const QString &userName() const;
 
 	const PeerId id;
-	int32 bareId() const {
-		return int32(uint32(id & 0xFFFFFFFFULL));
+	int32_t bareId() const {
+		return int32_t(uint32_t(id & 0xFFFFFFFFULL));
 	}
 
 	QString name;
@@ -476,7 +476,7 @@ public:
 
 	void madeAction(TimeId when); // pseudo-online
 
-	uint64 access = 0;
+	uint64_t access = 0;
 
 	MTPDuser::Flags flags = 0;
 	bool isVerified() const {
@@ -521,7 +521,7 @@ public:
 	QString nameOrPhone;
 	Text phoneText;
 	TimeId onlineTill = 0;
-	int32 contact = -1; // -1 - not contact, cant add (self, empty, deleted, foreign), 0 - not contact, can add (request), 1 - contact
+	int32_t contact = -1; // -1 - not contact, cant add (self, empty, deleted, foreign), 0 - not contact, can add (request), 1 - contact
 
 	enum class BlockStatus {
 		Unknown,
@@ -577,7 +577,7 @@ private:
 	CallsStatus _callsStatus = CallsStatus::Unknown;
 	int _commonChatsCount = 0;
 
-	static constexpr const uint64 NoAccess = 0xFFFFFFFFFFFFFFFFULL;
+	static constexpr const uint64_t NoAccess = 0xFFFFFFFFFFFFFFFFULL;
 
 };
 
@@ -675,7 +675,7 @@ public:
 		, _waitingForSkipped(false)
 		, _waitingForShortPoll(false) {
 	}
-	void init(int32 pts) {
+	void init(int32_t pts) {
 		_good = _last = _count = pts;
 		clearSkippedUpdates();
 	}
@@ -697,31 +697,31 @@ public:
 	bool waitingForShortPoll() const {
 		return _waitingForShortPoll;
 	}
-	void setWaitingForSkipped(ChannelData *channel, int32 ms); // < 0 - not waiting
-	void setWaitingForShortPoll(ChannelData *channel, int32 ms); // < 0 - not waiting
-	int32 current() const{
+	void setWaitingForSkipped(ChannelData *channel, int32_t ms); // < 0 - not waiting
+	void setWaitingForShortPoll(ChannelData *channel, int32_t ms); // < 0 - not waiting
+	int32_t current() const{
 		return _good;
 	}
-	bool updated(ChannelData *channel, int32 pts, int32 count, const MTPUpdates &updates);
-	bool updated(ChannelData *channel, int32 pts, int32 count, const MTPUpdate &update);
-	bool updated(ChannelData *channel, int32 pts, int32 count);
-	bool updateAndApply(ChannelData *channel, int32 pts, int32 count, const MTPUpdates &updates);
-	bool updateAndApply(ChannelData *channel, int32 pts, int32 count, const MTPUpdate &update);
-	bool updateAndApply(ChannelData *channel, int32 pts, int32 count);
+	bool updated(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdates &updates);
+	bool updated(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdate &update);
+	bool updated(ChannelData *channel, int32_t pts, int32_t count);
+	bool updateAndApply(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdates &updates);
+	bool updateAndApply(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdate &update);
+	bool updateAndApply(ChannelData *channel, int32_t pts, int32_t count);
 	void applySkippedUpdates(ChannelData *channel);
 	void clearSkippedUpdates();
 
 private:
-	bool check(ChannelData *channel, int32 pts, int32 count); // return false if need to save that update and apply later
-	uint64 ptsKey(PtsSkippedQueue queue, int32 pts);
+	bool check(ChannelData *channel, int32_t pts, int32_t count); // return false if need to save that update and apply later
+	uint64_t ptsKey(PtsSkippedQueue queue, int32_t pts);
 	void checkForWaiting(ChannelData *channel);
-	QMap<uint64, PtsSkippedQueue> _queue;
-	QMap<uint64, MTPUpdate> _updateQueue;
-	QMap<uint64, MTPUpdates> _updatesQueue;
-	int32 _good, _last, _count;
-	int32 _applySkippedLevel;
+	QMap<uint64_t, PtsSkippedQueue> _queue;
+	QMap<uint64_t, MTPUpdate> _updateQueue;
+	QMap<uint64_t, MTPUpdates> _updatesQueue;
+	int32_t _good, _last, _count;
+	int32_t _applySkippedLevel;
 	bool _requesting, _waitingForSkipped, _waitingForShortPoll;
-	uint32 _skippedKey = 0;
+	uint32_t _skippedKey = 0;
 };
 
 struct MegagroupInfo {
@@ -770,7 +770,7 @@ public:
 
 	void setName(const QString &name, const QString &username);
 
-	uint64 access = 0;
+	uint64_t access = 0;
 
 	MTPinputChannel inputChannel;
 
@@ -829,7 +829,7 @@ public:
 	void applyEditAdmin(not_null<UserData*> user, const MTPChannelAdminRights &oldRights, const MTPChannelAdminRights &newRights);
 	void applyEditBanned(not_null<UserData*> user, const MTPChannelBannedRights &oldRights, const MTPChannelBannedRights &newRights);
 
-	int32 date = 0;
+	int32_t date = 0;
 	int version = 0;
 	MTPDchannel::Flags flags = 0;
 	MTPDchannelFull::Flags flagsFull = 0;
@@ -877,7 +877,7 @@ public:
 	bool hasRestrictedRights() const {
 		return (restrictedRights().vflags.v != 0);
 	}
-	bool hasRestrictedRights(int32 now) const {
+	bool hasRestrictedRights(int32_t now) const {
 		return hasRestrictedRights() && (restrictedRights().vuntil_date.v > now);
 	}
 	bool canBanMembers() const {
@@ -940,25 +940,25 @@ public:
 		return adminRights().is_invite_link() || amCreator();
 	}
 
-	int32 inviter = 0; // > 0 - user who invited me to channel, < 0 - not in channel
+	int32_t inviter = 0; // > 0 - user who invited me to channel, < 0 - not in channel
 	QDateTime inviteDate;
 
-	void ptsInit(int32 pts) {
+	void ptsInit(int32_t pts) {
 		_ptsWaiter.init(pts);
 	}
-	void ptsReceived(int32 pts) {
+	void ptsReceived(int32_t pts) {
 		_ptsWaiter.updateAndApply(this, pts, 0);
 	}
-	bool ptsUpdateAndApply(int32 pts, int32 count) {
+	bool ptsUpdateAndApply(int32_t pts, int32_t count) {
 		return _ptsWaiter.updateAndApply(this, pts, count);
 	}
-	bool ptsUpdateAndApply(int32 pts, int32 count, const MTPUpdate &update) {
+	bool ptsUpdateAndApply(int32_t pts, int32_t count, const MTPUpdate &update) {
 		return _ptsWaiter.updateAndApply(this, pts, count, update);
 	}
-	bool ptsUpdateAndApply(int32 pts, int32 count, const MTPUpdates &updates) {
+	bool ptsUpdateAndApply(int32_t pts, int32_t count, const MTPUpdates &updates) {
 		return _ptsWaiter.updateAndApply(this, pts, count, updates);
 	}
-	int32 pts() const {
+	int32_t pts() const {
 		return _ptsWaiter.current();
 	}
 	bool ptsInited() const {
@@ -970,7 +970,7 @@ public:
 	void ptsSetRequesting(bool isRequesting) {
 		return _ptsWaiter.setRequesting(isRequesting);
 	}
-	void ptsWaitingForShortPoll(int32 ms) { // < 0 - not waiting
+	void ptsWaitingForShortPoll(int32_t ms) { // < 0 - not waiting
 		return _ptsWaiter.setWaitingForShortPoll(this, ms);
 	}
 	bool ptsWaitingForSkipped() const {
@@ -1101,7 +1101,7 @@ enum ActionOnLoad {
 typedef QMap<char, QPixmap> PreparedPhotoThumbs;
 class PhotoData {
 public:
-	PhotoData(const PhotoId &id, const uint64 &access = 0, int32 date = 0, const ImagePtr &thumb = ImagePtr(), const ImagePtr &medium = ImagePtr(), const ImagePtr &full = ImagePtr());
+	PhotoData(const PhotoId &id, const uint64_t &access = 0, int32_t date = 0, const ImagePtr &thumb = ImagePtr(), const ImagePtr &medium = ImagePtr(), const ImagePtr &full = ImagePtr());
 
 	void automaticLoad(const HistoryItem *item);
 	void automaticLoadSettingsChanged();
@@ -1111,16 +1111,16 @@ public:
 	bool loading() const;
 	bool displayLoading() const;
 	void cancel();
-	float64 progress() const;
-	int32 loadOffset() const;
+	double progress() const;
+	int32_t loadOffset() const;
 	bool uploading() const;
 
 	void forget();
 	ImagePtr makeReplyPreview();
 
 	PhotoId id;
-	uint64 access;
-	int32 date;
+	uint64_t access;
+	int32_t date;
 	ImagePtr thumb, replyPreview;
 	ImagePtr medium;
 	ImagePtr full;
@@ -1214,7 +1214,7 @@ struct StickerData : public DocumentAdditionalData {
 };
 
 struct SongData : public DocumentAdditionalData {
-	int32 duration = 0;
+	int32_t duration = 0;
 	QString title, performer;
 
 };
@@ -1237,7 +1237,7 @@ class Document;
 class DocumentData {
 public:
 	static DocumentData *create(DocumentId id);
-	static DocumentData *create(DocumentId id, int32 dc, uint64 accessHash, int32 version, const QVector<MTPDocumentAttribute> &attributes);
+	static DocumentData *create(DocumentId id, int32_t dc, uint64_t accessHash, int32_t version, const QVector<MTPDocumentAttribute> &attributes);
 	static DocumentData *create(DocumentId id, const QString &url, const QVector<MTPDocumentAttribute> &attributes);
 
 	void setattributes(const QVector<MTPDocumentAttribute> &attributes);
@@ -1257,8 +1257,8 @@ public:
 	bool displayLoading() const;
 	void save(const QString &toFile, ActionOnLoad action = ActionOnLoadNone, const FullMsgId &actionMsgId = FullMsgId(), LoadFromCloudSetting fromCloud = LoadFromCloudOrLocal, bool autoLoading = false);
 	void cancel();
-	float64 progress() const;
-	int32 loadOffset() const;
+	double progress() const;
+	int32_t loadOffset() const;
 	bool uploading() const;
 
 	QByteArray data() const;
@@ -1330,7 +1330,7 @@ public:
 	bool isVideo() const {
 		return (type == VideoDocument);
 	}
-	int32 duration() const {
+	int32_t duration() const {
 		return (isAnimation() || isVideo()) ? _duration : -1;
 	}
 	bool isImage() const {
@@ -1341,8 +1341,8 @@ public:
 		_data = data;
 	}
 
-	bool setRemoteVersion(int32 version); // Returns true if version has changed.
-	void setRemoteLocation(int32 dc, uint64 access);
+	bool setRemoteVersion(int32_t version); // Returns true if version has changed.
+	void setRemoteLocation(int32_t dc, uint64_t access);
 	void setContentUrl(const QString &url);
 	bool hasRemoteLocation() const {
 		return (_dc != 0 && _access != 0);
@@ -1368,16 +1368,16 @@ public:
 	DocumentId id = 0;
 	DocumentType type = FileDocument;
 	QSize dimensions;
-	int32 date = 0;
+	int32_t date = 0;
 	QString name;
 	QString mime;
 	ImagePtr thumb, replyPreview;
-	int32 size = 0;
+	int32_t size = 0;
 
 	FileStatus status = FileReady;
-	int32 uploadOffset = 0;
+	int32_t uploadOffset = 0;
 
-	int32 md5[8];
+	int32_t md5[8];
 
 	MediaKey mediaKey() const {
 		return ::mediaKey(locationType(), _dc, id, _version);
@@ -1392,7 +1392,7 @@ public:
 	}
 
 private:
-	DocumentData(DocumentId id, int32 dc, uint64 accessHash, int32 version, const QString &url, const QVector<MTPDocumentAttribute> &attributes);
+	DocumentData(DocumentId id, int32_t dc, uint64_t accessHash, int32_t version, const QString &url, const QVector<MTPDocumentAttribute> &attributes);
 
 	friend class Serialize::Document;
 
@@ -1401,15 +1401,15 @@ private:
 	}
 
 	// Two types of location: from MTProto by dc+access+version or from web by url
-	int32 _dc = 0;
-	uint64 _access = 0;
-	int32 _version = 0;
+	int32_t _dc = 0;
+	uint64_t _access = 0;
+	int32_t _version = 0;
 	QString _url;
 
 	FileLocation _location;
 	QByteArray _data;
 	std::unique_ptr<DocumentAdditionalData> _additional;
-	int32 _duration = -1;
+	int32_t _duration = -1;
 
 	ActionOnLoad _actionOnLoad = ActionOnLoadNone;
 	FullMsgId _actionOnLoadMsgId;
@@ -1434,7 +1434,7 @@ public:
 	};
 
 	AudioMsgId() = default;
-	AudioMsgId(DocumentData *audio, const FullMsgId &msgId, uint32 playId = 0) : _audio(audio), _contextId(msgId), _playId(playId) {
+	AudioMsgId(DocumentData *audio, const FullMsgId &msgId, uint32_t playId = 0) : _audio(audio), _contextId(msgId), _playId(playId) {
 		setTypeFromAudio();
 	}
 
@@ -1447,7 +1447,7 @@ public:
 	FullMsgId contextId() const {
 		return _contextId;
 	}
-	uint32 playId() const {
+	uint32_t playId() const {
 		return _playId;
 	}
 
@@ -1471,7 +1471,7 @@ private:
 	DocumentData *_audio = nullptr;
 	Type _type = Type::Unknown;
 	FullMsgId _contextId;
-	uint32 _playId = 0;
+	uint32_t _playId = 0;
 
 };
 
@@ -1559,7 +1559,7 @@ inline WebPageType toWebPageType(const QString &type) {
 }
 
 struct WebPageData {
-	WebPageData(const WebPageId &id, WebPageType type = WebPageArticle, const QString &url = QString(), const QString &displayUrl = QString(), const QString &siteName = QString(), const QString &title = QString(), const TextWithEntities &description = TextWithEntities(), DocumentData *doc = nullptr, PhotoData *photo = nullptr, int32 duration = 0, const QString &author = QString(), int32 pendingTill = -1);
+	WebPageData(const WebPageId &id, WebPageType type = WebPageArticle, const QString &url = QString(), const QString &displayUrl = QString(), const QString &siteName = QString(), const QString &title = QString(), const TextWithEntities &description = TextWithEntities(), DocumentData *doc = nullptr, PhotoData *photo = nullptr, int32_t duration = 0, const QString &author = QString(), int32_t pendingTill = -1);
 
 	void forget() {
 		if (document) document->forget();
@@ -1570,16 +1570,16 @@ struct WebPageData {
 	WebPageType type;
 	QString url, displayUrl, siteName, title;
 	TextWithEntities description;
-	int32 duration;
+	int32_t duration;
 	QString author;
 	PhotoData *photo;
 	DocumentData *document;
-	int32 pendingTill;
+	int32_t pendingTill;
 
 };
 
 struct GameData {
-	GameData(const GameId &id, const uint64 &accessHash = 0, const QString &shortName = QString(), const QString &title = QString(), const QString &description = QString(), PhotoData *photo = nullptr, DocumentData *doc = nullptr);
+	GameData(const GameId &id, const uint64_t &accessHash = 0, const QString &shortName = QString(), const QString &title = QString(), const QString &description = QString(), PhotoData *photo = nullptr, DocumentData *doc = nullptr);
 
 	void forget() {
 		if (document) document->forget();
@@ -1587,7 +1587,7 @@ struct GameData {
 	}
 
 	GameId id;
-	uint64 accessHash;
+	uint64_t accessHash;
 	QString shortName, title, description;
 	PhotoData *photo;
 	DocumentData *document;

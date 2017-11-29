@@ -186,7 +186,7 @@ void EmojiColorPicker::mouseReleaseEvent(QMouseEvent *e) {
 
 void EmojiColorPicker::handleMouseRelease(QPoint globalPos) {
 	_lastMousePos = globalPos;
-	int32 pressed = _pressedSel;
+	int32_t pressed = _pressedSel;
 	_pressedSel = -1;
 
 	updateSelected();
@@ -492,7 +492,7 @@ void EmojiListWidget::mousePressEvent(QMouseEvent *e) {
 }
 
 void EmojiListWidget::mouseReleaseEvent(QMouseEvent *e) {
-	int32 pressed = _pressedSel;
+	int32_t pressed = _pressedSel;
 	_pressedSel = -1;
 
 	_lastMousePos = e->globalPos();
@@ -553,7 +553,7 @@ void EmojiListWidget::onShowPicker() {
 			y += _picker->height() - st::buttonRadius + st::emojiPanSize.height() - st::buttonRadius;
 		}
 		auto xmax = width() - _picker->width();
-		auto coef = float64(sel % kEmojiPanelPerRow) / float64(kEmojiPanelPerRow - 1);
+		auto coef = double(sel % kEmojiPanelPerRow) / double(kEmojiPanelPerRow - 1);
 		if (rtl()) coef = 1. - coef;
 		_picker->move(qRound(xmax * coef), y);
 

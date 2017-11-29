@@ -144,8 +144,8 @@ void MessageField::dropEvent(QDropEvent *e) {
 
 bool MessageField::canInsertFromMimeData(const QMimeData *source) const {
 	if (source->hasUrls()) {
-		int32 files = 0;
-		for (int32 i = 0; i < source->urls().size(); ++i) {
+		int32_t files = 0;
+		for (int32_t i = 0; i < source->urls().size(); ++i) {
 			if (source->urls().at(i).isLocalFile()) {
 				++files;
 			}

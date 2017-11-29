@@ -34,7 +34,7 @@ constexpr int kWideScale = 3;
 
 } // namespace
 
-MultiSelect::Item::Item(const style::MultiSelectItem &st, uint64 id, const QString &text, style::color color, PaintRoundImage &&paintRoundImage)
+MultiSelect::Item::Item(const style::MultiSelectItem &st, uint64_t id, const QString &text, style::color color, PaintRoundImage &&paintRoundImage)
 : _st(st)
 , _id(id)
 , _color(color)
@@ -116,7 +116,7 @@ void MultiSelect::Item::paintOnce(Painter &p, int x, int y, int outerWidth, Time
 	_text.drawLeftElided(p, x + textLeft, y + _st.padding.top(), textWidth, outerWidth);
 }
 
-void MultiSelect::Item::paintDeleteButton(Painter &p, int x, int y, int outerWidth, float64 overOpacity) {
+void MultiSelect::Item::paintDeleteButton(Painter &p, int x, int y, int outerWidth, double overOpacity) {
 	p.setOpacity(overOpacity);
 
 	p.setPen(Qt::NoPen);
@@ -319,12 +319,12 @@ QString MultiSelect::getQuery() const {
 	return _inner->getQuery();
 }
 
-void MultiSelect::addItem(uint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage, AddItemWay way) {
+void MultiSelect::addItem(uint64_t itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage, AddItemWay way) {
 	addItemInBunch(itemId, text, color, std::move(paintRoundImage));
 	_inner->finishItemsBunch(way);
 }
 
-void MultiSelect::addItemInBunch(uint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage) {
+void MultiSelect::addItemInBunch(uint64_t itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage) {
 	_inner->addItemInBunch(std::make_unique<Item>(_st.item, itemId, text, color, std::move(paintRoundImage)));
 }
 
@@ -332,11 +332,11 @@ void MultiSelect::finishItemsBunch() {
 	_inner->finishItemsBunch(AddItemWay::SkipAnimation);
 }
 
-void MultiSelect::setItemRemovedCallback(base::lambda<void(uint64 itemId)> callback) {
+void MultiSelect::setItemRemovedCallback(base::lambda<void(uint64_t itemId)> callback) {
 	_inner->setItemRemovedCallback(std::move(callback));
 }
 
-void MultiSelect::removeItem(uint64 itemId) {
+void MultiSelect::removeItem(uint64_t itemId) {
 	_inner->removeItem(itemId);
 }
 
@@ -344,11 +344,11 @@ int MultiSelect::getItemsCount() const {
 	return _inner->getItemsCount();
 }
 
-QVector<uint64> MultiSelect::getItems() const {
+QVector<uint64_t> MultiSelect::getItems() const {
 	return _inner->getItems();
 }
 
-bool MultiSelect::hasItem(uint64 itemId) const {
+bool MultiSelect::hasItem(uint64_t itemId) const {
 	return _inner->hasItem(itemId);
 }
 
@@ -704,7 +704,7 @@ void MultiSelect::Inner::finishHeightAnimation() {
 	updateHeightStep();
 }
 
-void MultiSelect::Inner::setItemText(uint64 itemId, const QString &text) {
+void MultiSelect::Inner::setItemText(uint64_t itemId, const QString &text) {
 	for_const (auto &item, _items) {
 		if (item->id() == itemId) {
 			item->setText(text);
@@ -714,7 +714,7 @@ void MultiSelect::Inner::setItemText(uint64 itemId, const QString &text) {
 	}
 }
 
-void MultiSelect::Inner::setItemRemovedCallback(base::lambda<void(uint64 itemId)> callback) {
+void MultiSelect::Inner::setItemRemovedCallback(base::lambda<void(uint64_t itemId)> callback) {
 	_itemRemovedCallback = std::move(callback);
 }
 
@@ -722,7 +722,7 @@ void MultiSelect::Inner::setResizedCallback(base::lambda<void(int heightDelta)> 
 	_resizedCallback = std::move(callback);
 }
 
-void MultiSelect::Inner::removeItem(uint64 itemId) {
+void MultiSelect::Inner::removeItem(uint64_t itemId) {
 	auto found = false;
 	for (auto i = 0, count = int(_items.size()); i != count; ++i) {
 		auto &item = _items[i];
@@ -764,8 +764,8 @@ int MultiSelect::Inner::getItemsCount() const {
 	return _items.size();
 }
 
-QVector<uint64> MultiSelect::Inner::getItems() const {
-	auto result = QVector<uint64>();
+QVector<uint64_t> MultiSelect::Inner::getItems() const {
+	auto result = QVector<uint64_t>();
 	result.reserve(_items.size());
 	for_const (auto &item, _items) {
 		result.push_back(item->id());
@@ -773,7 +773,7 @@ QVector<uint64> MultiSelect::Inner::getItems() const {
 	return result;
 }
 
-bool MultiSelect::Inner::hasItem(uint64 itemId) const {
+bool MultiSelect::Inner::hasItem(uint64_t itemId) const {
 	return _idsMap.find(itemId) != _idsMap.cend();
 }
 

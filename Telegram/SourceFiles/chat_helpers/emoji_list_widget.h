@@ -155,7 +155,7 @@ private:
 	int _counts[kEmojiSectionCount];
 	QVector<EmojiPtr> _emoji[kEmojiSectionCount];
 
-	int32 _esize;
+	int32_t _esize;
 
 	int _selected = -1;
 	int _pressedSel = -1;

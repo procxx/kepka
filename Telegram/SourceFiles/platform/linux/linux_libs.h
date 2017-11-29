@@ -190,7 +190,7 @@ extern f_gdk_set_allowed_backends gdk_set_allowed_backends;
 typedef void (*f_gdk_window_set_modal_hint)(GdkWindow *window, gboolean modal);
 extern f_gdk_window_set_modal_hint gdk_window_set_modal_hint;
 
-typedef void (*f_gdk_window_focus)(GdkWindow *window, guint32 timestamp);
+typedef void (*f_gdk_window_focus)(GdkWindow *window, guint32_t timestamp);
 extern f_gdk_window_focus gdk_window_focus;
 
 typedef GTypeInstance* (*f_g_type_check_instance_cast)(GTypeInstance *instance, GType iface_type);
@@ -341,10 +341,10 @@ extern f_gtk_status_icon_get_geometry gtk_status_icon_get_geometry;
 typedef void (*f_gtk_status_icon_position_menu)(GtkMenu *menu, gint *x, gint *y, gboolean *push_in, gpointer user_data);
 extern f_gtk_status_icon_position_menu gtk_status_icon_position_menu;
 
-typedef void (*f_gtk_menu_popup)(GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32 activate_time);
+typedef void (*f_gtk_menu_popup)(GtkMenu *menu, GtkWidget *parent_menu_shell, GtkWidget *parent_menu_item, GtkMenuPositionFunc func, gpointer data, guint button, guint32_t activate_time);
 extern f_gtk_menu_popup gtk_menu_popup;
 
-typedef guint32 (*f_gtk_get_current_event_time)(void);
+typedef guint32_t (*f_gtk_get_current_event_time)(void);
 extern f_gtk_get_current_event_time gtk_get_current_event_time;
 
 typedef gpointer (*f_g_object_ref_sink)(gpointer object);
@@ -375,7 +375,7 @@ typedef void (*f_g_slist_free)(GSList *list);
 extern f_g_slist_free g_slist_free;
 
 #ifndef TDESKTOP_DISABLE_UNITY_INTEGRATION
-typedef void (*f_unity_launcher_entry_set_count)(UnityLauncherEntry* self, gint64 value);
+typedef void (*f_unity_launcher_entry_set_count)(UnityLauncherEntry* self, gint64_t value);
 extern f_unity_launcher_entry_set_count unity_launcher_entry_set_count;
 
 typedef void (*f_unity_launcher_entry_set_count_visible)(UnityLauncherEntry* self, gboolean value);

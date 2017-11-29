@@ -110,16 +110,16 @@ int One::index() const {
 	return (this - internal::ByIndex(0));
 }
 
-QString IdFromOldKey(uint64 oldKey) {
-	auto code = uint32(oldKey >> 32);
-	auto code2 = uint32(oldKey & 0xFFFFFFFFLLU);
+QString IdFromOldKey(uint64_t oldKey) {
+	auto code = uint32_t(oldKey >> 32);
+	auto code2 = uint32_t(oldKey & 0xFFFFFFFFLLU);
 	if (!code && code2) {
 		code = base::take(code2);
 	}
 	if ((code & 0xFFFF0000U) != 0xFFFF0000U) { // code and code2 contain the whole id
 		auto result = QString();
 		result.reserve(4);
-		auto addCode = [&result](uint32 code) {
+		auto addCode = [&result](uint32_t code) {
 			if (auto high = (code >> 16)) {
 				result.append(QChar(static_cast<ushort>(high & 0xFFFFU)));
 			}

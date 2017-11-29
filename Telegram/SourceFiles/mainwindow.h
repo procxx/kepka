@@ -83,11 +83,11 @@ public:
 	void clearPasscode();
 	void setupIntro();
 	void setupMain(const MTPUser *user = nullptr);
-	void serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media = MTP_messageMediaEmpty(), int32 date = 0, bool force = false);
+	void serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media = MTP_messageMediaEmpty(), int32_t date = 0, bool force = false);
 	void sendServiceHistoryRequest();
 	void showDelayedServiceMsgs();
 
-	void mtpStateChanged(int32 dc, int32 state);
+	void mtpStateChanged(int32_t dc, int32_t state);
 
 	MainWidget *mainWidget();
 	PasscodeWidget *passcodeWidget();
@@ -188,11 +188,11 @@ private:
 	QImage icon16, icon32, icon64, iconbig16, iconbig32, iconbig64;
 
 	struct DelayedServiceMsg {
-		DelayedServiceMsg(const TextWithEntities &message, const MTPMessageMedia &media, int32 date) : message(message), media(media), date(date) {
+		DelayedServiceMsg(const TextWithEntities &message, const MTPMessageMedia &media, int32_t date) : message(message), media(media), date(date) {
 		}
 		TextWithEntities message;
 		MTPMessageMedia media;
-		int32 date;
+		int32_t date;
 	};
 	QList<DelayedServiceMsg> _delayedServiceMsgs;
 	mtpRequestId _serviceHistoryRequest = 0;
@@ -291,13 +291,13 @@ public slots:
 	void onGetApp();
 
 	void onNetworkSettings();
-	void onNetworkSettingsSaved(QString host, quint32 port, QString username, QString password);
+	void onNetworkSettingsSaved(QString host, uint32_t port, QString username, QString password);
 	void onContinue();
 
 	void onCheckingFinished();
 	void onSendingError(QNetworkReply::NetworkError e);
 	void onSendingFinished();
-	void onSendingProgress(qint64 uploaded, qint64 total);
+	void onSendingProgress(int64_t uploaded, int64_t total);
 
 #ifndef TDESKTOP_DISABLE_AUTOUPDATE
 	void onUpdateRetry();
@@ -305,7 +305,7 @@ public slots:
 
 	void onUpdateChecking();
 	void onUpdateLatest();
-	void onUpdateDownloading(qint64 ready, qint64 total);
+	void onUpdateDownloading(int64_t ready, int64_t total);
 	void onUpdateReady();
 	void onUpdateFailed();
 #endif // !TDESKTOP_DISABLE_AUTOUPDATE
@@ -321,7 +321,7 @@ private:
 	void updateControls();
 
 	QString _host, _username, _password;
-	quint32 _port;
+	uint32_t _port;
 
 	PreLaunchLabel _label, _pleaseSendReport, _yourReportName, _minidump;
 	PreLaunchLog _report;
@@ -351,7 +351,7 @@ private:
 	SendingState _sendingState;
 
 	PreLaunchLabel _updating;
-	qint64 _sendingProgress, _sendingTotal;
+	int64_t _sendingProgress, _sendingTotal;
 
 	QNetworkAccessManager _sendManager;
 	QNetworkReply *_checkReply, *_sendReply;
@@ -370,7 +370,7 @@ private:
 	QString _newVersionDownload;
 
 	void setUpdatingState(UpdatingState state, bool force = false);
-	void setDownloadProgress(qint64 ready, qint64 total);
+	void setDownloadProgress(int64_t ready, int64_t total);
 #endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 	QString getReportField(const QLatin1String &name, const QLatin1String &prefix);
@@ -383,11 +383,11 @@ class NetworkSettingsWindow : public PreLaunchWindow {
 
 public:
 
-	NetworkSettingsWindow(QWidget *parent, QString host, quint32 port, QString username, QString password);
+	NetworkSettingsWindow(QWidget *parent, QString host, uint32_t port, QString username, QString password);
 
 signals:
 
-	void saved(QString host, quint32 port, QString username, QString password);
+	void saved(QString host, uint32_t port, QString username, QString password);
 
 public slots:
 

@@ -52,7 +52,7 @@ void PeerListBox::createMultiSelect() {
 	_select.create(this, std::move(entity), margins, std::move(callback));
 	_select->entity()->setSubmittedCallback([this](bool chtrlShiftEnter) { _inner->submitted(); });
 	_select->entity()->setQueryChangedCallback([this](const QString &query) { searchQueryChanged(query); });
-	_select->entity()->setItemRemovedCallback([this](uint64 itemId) {
+	_select->entity()->setItemRemovedCallback([this](uint64_t itemId) {
 		if (auto peer = App::peerLoaded(itemId)) {
 			if (auto row = peerListFindRow(peer->id)) {
 				_inner->changeCheckState(row, false, PeerListRow::SetStyle::Animated);
@@ -344,7 +344,7 @@ int PeerListBox::peerListSelectedRowsCount() {
 
 std::vector<not_null<PeerData*>> PeerListBox::peerListCollectSelectedRows() {
 	auto result = std::vector<not_null<PeerData*>> {};
-	auto items = _select ? _select->entity()->getItems() : QVector<uint64> {};
+	auto items = _select ? _select->entity()->getItems() : QVector<uint64_t> {};
 	if (!items.empty()) {
 		result.reserve(items.size());
 		for_const (auto itemId, items) {
@@ -499,7 +499,7 @@ void PeerListRow::setStatusText(const QString &text) {
 	_status.setText(st::defaultTextStyle, text, _textNameOptions);
 }
 
-float64 PeerListRow::checkedRatio() {
+double PeerListRow::checkedRatio() {
 	return _checkbox ? _checkbox->checkedAnimationRatio() : 0.;
 }
 

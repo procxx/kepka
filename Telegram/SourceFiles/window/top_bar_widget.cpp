@@ -257,7 +257,7 @@ void TopBarWidget::resizeEvent(QResizeEvent *e) {
 	updateControlsGeometry();
 }
 
-int TopBarWidget::countSelectedButtonsTop(float64 selectedShown) {
+int TopBarWidget::countSelectedButtonsTop(double selectedShown) {
 	return (1. - selectedShown) * (-st::topBarHeight);
 }
 

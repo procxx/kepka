@@ -149,7 +149,7 @@ void HistoryInner::messagesReceivedDown(PeerData *peer, const QVector<MTPMessage
 
 void HistoryInner::repaintItem(const HistoryItem *item) {
 	if (!item || item->detached() || !_history) return;
-	int32 msgy = itemTop(item);
+	int32_t msgy = itemTop(item);
 	if (msgy >= 0) {
 		update(0, msgy, width(), item->height());
 	}
@@ -435,7 +435,7 @@ void HistoryInner::paintEvent(QPaintEvent *e) {
 					_widget->enqueueMessageHighlight(item);
 				}
 
-				int32 h = item->height();
+				int32_t h = item->height();
 				p.translate(0, h);
 				y += h;
 
@@ -587,7 +587,7 @@ void HistoryInner::onTouchScrollTimer() {
 		_touchScrollState = Ui::TouchScrollState::Manual;
 		touchResetSpeed();
 	} else if (_touchScrollState == Ui::TouchScrollState::Auto || _touchScrollState == Ui::TouchScrollState::Acceleration) {
-		int32 elapsed = int32(nowTime - _touchTime);
+		int32_t elapsed = int32_t(nowTime - _touchTime);
 		QPoint delta = _touchSpeed * elapsed / 1000;
 		bool hasScrolled = _widget->touchScroll(delta);
 
@@ -646,9 +646,9 @@ void HistoryInner::touchResetSpeed() {
 	_touchPrevPosValid = false;
 }
 
-void HistoryInner::touchDeaccelerate(int32 elapsed) {
-	int32 x = _touchSpeed.x();
-	int32 y = _touchSpeed.y();
+void HistoryInner::touchDeaccelerate(int32_t elapsed) {
+	int32_t x = _touchSpeed.x();
+	int32_t y = _touchSpeed.y();
 	_touchSpeed.setX((x == 0) ? x : (x > 0) ? qMax(0, x - elapsed) : qMin(0, x + elapsed));
 	_touchSpeed.setY((y == 0) ? y : (y > 0) ? qMax(0, y - elapsed) : qMin(0, y + elapsed));
 }
@@ -777,7 +777,7 @@ void HistoryInner::touchScrollUpdated(const QPoint &screenPos) {
 }
 
 QPoint HistoryInner::mapPointToItem(QPoint p, HistoryItem *item) {
-	int32 msgy = itemTop(item);
+	int32_t msgy = itemTop(item);
 	if (msgy < 0) return QPoint(0, 0);
 
 	p.setY(p.y() - msgy);
@@ -857,7 +857,7 @@ void HistoryInner::mouseActionStart(const QPoint &screenPos, Qt::MouseButton but
 						) {
 						uponSelected = false;
 					} else {
-						uint16 selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
+						uint16_t selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
 						if (_mouseTextSymbol < selFrom || _mouseTextSymbol >= selTo) {
 							uponSelected = false;
 						}
@@ -925,7 +925,7 @@ void HistoryInner::performDrag() {
 					) {
 					uponSelected = false;
 				} else {
-					uint16 selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
+					uint16_t selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
 					if (dragState.symbol < selFrom || dragState.symbol >= selTo) {
 						uponSelected = false;
 					}
@@ -1168,7 +1168,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				isUponSelected = -2;
 			}
 		} else {
-			uint16 selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
+			uint16_t selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
 			hasSelected = (selTo > selFrom) ? 1 : 0;
 			if (App::mousedItem() && App::mousedItem() == App::hoveredItem()) {
 				auto mousePos = mapPointToItem(mapFromGlobal(_mousePosition), App::mousedItem());
@@ -1609,22 +1609,22 @@ void HistoryInner::recountHeight() {
 
 	updateBotInfo(false);
 	if (_botAbout && !_botAbout->info->text.isEmpty()) {
-		int32 tw = _scroll->width() - st::msgMargin.left() - st::msgMargin.right();
+		int32_t tw = _scroll->width() - st::msgMargin.left() - st::msgMargin.right();
 		if (tw > st::msgMaxWidth) tw = st::msgMaxWidth;
 		tw -= st::msgPadding.left() + st::msgPadding.right();
-		int32 mw = qMax(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
+		int32_t mw = qMax(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
 		if (tw > mw) tw = mw;
 
 		_botAbout->width = tw;
 		_botAbout->height = _botAbout->info->text.countHeight(_botAbout->width);
 
-		int32 descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
-		int32 descMaxWidth = _scroll->width();
+		int32_t descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
+		int32_t descMaxWidth = _scroll->width();
 		if (Adaptive::ChatWide()) {
-			descMaxWidth = qMin(descMaxWidth, int32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+			descMaxWidth = qMin(descMaxWidth, int32_t(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 		}
-		int32 descAtX = (descMaxWidth - _botAbout->width) / 2 - st::msgPadding.left();
-		int32 descAtY = qMin(_historyPaddingTop - descH, qMax(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
+		int32_t descAtX = (descMaxWidth - _botAbout->width) / 2 - st::msgPadding.left();
+		int32_t descAtY = qMin(_historyPaddingTop - descH, qMax(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
 
 		_botAbout->rect = QRect(descAtX, descAtY, _botAbout->width + st::msgPadding.left() + st::msgPadding.right(), descH - st::msgMargin.top() - st::msgMargin.bottom());
 	} else if (_botAbout) {
@@ -1653,10 +1653,10 @@ void HistoryInner::updateBotInfo(bool recount) {
 		if (_botAbout->info->text.isEmpty()) {
 			_botAbout->info->text.setText(st::messageTextStyle, _botAbout->info->description, _historyBotNoMonoOptions);
 			if (recount) {
-				int32 tw = _scroll->width() - st::msgMargin.left() - st::msgMargin.right();
+				int32_t tw = _scroll->width() - st::msgMargin.left() - st::msgMargin.right();
 				if (tw > st::msgMaxWidth) tw = st::msgMaxWidth;
 				tw -= st::msgPadding.left() + st::msgPadding.right();
-				int32 mw = qMax(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
+				int32_t mw = qMax(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
 				if (tw > mw) tw = mw;
 
 				_botAbout->width = tw;
@@ -1672,9 +1672,9 @@ void HistoryInner::updateBotInfo(bool recount) {
 			updateSize();
 		}
 		if (_botAbout->height > 0) {
-			int32 descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
-			int32 descAtX = (_scroll->width() - _botAbout->width) / 2 - st::msgPadding.left();
-			int32 descAtY = qMin(_historyPaddingTop - descH, (_scroll->height() - descH) / 2) + st::msgMargin.top();
+			int32_t descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
+			int32_t descAtX = (_scroll->width() - _botAbout->width) / 2 - st::msgPadding.left();
+			int32_t descAtY = qMin(_historyPaddingTop - descH, (_scroll->height() - descH) / 2) + st::msgMargin.top();
 
 			_botAbout->rect = QRect(descAtX, descAtY, _botAbout->width + st::msgPadding.left() + st::msgPadding.right(), descH - st::msgMargin.top() - st::msgMargin.bottom());
 		} else {
@@ -1802,13 +1802,13 @@ void HistoryInner::updateSize() {
 	}
 
 	if (_botAbout && _botAbout->height > 0) {
-		int32 descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
-		int32 descMaxWidth = _scroll->width();
+		int32_t descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
+		int32_t descMaxWidth = _scroll->width();
 		if (Adaptive::ChatWide()) {
-			descMaxWidth = qMin(descMaxWidth, int32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+			descMaxWidth = qMin(descMaxWidth, int32_t(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 		}
-		int32 descAtX = (descMaxWidth - _botAbout->width) / 2 - st::msgPadding.left();
-		int32 descAtY = qMin(newHistoryPaddingTop - descH, qMax(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
+		int32_t descAtX = (descMaxWidth - _botAbout->width) / 2 - st::msgPadding.left();
+		int32_t descAtY = qMin(newHistoryPaddingTop - descH, qMax(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
 
 		_botAbout->rect = QRect(descAtX, descAtY, _botAbout->width + st::msgPadding.left() + st::msgPadding.right(), descH - st::msgMargin.top() - st::msgMargin.bottom());
 	}
@@ -1858,8 +1858,8 @@ bool HistoryInner::focusNextPrevChild(bool next) {
 	}
 }
 
-void HistoryInner::adjustCurrent(int32 y) const {
-	int32 htop = historyTop(), hdrawtop = historyDrawTop(), mtop = migratedTop();
+void HistoryInner::adjustCurrent(int32_t y) const {
+	int32_t htop = historyTop(), hdrawtop = historyDrawTop(), mtop = migratedTop();
 	_curHistory = 0;
 	if (mtop >= 0) {
 		adjustCurrent(y - mtop, _migrated);
@@ -1869,7 +1869,7 @@ void HistoryInner::adjustCurrent(int32 y) const {
 	}
 }
 
-void HistoryInner::adjustCurrent(int32 y, History *history) const {
+void HistoryInner::adjustCurrent(int32_t y, History *history) const {
 	Assert(!history->isEmpty());
 	_curHistory = history;
 	if (_curBlock >= history->blocks.size()) {
@@ -2082,7 +2082,7 @@ void HistoryInner::onUpdateSelected() {
 					auto dateLeft = st::msgServiceMargin.left();
 					auto maxwidth = item->history()->width;
 					if (Adaptive::ChatWide()) {
-						maxwidth = qMin(maxwidth, int32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+						maxwidth = qMin(maxwidth, int32_t(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 					}
 					auto widthForDate = maxwidth - st::msgServiceMargin.left() - st::msgServiceMargin.left();
 
@@ -2155,7 +2155,7 @@ void HistoryInner::onUpdateSelected() {
 		if (_mouseAction == MouseAction::Selecting) {
 			auto canSelectMany = (_history != nullptr);
 			if (selectingText) {
-				uint16 second = dragState.symbol;
+				uint16_t second = dragState.symbol;
 				if (dragState.afterSymbol && _mouseSelectType == TextSelectType::Letters) {
 					++second;
 				}
@@ -2246,7 +2246,7 @@ void HistoryInner::updateDragSelection(HistoryItem *dragSelFrom, HistoryItem *dr
 	if (_dragSelFrom != dragSelFrom || _dragSelTo != dragSelTo || _dragSelecting != dragSelecting) {
 		_dragSelFrom = dragSelFrom;
 		_dragSelTo = dragSelTo;
-		int32 fromy = itemTop(_dragSelFrom), toy = itemTop(_dragSelTo);
+		int32_t fromy = itemTop(_dragSelFrom), toy = itemTop(_dragSelTo);
 		if (fromy >= 0 && toy >= 0 && fromy > toy) {
 			qSwap(_dragSelFrom, _dragSelTo);
 		}
@@ -2350,11 +2350,11 @@ void HistoryInner::applyDragSelection() {
 	applyDragSelection(&_selected);
 }
 
-void HistoryInner::addSelectionRange(SelectedItems *toItems, int32 fromblock, int32 fromitem, int32 toblock, int32 toitem, History *h) const {
+void HistoryInner::addSelectionRange(SelectedItems *toItems, int32_t fromblock, int32_t fromitem, int32_t toblock, int32_t toitem, History *h) const {
 	if (fromblock >= 0 && fromitem >= 0 && toblock >= 0 && toitem >= 0) {
 		for (; fromblock <= toblock; ++fromblock) {
 			HistoryBlock *block = h->blocks[fromblock];
-			for (int32 cnt = (fromblock < toblock) ? block->items.size() : (toitem + 1); fromitem < cnt; ++fromitem) {
+			for (int32_t cnt = (fromblock < toblock) ? block->items.size() : (toitem + 1); fromitem < cnt; ++fromitem) {
 				HistoryItem *item = block->items[fromitem];
 				SelectedItems::iterator i = toItems->find(item);
 				if (item->id > 0 && !item->serviceMsg()) {
@@ -2377,7 +2377,7 @@ void HistoryInner::addSelectionRange(SelectedItems *toItems, int32 fromblock, in
 }
 
 void HistoryInner::applyDragSelection(SelectedItems *toItems) const {
-	int32 selfromy = itemTop(_dragSelFrom), seltoy = itemTop(_dragSelTo);
+	int32_t selfromy = itemTop(_dragSelFrom), seltoy = itemTop(_dragSelTo);
 	if (selfromy < 0 || seltoy < 0) {
 		return;
 	}
@@ -2387,8 +2387,8 @@ void HistoryInner::applyDragSelection(SelectedItems *toItems) const {
 		toItems->clear();
 	}
 	if (_dragSelecting) {
-		int32 fromblock = _dragSelFrom->block()->indexInHistory(), fromitem = _dragSelFrom->indexInBlock();
-		int32 toblock = _dragSelTo->block()->indexInHistory(), toitem = _dragSelTo->indexInBlock();
+		int32_t fromblock = _dragSelFrom->block()->indexInHistory(), fromitem = _dragSelFrom->indexInBlock();
+		int32_t toblock = _dragSelTo->block()->indexInHistory(), toitem = _dragSelTo->indexInBlock();
 		if (_migrated) {
 			if (_dragSelFrom->history() == _migrated) {
 				if (_dragSelTo->history() == _migrated) {
@@ -2408,7 +2408,7 @@ void HistoryInner::applyDragSelection(SelectedItems *toItems) const {
 		addSelectionRange(toItems, fromblock, fromitem, toblock, toitem, _history);
 	} else {
 		for (SelectedItems::iterator i = toItems->begin(); i != toItems->cend();) {
-			int32 iy = itemTop(i.key());
+			int32_t iy = itemTop(i.key());
 			if (iy < 0) {
 				if (iy < -1) i = toItems->erase(i);
 				continue;

@@ -58,7 +58,7 @@ void Widget::onParentResized() {
 	setGeometry((parentWidget()->width() - newWidth) / 2, (parentWidget()->height() - newHeight) / 2, newWidth, newHeight);
 }
 
-void Widget::setShownLevel(float64 shownLevel) {
+void Widget::setShownLevel(double shownLevel) {
 	_shownLevel = shownLevel;
 }
 

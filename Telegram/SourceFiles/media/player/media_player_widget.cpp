@@ -104,17 +104,17 @@ Widget::Widget(QWidget *parent) : TWidget(parent)
 	_playback->setInLoadingStateChangedCallback([this](bool loading) {
 		_playbackSlider->setDisabled(loading);
 	});
-	_playback->setValueChangedCallback([this](float64 value) {
+	_playback->setValueChangedCallback([this](double value) {
 		_playbackSlider->setValue(value);
 	});
-	_playbackSlider->setChangeProgressCallback([this](float64 value) {
+	_playbackSlider->setChangeProgressCallback([this](double value) {
 		if (_type != AudioMsgId::Type::Song) {
 			return; // Round video seek is not supported for now :(
 		}
 		_playback->setValue(value, false);
 		handleSeekProgress(value);
 	});
-	_playbackSlider->setChangeFinishedCallback([this](float64 value) {
+	_playbackSlider->setChangeFinishedCallback([this](double value) {
 		if (_type != AudioMsgId::Type::Song) {
 			return; // Round video seek is not supported for now :(
 		}
@@ -233,7 +233,7 @@ void Widget::volumeWidgetCreated(VolumeWidget *widget) {
 
 Widget::~Widget() = default;
 
-void Widget::handleSeekProgress(float64 progress) {
+void Widget::handleSeekProgress(double progress) {
 	if (!_lastDurationMs) return;
 
 	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
@@ -245,7 +245,7 @@ void Widget::handleSeekProgress(float64 progress) {
 	}
 }
 
-void Widget::handleSeekFinished(float64 progress) {
+void Widget::handleSeekFinished(double progress) {
 	if (!_lastDurationMs) return;
 
 	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
@@ -429,7 +429,7 @@ void Widget::handleSongUpdate(const TrackState &state) {
 
 void Widget::updateTimeText(const TrackState &state) {
 	QString time;
-	qint64 position = 0, length = 0, display = 0;
+	int64_t position = 0, length = 0, display = 0;
 	auto frequency = state.frequency;
 	if (!IsStoppedOrStopping(state.state)) {
 		display = position = state.position;

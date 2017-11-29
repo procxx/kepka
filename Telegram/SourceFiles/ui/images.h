@@ -52,76 +52,76 @@ enum class ImageRoundCorner {
 using ImageRoundCorners = base::flags<ImageRoundCorner>;
 inline constexpr auto is_flag_type(ImageRoundCorner) { return true; };
 
-inline uint32 packInt(int32 a) {
-	return (a < 0) ? uint32(int64(a) + 0x100000000LL) : uint32(a);
+inline uint32_t packInt(int32_t a) {
+	return (a < 0) ? uint32_t(int64_t(a) + 0x100000000LL) : uint32_t(a);
 }
-inline int32 unpackInt(uint32 a) {
-	return (a > 0x7FFFFFFFU) ? int32(int64(a) - 0x100000000LL) : int32(a);
+inline int32_t unpackInt(uint32_t a) {
+	return (a > 0x7FFFFFFFU) ? int32_t(int64_t(a) - 0x100000000LL) : int32_t(a);
 }
-inline uint64 packUIntUInt(uint32 a, uint32 b) {
-	return (uint64(a) << 32) | uint64(b);
+inline uint64_t packUIntUInt(uint32_t a, uint32_t b) {
+	return (uint64_t(a) << 32) | uint64_t(b);
 }
-inline uint64 packUIntInt(uint32 a, int32 b) {
+inline uint64_t packUIntInt(uint32_t a, int32_t b) {
 	return packUIntUInt(a, packInt(b));
 }
-inline uint64 packIntUInt(int32 a, uint32 b) {
+inline uint64_t packIntUInt(int32_t a, uint32_t b) {
 	return packUIntUInt(packInt(a), b);
 }
-inline uint64 packIntInt(int32 a, int32 b) {
+inline uint64_t packIntInt(int32_t a, int32_t b) {
 	return packUIntUInt(packInt(a), packInt(b));
 }
-inline uint32 unpackUIntFirst(uint64 v) {
-	return uint32(v >> 32);
+inline uint32_t unpackUIntFirst(uint64_t v) {
+	return uint32_t(v >> 32);
 }
-inline int32 unpackIntFirst(uint64 v) {
+inline int32_t unpackIntFirst(uint64_t v) {
 	return unpackInt(unpackUIntFirst(v));
 }
-inline uint32 unpackUIntSecond(uint64 v) {
-	return uint32(v & 0xFFFFFFFFULL);
+inline uint32_t unpackUIntSecond(uint64_t v) {
+	return uint32_t(v & 0xFFFFFFFFULL);
 }
-inline int32 unpackIntSecond(uint64 v) {
+inline int32_t unpackIntSecond(uint64_t v) {
 	return unpackInt(unpackUIntSecond(v));
 }
 
 class StorageImageLocation {
 public:
 	StorageImageLocation() = default;
-	StorageImageLocation(int32 width, int32 height, int32 dc, const uint64 &volume, int32 local, const uint64 &secret) : _widthheight(packIntInt(width, height)), _dclocal(packIntInt(dc, local)), _volume(volume), _secret(secret) {
+	StorageImageLocation(int32_t width, int32_t height, int32_t dc, const uint64_t &volume, int32_t local, const uint64_t &secret) : _widthheight(packIntInt(width, height)), _dclocal(packIntInt(dc, local)), _volume(volume), _secret(secret) {
 	}
-	StorageImageLocation(int32 width, int32 height, const MTPDfileLocation &location) : _widthheight(packIntInt(width, height)), _dclocal(packIntInt(location.vdc_id.v, location.vlocal_id.v)), _volume(location.vvolume_id.v), _secret(location.vsecret.v) {
+	StorageImageLocation(int32_t width, int32_t height, const MTPDfileLocation &location) : _widthheight(packIntInt(width, height)), _dclocal(packIntInt(location.vdc_id.v, location.vlocal_id.v)), _volume(location.vvolume_id.v), _secret(location.vsecret.v) {
 	}
 	bool isNull() const {
 		return !_dclocal;
 	}
-	int32 width() const {
+	int32_t width() const {
 		return unpackIntFirst(_widthheight);
 	}
-	int32 height() const {
+	int32_t height() const {
 		return unpackIntSecond(_widthheight);
 	}
-	void setSize(int32 width, int32 height) {
+	void setSize(int32_t width, int32_t height) {
 		_widthheight = packIntInt(width, height);
 	}
-	int32 dc() const {
+	int32_t dc() const {
 		return unpackIntFirst(_dclocal);
 	}
-	uint64 volume() const {
+	uint64_t volume() const {
 		return _volume;
 	}
-	int32 local() const {
+	int32_t local() const {
 		return unpackIntSecond(_dclocal);
 	}
-	uint64 secret() const {
+	uint64_t secret() const {
 		return _secret;
 	}
 
 	static StorageImageLocation Null;
 
 private:
-	uint64 _widthheight = 0;
-	uint64 _dclocal = 0;
-	uint64 _volume = 0;
-	uint64 _secret = 0;
+	uint64_t _widthheight = 0;
+	uint64_t _dclocal = 0;
+	uint64_t _volume = 0;
+	uint64_t _secret = 0;
 
 	friend inline bool operator==(const StorageImageLocation &a, const StorageImageLocation &b) {
 		return (a._dclocal == b._dclocal) && (a._volume == b._volume) && (a._secret == b._secret);
@@ -136,24 +136,24 @@ inline bool operator!=(const StorageImageLocation &a, const StorageImageLocation
 class WebFileImageLocation {
 public:
 	WebFileImageLocation() = default;
-	WebFileImageLocation(int32 width, int32 height, int32 dc, const QByteArray &url, uint64 accessHash) : _widthheight(packIntInt(width, height)), _accessHash(accessHash), _url(url), _dc(dc) {
+	WebFileImageLocation(int32_t width, int32_t height, int32_t dc, const QByteArray &url, uint64_t accessHash) : _widthheight(packIntInt(width, height)), _accessHash(accessHash), _url(url), _dc(dc) {
 	}
 	bool isNull() const {
 		return !_dc;
 	}
-	int32 width() const {
+	int32_t width() const {
 		return unpackIntFirst(_widthheight);
 	}
-	int32 height() const {
+	int32_t height() const {
 		return unpackIntSecond(_widthheight);
 	}
-	void setSize(int32 width, int32 height) {
+	void setSize(int32_t width, int32_t height) {
 		_widthheight = packIntInt(width, height);
 	}
-	int32 dc() const {
+	int32_t dc() const {
 		return _dc;
 	}
-	uint64 accessHash() const {
+	uint64_t accessHash() const {
 		return _accessHash;
 	}
 	const QByteArray &url() const {
@@ -163,10 +163,10 @@ public:
 	static WebFileImageLocation Null;
 
 private:
-	uint64 _widthheight = 0;
-	uint64 _accessHash = 0;
+	uint64_t _widthheight = 0;
+	uint64_t _accessHash = 0;
 	QByteArray _url;
-	int32 _dc = 0;
+	int32_t _dc = 0;
 
 	friend inline bool operator==(const WebFileImageLocation &a, const WebFileImageLocation &b) {
 		return (a._dc == b._dc) && (a._accessHash == b._accessHash) && (a._url == b._url);
@@ -238,31 +238,31 @@ public:
 	}
 	virtual void cancel() {
 	}
-	virtual float64 progress() const {
+	virtual double progress() const {
 		return 1;
 	}
-	virtual int32 loadOffset() const {
+	virtual int32_t loadOffset() const {
 		return 0;
 	}
 
-	const QPixmap &pix(int32 w = 0, int32 h = 0) const;
-	const QPixmap &pixRounded(int32 w = 0, int32 h = 0, ImageRoundRadius radius = ImageRoundRadius::None, ImageRoundCorners corners = ImageRoundCorner::All) const;
-	const QPixmap &pixBlurred(int32 w = 0, int32 h = 0) const;
-	const QPixmap &pixColored(style::color add, int32 w = 0, int32 h = 0) const;
-	const QPixmap &pixBlurredColored(style::color add, int32 w = 0, int32 h = 0) const;
-	const QPixmap &pixSingle(int32 w, int32 h, int32 outerw, int32 outerh, ImageRoundRadius radius, ImageRoundCorners corners = ImageRoundCorner::All, const style::color *colored = nullptr) const;
-	const QPixmap &pixBlurredSingle(int32 w, int32 h, int32 outerw, int32 outerh, ImageRoundRadius radius, ImageRoundCorners corners = ImageRoundCorner::All) const;
-	const QPixmap &pixCircled(int32 w = 0, int32 h = 0) const;
-	const QPixmap &pixBlurredCircled(int32 w = 0, int32 h = 0) const;
+	const QPixmap &pix(int32_t w = 0, int32_t h = 0) const;
+	const QPixmap &pixRounded(int32_t w = 0, int32_t h = 0, ImageRoundRadius radius = ImageRoundRadius::None, ImageRoundCorners corners = ImageRoundCorner::All) const;
+	const QPixmap &pixBlurred(int32_t w = 0, int32_t h = 0) const;
+	const QPixmap &pixColored(style::color add, int32_t w = 0, int32_t h = 0) const;
+	const QPixmap &pixBlurredColored(style::color add, int32_t w = 0, int32_t h = 0) const;
+	const QPixmap &pixSingle(int32_t w, int32_t h, int32_t outerw, int32_t outerh, ImageRoundRadius radius, ImageRoundCorners corners = ImageRoundCorner::All, const style::color *colored = nullptr) const;
+	const QPixmap &pixBlurredSingle(int32_t w, int32_t h, int32_t outerw, int32_t outerh, ImageRoundRadius radius, ImageRoundCorners corners = ImageRoundCorner::All) const;
+	const QPixmap &pixCircled(int32_t w = 0, int32_t h = 0) const;
+	const QPixmap &pixBlurredCircled(int32_t w = 0, int32_t h = 0) const;
 	QPixmap pixNoCache(int w = 0, int h = 0, Images::Options options = 0, int outerw = -1, int outerh = -1, const style::color *colored = nullptr) const;
-	QPixmap pixColoredNoCache(style::color add, int32 w = 0, int32 h = 0, bool smooth = false) const;
-	QPixmap pixBlurredColoredNoCache(style::color add, int32 w, int32 h = 0) const;
+	QPixmap pixColoredNoCache(style::color add, int32_t w = 0, int32_t h = 0, bool smooth = false) const;
+	QPixmap pixBlurredColoredNoCache(style::color add, int32_t w, int32_t h = 0) const;
 
-	int32 width() const {
+	int32_t width() const {
 		return qMax(countWidth(), 1);
 	}
 
-	int32 height() const {
+	int32_t height() const {
 		return qMax(countHeight(), 1);
 	}
 
@@ -305,12 +305,12 @@ protected:
 	}
 	void invalidateSizeCache() const;
 
-	virtual int32 countWidth() const {
+	virtual int32_t countWidth() const {
 		restore();
 		return _data.width();
 	}
 
-	virtual int32 countHeight() const {
+	virtual int32_t countHeight() const {
 		restore();
 		return _data.height();
 	}
@@ -320,16 +320,16 @@ protected:
 	mutable QPixmap _data;
 
 private:
-	using Sizes = QMap<uint64, QPixmap>;
+	using Sizes = QMap<uint64_t, QPixmap>;
 	mutable Sizes _sizesCache;
 
 };
 
-typedef QPair<uint64, uint64> StorageKey;
-inline uint64 storageMix32To64(int32 a, int32 b) {
-	return (uint64(*reinterpret_cast<uint32*>(&a)) << 32) | uint64(*reinterpret_cast<uint32*>(&b));
+typedef QPair<uint64_t, uint64_t> StorageKey;
+inline uint64_t storageMix32To64(int32_t a, int32_t b) {
+	return (uint64_t(*reinterpret_cast<uint32_t*>(&a)) << 32) | uint64_t(*reinterpret_cast<uint32_t*>(&b));
 }
-inline StorageKey storageKey(int32 dc, const uint64 &volume, int32 local) {
+inline StorageKey storageKey(int32_t dc, const uint64_t &volume, int32_t local) {
 	return StorageKey(storageMix32To64(dc, local), volume);
 }
 inline StorageKey storageKey(const MTPDfileLocation &location) {
@@ -341,7 +341,7 @@ inline StorageKey storageKey(const StorageImageLocation &location) {
 inline StorageKey storageKey(const WebFileImageLocation &location) {
 	auto url = location.url();
 	auto sha = hashSha1(url.data(), url.size());
-	return storageKey(location.dc(), *reinterpret_cast<const uint64*>(sha.data()), *reinterpret_cast<const int32*>(sha.data() + sizeof(uint64)));
+	return storageKey(location.dc(), *reinterpret_cast<const uint64_t*>(sha.data()), *reinterpret_cast<const int32_t*>(sha.data() + sizeof(uint64_t)));
 }
 
 class RemoteImage : public Image {
@@ -355,8 +355,8 @@ public:
 	}
 	bool displayLoading() const;
 	void cancel();
-	float64 progress() const;
-	int32 loadOffset() const;
+	double progress() const;
+	int32_t loadOffset() const;
 
 	void setData(QByteArray &bytes, const QByteArray &format = QByteArray());
 
@@ -371,7 +371,7 @@ protected:
 	virtual QSize shrinkBox() const {
 		return QSize();
 	}
-	virtual void setInformation(int32 size, int32 width, int32 height) = 0;
+	virtual void setInformation(int32_t size, int32_t width, int32_t height) = 0;
 	virtual FileLoader *createLoader(LoadFromCloudSetting fromCloud, bool autoLoading) = 0;
 
 	void checkload() const {
@@ -390,7 +390,7 @@ private:
 
 class StorageImage : public RemoteImage {
 public:
-	StorageImage(const StorageImageLocation &location, int32 size = 0);
+	StorageImage(const StorageImageLocation &location, int32_t size = 0);
 	StorageImage(const StorageImageLocation &location, QByteArray &bytes);
 
 	const StorageImageLocation &location() const override {
@@ -398,30 +398,30 @@ public:
 	}
 
 protected:
-	void setInformation(int32 size, int32 width, int32 height) override;
+	void setInformation(int32_t size, int32_t width, int32_t height) override;
 	FileLoader *createLoader(LoadFromCloudSetting fromCloud, bool autoLoading) override;
 
 	StorageImageLocation _location;
-	int32 _size;
+	int32_t _size;
 
-	int32 countWidth() const override;
-	int32 countHeight() const override;
+	int32_t countWidth() const override;
+	int32_t countHeight() const override;
 
 };
 
 class WebFileImage : public RemoteImage {
 public:
-	WebFileImage(const WebFileImageLocation &location, int32 size = 0);
+	WebFileImage(const WebFileImageLocation &location, int32_t size = 0);
 
 protected:
-	void setInformation(int32 size, int32 width, int32 height) override;
+	void setInformation(int32_t size, int32_t width, int32_t height) override;
 	FileLoader *createLoader(LoadFromCloudSetting fromCloud, bool autoLoading) override;
 
 	WebFileImageLocation _location;
-	int32 _size;
+	int32_t _size;
 
-	int32 countWidth() const override;
-	int32 countHeight() const override;
+	int32_t countWidth() const override;
+	int32_t countHeight() const override;
 
 };
 
@@ -429,7 +429,7 @@ class DelayedStorageImage : public StorageImage {
 public:
 
 	DelayedStorageImage();
-	DelayedStorageImage(int32 w, int32 h);
+	DelayedStorageImage(int32_t w, int32_t h);
 	DelayedStorageImage(QByteArray &bytes);
 
 	void setStorageLocation(const StorageImageLocation location);
@@ -472,16 +472,16 @@ protected:
 	QSize shrinkBox() const override {
 		return _box;
 	}
-	void setInformation(int32 size, int32 width, int32 height) override;
+	void setInformation(int32_t size, int32_t width, int32_t height) override;
 	FileLoader *createLoader(LoadFromCloudSetting fromCloud, bool autoLoading) override;
 
-	int32 countWidth() const override;
-	int32 countHeight() const override;
+	int32_t countWidth() const override;
+	int32_t countHeight() const override;
 
 private:
 	QString _url;
 	QSize _box;
-	int32 _size, _width, _height;
+	int32_t _size, _width, _height;
 
 };
 
@@ -492,10 +492,10 @@ namespace internal {
 	Image *getImage(const QByteArray &filecontent, QByteArray format);
 	Image *getImage(const QPixmap &pixmap, QByteArray format);
 	Image *getImage(const QByteArray &filecontent, QByteArray format, const QPixmap &pixmap);
-	Image *getImage(int32 width, int32 height);
-	StorageImage *getImage(const StorageImageLocation &location, int32 size = 0);
+	Image *getImage(int32_t width, int32_t height);
+	StorageImage *getImage(const StorageImageLocation &location, int32_t size = 0);
 	StorageImage *getImage(const StorageImageLocation &location, const QByteArray &bytes);
-	WebFileImage *getImage(const WebFileImageLocation &location, int32 size = 0);
+	WebFileImage *getImage(const WebFileImageLocation &location, int32_t size = 0);
 } // namespace internal
 
 class ImagePtr : public ManagedPtr<Image> {
@@ -513,14 +513,14 @@ public:
 	}
 	ImagePtr(const QPixmap &pixmap, QByteArray format) : Parent(internal::getImage(pixmap, format)) {
 	}
-	ImagePtr(const StorageImageLocation &location, int32 size = 0) : Parent(internal::getImage(location, size)) {
+	ImagePtr(const StorageImageLocation &location, int32_t size = 0) : Parent(internal::getImage(location, size)) {
 	}
 	ImagePtr(const StorageImageLocation &location, const QByteArray &bytes) : Parent(internal::getImage(location, bytes)) {
 	}
-	ImagePtr(const WebFileImageLocation &location, int32 size = 0) : Parent(internal::getImage(location, size)) {
+	ImagePtr(const WebFileImageLocation &location, int32_t size = 0) : Parent(internal::getImage(location, size)) {
 	}
-	ImagePtr(int32 width, int32 height, const MTPFileLocation &location, ImagePtr def = ImagePtr());
-	ImagePtr(int32 width, int32 height) : Parent(internal::getImage(width, height)) {
+	ImagePtr(int32_t width, int32_t height, const MTPFileLocation &location, ImagePtr def = ImagePtr());
+	ImagePtr(int32_t width, int32_t height) : Parent(internal::getImage(width, height)) {
 	}
 
 	explicit operator bool() const {
@@ -529,13 +529,13 @@ public:
 
 };
 
-inline QSize shrinkToKeepAspect(int32 width, int32 height, int32 towidth, int32 toheight) {
-	int32 w = qMax(width, 1), h = qMax(height, 1);
+inline QSize shrinkToKeepAspect(int32_t width, int32_t height, int32_t towidth, int32_t toheight) {
+	int32_t w = qMax(width, 1), h = qMax(height, 1);
 	if (w * toheight > h * towidth) {
-		h = qRound(h * towidth / float64(w));
+		h = qRound(h * towidth / double(w));
 		w = towidth;
 	} else {
-		w = qRound(w * toheight / float64(h));
+		w = qRound(w * toheight / double(h));
 		h = toheight;
 	}
 	return QSize(qMax(w, 1), qMax(h, 1));
@@ -543,7 +543,7 @@ inline QSize shrinkToKeepAspect(int32 width, int32 height, int32 towidth, int32 
 
 void clearStorageImages();
 void clearAllImages();
-int64 imageCacheSize();
+int64_t imageCacheSize();
 
 class PsFileBookmark;
 class ReadAccessEnabler {
@@ -579,7 +579,7 @@ public:
 
 	QString fname;
 	QDateTime modified;
-	qint32 size;
+	int32_t size;
 
 private:
 	QSharedPointer<PsFileBookmark> _bookmark;

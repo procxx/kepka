@@ -123,7 +123,7 @@ QString demanglestr(const QString &mangled) {
 	return result.trimmed();
 }
 
-QStringList addr2linestr(uint64 *addresses, int count) {
+QStringList addr2linestr(uint64_t *addresses, int count) {
 	QStringList result;
 	if (!count || cExeName().isEmpty()) return result;
 
@@ -171,10 +171,10 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	QString initial = QString::fromUtf8(crashdump), result;
 	QStringList lines = initial.split('\n');
 	result.reserve(initial.size());
-	int32 i = 0, l = lines.size();
+	int32_t i = 0, l = lines.size();
 
 	while (i < l) {
-		uint64 addresses[1024] = { 0 };
+		uint64_t addresses[1024] = { 0 };
 		for (; i < l; ++i) {
 			result.append(lines.at(i)).append('\n');
 			QString line = lines.at(i).trimmed();
@@ -184,7 +184,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			}
 		}
 
-		int32 start = i;
+		int32_t start = i;
 		for (; i < l; ++i) {
 			QString line = lines.at(i).trimmed();
 			if (line.isEmpty()) break;
@@ -193,7 +193,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			QRegularExpressionMatch m2 = QRegularExpression(qsl("^(.+)\\[(.+)\\]$")).match(line);
 			QString addrstr = m1.hasMatch() ? m1.captured(4) : (m2.hasMatch() ? m2.captured(2) : QString());
 			if (!addrstr.isEmpty()) {
-				uint64 addr = addrstr.startsWith(qstr("0x")) ? addrstr.mid(2).toULongLong(0, 16) : addrstr.toULongLong();
+				uint64_t addr = addrstr.startsWith(qstr("0x")) ? addrstr.mid(2).toULongLong(0, 16) : addrstr.toULongLong();
 				if (addr > 1) {
 					addresses[i - start] = addr;
 				}
@@ -295,7 +295,7 @@ TimeMs psIdleTime() {
 	return getms(true) - _lastUserAction;
 }
 
-void psActivateProcess(uint64 pid) {
+void psActivateProcess(uint64_t pid) {
 //	objc_activateProgram();
 }
 

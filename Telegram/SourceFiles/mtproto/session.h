@@ -94,7 +94,7 @@ inline bool ResponseNeedsAck(const SerializedMessage &response) {
 	if (response.size() < 8) {
 		return false;
 	}
-	auto seqNo = *(uint32*)(response.constData() + 6);
+	auto seqNo = *(uint32_t*)(response.constData() + 6);
 	return (seqNo & 0x01) ? true : false;
 }
 
@@ -104,7 +104,7 @@ public:
 	SessionData(not_null<Session*> creator) : _owner(creator) {
 	}
 
-	void setSession(uint64 session) {
+	void setSession(uint64_t session) {
 		DEBUG_LOG(("MTP Info: setting server_session: %1").arg(session));
 
 		QWriteLocker locker(&_lock);
@@ -113,7 +113,7 @@ public:
 			_messagesSent = 0;
 		}
 	}
-	uint64 getSession() const {
+	uint64_t getSession() const {
 		QReadLocker locker(&_lock);
 		return _session;
 	}
@@ -143,11 +143,11 @@ public:
 		_cloudLangCode = code;
 	}
 
-	void setSalt(uint64 salt) {
+	void setSalt(uint64_t salt) {
 		QWriteLocker locker(&_lock);
 		_salt = salt;
 	}
-	uint64 getSalt() const {
+	uint64_t getSalt() const {
 		QReadLocker locker(&_lock);
 		return _salt;
 	}
@@ -246,7 +246,7 @@ public:
 		return _owner;
 	}
 
-	uint32 nextRequestSeqNumber(bool needAck = true) {
+	uint32_t nextRequestSeqNumber(bool needAck = true) {
 		QWriteLocker locker(&_lock);
 		auto result = _messagesSent;
 		_messagesSent += (needAck ? 1 : 0);
@@ -256,10 +256,10 @@ public:
 	void clear(Instance *instance);
 
 private:
-	uint64 _session = 0;
-	uint64 _salt = 0;
+	uint64_t _session = 0;
+	uint64_t _salt = 0;
 
-	uint32 _messagesSent = 0;
+	uint32_t _messagesSent = 0;
 
 	not_null<Session*> _owner;
 
@@ -316,8 +316,8 @@ public:
 
 	void ping();
 	void cancel(mtpRequestId requestId, mtpMsgId msgId);
-	int32 requestState(mtpRequestId requestId) const;
-	int32 getState() const;
+	int32_t requestState(mtpRequestId requestId) const;
+	int32_t getState() const;
 	QString transport() const;
 
 	void sendPrepared(const mtpRequest &request, TimeMs msCanWait = 0, bool newRequest = true); // nulls msgId and seqNo in request, if newRequest = true
@@ -333,8 +333,8 @@ signals:
 public slots:
 	void needToResumeAndSend();
 
-	mtpRequestId resend(quint64 msgId, qint64 msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
-	void resendMany(QVector<quint64> msgIds, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo);
+	mtpRequestId resend(uint64_t msgId, int64_t msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
+	void resendMany(QVector<uint64_t> msgIds, int64_t msCanWait, bool forceContainer, bool sendMsgStateInfo);
 	void resendAll(); // after connection restart
 
 	void authKeyCreatedForDC();
@@ -342,12 +342,12 @@ public slots:
 
 	void tryToReceive();
 	void checkRequestsByTimer();
-	void onConnectionStateChange(qint32 newState);
+	void onConnectionStateChange(int32_t newState);
 	void onResetDone();
 
-	void sendAnything(qint64 msCanWait = 0);
-	void sendPong(quint64 msgId, quint64 pingId);
-	void sendMsgsStateInfo(quint64 msgId, QByteArray data);
+	void sendAnything(int64_t msCanWait = 0);
+	void sendPong(uint64_t msgId, uint64_t pingId);
+	void sendMsgsStateInfo(uint64_t msgId, QByteArray data);
 
 private:
 	void createDcData();

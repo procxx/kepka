@@ -597,7 +597,7 @@ void Widget::Step::hideDescription() {
 	_description->hideAnimated();
 }
 
-void Widget::Step::paintContentSnapshot(Painter &p, const QPixmap &snapshot, float64 alpha, float64 howMuchHidden) {
+void Widget::Step::paintContentSnapshot(Painter &p, const QPixmap &snapshot, double alpha, double howMuchHidden) {
 	if (!snapshot.isNull()) {
 		auto contentTop = anim::interpolate(height() - (snapshot.height() / cIntRetinaFactor()), height(), howMuchHidden);
 		if (contentTop < height()) {
@@ -613,11 +613,11 @@ void Widget::Step::prepareCoverMask() {
 	auto maskWidth = cIntRetinaFactor();
 	auto maskHeight = st::introCoverHeight * cIntRetinaFactor();
 	auto mask = QImage(maskWidth, maskHeight, QImage::Format_ARGB32_Premultiplied);
-	auto maskInts = reinterpret_cast<uint32*>(mask.bits());
-	Assert(mask.depth() == (sizeof(uint32) << 3));
+	auto maskInts = reinterpret_cast<uint32_t*>(mask.bits());
+	Assert(mask.depth() == (sizeof(uint32_t) << 3));
 	auto maskIntsPerLineAdded = (mask.bytesPerLine() >> 2) - maskWidth;
 	Assert(maskIntsPerLineAdded >= 0);
-	auto realHeight = static_cast<float64>(maskHeight - 1);
+	auto realHeight = static_cast<double>(maskHeight - 1);
 	for (auto y = 0; y != maskHeight; ++y) {
 		auto color = anim::color(st::introCoverTopBg, st::introCoverBottomBg, y / realHeight);
 		auto colorInt = anim::getPremultiplied(color);
@@ -645,7 +645,7 @@ void Widget::Step::paintCover(Painter &p, int top) {
 		right = -outside - left;
 	}
 	if (top < 0) {
-		auto shown = float64(coverHeight) / st::introCoverHeight;
+		auto shown = double(coverHeight) / st::introCoverHeight;
 		auto leftShown = qRound(shown * (left + st::introCoverLeft.width()));
 		left = leftShown - st::introCoverLeft.width();
 		auto rightShown = qRound(shown * (right + st::introCoverRight.width()));
@@ -657,7 +657,7 @@ void Widget::Step::paintCover(Painter &p, int top) {
 	auto planeLeft = (width() - st::introCoverIcon.width()) / 2 - st::introCoverIconLeft;
 	auto planeTop = top + st::introCoverIconTop;
 	if (top < 0 && !_hasCover) {
-		auto deltaLeft = -qRound(float64(st::introPlaneWidth / st::introPlaneHeight) * top);
+		auto deltaLeft = -qRound(double(st::introPlaneWidth / st::introPlaneHeight) * top);
 //		auto deltaTop = top;
 		planeLeft += deltaLeft;
 	//	planeTop += top;
@@ -672,7 +672,7 @@ int Widget::Step::contentLeft() const {
 int Widget::Step::contentTop() const {
 	auto result = height() - st::introStepHeight - st::introStepHeightAdd;
 	if (_hasCover) {
-		auto added = 1. - snap(float64(height() - st::windowMinHeight) / (st::introStepHeightFull - st::windowMinHeight), 0., 1.);
+		auto added = 1. - snap(double(height() - st::windowMinHeight) / (st::introStepHeightFull - st::windowMinHeight), 0., 1.);
 		result += qRound(added * st::introStepHeightAdd);
 	}
 	return result;

@@ -161,7 +161,7 @@ public:
 		return std::move(_adminsCanEdit);
 	}
 
-	void setItems(std::vector<HistoryItemOwned> &&items, std::map<uint64, HistoryItem*> &&itemsByIds, bool upLoaded, bool downLoaded) {
+	void setItems(std::vector<HistoryItemOwned> &&items, std::map<uint64_t, HistoryItem*> &&itemsByIds, bool upLoaded, bool downLoaded) {
 		_items = std::move(items);
 		_itemsByIds = std::move(itemsByIds);
 		_upLoaded = upLoaded;
@@ -179,7 +179,7 @@ public:
 	std::vector<HistoryItemOwned> takeItems() {
 		return std::move(_items);
 	}
-	std::map<uint64, HistoryItem*> takeItemsByIds() {
+	std::map<uint64_t, HistoryItem*> takeItemsByIds() {
 		return std::move(_itemsByIds);
 	}
 	LocalIdManager takeIdManager() {
@@ -204,7 +204,7 @@ private:
 	std::vector<not_null<UserData*>> _admins;
 	std::vector<not_null<UserData*>> _adminsCanEdit;
 	std::vector<HistoryItemOwned> _items;
-	std::map<uint64, HistoryItem*> _itemsByIds;
+	std::map<uint64_t, HistoryItem*> _itemsByIds;
 	bool _upLoaded = false;
 	bool _downLoaded = true;
 	LocalIdManager _idManager;

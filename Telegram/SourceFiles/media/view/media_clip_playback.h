@@ -33,33 +33,33 @@ class Playback {
 public:
 	Playback();
 
-	void setValueChangedCallback(base::lambda<void(float64)> callback) {
+	void setValueChangedCallback(base::lambda<void(double)> callback) {
 		_valueChanged = std::move(callback);
 	}
 	void setInLoadingStateChangedCallback(base::lambda<void(bool)> callback) {
 		_inLoadingStateChanged = std::move(callback);
 	}
-	void setValue(float64 value, bool animated);
-	float64 value() const;
-	float64 value(TimeMs ms);
+	void setValue(double value, bool animated);
+	double value() const;
+	double value(TimeMs ms);
 
 	void updateState(const Player::TrackState &state);
-	void updateLoadingState(float64 progress);
+	void updateLoadingState(double progress);
 
 private:
-	void step_value(float64 ms, bool timer);
+	void step_value(double ms, bool timer);
 
 	// This can animate for a very long time (like in music playing),
 	// so it should be a BasicAnimation, not an Animation.
 	anim::value a_value;
 	BasicAnimation _a_value;
-	base::lambda<void(float64)> _valueChanged;
+	base::lambda<void(double)> _valueChanged;
 
 	bool _inLoadingState = false;
 	base::lambda<void(bool)> _inLoadingStateChanged;
 
-	int64 _position = 0;
-	int64 _length = 0;
+	int64_t _position = 0;
+	int64_t _length = 0;
 
 	bool _playing = false;
 

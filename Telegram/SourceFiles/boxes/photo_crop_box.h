@@ -29,7 +29,7 @@ public:
 	PhotoCropBox(QWidget*, const QImage &img, const PeerId &peer);
 	PhotoCropBox(QWidget*, const QImage &img, PeerData *peer);
 
-	int32 mouseState(QPoint p);
+	int32_t mouseState(QPoint p);
 
 signals:
 	void ready(const QImage &tosend);
@@ -51,10 +51,10 @@ private:
 	void sendPhoto();
 
 	QString _title;
-	int32 _downState = 0;
-	int32 _thumbx, _thumby, _thumbw, _thumbh;
-	int32 _cropx, _cropy, _cropw;
-	int32 _fromposx, _fromposy, _fromcropx, _fromcropy, _fromcropw;
+	int32_t _downState = 0;
+	int32_t _thumbx, _thumby, _thumbw, _thumbh;
+	int32_t _cropx, _cropy, _cropw;
+	int32_t _fromposx, _fromposy, _fromcropx, _fromcropy, _fromcropw;
 	QImage _img;
 	QPixmap _thumb;
 	QImage _mask, _fade;

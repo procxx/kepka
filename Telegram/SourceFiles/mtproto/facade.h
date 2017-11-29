@@ -178,7 +178,7 @@ inline DcId maindc() {
 	return MainInstance()->mainDcId();
 }
 
-inline int32 dcstate(ShiftedDcId shiftedDcId = 0) {
+inline int32_t dcstate(ShiftedDcId shiftedDcId = 0) {
 	if (auto instance = MainInstance()) {
 		return instance->dcstate(shiftedDcId);
 	}
@@ -222,7 +222,7 @@ inline void stopSession(ShiftedDcId shiftedDcId) {
 	return MainInstance()->stopSession(shiftedDcId);
 }
 
-inline int32 state(mtpRequestId requestId) { // < 0 means waiting for such count of ms
+inline int32_t state(mtpRequestId requestId) { // < 0 means waiting for such count of ms
 	return MainInstance()->state(requestId);
 }
 
@@ -232,7 +232,7 @@ template <typename TRequest>
 mtpRequestId Session::send(const TRequest &request, RPCResponseHandler callbacks, TimeMs msCanWait, bool needsLayer, bool toMainDC, mtpRequestId after) {
 	mtpRequestId requestId = 0;
 	try {
-		uint32 requestSize = request.innerLength() >> 2;
+		uint32_t requestSize = request.innerLength() >> 2;
 		mtpRequest reqSerialized(mtpRequestData::prepare(requestSize));
 		request.write(*reqSerialized);
 

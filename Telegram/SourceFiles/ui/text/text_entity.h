@@ -172,10 +172,10 @@ QStringList PrepareSearchWords(const QString &query, const QRegularExpression *S
 bool CutPart(TextWithEntities &sending, TextWithEntities &left, int limit);
 
 struct MentionNameFields {
-	MentionNameFields(int32 userId = 0, uint64 accessHash = 0) : userId(userId), accessHash(accessHash) {
+	MentionNameFields(int32_t userId = 0, uint64_t accessHash = 0) : userId(userId), accessHash(accessHash) {
 	}
-	int32 userId = 0;
-	uint64 accessHash = 0;
+	int32_t userId = 0;
+	uint64_t accessHash = 0;
 };
 inline MentionNameFields MentionNameDataToFields(const QString &data) {
 	auto components = data.split('.');
@@ -202,10 +202,10 @@ MTPVector<MTPMessageEntity> EntitiesToMTP(const EntitiesInText &entities, Conver
 
 // New entities are added to the ones that are already in result.
 // Changes text if (flags & TextParseMarkdown).
-void ParseEntities(TextWithEntities &result, int32 flags, bool rich = false);
+void ParseEntities(TextWithEntities &result, int32_t flags, bool rich = false);
 QString ApplyEntities(const TextWithEntities &text);
 
-void PrepareForSending(TextWithEntities &result, int32 flags);
+void PrepareForSending(TextWithEntities &result, int32_t flags);
 void Trim(TextWithEntities &result);
 
 enum class PrepareTextOption {

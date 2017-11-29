@@ -347,7 +347,7 @@ bool objc_idleTime(TimeMs &idleTime) { // taken from https://github.com/trueinte
 		return false;
 	}
 
-	uint64 err = ~0L, result = err;
+	uint64_t err = ~0L, result = err;
 	if (obj) {
 		CFTypeID type = CFGetTypeID(obj);
 

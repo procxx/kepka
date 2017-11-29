@@ -67,7 +67,7 @@ void AbstractCheckView::finishAnimation() {
 	_toggleAnimation.finish();
 }
 
-float64 AbstractCheckView::currentAnimationValue(TimeMs ms) {
+double AbstractCheckView::currentAnimationValue(TimeMs ms) {
 	return ms ? _toggleAnimation.current(ms, _checked ? 1. : 0.) : _toggleAnimation.current(_checked ? 1. : 0.);
 }
 
@@ -91,7 +91,7 @@ void ToggleView::paint(Painter &p, int left, int top, int outerWidth, TimeMs ms)
 	auto toggled = currentAnimationValue(ms);
 	auto fullWidth = _st->diameter + _st->width;
 	auto innerDiameter = _st->diameter - 2 * _st->shift;
-	auto innerRadius = float64(innerDiameter) / 2.;
+	auto innerRadius = double(innerDiameter) / 2.;
 	auto toggleLeft = left + anim::interpolate(0, fullWidth - _st->diameter, toggled);
 	auto bgRect = rtlrect(left + _st->shift, top + _st->shift, fullWidth - 2 * _st->shift, innerDiameter, outerWidth);
 	auto fgRect = rtlrect(toggleLeft, top, _st->diameter, _st->diameter, outerWidth);
@@ -112,7 +112,7 @@ void ToggleView::paint(Painter &p, int left, int top, int outerWidth, TimeMs ms)
 	}
 }
 
-void ToggleView::paintXV(Painter &p, int left, int top, int outerWidth, float64 toggled, const QBrush &brush) {
+void ToggleView::paintXV(Painter &p, int left, int top, int outerWidth, double toggled, const QBrush &brush) {
 	Assert(_st->vsize > 0);
 	Assert(_st->stroke > 0);
 	static const auto sqrt2 = sqrt(2.);
@@ -268,7 +268,7 @@ void RadioView::paint(Painter &p, int left, int top, int outerWidth, TimeMs ms) 
 	pen.setWidth(_st->thickness);
 	p.setPen(pen);
 	p.setBrush(_st->bg);
-	//int32 skip = qCeil(_st->thickness / 2.);
+	//int32_t skip = qCeil(_st->thickness / 2.);
 	//p.drawEllipse(_checkRect.marginsRemoved(QMargins(skip, skip, skip, skip)));
 	p.drawEllipse(rtlrect(QRectF(left, top, _st->diameter, _st->diameter).marginsRemoved(QMarginsF(_st->thickness / 2., _st->thickness / 2., _st->thickness / 2., _st->thickness / 2.)), outerWidth));
 
@@ -278,10 +278,10 @@ void RadioView::paint(Painter &p, int left, int top, int outerWidth, TimeMs ms) 
 
 		auto skip0 = _st->diameter / 2., skip1 = _st->skip / 10., checkSkip = skip0 * (1. - toggled) + skip1 * toggled;
 		p.drawEllipse(rtlrect(QRectF(left, top, _st->diameter, _st->diameter).marginsRemoved(QMarginsF(checkSkip, checkSkip, checkSkip, checkSkip)), outerWidth));
-		//int32 fskip = qFloor(checkSkip), cskip = qCeil(checkSkip);
+		//int32_t fskip = qFloor(checkSkip), cskip = qCeil(checkSkip);
 		//if (2 * fskip < _checkRect.width()) {
 		//	if (fskip != cskip) {
-		//		p.setOpacity(float64(cskip) - checkSkip);
+		//		p.setOpacity(double(cskip) - checkSkip);
 		//		p.drawEllipse(_checkRect.marginsRemoved(QMargins(fskip, fskip, fskip, fskip)));
 		//		p.setOpacity(1.);
 		//	}

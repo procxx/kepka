@@ -57,7 +57,7 @@ public:
 		Expects(isValid());
 		return toBytes(_rsa->e);
 	}
-	uint64 getFingerPrint() const {
+	uint64_t getFingerPrint() const {
 		return _fingerprint;
 	}
 	bool isValid() const {
@@ -110,7 +110,7 @@ private:
 		MTP_bytes(toBytes(_rsa->e)).write(string);
 
 		uchar sha1Buffer[20];
-		_fingerprint = *(uint64*)(hashSha1(&string[0], string.size() * sizeof(mtpPrime), sha1Buffer) + 3);
+		_fingerprint = *(uint64_t*)(hashSha1(&string[0], string.size() * sizeof(mtpPrime), sha1Buffer) + 3);
 	}
 	static base::byte_vector toBytes(BIGNUM *number) {
 		auto size = BN_num_bytes(number);
@@ -120,7 +120,7 @@ private:
 	}
 
 	RSA *_rsa = nullptr;
-	uint64 _fingerprint = 0;
+	uint64_t _fingerprint = 0;
 
 };
 
@@ -134,7 +134,7 @@ bool RSAPublicKey::isValid() const {
 	return _private && _private->isValid();
 }
 
-uint64 RSAPublicKey::getFingerPrint() const {
+uint64_t RSAPublicKey::getFingerPrint() const {
 	Expects(isValid());
 	return _private->getFingerPrint();
 }

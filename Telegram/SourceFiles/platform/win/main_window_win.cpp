@@ -96,7 +96,7 @@ enum {
 	_PsInitVer = 0x02,
 };
 
-int32 _psSize = 0;
+int32_t _psSize = 0;
 class _PsShadowWindows {
 public:
 
@@ -145,13 +145,13 @@ public:
 		_metaSize = _fullsize + 2 * _shift;
 		_alphas.reserve(_metaSize);
 		_colors.reserve(_metaSize * _metaSize);
-		for (int32 j = 0; j < _metaSize; ++j) {
-			for (int32 i = 0; i < _metaSize; ++i) {
+		for (int32_t j = 0; j < _metaSize; ++j) {
+			for (int32_t i = 0; i < _metaSize; ++i) {
 				_colors.push_back((i < 2 * _shift || j < 2 * _shift) ? 1 : qMax(BYTE(1), BYTE(cornersImage.pixel(QPoint(i - 2 * _shift, j - 2 * _shift)) >> 24)));
 			}
 		}
 		uchar prev = 0;
-		for (int32 i = 0; i < _metaSize; ++i) {
+		for (int32_t i = 0; i < _metaSize; ++i) {
 			uchar a = _colors[(_metaSize - 1) * _metaSize + i];
 			if (a < prev) break;
 
@@ -539,7 +539,7 @@ LRESULT CALLBACK _PsShadowWindows::wndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	break;
 
 	case WM_NCHITTEST: {
-		int32 xPos = GET_X_LPARAM(lParam), yPos = GET_Y_LPARAM(lParam);
+		int32_t xPos = GET_X_LPARAM(lParam), yPos = GET_Y_LPARAM(lParam);
 		switch (i) {
 		case 0: return HTTOP;
 		case 1: return (yPos < _psShadowWindows._y + _psSize) ? HTTOPRIGHT : ((yPos >= _psShadowWindows._y + _psShadowWindows._h - _psSize) ? HTBOTTOMRIGHT : HTRIGHT);
@@ -636,7 +636,7 @@ void MainWindow::psShowTrayMenu() {
 	trayIconMenu->popup(QCursor::pos());
 }
 
-int32 MainWindow::screenNameChecksum(const QString &name) const {
+int32_t MainWindow::screenNameChecksum(const QString &name) const {
 	constexpr int DeviceNameSize = base::array_size(MONITORINFOEX().szDevice);
 	wchar_t buffer[DeviceNameSize] = { 0 };
 	if (name.size() < DeviceNameSize) {

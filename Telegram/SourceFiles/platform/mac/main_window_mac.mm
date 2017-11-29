@@ -316,7 +316,7 @@ void _placeCounter(QImage &img, int size, int count, style::color bg, style::col
 
 		p.setBrush(bg);
 		p.setPen(Qt::NoPen);
-		int32 fontSize, skip;
+		int32_t fontSize, skip;
 		if (size == 22) {
 			skip = 1;
 			fontSize = 8;
@@ -325,7 +325,7 @@ void _placeCounter(QImage &img, int size, int count, style::color bg, style::col
 			fontSize = 16;
 		}
 		style::font f(fontSize, 0, 0);
-		int32 w = f->width(cnt), d, r;
+		int32_t w = f->width(cnt), d, r;
 		if (size == 22) {
 			d = (cntSize < 2) ? 3 : 2;
 			r = (cntSize < 2) ? 6 : 5;
@@ -367,7 +367,7 @@ void MainWindow::updateIconCounters() {
 		QImage img(psTrayIcon(dm)), imgsel(psTrayIcon(true));
 		img.detach();
 		imgsel.detach();
-		int32 size = cRetina() ? 44 : 22;
+		int32_t size = cRetina() ? 44 : 22;
 		_placeCounter(img, size, counter, bg, (dm && muted) ? st::trayCounterFgMacInvert : st::trayCounterFg);
 		_placeCounter(imgsel, size, counter, st::trayCounterBgMacInvert, st::trayCounterFgMacInvert);
 		icon.addPixmap(App::pixmapFromImageInPlace(std::move(img)));

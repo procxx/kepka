@@ -116,8 +116,8 @@ void LocationManager::getData(LocationData *data) {
 		return failed(data);
 	}
 
-	int32 w = st::locationSize.width(), h = st::locationSize.height();
-	int32 zoom = 13, scale = 1;
+	int32_t w = st::locationSize.width(), h = st::locationSize.height();
+	int32_t zoom = 13, scale = 1;
 	if (cScale() == dbisTwo || cRetina()) {
 		scale = 2;
 	} else {

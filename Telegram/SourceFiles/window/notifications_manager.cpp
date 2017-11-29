@@ -167,7 +167,7 @@ void System::clearAllFast() {
 }
 
 void System::checkDelayed() {
-	int32 t = unixtime();
+	int32_t t = unixtime();
 	for (auto i = _settingWaiters.begin(); i != _settingWaiters.end();) {
 		auto history = i.key();
 		bool loaded = false, muted = false;
@@ -213,7 +213,7 @@ void System::showNext() {
 
 	auto ms = getms(true), nextAlert = 0LL;
 	bool alert = false;
-	int32 now = unixtime();
+	int32_t now = unixtime();
 	for (auto i = _whenAlerts.begin(); i != _whenAlerts.end();) {
 		while (!i.value().isEmpty() && i.value().begin().key() <= ms) {
 			NotifySettingsPtr n = i.key()->peer->notify, f = i.value().begin().value() ? i.value().begin().value()->notify : UnknownNotifySettings;
@@ -326,7 +326,7 @@ void System::showNext() {
 						if (nextNotify) {
 							if (forwardedItem) {
 								auto nextForwarded = nextNotify->Has<HistoryMessageForwarded>() ? nextNotify : nullptr;
-								if (nextForwarded && forwardedItem->author() == nextForwarded->author() && qAbs(int64(nextForwarded->date.toTime_t()) - int64(forwardedItem->date.toTime_t())) < 2) {
+								if (nextForwarded && forwardedItem->author() == nextForwarded->author() && qAbs(int64_t(nextForwarded->date.toTime_t()) - int64_t(forwardedItem->date.toTime_t())) < 2) {
 									forwardedItem = nextForwarded;
 									++forwardedCount;
 								} else {

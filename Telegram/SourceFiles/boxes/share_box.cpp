@@ -64,7 +64,7 @@ void ShareBox::prepare() {
 	setDimensions(st::boxWideWidth, st::boxMaxListHeight);
 
 	_select->setQueryChangedCallback([this](const QString &query) { onFilterUpdate(query); });
-	_select->setItemRemovedCallback([this](uint64 itemId) {
+	_select->setItemRemovedCallback([this](uint64_t itemId) {
 		if (auto peer = App::peerLoaded(itemId)) {
 			_inner->peerUnselected(peer);
 			onSelectedChanged();
@@ -481,7 +481,7 @@ ShareBox::Inner::Chat *ShareBox::Inner::getChat(Dialogs::Row *row) {
 
 void ShareBox::Inner::setActive(int active) {
 	if (active != _active) {
-		auto changeNameFg = [this](int index, float64 from, float64 to) {
+		auto changeNameFg = [this](int index, double from, double to) {
 			if (auto chat = getChatAtIndex(index)) {
 				chat->nameActive.start([this, peer = chat->peer] {
 					repaintChat(peer);
@@ -620,7 +620,7 @@ void ShareBox::Inner::onSelectActive() {
 }
 
 void ShareBox::Inner::resizeEvent(QResizeEvent *e) {
-	_columnSkip = (width() - _columnCount * st::sharePhotoCheckbox.imageRadius * 2) / float64(_columnCount + 1);
+	_columnSkip = (width() - _columnCount * st::sharePhotoCheckbox.imageRadius * 2) / double(_columnCount + 1);
 	_rowWidthReal = st::sharePhotoCheckbox.imageRadius * 2 + _columnSkip;
 	_rowsLeft = qFloor(_columnSkip / 2);
 	_rowWidth = qFloor(_rowWidthReal);
@@ -743,7 +743,7 @@ void ShareBox::Inner::updateFilter(QString filter) {
 void ShareBox::Inner::peopleReceived(const QString &query, const QVector<MTPPeer> &people) {
 	_lastQuery = query.toLower().trimmed();
 	if (_lastQuery.at(0) == '@') _lastQuery = _lastQuery.mid(1);
-	int32 already = _byUsernameFiltered.size();
+	int32_t already = _byUsernameFiltered.size();
 	_byUsernameFiltered.reserve(already + people.size());
 	d_byUsernameFiltered.reserve(already + people.size());
 	for_const (auto &mtpPeer, people) {
@@ -800,10 +800,10 @@ QVector<PeerData*> ShareBox::Inner::selected() const {
 
 QString AppendShareGameScoreUrl(const QString &url, const FullMsgId &fullId) {
 	auto shareHashData = QByteArray(0x10, Qt::Uninitialized);
-	auto shareHashDataInts = reinterpret_cast<int32*>(shareHashData.data());
+	auto shareHashDataInts = reinterpret_cast<int32_t*>(shareHashData.data());
 	auto channel = fullId.channel ? App::channelLoaded(fullId.channel) : static_cast<ChannelData*>(nullptr);
 	auto channelAccessHash = channel ? channel->access : 0ULL;
-	auto channelAccessHashInts = reinterpret_cast<int32*>(&channelAccessHash);
+	auto channelAccessHashInts = reinterpret_cast<int32_t*>(&channelAccessHash);
 	shareHashDataInts[0] = Auth().userId();
 	shareHashDataInts[1] = fullId.channel;
 	shareHashDataInts[2] = fullId.msg;
@@ -815,7 +815,7 @@ QString AppendShareGameScoreUrl(const QString &url, const FullMsgId &fullId) {
 	hashSha1(shareHashData.constData(), shareHashData.size(), shareHashEncrypted.data());
 
 	// Mix in channel access hash to the first 64 bits of SHA1 of data.
-	*reinterpret_cast<uint64*>(shareHashEncrypted.data()) ^= *reinterpret_cast<uint64*>(channelAccessHashInts);
+	*reinterpret_cast<uint64_t*>(shareHashEncrypted.data()) ^= *reinterpret_cast<uint64_t*>(channelAccessHashInts);
 
 	// Encrypt data.
 	if (!Local::encrypt(shareHashData.constData(), shareHashEncrypted.data() + key128Size, shareHashData.size(), shareHashEncrypted.constData())) {
@@ -861,7 +861,7 @@ void ShareGameScoreByHash(const QString &hash) {
 	hashSha1(hashData.constData(), hashData.size(), dataSha1);
 
 	// Mix out channel access hash from the first 64 bits of SHA1 of data.
-	auto channelAccessHash = *reinterpret_cast<uint64*>(hashEncrypted.data()) ^ *reinterpret_cast<uint64*>(dataSha1);
+	auto channelAccessHash = *reinterpret_cast<uint64_t*>(hashEncrypted.data()) ^ *reinterpret_cast<uint64_t*>(dataSha1);
 
 	// Check next 64 bits of SHA1() of data.
 	auto skipSha1Part = sizeof(channelAccessHash);
@@ -870,14 +870,14 @@ void ShareGameScoreByHash(const QString &hash) {
 		return;
 	}
 
-	auto hashDataInts = reinterpret_cast<int32*>(hashData.data());
+	auto hashDataInts = reinterpret_cast<int32_t*>(hashData.data());
 	if (!AuthSession::Exists() || hashDataInts[0] != Auth().userId()) {
 		Ui::show(Box<InformBox>(lang(lng_share_wrong_user)));
 		return;
 	}
 
 	// Check first 32 bits of channel access hash.
-	auto channelAccessHashInts = reinterpret_cast<int32*>(&channelAccessHash);
+	auto channelAccessHashInts = reinterpret_cast<int32_t*>(&channelAccessHash);
 	if (channelAccessHashInts[0] != hashDataInts[3]) {
 		Ui::show(Box<InformBox>(lang(lng_share_wrong_user)));
 		return;

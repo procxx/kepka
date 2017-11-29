@@ -62,7 +62,7 @@ void UpdateChecker::initOutput() {
 		fileName = m.captured(1).replace(QRegularExpression(qsl("[^a-zA-Z0-9_\\-]")), QString());
 	}
 	if (fileName.isEmpty()) {
-		fileName = qsl("tupdate-%1").arg(rand_value<uint32>() % 1000000);
+		fileName = qsl("tupdate-%1").arg(rand_value<uint32_t>() % 1000000);
 	}
 	QString dirStr = cWorkingDir() + qsl("tupdates/");
 	fileName = dirStr + fileName;
@@ -81,9 +81,9 @@ void UpdateChecker::initOutput() {
 	}
 	outputFile.setFileName(fileName);
 	if (file.exists()) {
-		uint64 fullSize = file.size();
+		uint64_t fullSize = file.size();
 		if (fullSize < INT_MAX) {
-			int32 goodSize = (int32)fullSize;
+			int32_t goodSize = (int32_t)fullSize;
 			if (goodSize % UpdateChunk) {
 				goodSize = goodSize - (goodSize % UpdateChunk);
 				if (goodSize) {
@@ -121,7 +121,7 @@ void UpdateChecker::sendRequest() {
 	req.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
 	if (reply) reply->deleteLater();
 	reply = manager.get(req);
-	connect(reply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(partFinished(qint64,qint64)));
+	connect(reply, SIGNAL(downloadProgress(int64_t,int64_t)), this, SLOT(partFinished(int64_t,int64_t)));
 	connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(partFailed(QNetworkReply::NetworkError)));
 	connect(reply, SIGNAL(metaDataChanged()), this, SLOT(partMetaGot()));
 }
@@ -144,17 +144,17 @@ void UpdateChecker::partMetaGot() {
 	}
 }
 
-int32 UpdateChecker::ready() {
+int32_t UpdateChecker::ready() {
 	QMutexLocker lock(&mutex);
 	return already;
 }
 
-int32 UpdateChecker::size() {
+int32_t UpdateChecker::size() {
 	QMutexLocker lock(&mutex);
 	return full;
 }
 
-void UpdateChecker::partFinished(qint64 got, qint64 total) {
+void UpdateChecker::partFinished(int64_t got, int64_t total) {
 	if (!reply) return;
 
 	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
@@ -245,13 +245,13 @@ void UpdateChecker::unpackUpdate() {
 	}
 
 //#ifdef Q_OS_WIN // use Lzma SDK for win
-//	const int32 hSigLen = 128, hShaLen = 20, hPropsLen = LZMA_PROPS_SIZE, hOriginalSizeLen = sizeof(int32), hSize = hSigLen + hShaLen + hPropsLen + hOriginalSizeLen; // header
+//	const int32_t hSigLen = 128, hShaLen = 20, hPropsLen = LZMA_PROPS_SIZE, hOriginalSizeLen = sizeof(int32_t), hSize = hSigLen + hShaLen + hPropsLen + hOriginalSizeLen; // header
 //#else // Q_OS_WIN
-	const int32 hSigLen = 128, hShaLen = 20, hPropsLen = 0, hOriginalSizeLen = sizeof(int32), hSize = hSigLen + hShaLen + hOriginalSizeLen; // header
+	const int32_t hSigLen = 128, hShaLen = 20, hPropsLen = 0, hOriginalSizeLen = sizeof(int32_t), hSize = hSigLen + hShaLen + hOriginalSizeLen; // header
 //#endif // Q_OS_WIN
 
 	QByteArray compressed = outputFile.readAll();
-	int32 compressedLen = compressed.size() - hSize;
+	int32_t compressedLen = compressed.size() - hSize;
 	if (compressedLen <= 0) {
 		LOG(("Update Error: bad compressed size: %1").arg(compressed.size()));
 		return fatalFail();
@@ -301,7 +301,7 @@ void UpdateChecker::unpackUpdate() {
 
 	QByteArray uncompressed;
 
-	int32 uncompressedLen;
+	int32_t uncompressedLen;
 	memcpy(&uncompressedLen, compressed.constData() + hSigLen + hShaLen + hPropsLen, hOriginalSizeLen);
 	uncompressed.resize(uncompressedLen);
 
@@ -360,7 +360,7 @@ void UpdateChecker::unpackUpdate() {
 
 	tempDir.mkdir(tempDir.absolutePath());
 
-	quint32 version;
+	uint32_t version;
 	{
 		QDataStream stream(uncompressed);
 		stream.setVersion(QDataStream::Qt_5_1);
@@ -371,7 +371,7 @@ void UpdateChecker::unpackUpdate() {
 			return fatalFail();
 		}
 
-		quint64 betaVersion = 0;
+		uint64_t betaVersion = 0;
 		if (version == 0x7FFFFFFF) { // beta version
 			stream >> betaVersion;
 			if (stream.status() != QDataStream::Ok) {
@@ -382,12 +382,12 @@ void UpdateChecker::unpackUpdate() {
 				LOG(("Update Error: downloaded beta version %1 is not greater, than mine %2").arg(betaVersion).arg(cBetaVersion()));
 				return fatalFail();
 			}
-		} else if (int32(version) <= AppVersion) {
+		} else if (int32_t(version) <= AppVersion) {
 			LOG(("Update Error: downloaded version %1 is not greater, than mine %2").arg(version).arg(AppVersion));
 			return fatalFail();
 		}
 
-		quint32 filesCount;
+		uint32_t filesCount;
 		stream >> filesCount;
 		if (stream.status() != QDataStream::Ok) {
 			LOG(("Update Error: cant read files count from downloaded stream, status: %1").arg(stream.status()));
@@ -397,9 +397,9 @@ void UpdateChecker::unpackUpdate() {
 			LOG(("Update Error: update is empty!"));
 			return fatalFail();
 		}
-		for (uint32 i = 0; i < filesCount; ++i) {
+		for (uint32_t i = 0; i < filesCount; ++i) {
 			QString relativeName;
-			quint32 fileSize;
+			uint32_t fileSize;
 			QByteArray fileInnerData;
 			bool executable = false;
 
@@ -411,7 +411,7 @@ void UpdateChecker::unpackUpdate() {
 				LOG(("Update Error: cant read file from downloaded stream, status: %1").arg(stream.status()));
 				return fatalFail();
 			}
-			if (fileSize != quint32(fileInnerData.size())) {
+			if (fileSize != uint32_t(fileInnerData.size())) {
 				LOG(("Update Error: bad file size %1 not matching data size %2").arg(fileSize).arg(fileInnerData.size()));
 				return fatalFail();
 			}
@@ -454,7 +454,7 @@ void UpdateChecker::unpackUpdate() {
 		}
 		fVersion.write((const char*)&versionNum, sizeof(VerInt));
 		if (versionNum == 0x7FFFFFFF) { // beta version
-			fVersion.write((const char*)&betaVersion, sizeof(quint64));
+			fVersion.write((const char*)&betaVersion, sizeof(uint64_t));
 		} else {
 			fVersion.write((const char*)&versionLen, sizeof(VerInt));
 			fVersion.write((const char*)&versionStr[0], versionLen);
@@ -509,8 +509,8 @@ bool checkReadyUpdate() {
 			return false;
 		}
 		if (versionNum == 0x7FFFFFFF) { // beta version
-			quint64 betaVersion = 0;
-			if (fVersion.read((char*)&betaVersion, sizeof(quint64)) != sizeof(quint64)) {
+			uint64_t betaVersion = 0;
+			if (fVersion.read((char*)&betaVersion, sizeof(uint64_t)) != sizeof(uint64_t)) {
 				LOG(("Update Error: cant read beta version from file '%1'").arg(versionPath));
 				UpdateChecker::clearAll();
 				return false;
@@ -582,7 +582,7 @@ bool checkReadyUpdate() {
 
 #endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
-QString countBetaVersionSignature(uint64 version) { // duplicated in packer.cpp
+QString countBetaVersionSignature(uint64_t version) { // duplicated in packer.cpp
 	if (cBetaPrivateKey().isEmpty()) {
 		LOG(("Error: Trying to count beta version signature without beta private key!"));
 		return QString();
@@ -590,12 +590,12 @@ QString countBetaVersionSignature(uint64 version) { // duplicated in packer.cpp
 
 	QByteArray signedData = (qstr("TelegramBeta_") + QString::number(version, 16).toLower()).toUtf8();
 
-	static const int32 shaSize = 20, keySize = 128;
+	static const int32_t shaSize = 20, keySize = 128;
 
 	uchar sha1Buffer[shaSize];
 	hashSha1(signedData.constData(), signedData.size(), sha1Buffer); // count sha1
 
-	uint32 siglen = 0;
+	uint32_t siglen = 0;
 
 	RSA *prKey = PEM_read_bio_RSAPrivateKey(BIO_new_mem_buf(const_cast<char*>(cBetaPrivateKey().constData()), -1), 0, 0, 0);
 	if (!prKey) {

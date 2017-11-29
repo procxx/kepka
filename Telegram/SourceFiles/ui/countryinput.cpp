@@ -323,9 +323,9 @@ void CountrySelectBox::Inner::paintEvent(QPaintEvent *e) {
 		if (r.intersects(QRect(0, 0, width(), st::countriesSkip))) {
 			p.fillRect(r.intersected(QRect(0, 0, width(), st::countriesSkip)), st::countryRowBg);
 		}
-		int32 from = floorclamp(r.y() - st::countriesSkip, _rowHeight, 0, l);
-		int32 to = ceilclamp(r.y() + r.height() - st::countriesSkip, _rowHeight, 0, l);
-		for (int32 i = from; i < to; ++i) {
+		int32_t from = floorclamp(r.y() - st::countriesSkip, _rowHeight, 0, l);
+		int32_t to = ceilclamp(r.y() + r.height() - st::countriesSkip, _rowHeight, 0, l);
+		for (int32_t i = from; i < to; ++i) {
 			auto selected = (i == (_pressed >= 0 ? _pressed : _selected));
 			auto y = st::countriesSkip + i * _rowHeight;
 
@@ -457,7 +457,7 @@ void CountrySelectBox::Inner::updateFilter(QString filter) {
 	}
 }
 
-void CountrySelectBox::Inner::selectSkip(int32 dir) {
+void CountrySelectBox::Inner::selectSkip(int32_t dir) {
 	_mouseSelection = false;
 
 	int cur = (_selected >= 0) ? _selected : -1;
@@ -475,8 +475,8 @@ void CountrySelectBox::Inner::selectSkip(int32 dir) {
 	update();
 }
 
-void CountrySelectBox::Inner::selectSkipPage(int32 h, int32 dir) {
-	int32 points = h / _rowHeight;
+void CountrySelectBox::Inner::selectSkipPage(int32_t h, int32_t dir) {
+	int32_t points = h / _rowHeight;
 	if (!points) return;
 	selectSkip(points * dir);
 }

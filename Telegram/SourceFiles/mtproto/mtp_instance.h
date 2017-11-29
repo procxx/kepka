@@ -78,7 +78,7 @@ public:
 	}
 
 	template <typename TRequest>
-	mtpRequestId send(const TRequest &request, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail = RPCFailHandlerPtr(), int32 dc = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
+	mtpRequestId send(const TRequest &request, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail = RPCFailHandlerPtr(), int32_t dc = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
 		return send(request, RPCResponseHandler(onDone, onFail), dc, msCanWait, after);
 	}
 
@@ -90,11 +90,11 @@ public:
 
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
-	int32 dcstate(ShiftedDcId shiftedDcId = 0);
+	int32_t dcstate(ShiftedDcId shiftedDcId = 0);
 	QString dctransport(ShiftedDcId shiftedDcId = 0);
 	void ping();
 	void cancel(mtpRequestId requestId);
-	int32 state(mtpRequestId requestId); // < 0 means waiting for such count of ms
+	int32_t state(mtpRequestId requestId); // < 0 means waiting for such count of ms
 	void killSession(ShiftedDcId shiftedDcId);
 	void stopSession(ShiftedDcId shiftedDcId);
 	void reInitConnection(DcId dcId);
@@ -107,11 +107,11 @@ public:
 
 	void setUpdatesHandler(RPCDoneHandlerPtr onDone);
 	void setGlobalFailHandler(RPCFailHandlerPtr onFail);
-	void setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, int32 state)> handler);
+	void setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, int32_t state)> handler);
 	void setSessionResetHandler(base::lambda<void(ShiftedDcId shiftedDcId)> handler);
 	void clearGlobalHandlers();
 
-	void onStateChange(ShiftedDcId dcWithShift, int32 state);
+	void onStateChange(ShiftedDcId dcWithShift, int32_t state);
 	void onSessionReset(ShiftedDcId dcWithShift);
 
 	void registerRequest(mtpRequestId requestId, ShiftedDcId dcWithShift);
@@ -140,11 +140,11 @@ public slots:
 signals:
 	void configLoaded();
 	void cdnConfigLoaded();
-	void keyDestroyed(qint32 shiftedDcId);
+	void keyDestroyed(int32_t shiftedDcId);
 	void allKeysDestroyed();
 
 private slots:
-	void onKeyDestroyed(qint32 shiftedDcId);
+	void onKeyDestroyed(int32_t shiftedDcId);
 
 private:
 	internal::Session *getSession(ShiftedDcId shiftedDcId);

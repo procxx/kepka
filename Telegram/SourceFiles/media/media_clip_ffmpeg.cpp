@@ -149,12 +149,12 @@ ReaderImplementation::ReadResult FFMpegReaderImplementation::readNextFrame() {
 }
 
 void FFMpegReaderImplementation::processReadFrame() {
-	int64 duration = _frame->pkt_duration;
-	int64 framePts = _frame->pts;
+	int64_t duration = _frame->pkt_duration;
+	int64_t framePts = _frame->pts;
 	TimeMs frameMs = (framePts * 1000LL * _fmtContext->streams[_streamId]->time_base.num) / _fmtContext->streams[_streamId]->time_base.den;
 	_currentFrameDelay = _nextFrameDelay;
 	if (_frameMs + _currentFrameDelay < frameMs) {
-		_currentFrameDelay = int32(frameMs - _frameMs);
+		_currentFrameDelay = int32_t(frameMs - _frameMs);
 	} else if (frameMs < _frameMs + _currentFrameDelay) {
 		frameMs = _frameMs + _currentFrameDelay;
 	}
@@ -240,9 +240,9 @@ bool FFMpegReaderImplementation::renderFrame(QImage &to, bool &hasAlpha, const Q
 	}
 	hasAlpha = (_frame->format == AV_PIX_FMT_BGRA || (_frame->format == -1 && _codecContext->pix_fmt == AV_PIX_FMT_BGRA));
 	if (_frame->width == toSize.width() && _frame->height == toSize.height() && hasAlpha) {
-		int32 sbpl = _frame->linesize[0], dbpl = to.bytesPerLine(), bpl = qMin(sbpl, dbpl);
+		int32_t sbpl = _frame->linesize[0], dbpl = to.bytesPerLine(), bpl = qMin(sbpl, dbpl);
 		uchar *s = _frame->data[0], *d = to.bits();
-		for (int32 i = 0, l = _frame->height; i < l; ++i) {
+		for (int32_t i = 0, l = _frame->height; i < l; ++i) {
 			memcpy(d + i * dbpl, s + i * sbpl, bpl);
 		}
 	} else {
@@ -537,7 +537,7 @@ void FFMpegReaderImplementation::processPacket(AVPacket *packet) {
 }
 
 TimeMs FFMpegReaderImplementation::countPacketMs(AVPacket *packet) const {
-	int64 packetPts = (packet->pts == AV_NOPTS_VALUE) ? packet->dts : packet->pts;
+	int64_t packetPts = (packet->pts == AV_NOPTS_VALUE) ? packet->dts : packet->pts;
 	TimeMs packetMs = (packetPts * 1000LL * _fmtContext->streams[packet->stream_index]->time_base.num) / _fmtContext->streams[packet->stream_index]->time_base.den;
 	return packetMs;
 }

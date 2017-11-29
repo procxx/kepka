@@ -244,7 +244,7 @@ void MainWindow::setTitleVisible(bool visible) {
 	titleVisibilityChangedHook();
 }
 
-int32 MainWindow::screenNameChecksum(const QString &name) const {
+int32_t MainWindow::screenNameChecksum(const QString &name) const {
 	auto bytes = name.toUtf8();
 	return hashCrc32(bytes.constData(), bytes.size());
 }

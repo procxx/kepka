@@ -185,9 +185,9 @@ inline void InvokeQueued(QObject *context, Lambda &&lambda) {
 	QObject::connect(&proxy, &QObject::destroyed, context, std::forward<Lambda>(lambda), Qt::QueuedConnection);
 }
 
-static const int32 ScrollMax = INT_MAX;
+static const int32_t ScrollMax = INT_MAX;
 
-extern uint64 _SharedMemoryLocation[];
+extern uint64_t _SharedMemoryLocation[];
 template <typename T, unsigned int N>
 T *SharedMemoryLocation() {
 	static_assert(N < 4, "Only 4 shared memory locations!");
@@ -253,17 +253,17 @@ private:
 };
 
 class MTPint;
-using TimeId = int32;
+using TimeId = int32_t;
 TimeId myunixtime();
 void unixtimeInit();
 void unixtimeSet(TimeId servertime, bool force = false);
 TimeId unixtime();
 TimeId fromServerTime(const MTPint &serverTime);
 void toServerTime(const TimeId &clientTime, MTPint &outServerTime);
-uint64 msgid();
-int32 reqid();
+uint64_t msgid();
+int32_t reqid();
 
-inline QDateTime date(int32 time = -1) {
+inline QDateTime date(int32_t time = -1) {
 	QDateTime result;
 	if (time >= 0) result.setTime_t(time);
 	return result;
@@ -294,17 +294,17 @@ void finish();
 
 }
 
-using TimeMs = int64; // @todo use std::chrono::milliseconds
+using TimeMs = int64_t; // @todo use std::chrono::milliseconds
 bool checkms(); // returns true if time has changed
 TimeMs getms(bool checked = false);
 
-const static uint32 _md5_block_size = 64;
+const static uint32_t _md5_block_size = 64;
 class HashMd5 {
 public:
 
-	HashMd5(const void *input = 0, uint32 length = 0);
-	void feed(const void *input, uint32 length);
-	int32 *result();
+	HashMd5(const void *input = 0, uint32_t length = 0);
+	void feed(const void *input, uint32_t length);
+	int32_t *result();
 
 private:
 
@@ -314,37 +314,37 @@ private:
 
 	bool _finalized;
 	uchar _buffer[_md5_block_size];
-	uint32 _count[2];
-	uint32 _state[4];
+	uint32_t _count[2];
+	uint32_t _state[4];
 	uchar _digest[16];
 
 };
 
-int32 hashCrc32(const void *data, uint32 len);
+int32_t hashCrc32(const void *data, uint32_t len);
 
-int32 *hashSha1(const void *data, uint32 len, void *dest); // dest - ptr to 20 bytes, returns (int32*)dest
+int32_t *hashSha1(const void *data, uint32_t len, void *dest); // dest - ptr to 20 bytes, returns (int32_t*)dest
 inline std::array<char, 20> hashSha1(const void *data, int size) {
 	auto result = std::array<char, 20>();
 	hashSha1(data, size, result.data());
 	return result;
 }
 
-int32 *hashSha256(const void *data, uint32 len, void *dest); // dest - ptr to 32 bytes, returns (int32*)dest
+int32_t *hashSha256(const void *data, uint32_t len, void *dest); // dest - ptr to 32 bytes, returns (int32_t*)dest
 inline std::array<char, 32> hashSha256(const void *data, int size) {
 	auto result = std::array<char, 32>();
 	hashSha256(data, size, result.data());
 	return result;
 }
 
-int32 *hashMd5(const void *data, uint32 len, void *dest); // dest = ptr to 16 bytes, returns (int32*)dest
+int32_t *hashMd5(const void *data, uint32_t len, void *dest); // dest = ptr to 16 bytes, returns (int32_t*)dest
 inline std::array<char, 16> hashMd5(const void *data, int size) {
 	auto result = std::array<char, 16>();
 	hashMd5(data, size, result.data());
 	return result;
 }
 
-char *hashMd5Hex(const int32 *hashmd5, void *dest); // dest = ptr to 32 bytes, returns (char*)dest
-inline char *hashMd5Hex(const void *data, uint32 len, void *dest) { // dest = ptr to 32 bytes, returns (char*)dest
+char *hashMd5Hex(const int32_t *hashmd5, void *dest); // dest = ptr to 32 bytes, returns (char*)dest
+inline char *hashMd5Hex(const void *data, uint32_t len, void *dest) { // dest = ptr to 32 bytes, returns (char*)dest
 	return hashMd5Hex(HashMd5(data, len).result(), dest);
 }
 inline std::array<char, 32> hashMd5Hex(const void *data, int size) {
@@ -354,7 +354,7 @@ inline std::array<char, 32> hashMd5Hex(const void *data, int size) {
 }
 
 // good random (using openssl implementation)
-void memset_rand(void *data, uint32 len);
+void memset_rand(void *data, uint32_t len);
 template <typename T>
 T rand_value() {
 	T result;
@@ -362,7 +362,7 @@ T rand_value() {
 	return result;
 }
 
-inline void memset_rand_bad(void *data, uint32 len) {
+inline void memset_rand_bad(void *data, uint32_t len) {
 	for (uchar *i = reinterpret_cast<uchar*>(data), *e = i + len; i != e; ++i) {
 		*i = uchar(rand() & 0xFF);
 	}
@@ -402,9 +402,9 @@ private:
 
 };
 
-inline QString fromUtf8Safe(const char *str, int32 size = -1) {
+inline QString fromUtf8Safe(const char *str, int32_t size = -1) {
 	if (!str || !size) return QString();
-	if (size < 0) size = int32(strlen(str));
+	if (size < 0) size = int32_t(strlen(str));
 	QString result(QString::fromUtf8(str, size));
 	QByteArray back = result.toUtf8();
 	if (back.size() != size || memcmp(back.constData(), str, size)) return QString::fromLocal8Bit(str, size);
@@ -474,7 +474,7 @@ enum DBIConnectionType {
 
 struct ProxyData {
 	QString host;
-	uint32 port = 0;
+	uint32_t port = 0;
 	QString user, password;
 };
 
@@ -508,10 +508,10 @@ enum DBIPeerReportSpamStatus {
 };
 
 template <int Size>
-inline QString strMakeFromLetters(const uint32 (&letters)[Size]) {
+inline QString strMakeFromLetters(const uint32_t (&letters)[Size]) {
 	QString result;
 	result.reserve(Size);
-	for (int32 i = 0; i < Size; ++i) {
+	for (int32_t i = 0; i < Size; ++i) {
 		result.push_back(QChar((((letters[i] >> 16) & 0xFF) << 8) | (letters[i] & 0xFF)));
 	}
 	return result;
@@ -552,13 +552,13 @@ inline int rowscount(int fullCount, int countPerRow) {
 inline int floorclamp(int value, int step, int lowest, int highest) {
 	return qMin(qMax(value / step, lowest), highest);
 }
-inline int floorclamp(float64 value, int step, int lowest, int highest) {
+inline int floorclamp(double value, int step, int lowest, int highest) {
 	return qMin(qMax(static_cast<int>(std::floor(value / step)), lowest), highest);
 }
 inline int ceilclamp(int value, int step, int lowest, int highest) {
 	return qMax(qMin((value + step - 1) / step, highest), lowest);
 }
-inline int ceilclamp(float64 value, int32 step, int32 lowest, int32 highest) {
+inline int ceilclamp(double value, int32_t step, int32_t lowest, int32_t highest) {
 	return qMax(qMin(static_cast<int>(std::ceil(value / step)), highest), lowest);
 }
 
@@ -580,10 +580,10 @@ enum ShowLayerOption {
 using ShowLayerOptions = base::flags<ShowLayerOption>;
 inline constexpr auto is_flag_type(ShowLayerOption) { return true; };
 
-static int32 FullArcLength = 360 * 16;
-static int32 QuarterArcLength = (FullArcLength / 4);
-static int32 MinArcLength = (FullArcLength / 360);
-static int32 AlmostFullArcLength = (FullArcLength - MinArcLength);
+static int32_t FullArcLength = 360 * 16;
+static int32_t QuarterArcLength = (FullArcLength / 4);
+static int32_t MinArcLength = (FullArcLength / 360);
+static int32_t AlmostFullArcLength = (FullArcLength - MinArcLength);
 
 template <typename T, typename... Args>
 inline QSharedPointer<T> MakeShared(Args&&... args) {

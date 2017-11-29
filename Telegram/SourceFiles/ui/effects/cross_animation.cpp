@@ -45,11 +45,11 @@ constexpr auto kPointCount = 12;
 //     9         7
 //
 
-void transformLoadingCross(float64 loading, std::array<QPointF, kPointCount> &points, int &paintPointsCount) {
-	auto moveTo = [](QPointF &point, QPointF &to, float64 ratio) {
+void transformLoadingCross(double loading, std::array<QPointF, kPointCount> &points, int &paintPointsCount) {
+	auto moveTo = [](QPointF &point, QPointF &to, double ratio) {
 		point = point * (1. - ratio) + to * ratio;
 	};
-	auto moveFrom = [](QPointF &point, QPointF &from, float64 ratio) {
+	auto moveFrom = [](QPointF &point, QPointF &from, double ratio) {
 		point = from * (1. - ratio) + point * ratio;
 	};
 	auto paintPoints = [&points, &paintPointsCount](std::initializer_list<int> &&indices) {
@@ -103,7 +103,7 @@ void transformLoadingCross(float64 loading, std::array<QPointF, kPointCount> &po
 
 } // namespace
 
-void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::color color, int x, int y, int outerWidth, float64 shown, float64 loading) {
+void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::color color, int x, int y, int outerWidth, double shown, double loading) {
 	PainterHighQualityEnabler hq(p);
 
 	auto sqrt2 = sqrt(2.);

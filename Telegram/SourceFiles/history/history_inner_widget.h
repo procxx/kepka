@@ -150,10 +150,10 @@ private:
 
 	void touchResetSpeed();
 	void touchUpdateSpeed();
-	void touchDeaccelerate(int32 elapsed);
+	void touchDeaccelerate(int32_t elapsed);
 
-	void adjustCurrent(int32 y) const;
-	void adjustCurrent(int32 y, History *history) const;
+	void adjustCurrent(int32_t y) const;
+	void adjustCurrent(int32_t y, History *history) const;
 	HistoryItem *prevItem(HistoryItem *item);
 	HistoryItem *nextItem(HistoryItem *item);
 	void updateDragSelection(HistoryItem *dragSelFrom, HistoryItem *dragSelTo, bool dragSelecting, bool force = false);
@@ -210,7 +210,7 @@ private:
 	SelectedItems _selected;
 	void applyDragSelection();
 	void applyDragSelection(SelectedItems *toItems) const;
-	void addSelectionRange(SelectedItems *toItems, int32 fromblock, int32 fromitem, int32 toblock, int32 toitem, History *h) const;
+	void addSelectionRange(SelectedItems *toItems, int32_t fromblock, int32_t fromitem, int32_t toblock, int32_t toitem, History *h) const;
 
 	// Does any of the shown histories has this flag set.
 	bool hasPendingResizedItems() const {
@@ -223,7 +223,7 @@ private:
 	QPoint _mousePosition;
 	HistoryItem *_mouseActionItem = nullptr;
 	HistoryCursorState _mouseCursorState = HistoryDefaultCursorState;
-	uint16 _mouseTextSymbol = 0;
+	uint16_t _mouseTextSymbol = 0;
 	bool _pressWasInactive = false;
 
 	QPoint _trippleClickPoint;

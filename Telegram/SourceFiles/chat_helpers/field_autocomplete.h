@@ -52,8 +52,8 @@ public:
 	ChannelData *channel() const;
 	UserData *user() const;
 
-	int32 innerTop();
-	int32 innerBottom();
+	int32_t innerTop();
+	int32_t innerBottom();
 
 	bool eventFilter(QObject *obj, QEvent *e) override;
 
@@ -126,7 +126,7 @@ private:
 	QRect _boundings;
 	bool _addInlineBots;
 
-	int32 _width, _height;
+	int32_t _width, _height;
 	bool _hiding = false;
 
 	Animation _a_opacity;
@@ -147,7 +147,7 @@ public:
 	bool moveSel(int key);
 	bool chooseSelected(FieldAutocomplete::ChooseMethod method) const;
 
-	void setRecentInlineBotsInRows(int32 bots);
+	void setRecentInlineBotsInRows(int32_t bots);
 
 signals:
 	void mentionChosen(UserData *user, FieldAutocomplete::ChooseMethod method) const;
@@ -180,8 +180,8 @@ private:
 	HashtagRows *_hrows;
 	BotCommandRows *_brows;
 	StickerPack *_srows;
-	int32 _stickersPerRow, _recentInlineBotsInRows;
-	int32 _sel, _down;
+	int32_t _stickersPerRow, _recentInlineBotsInRows;
+	int32_t _sel, _down;
 	bool _mouseSel;
 	QPoint _mousePos;
 

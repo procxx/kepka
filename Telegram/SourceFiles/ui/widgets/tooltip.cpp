@@ -105,8 +105,8 @@ void Tooltip::popup(const QPoint &m, const QString &text, const style::Tooltip *
 	_useTransparency = Platform::TranslucentWindowsSupported(_point);
 	setAttribute(Qt::WA_OpaquePaintEvent, !_useTransparency);
 
-	int32 addw = 2 * st::lineWidth + _st->textPadding.left() + _st->textPadding.right();
-	int32 addh = 2 * st::lineWidth + _st->textPadding.top() + _st->textPadding.bottom();
+	int32_t addw = 2 * st::lineWidth + _st->textPadding.left() + _st->textPadding.right();
+	int32_t addh = 2 * st::lineWidth + _st->textPadding.top() + _st->textPadding.bottom();
 
 	// count tooltip size
 	QSize s(addw + _text.maxWidth(), addh + _text.minHeight());
@@ -114,7 +114,7 @@ void Tooltip::popup(const QPoint &m, const QString &text, const style::Tooltip *
 		s.setWidth(addw + _text.countWidth(_st->widthMax - addw));
 		s.setHeight(addh + _text.countHeight(s.width() - addw));
 	}
-	int32 maxh = addh + (_st->linesMax * _st->textStyle.font->height);
+	int32_t maxh = addh + (_st->linesMax * _st->textStyle.font->height);
 	if (s.height() > maxh) {
 		s.setHeight(maxh);
 	}
@@ -131,10 +131,10 @@ void Tooltip::popup(const QPoint &m, const QString &text, const style::Tooltip *
 	// adjust tooltip position
 	QRect r(QApplication::desktop()->screenGeometry(m));
 	if (r.x() + r.width() - _st->skip < p.x() + s.width() && p.x() + s.width() > m.x()) {
-		p.setX(qMax(r.x() + r.width() - int32(_st->skip) - s.width(), m.x() - s.width()));
+		p.setX(qMax(r.x() + r.width() - int32_t(_st->skip) - s.width(), m.x() - s.width()));
 	}
 	if (r.x() + _st->skip > p.x() && p.x() < m.x()) {
-		p.setX(qMin(m.x(), r.x() + int32(_st->skip)));
+		p.setX(qMin(m.x(), r.x() + int32_t(_st->skip)));
 	}
 	if (r.y() + r.height() - _st->skip < p.y() + s.height()) {
 		p.setY(m.y() - s.height() - _st->skip);
@@ -167,7 +167,7 @@ void Tooltip::paintEvent(QPaintEvent *e) {
 		p.fillRect(QRect(0, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth), _st->textBorder);
 		p.fillRect(QRect(width() - st::lineWidth, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth), _st->textBorder);
 	}
-	int32 lines = qFloor((height() - 2 * st::lineWidth - _st->textPadding.top() - _st->textPadding.bottom()) / _st->textStyle.font->height);
+	int32_t lines = qFloor((height() - 2 * st::lineWidth - _st->textPadding.top() - _st->textPadding.bottom()) / _st->textStyle.font->height);
 
 	p.setPen(_st->textFg);
 	_text.drawElided(p, st::lineWidth + _st->textPadding.left(), st::lineWidth + _st->textPadding.top(), width() - 2 * st::lineWidth - _st->textPadding.left() - _st->textPadding.right(), lines);
@@ -179,7 +179,7 @@ void Tooltip::hideEvent(QHideEvent *e) {
 	}
 }
 
-void Tooltip::Show(int32 delay, const AbstractTooltipShower *shower) {
+void Tooltip::Show(int32_t delay, const AbstractTooltipShower *shower) {
 	if (!TooltipInstance) {
 		new Tooltip();
 	}

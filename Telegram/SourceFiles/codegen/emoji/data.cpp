@@ -19,14 +19,11 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/emoji/data.h"
+#include <cstdint>
 
 namespace codegen {
 namespace emoji {
 namespace {
-
-using uint16 = quint16;
-using uint32 = quint32;
-using uint64 = quint64;
 
 using std::vector;
 using std::map;
@@ -36,7 +33,7 @@ using std::move;
 using std::begin;
 using std::end;
 
-using InputId = vector<uint32>;
+using InputId = vector<uint32_t>;
 using InputCategory = vector<InputId>;
 
 // copied from emoji_box.cpp
@@ -83,7 +80,7 @@ Replace Replaces[] = {
 	{ { 0xD83DDE08U }, "}:)" },
 };
 
-using ColorId = uint32;
+using ColorId = uint32_t;
 ColorId Colors[] = {
 	0xD83CDFFBU,
 	0xD83CDFFCU,
@@ -1703,11 +1700,11 @@ InputCategory Category7 = {
 
 constexpr auto kErrorBadData = 401;
 
-void append(Id &id, uint32 code) {
-	if (auto first = static_cast<uint16>((code >> 16) & 0xFFFFU)) {
+void append(Id &id, uint32_t code) {
+	if (auto first = static_cast<uint16_t>((code >> 16) & 0xFFFFU)) {
 		id.append(QChar(first));
 	}
-	id.append(QChar(static_cast<uint16>(code & 0xFFFFU)));
+	id.append(QChar(static_cast<uint16_t>(code & 0xFFFFU)));
 }
 
 using VariatedIds = map<Id, bool>;

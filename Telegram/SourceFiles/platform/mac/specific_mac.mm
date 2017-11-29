@@ -135,7 +135,7 @@ QString escapeShell(const QString &str) {
 	return result;
 }
 
-QStringList atosstr(uint64 *addresses, int count, uint64 base) {
+QStringList atosstr(uint64_t *addresses, int count, uint64_t base) {
 	QStringList result;
 	if (!count || cExeName().isEmpty()) return result;
 
@@ -179,10 +179,10 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	QString initial = QString::fromUtf8(crashdump), result;
 	QStringList lines = initial.split('\n');
 	result.reserve(initial.size());
-	int32 i = 0, l = lines.size();
+	int32_t i = 0, l = lines.size();
 
 	while (i < l) {
-		uint64 addresses[1024] = { 0 };
+		uint64_t addresses[1024] = { 0 };
 		for (; i < l; ++i) {
 			result.append(lines.at(i)).append('\n');
 			QString line = lines.at(i).trimmed();
@@ -192,15 +192,15 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			}
 		}
 
-		uint64 base = 0;
-		for (int32 start = i; i < l; ++i) {
+		uint64_t base = 0;
+		for (int32_t start = i; i < l; ++i) {
 			QString line = lines.at(i).trimmed();
 			if (line.isEmpty()) break;
 
 			if (!base) {
 				QRegularExpressionMatch m = QRegularExpression(qsl("^\\d+ (\\d+) \\((.+)\\)")).match(line);
 				if (m.hasMatch()) {
-					if (uint64 address = m.captured(1).toULongLong()) {
+					if (uint64_t address = m.captured(1).toULongLong()) {
 						if (m.captured(2).endsWith(qstr("Contents/MacOS/Telegram"))) {
 							base = address;
 						}
@@ -223,7 +223,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			}
 		}
 
-		int32 start = i;
+		int32_t start = i;
 		for (; i < l; ++i) {
 			QString line = lines.at(i).trimmed();
 			if (line.isEmpty()) break;
@@ -231,7 +231,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			if (QRegularExpression(qsl("^\\d+")).match(line).hasMatch()) {
 				QStringList lst = line.split(' ', QString::SkipEmptyParts);
 				if (lst.size() > 2) {
-					uint64 addr = lst.at(2).startsWith(qstr("0x")) ? lst.at(2).mid(2).toULongLong(0, 16) : lst.at(2).toULongLong();
+					uint64_t addr = lst.at(2).startsWith(qstr("0x")) ? lst.at(2).mid(2).toULongLong(0, 16) : lst.at(2).toULongLong();
 					addresses[i - start] = addr;
 				}
 			}
@@ -327,7 +327,7 @@ void psClearInitLogs() {
 	_initLogs = QStringList();
 }
 
-void psActivateProcess(uint64 pid) {
+void psActivateProcess(uint64_t pid) {
 	if (!pid) {
 		objc_activateProgram(App::wnd() ? App::wnd()->winId() : 0);
 	}
@@ -450,21 +450,21 @@ bool psLaunchMaps(const LocationCoords &coords) {
 }
 
 QString strNotificationAboutThemeChange() {
-	const uint32 letters[] = { 0xE9005541, 0x5600DC70, 0x88001570, 0xF500D86C, 0x8100E165, 0xEE005949, 0x2900526E, 0xAE00FB74, 0x96000865, 0x7000CD72, 0x3B001566, 0x5F007361, 0xAE00B663, 0x74009A65, 0x29003054, 0xC6002668, 0x98003865, 0xFA00336D, 0xA3007A65, 0x93001443, 0xBB007868, 0xE100E561, 0x3500366E, 0xC0007A67, 0x0200CA65, 0xBE00DF64, 0xE300BB4E, 0x2900D26F, 0xD500D374, 0xE900E269, 0x86008F66, 0xC4006669, 0x1C00A863, 0xE600A761, 0x8E00EE74, 0xB300B169, 0xCF00B36F, 0xE600D36E };
+	const uint32_t letters[] = { 0xE9005541, 0x5600DC70, 0x88001570, 0xF500D86C, 0x8100E165, 0xEE005949, 0x2900526E, 0xAE00FB74, 0x96000865, 0x7000CD72, 0x3B001566, 0x5F007361, 0xAE00B663, 0x74009A65, 0x29003054, 0xC6002668, 0x98003865, 0xFA00336D, 0xA3007A65, 0x93001443, 0xBB007868, 0xE100E561, 0x3500366E, 0xC0007A67, 0x0200CA65, 0xBE00DF64, 0xE300BB4E, 0x2900D26F, 0xD500D374, 0xE900E269, 0x86008F66, 0xC4006669, 0x1C00A863, 0xE600A761, 0x8E00EE74, 0xB300B169, 0xCF00B36F, 0xE600D36E };
 	return strMakeFromLetters(letters);
 }
 
 QString strNotificationAboutScreenLocked() {
-	const uint32 letters[] = { 0x22008263, 0x0800DB6F, 0x45004F6D, 0xCC00972E, 0x0E00A861, 0x9700D970, 0xA100D570, 0x8900686C, 0xB300B365, 0xFE00DE2E, 0x76009B73, 0xFA00BF63, 0xE000A772, 0x9C009F65, 0x4E006065, 0xD900426E, 0xB7007849, 0x64006473, 0x6700824C, 0xE300706F, 0x7C00A063, 0x8F00D76B, 0x04001C65, 0x1C00A664 };
+	const uint32_t letters[] = { 0x22008263, 0x0800DB6F, 0x45004F6D, 0xCC00972E, 0x0E00A861, 0x9700D970, 0xA100D570, 0x8900686C, 0xB300B365, 0xFE00DE2E, 0x76009B73, 0xFA00BF63, 0xE000A772, 0x9C009F65, 0x4E006065, 0xD900426E, 0xB7007849, 0x64006473, 0x6700824C, 0xE300706F, 0x7C00A063, 0x8F00D76B, 0x04001C65, 0x1C00A664 };
 	return strMakeFromLetters(letters);
 }
 
 QString strNotificationAboutScreenUnlocked() {
-	const uint32 letters[] = { 0x9200D763, 0xC8003C6F, 0xD2003F6D, 0x6000012E, 0x36004061, 0x4400E570, 0xA500BF70, 0x2E00796C, 0x4A009E65, 0x2E00612E, 0xC8001D73, 0x57002263, 0xF0005872, 0x49000765, 0xE5008D65, 0xE600D76E, 0xE8007049, 0x19005C73, 0x34009455, 0xB800B36E, 0xF300CA6C, 0x4C00806F, 0x5300A763, 0xD1003B6B, 0x63003565, 0xF800F264 };
+	const uint32_t letters[] = { 0x9200D763, 0xC8003C6F, 0xD2003F6D, 0x6000012E, 0x36004061, 0x4400E570, 0xA500BF70, 0x2E00796C, 0x4A009E65, 0x2E00612E, 0xC8001D73, 0x57002263, 0xF0005872, 0x49000765, 0xE5008D65, 0xE600D76E, 0xE8007049, 0x19005C73, 0x34009455, 0xB800B36E, 0xF300CA6C, 0x4C00806F, 0x5300A763, 0xD1003B6B, 0x63003565, 0xF800F264 };
 	return strMakeFromLetters(letters);
 }
 
 QString strStyleOfInterface() {
-	const uint32 letters[] = { 0xEF004041, 0x4C007F70, 0x1F007A70, 0x9E00A76C, 0x8500D165, 0x2E003749, 0x7B00526E, 0x3400E774, 0x3C00FA65, 0x6200B172, 0xF7001D66, 0x0B002961, 0x71008C63, 0x86005465, 0xA3006F53, 0x11006174, 0xCD001779, 0x8200556C, 0x6C009B65 };
+	const uint32_t letters[] = { 0xEF004041, 0x4C007F70, 0x1F007A70, 0x9E00A76C, 0x8500D165, 0x2E003749, 0x7B00526E, 0x3400E774, 0x3C00FA65, 0x6200B172, 0xF7001D66, 0x0B002961, 0x71008C63, 0x86005465, 0xA3006F53, 0x11006174, 0xCD001779, 0x8200556C, 0x6C009B65 };
 	return strMakeFromLetters(letters);
 }

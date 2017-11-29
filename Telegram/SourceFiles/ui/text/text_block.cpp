@@ -27,7 +27,7 @@ struct ScriptLine {
 	ScriptLine() : length(0), textWidth(0) {
 	}
 
-	int32 length;
+	int32_t length;
 	QFixed textWidth;
 };
 
@@ -157,12 +157,12 @@ static inline void addNextCluster(int &pos, int end, ScriptLine &line, int &glyp
 class BlockParser {
 public:
 
-	BlockParser(QTextEngine *e, TextBlock *b, QFixed minResizeWidth, int32 blockFrom, const QString &str)
+	BlockParser(QTextEngine *e, TextBlock *b, QFixed minResizeWidth, int32_t blockFrom, const QString &str)
 		: block(b), eng(e), str(str) {
 		parseWords(minResizeWidth, blockFrom);
 	}
 
-	void parseWords(QFixed minResizeWidth, int32 blockFrom) {
+	void parseWords(QFixed minResizeWidth, int32_t blockFrom) {
 		LineBreakHelper lbh;
 
 		int item = -1;
@@ -275,7 +275,7 @@ public:
 		}
 	}
 
-	bool isLineBreak(const QCharAttributes *attributes, int32 index) {
+	bool isLineBreak(const QCharAttributes *attributes, int32_t index) {
 		bool lineBreak = attributes[index].lineBreak;
 		if (lineBreak && block->lnkIndex() > 0 && index > 0 && str.at(index - 1) == '/') {
 			return false; // don't break after / in links
@@ -295,7 +295,7 @@ QFixed ITextBlock::f_rbearing() const {
 	return (type() == TextBlockTText) ? static_cast<const TextBlock*>(this)->real_f_rbearing() : 0;
 }
 
-TextBlock::TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, uint16 from, uint16 length, uchar flags, uint16 lnkIndex) : ITextBlock(font, str, from, length, flags, lnkIndex) {
+TextBlock::TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, uint16_t from, uint16_t length, uchar flags, uint16_t lnkIndex) : ITextBlock(font, str, from, length, flags, lnkIndex) {
 	_flags |= ((TextBlockTText & 0x0F) << 8);
 	if (length) {
 		style::font blockFont = font;
@@ -342,7 +342,7 @@ TextBlock::TextBlock(const style::font &font, const QString &str, QFixed minResi
 	}
 }
 
-EmojiBlock::EmojiBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, uint16 lnkIndex, EmojiPtr emoji) : ITextBlock(font, str, from, length, flags, lnkIndex)
+EmojiBlock::EmojiBlock(const style::font &font, const QString &str, uint16_t from, uint16_t length, uchar flags, uint16_t lnkIndex, EmojiPtr emoji) : ITextBlock(font, str, from, length, flags, lnkIndex)
 , emoji(emoji) {
 	_flags |= ((TextBlockTEmoji & 0x0F) << 8);
 	_width = int(st::emojiSize + 2 * st::emojiPadding);
@@ -358,7 +358,7 @@ EmojiBlock::EmojiBlock(const style::font &font, const QString &str, uint16 from,
 	}
 }
 
-SkipBlock::SkipBlock(const style::font &font, const QString &str, uint16 from, int32 w, int32 h, uint16 lnkIndex) : ITextBlock(font, str, from, 1, 0, lnkIndex), _height(h) {
+SkipBlock::SkipBlock(const style::font &font, const QString &str, uint16_t from, int32_t w, int32_t h, uint16_t lnkIndex) : ITextBlock(font, str, from, 1, 0, lnkIndex), _height(h) {
 	_flags |= ((TextBlockTSkip & 0x0F) << 8);
 	_width = w;
 }

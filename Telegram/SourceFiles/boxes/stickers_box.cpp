@@ -156,7 +156,7 @@ StickersBox::StickersBox(QWidget*, not_null<ChannelData*> megagroup)
 	subscribe(_installed.widget()->scrollToY, [this](int y) { onScrollToY(y); });
 }
 
-void StickersBox::getArchivedDone(uint64 offsetId, const MTPmessages_ArchivedStickers &result) {
+void StickersBox::getArchivedDone(uint64_t offsetId, const MTPmessages_ArchivedStickers &result) {
 	_archivedRequestId = 0;
 	_archivedLoaded = true;
 	if (result.type() != mtpc_messages_archivedStickers) {
@@ -253,10 +253,10 @@ void StickersBox::prepare() {
 	if (_archived.widget() && _section != Section::Archived) _archived.widget()->hide();
 
 	if (_featured.widget()) {
-		_featured.widget()->setInstallSetCallback([this](uint64 setId) { installSet(setId); });
+		_featured.widget()->setInstallSetCallback([this](uint64_t setId) { installSet(setId); });
 	}
 	if (_archived.widget()) {
-		_archived.widget()->setInstallSetCallback([this](uint64 setId) { installSet(setId); });
+		_archived.widget()->setInstallSetCallback([this](uint64_t setId) { installSet(setId); });
 		_archived.widget()->setLoadMoreCallback([this] { loadMoreArchived(); });
 	}
 
@@ -326,7 +326,7 @@ void StickersBox::loadMoreArchived() {
 		return;
 	}
 
-	uint64 lastId = 0;
+	uint64_t lastId = 0;
 	for (auto setIt = Global::ArchivedStickerSetsOrder().cend(), e = Global::ArchivedStickerSetsOrder().cbegin(); setIt != e;) {
 		--setIt;
 		auto it = Global::StickerSets().constFind(*setIt);
@@ -441,7 +441,7 @@ QPixmap StickersBox::grabContentCache() {
 	return result;
 }
 
-void StickersBox::installSet(uint64 setId) {
+void StickersBox::installSet(uint64_t setId) {
 	auto &sets = Global::RefStickerSets();
 	auto it = sets.find(setId);
 	if (it == sets.cend()) {
@@ -468,7 +468,7 @@ void StickersBox::installDone(const MTPmessages_StickerSetInstallResult &result)
 	}
 }
 
-bool StickersBox::installFail(uint64 setId, const RPCError &error) {
+bool StickersBox::installFail(uint64_t setId, const RPCError &error) {
 	if (MTP::isDefaultHandledError(error)) return false;
 
 	auto &sets = Global::RefStickerSets();
@@ -568,7 +568,7 @@ void StickersBox::setInnerFocus() {
 
 StickersBox::~StickersBox() = default;
 
-StickersBox::Inner::Row::Row(uint64 id, DocumentData *sticker, int32 count, const QString &title, int titleWidth, bool installed, bool official, bool unread, bool archived, bool removed, int32 pixw, int32 pixh) : id(id)
+StickersBox::Inner::Row::Row(uint64_t id, DocumentData *sticker, int32_t count, const QString &title, int titleWidth, bool installed, bool official, bool unread, bool archived, bool removed, int32_t pixw, int32_t pixh) : id(id)
 , sticker(sticker)
 , count(count)
 , title(title)
@@ -654,11 +654,11 @@ void StickersBox::Inner::paintEvent(QPaintEvent *e) {
 	} else {
 		p.translate(0, _itemsTop);
 
-		int32 yFrom = clip.y() - _itemsTop, yTo = clip.y() + clip.height() - _itemsTop;
-		int32 from = floorclamp(yFrom - _rowHeight, _rowHeight, 0, _rows.size());
-		int32 to = ceilclamp(yTo + _rowHeight, _rowHeight, 0, _rows.size());
+		int32_t yFrom = clip.y() - _itemsTop, yTo = clip.y() + clip.height() - _itemsTop;
+		int32_t from = floorclamp(yFrom - _rowHeight, _rowHeight, 0, _rows.size());
+		int32_t to = ceilclamp(yTo + _rowHeight, _rowHeight, 0, _rows.size());
 		p.translate(0, from * _rowHeight);
-		for (int32 i = from; i < to; ++i) {
+		for (int32_t i = from; i < to; ++i) {
 			if (i != _above) {
 				paintRow(p, _rows[i].get(), i, ms);
 			}
@@ -957,14 +957,14 @@ void StickersBox::Inner::onUpdateSelected() {
 		}
 		if (_dragStart.y() > local.y() && _dragging > 0) {
 			shift = -floorclamp(_dragStart.y() - local.y() + (_rowHeight / 2), _rowHeight, 0, _dragging - firstSetIndex);
-			for (int32 from = _dragging, to = _dragging + shift; from > to; --from) {
+			for (int32_t from = _dragging, to = _dragging + shift; from > to; --from) {
 				qSwap(_rows[from], _rows[from - 1]);
 				_rows[from]->yadd = anim::value(_rows[from]->yadd.current() - _rowHeight, 0);
 				_animStartTimes[from] = ms;
 			}
 		} else if (_dragStart.y() < local.y() && _dragging + 1 < _rows.size()) {
 			shift = floorclamp(local.y() - _dragStart.y() + (_rowHeight / 2), _rowHeight, 0, _rows.size() - _dragging - 1);
-			for (int32 from = _dragging, to = _dragging + shift; from < to; ++from) {
+			for (int32_t from = _dragging, to = _dragging + shift; from < to; ++from) {
 				qSwap(_rows[from], _rows[from + 1]);
 				_rows[from]->yadd = anim::value(_rows[from]->yadd.current() + _rowHeight, 0);
 				_animStartTimes[from] = ms;
@@ -1033,7 +1033,7 @@ void StickersBox::Inner::onUpdateSelected() {
 	}
 }
 
-float64 StickersBox::Inner::aboveShadowOpacity() const {
+double StickersBox::Inner::aboveShadowOpacity() const {
 	if (_above < 0) return 0;
 
 	auto dx = 0;
@@ -1126,7 +1126,7 @@ void StickersBox::Inner::step_shifting(TimeMs ms, bool timer) {
 			if (updateMin < 0) updateMin = i;
 			updateMax = i;
 			if (start + st::stickersRowDuration > ms && ms >= start) {
-				_rows[i]->yadd.update(float64(ms - start) / st::stickersRowDuration, anim::sineInOut);
+				_rows[i]->yadd.update(double(ms - start) / st::stickersRowDuration, anim::sineInOut);
 				animating = true;
 			} else {
 				_rows[i]->yadd.finish();
@@ -1138,7 +1138,7 @@ void StickersBox::Inner::step_shifting(TimeMs ms, bool timer) {
 		if (updateMin < 0 || updateMin > _above) updateMin = _above;
 		if (updateMax < _above) updateMin = _above;
 		if (_aboveShadowFadeStart + st::stickersRowDuration > ms && ms > _aboveShadowFadeStart) {
-			_aboveShadowFadeOpacity.update(float64(ms - _aboveShadowFadeStart) / st::stickersRowDuration, anim::sineInOut);
+			_aboveShadowFadeOpacity.update(double(ms - _aboveShadowFadeStart) / st::stickersRowDuration, anim::sineInOut);
 			animating = true;
 		} else {
 			_aboveShadowFadeOpacity.finish();
@@ -1179,7 +1179,7 @@ void StickersBox::Inner::clear() {
 	update();
 }
 
-void StickersBox::Inner::setActionSel(int32 actionSel) {
+void StickersBox::Inner::setActionSel(int32_t actionSel) {
 	if (actionSel != _actionSel) {
 		if (_actionSel >= 0) update(0, _itemsTop + _actionSel * _rowHeight, width(), _rowHeight);
 		_actionSel = actionSel;
@@ -1502,7 +1502,7 @@ Stickers::Order StickersBox::Inner::getRemovedSets() const {
 	});
 }
 
-int StickersBox::Inner::getRowIndex(uint64 setId) const {
+int StickersBox::Inner::getRowIndex(uint64_t setId) const {
 	for (auto i = 0, count = int(_rows.size()); i != count; ++i) {
 		auto &row = _rows[i];
 		if (row->id == setId) {

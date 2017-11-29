@@ -221,11 +221,11 @@ void AddContactBox::onSave() {
 	}
 	_sentName = firstName;
 	if (_user) {
-		_contactId = rand_value<uint64>();
+		_contactId = rand_value<uint64_t>();
 		QVector<MTPInputContact> v(1, MTP_inputPhoneContact(MTP_long(_contactId), MTP_string(_user->phone()), MTP_string(firstName), MTP_string(lastName)));
 		_addRequest = MTP::send(MTPcontacts_ImportContacts(MTP_vector<MTPInputContact>(v)), rpcDone(&AddContactBox::onSaveUserDone), rpcFail(&AddContactBox::onSaveUserFail));
 	} else {
-		_contactId = rand_value<uint64>();
+		_contactId = rand_value<uint64_t>();
 		QVector<MTPInputContact> v(1, MTP_inputPhoneContact(MTP_long(_contactId), MTP_string(phone), MTP_string(firstName), MTP_string(lastName)));
 		_addRequest = MTP::send(MTPcontacts_ImportContacts(MTP_vector<MTPInputContact>(v)), rpcDone(&AddContactBox::onImportDone));
 	}
@@ -745,8 +745,8 @@ void SetupChannelBox::onChange() {
 		}
 		_checkTimer.stop();
 	} else {
-		int32 len = name.size();
-		for (int32 i = 0; i < len; ++i) {
+		int32_t len = name.size();
+		for (int32_t i = 0; i < len; ++i) {
 			QChar ch = name.at(i);
 			if ((ch < 'A' || ch > 'Z') && (ch < 'a' || ch > 'z') && (ch < '0' || ch > '9') && ch != '_') {
 				if (_errorText != lang(lng_create_channel_link_bad_symbols)) {
@@ -1498,8 +1498,8 @@ void RevokePublicLinkBox::Inner::paintChat(Painter &p, const ChatRow &row, bool 
 
 	p.setPen(st::contactsNameFg);
 
-	int32 namex = st::contactsPadding.left() + st::contactsPhotoSize + st::contactsPadding.left();
-	int32 namew = width() - namex - st::contactsPadding.right() - (_revokeWidth + st::contactsCheckPosition.x() * 2);
+	int32_t namex = st::contactsPadding.left() + st::contactsPhotoSize + st::contactsPadding.left();
+	int32_t namew = width() - namex - st::contactsPadding.right() - (_revokeWidth + st::contactsCheckPosition.x() * 2);
 	if (peer->isVerified()) {
 		auto icon = &st::dialogsVerifiedIcon;
 		namew -= icon->width();

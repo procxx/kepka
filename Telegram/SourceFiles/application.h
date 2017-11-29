@@ -44,7 +44,7 @@ public slots:
 	void socketConnected();
 	void socketError(QLocalSocket::LocalSocketError e);
 	void socketDisconnected();
-	void socketWritten(qint64 bytes);
+	void socketWritten(int64_t bytes);
 	void socketReading();
 	void newInstanceConnected();
 
@@ -81,13 +81,13 @@ public:
 		UpdatingReady,
 	};
 	UpdatingState updatingState();
-	int32 updatingSize();
-	int32 updatingReady();
+	int32_t updatingSize();
+	int32_t updatingReady();
 
 signals:
 	void updateChecking();
 	void updateLatest();
-	void updateProgress(qint64 ready, qint64 total);
+	void updateProgress(int64_t ready, int64_t total);
 	void updateReady();
 	void updateFailed();
 
@@ -127,12 +127,12 @@ void startUpdateCheck();
 void stopUpdate();
 
 Application::UpdatingState updatingState();
-int32 updatingSize();
-int32 updatingReady();
+int32_t updatingSize();
+int32_t updatingReady();
 
 void updateChecking();
 void updateLatest();
-void updateProgress(qint64 ready, qint64 total);
+void updateProgress(int64_t ready, int64_t total);
 void updateFailed();
 void updateReady();
 

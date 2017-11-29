@@ -84,7 +84,7 @@ struct RuntimeComponent {
 		}
 		return MyIndex.loadAcquire() - 1;
 	}
-	static uint64 Bit() {
+	static uint64_t Bit() {
 		return (1ULL << Index());
 	}
 
@@ -103,7 +103,7 @@ protected:
 
 class RuntimeComposerMetadata {
 public:
-	RuntimeComposerMetadata(uint64 mask) : _mask(mask) {
+	RuntimeComposerMetadata(uint64_t mask) : _mask(mask) {
 		for (int i = 0; i != 64; ++i) {
 			auto componentBit = (1ULL << i);
 			if (_mask & componentBit) {
@@ -130,26 +130,26 @@ public:
 	std::size_t offsets[64] = { 0 };
 	int last = 64;
 
-	bool equals(uint64 mask) const {
+	bool equals(uint64_t mask) const {
 		return _mask == mask;
 	}
-	uint64 maskadd(uint64 mask) const {
+	uint64_t maskadd(uint64_t mask) const {
 		return _mask | mask;
 	}
-	uint64 maskremove(uint64 mask) const {
+	uint64_t maskremove(uint64_t mask) const {
 		return _mask & (~mask);
 	}
 
 private:
-	uint64 _mask;
+	uint64_t _mask;
 
 };
 
-const RuntimeComposerMetadata *GetRuntimeComposerMetadata(uint64 mask);
+const RuntimeComposerMetadata *GetRuntimeComposerMetadata(uint64_t mask);
 
 class RuntimeComposer {
 public:
-	RuntimeComposer(uint64 mask = 0) : _data(zerodata()) {
+	RuntimeComposer(uint64_t mask = 0) : _data(zerodata()) {
 		if (mask) {
 			auto meta = GetRuntimeComposerMetadata(mask);
 
@@ -212,7 +212,7 @@ public:
 	}
 
 protected:
-	void UpdateComponents(uint64 mask = 0) {
+	void UpdateComponents(uint64_t mask = 0) {
 		if (!_meta()->equals(mask)) {
 			RuntimeComposer tmp(mask);
 			tmp.swap(*this);
@@ -228,10 +228,10 @@ protected:
 			}
 		}
 	}
-	void AddComponents(uint64 mask = 0) {
+	void AddComponents(uint64_t mask = 0) {
 		UpdateComponents(_meta()->maskadd(mask));
 	}
-	void RemoveComponents(uint64 mask = 0) {
+	void RemoveComponents(uint64_t mask = 0) {
 		UpdateComponents(_meta()->maskremove(mask));
 	}
 

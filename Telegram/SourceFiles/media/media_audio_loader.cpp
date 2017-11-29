@@ -37,7 +37,7 @@ bool AudioPlayerLoader::check(const FileLocation &file, const QByteArray &data) 
 	return this->_file == file && this->_data.size() == data.size();
 }
 
-void AudioPlayerLoader::saveDecodedSamples(QByteArray *samples, int64 *samplesCount) {
+void AudioPlayerLoader::saveDecodedSamples(QByteArray *samples, int64_t *samplesCount) {
 	Assert(_savedSamplesCount == 0);
 	Assert(_savedSamples.isEmpty());
 	Assert(!_holdsSavedSamples);
@@ -46,7 +46,7 @@ void AudioPlayerLoader::saveDecodedSamples(QByteArray *samples, int64 *samplesCo
 	_holdsSavedSamples = true;
 }
 
-void AudioPlayerLoader::takeSavedDecodedSamples(QByteArray *samples, int64 *samplesCount) {
+void AudioPlayerLoader::takeSavedDecodedSamples(QByteArray *samples, int64_t *samplesCount) {
 	Assert(*samplesCount == 0);
 	Assert(samples->isEmpty());
 	Assert(_holdsSavedSamples);

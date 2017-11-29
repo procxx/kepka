@@ -76,7 +76,7 @@ void ChatSearchFromController::rebuildRows() {
 	auto wasEmpty = !delegate()->peerListFullRowsCount();
 
 	auto now = unixtime();
-	QMultiMap<int32, UserData*> ordered;
+	QMultiMap<int32_t, UserData*> ordered;
 	if (_chat->noParticipantInfo()) {
 		Auth().api().requestFullPeer(_chat);
 	} else if (!_chat->participants.isEmpty()) {

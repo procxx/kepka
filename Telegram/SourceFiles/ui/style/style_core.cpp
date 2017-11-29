@@ -90,9 +90,9 @@ void colorizeImage(const QImage &src, QColor c, QImage *outResult, QRect srcRect
 	constexpr auto resultIntsPerPixel = 1;
 	auto resultIntsPerLine = (outResult->bytesPerLine() >> 2);
 	auto resultIntsAdded = resultIntsPerLine - width * resultIntsPerPixel;
-	auto resultInts = reinterpret_cast<uint32*>(outResult->bits()) + dstPoint.y() * resultIntsPerLine + dstPoint.x() * resultIntsPerPixel;
+	auto resultInts = reinterpret_cast<uint32_t*>(outResult->bits()) + dstPoint.y() * resultIntsPerLine + dstPoint.x() * resultIntsPerPixel;
 	Assert(resultIntsAdded >= 0);
-	Assert(outResult->depth() == static_cast<int>((resultIntsPerPixel * sizeof(uint32)) << 3));
+	Assert(outResult->depth() == static_cast<int>((resultIntsPerPixel * sizeof(uint32_t)) << 3));
 	Assert(outResult->bytesPerLine() == (resultIntsPerLine << 2));
 
 	auto maskBytesPerPixel = (src.depth() >> 3);

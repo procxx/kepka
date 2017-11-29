@@ -50,7 +50,7 @@ void paintRowDate(Painter &p, const QDateTime &date, QRect &rectForName, bool ac
 	} else {
 		dt = lastDate.toString(qsl("d.MM.yy"));
 	}
-	int32 dtWidth = st::dialogsDateFont->width(dt);
+	int32_t dtWidth = st::dialogsDateFont->width(dt);
 	rectForName.setWidth(rectForName.width() - dtWidth - st::dialogsDateSkip);
 	p.setFont(st::dialogsDateFont);
 	p.setPen(active ? st::dialogsDateFgActive : (selected ? st::dialogsDateFgOver : st::dialogsDateFg));
@@ -419,7 +419,7 @@ void paintImportantSwitch(Painter &p, Mode current, int fullWidth, bool selected
 	p.drawText(st::dialogsPadding.x(), textBaseline, text);
 
 	if (mutedHidden) {
-		if (int32 unread = App::histories().unreadMutedCount()) {
+		if (int32_t unread = App::histories().unreadMutedCount()) {
 			int unreadRight = fullWidth - st::dialogsPadding.x();
 			UnreadBadgeStyle st;
 			st.muted = true;

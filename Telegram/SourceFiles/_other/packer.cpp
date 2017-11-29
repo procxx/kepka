@@ -27,7 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #endif
 
 bool AlphaChannel = false;
-quint64 BetaVersion = 0;
+uint64_t BetaVersion = 0;
 
 const char *PublicKey = "\
 -----BEGIN RSA PUBLIC KEY-----\n\
@@ -50,24 +50,24 @@ extern const char *PrivateAlphaKey;
 #include "../../../../TelegramPrivate/packer_private.h" // RSA PRIVATE KEYS for update signing
 #include "../../../../TelegramPrivate/beta_private.h" // private key for beta version file generation
 
-QString countBetaVersionSignature(quint64 version);
+QString countBetaVersionSignature(uint64_t version);
 
 // sha1 hash
 typedef unsigned char uchar;
-typedef unsigned int uint32;
-typedef signed int int32;
+typedef unsigned int uint32_t;
+typedef signed int int32_t;
 
 namespace{
 
-inline uint32 sha1Shift(uint32 v, uint32 shift) {
+inline uint32_t sha1Shift(uint32_t v, uint32_t shift) {
 	return ((v << shift) | (v >> (32 - shift)));
 }
 
-void sha1PartHash(uint32 *sha, uint32 *temp) {
-	uint32 a = sha[0], b = sha[1], c = sha[2], d = sha[3], e = sha[4], round = 0;
+void sha1PartHash(uint32_t *sha, uint32_t *temp) {
+	uint32_t a = sha[0], b = sha[1], c = sha[2], d = sha[3], e = sha[4], round = 0;
 
 #define _shiftswap(f, v) { \
-		uint32 t = sha1Shift(a, 5) + (f) + e + v + temp[round]; \
+		uint32_t t = sha1Shift(a, 5) + (f) + e + v + temp[round]; \
 		e = d; \
 		d = c; \
 		c = sha1Shift(b, 30); \
@@ -99,42 +99,42 @@ void sha1PartHash(uint32 *sha, uint32 *temp) {
 
 } // namespace
 
-int32 *hashSha1(const void *data, uint32 len, void *dest) {
+int32_t *hashSha1(const void *data, uint32_t len, void *dest) {
 	const uchar *buf = (const uchar *)data;
 
-	uint32 temp[80], block = 0, end;
-	uint32 sha[5] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0};
+	uint32_t temp[80], block = 0, end;
+	uint32_t sha[5] = {0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0};
 	for (end = block + 64; block + 64 <= len; end = block + 64) {
-		for (uint32 i = 0; block < end; block += 4) {
-			temp[i++] = (uint32) buf[block + 3]
-			        | (((uint32) buf[block + 2]) << 8)
-			        | (((uint32) buf[block + 1]) << 16)
-			        | (((uint32) buf[block]) << 24);
+		for (uint32_t i = 0; block < end; block += 4) {
+			temp[i++] = (uint32_t) buf[block + 3]
+			        | (((uint32_t) buf[block + 2]) << 8)
+			        | (((uint32_t) buf[block + 1]) << 16)
+			        | (((uint32_t) buf[block]) << 24);
 		}
 		sha1PartHash(sha, temp);
 	}
 
 	end = len - block;
-	memset(temp, 0, sizeof(uint32) * 16);
-	uint32 last = 0;
+	memset(temp, 0, sizeof(uint32_t) * 16);
+	uint32_t last = 0;
 	for (; last < end; ++last) {
-		temp[last >> 2] |= (uint32)buf[last + block] << ((3 - (last & 0x03)) << 3);
+		temp[last >> 2] |= (uint32_t)buf[last + block] << ((3 - (last & 0x03)) << 3);
 	}
 	temp[last >> 2] |= 0x80 << ((3 - (last & 3)) << 3);
 	if (end >= 56) {
 		sha1PartHash(sha, temp);
-		memset(temp, 0, sizeof(uint32) * 16);
+		memset(temp, 0, sizeof(uint32_t) * 16);
 	}
 	temp[15] = len << 3;
 	sha1PartHash(sha, temp);
 
 	uchar *sha1To = (uchar*)dest;
 
-	for (int32 i = 19; i >= 0; --i) {
+	for (int32_t i = 19; i >= 0; --i) {
 		sha1To[i] = (sha[i >> 2] >> (((3 - i) & 0x03) << 3)) & 0xFF;
 	}
 
-	return (int32*)sha1To;
+	return (int32_t*)sha1To;
 }
 
 QString BetaSignature;
@@ -225,13 +225,13 @@ int main(int argc, char *argv[])
 		stream.setVersion(QDataStream::Qt_5_1);
 
 		if (BetaVersion) {
-			stream << quint32(0x7FFFFFFF);
-			stream << quint64(BetaVersion);
+			stream << uint32_t(0x7FFFFFFF);
+			stream << uint64_t(BetaVersion);
 		} else {
-			stream << quint32(version);
+			stream << uint32_t(version);
 		}
 
-		stream << quint32(files.size());
+		stream << uint32_t(files.size());
 		cout << "Found " << files.size() << " file" << (files.size() == 1 ? "" : "s") << "..\n";
 		for (QFileInfoList::iterator i = files.begin(); i != files.end(); ++i) {
 			QFileInfo info(*i);
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 				return -1;
 			}
 			QByteArray inner = f.readAll();
-			stream << name << quint32(inner.size()) << inner;
+			stream << name << uint32_t(inner.size()) << inner;
 #if defined Q_OS_MAC || defined Q_OS_LINUX
 			stream << (QFileInfo(fullName).isExecutable() ? true : false);
 #endif
@@ -256,12 +256,12 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	int32 resultSize = result.size();
+	int32_t resultSize = result.size();
 	cout << "Compression start, size: " << resultSize << "\n";
 
 	QByteArray compressed, resultCheck;
 #ifdef Q_OS_WIN // use Lzma SDK for win
-	const int32 hSigLen = 128, hShaLen = 20, hPropsLen = LZMA_PROPS_SIZE, hOriginalSizeLen = sizeof(int32), hSize = hSigLen + hShaLen + hPropsLen + hOriginalSizeLen; // header
+	const int32_t hSigLen = 128, hShaLen = 20, hPropsLen = LZMA_PROPS_SIZE, hOriginalSizeLen = sizeof(int32_t), hSize = hSigLen + hShaLen + hPropsLen + hOriginalSizeLen; // header
 
 	compressed.resize(hSize + resultSize + 1024 * 1024); // rsa signature + sha1 + lzma props + max compressed size
 
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 
 	cout << "Checking uncompressed..\n";
 
-	int32 resultCheckLen;
+	int32_t resultCheckLen;
 	memcpy(&resultCheckLen, compressed.constData() + hSigLen + hShaLen + hPropsLen, hOriginalSizeLen);
 	if (resultCheckLen <= 0 || resultCheckLen > 1024 * 1024 * 1024) {
 		cout << "Bad result len: " << resultCheckLen << "\n";
@@ -304,7 +304,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 #else // use liblzma for others
-	const int32 hSigLen = 128, hShaLen = 20, hPropsLen = 0, hOriginalSizeLen = sizeof(int32), hSize = hSigLen + hShaLen + hOriginalSizeLen; // header
+	const int32_t hSigLen = 128, hShaLen = 20, hPropsLen = 0, hOriginalSizeLen = sizeof(int32_t), hSize = hSigLen + hShaLen + hOriginalSizeLen; // header
 
 	compressed.resize(hSize + resultSize + 1024 * 1024); // rsa signature + sha1 + lzma props + max compressed size
 
@@ -352,7 +352,7 @@ int main(int argc, char *argv[])
 
 	cout << "Checking uncompressed..\n";
 
-	int32 resultCheckLen;
+	int32_t resultCheckLen;
 	memcpy(&resultCheckLen, compressed.constData() + hSigLen + hShaLen, hOriginalSizeLen);
 	if (resultCheckLen <= 0 || resultCheckLen > 1024 * 1024 * 1024) {
 		cout << "Bad result len: " << resultCheckLen << "\n";
@@ -415,9 +415,9 @@ int main(int argc, char *argv[])
 	cout << "Counting SHA1 hash..\n";
 
 	uchar sha1Buffer[20];
-	memcpy(compressed.data() + hSigLen, hashSha1(compressed.constData() + hSigLen + hShaLen, uint32(compressedLen + hPropsLen + hOriginalSizeLen), sha1Buffer), hShaLen); // count sha1
+	memcpy(compressed.data() + hSigLen, hashSha1(compressed.constData() + hSigLen + hShaLen, uint32_t(compressedLen + hPropsLen + hOriginalSizeLen), sha1Buffer), hShaLen); // count sha1
 
-	uint32 siglen = 0;
+	uint32_t siglen = 0;
 
 	cout << "Signing..\n";
 	RSA *prKey = PEM_read_bio_RSAPrivateKey(BIO_new_mem_buf(const_cast<char*>((AlphaChannel || BetaVersion) ? PrivateAlphaKey : PrivateKey), -1), 0, 0, 0);
@@ -493,7 +493,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-QString countBetaVersionSignature(quint64 version) { // duplicated in autoupdate.cpp
+QString countBetaVersionSignature(uint64_t version) { // duplicated in autoupdate.cpp
 	QByteArray cBetaPrivateKey(BetaPrivateKey);
 	if (cBetaPrivateKey.isEmpty()) {
 		cout << "Error: Trying to count beta version signature without beta private key!\n";
@@ -502,12 +502,12 @@ QString countBetaVersionSignature(quint64 version) { // duplicated in autoupdate
 
 	QByteArray signedData = (QLatin1String("TelegramBeta_") + QString::number(version, 16).toLower()).toUtf8();
 
-	static const int32 shaSize = 20, keySize = 128;
+	static const int32_t shaSize = 20, keySize = 128;
 
 	uchar sha1Buffer[shaSize];
 	hashSha1(signedData.constData(), signedData.size(), sha1Buffer); // count sha1
 
-	uint32 siglen = 0;
+	uint32_t siglen = 0;
 
 	RSA *prKey = PEM_read_bio_RSAPrivateKey(BIO_new_mem_buf(const_cast<char*>(cBetaPrivateKey.constData()), -1), 0, 0, 0);
 	if (!prKey) {

@@ -34,9 +34,9 @@ namespace Logs {
 
 	void writeMain(const QString &v);
 
-	void writeDebug(const char *file, int32 line, const QString &v);
+	void writeDebug(const char *file, int32_t line, const QString &v);
 	void writeTcp(const QString &v);
-	void writeMtp(int32 dc, const QString &v);
+	void writeMtp(int32_t dc, const QString &v);
 
 	QString full();
 
@@ -45,14 +45,14 @@ namespace Logs {
 	}
 
 	struct MemoryBuffer {
-		MemoryBuffer(const void *ptr, uint32 size) : p(ptr), s(size) {
+		MemoryBuffer(const void *ptr, uint32_t size) : p(ptr), s(size) {
 		}
 		QString str() const {
 			QString result;
 			const uchar *buf((const uchar*)p);
 			const char *hex = "0123456789ABCDEF";
 			result.reserve(s * 3);
-			for (uint32 i = 0; i < s; ++i) {
+			for (uint32_t i = 0; i < s; ++i) {
 				result += hex[(buf[i] >> 4)];
 				result += hex[buf[i] & 0x0F];
 				result += ' ';
@@ -62,15 +62,15 @@ namespace Logs {
 		}
 
 		const void *p;
-		uint32 s;
+		uint32_t s;
 	};
 
-	inline MemoryBuffer mb(const void *ptr, uint32 size) {
+	inline MemoryBuffer mb(const void *ptr, uint32_t size) {
 		return MemoryBuffer(ptr, size);
 	}
 
 	QString vector(const QVector<MTPlong> &ids);
-	QString vector(const QVector<uint64> &ids);
+	QString vector(const QVector<uint64_t> &ids);
 
 }
 

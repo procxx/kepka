@@ -29,11 +29,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace InlineBots {
 namespace Layout {
 
-void ItemBase::setPosition(int32 position) {
+void ItemBase::setPosition(int32_t position) {
 	_position = position;
 }
 
-int32 ItemBase::position() const {
+int32_t ItemBase::position() const {
 	return _position;
 }
 

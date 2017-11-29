@@ -95,11 +95,11 @@ extern f_notify_notification_set_image_from_pixbuf notify_notification_set_image
 //using f_notify_notification_set_hint = void (*)(NotifyNotification *notification, const char *key, GVariant *value);
 //extern f_notify_notification_set_hint notify_notification_set_hint;
 
-//using f_notify_notification_set_hint_int32 = void (*)(NotifyNotification *notification, const char *key, gint value);
-//extern f_notify_notification_set_hint_int32 notify_notification_set_hint_int32;
+//using f_notify_notification_set_hint_int32_t = void (*)(NotifyNotification *notification, const char *key, gint value);
+//extern f_notify_notification_set_hint_int32_t notify_notification_set_hint_int32_t;
 
-//using f_notify_notification_set_hint_uint32 = void (*)(NotifyNotification *notification, const char *key, guint value);
-//extern f_notify_notification_set_hint_uint32 notify_notification_set_hint_uint32;
+//using f_notify_notification_set_hint_uint32_t = void (*)(NotifyNotification *notification, const char *key, guint value);
+//extern f_notify_notification_set_hint_uint32_t notify_notification_set_hint_uint32_t;
 
 //using f_notify_notification_set_hint_double = void (*)(NotifyNotification *notification, const char *key, gdouble value);
 //extern f_notify_notification_set_hint_double notify_notification_set_hint_double;

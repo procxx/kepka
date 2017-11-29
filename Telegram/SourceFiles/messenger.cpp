@@ -292,18 +292,18 @@ void Messenger::setMtpKey(MTP::DcId dcId, const MTP::AuthKey::Data &keyData) {
 QByteArray Messenger::serializeMtpAuthorization() const {
 	auto serialize = [this](auto mainDcId, auto &keys, auto &keysToDestroy) {
 		auto keysSize = [](auto &list) {
-			return sizeof(qint32) + list.size() * (sizeof(qint32) + MTP::AuthKey::Data().size());
+			return sizeof(int32_t) + list.size() * (sizeof(int32_t) + MTP::AuthKey::Data().size());
 		};
 		auto writeKeys = [](QDataStream &stream, auto &keys) {
-			stream << qint32(keys.size());
+			stream << int32_t(keys.size());
 			for (auto &key : keys) {
-				stream << qint32(key->dcId());
+				stream << int32_t(key->dcId());
 				key->write(stream);
 			}
 		};
 
 		auto result = QByteArray();
-		auto size = sizeof(qint32) + sizeof(qint32); // userId + mainDcId
+		auto size = sizeof(int32_t) + sizeof(int32_t); // userId + mainDcId
 		size += keysSize(keys) + keysSize(keysToDestroy);
 		result.reserve(size);
 		{
@@ -311,7 +311,7 @@ QByteArray Messenger::serializeMtpAuthorization() const {
 			stream.setVersion(QDataStream::Qt_5_1);
 
 			auto currentUserId = _authSession ? _authSession->userId() : 0;
-			stream << qint32(currentUserId) << qint32(mainDcId);
+			stream << int32_t(currentUserId) << int32_t(mainDcId);
 			writeKeys(stream, keys);
 			writeKeys(stream, keysToDestroy);
 
@@ -354,8 +354,8 @@ void Messenger::setMtpAuthorization(const QByteArray &serialized) {
 	QDataStream stream(serialized);
 	stream.setVersion(QDataStream::Qt_5_1);
 
-	auto userId = Serialize::read<qint32>(stream);
-	auto mainDcId = Serialize::read<qint32>(stream);
+	auto userId = Serialize::read<int32_t>(stream);
+	auto mainDcId = Serialize::read<int32_t>(stream);
 	if (stream.status() != QDataStream::Ok) {
 		LOG(("MTP Error: could not read main fields from serialized mtp authorization."));
 		return;
@@ -365,14 +365,14 @@ void Messenger::setMtpAuthorization(const QByteArray &serialized) {
 	_private->mtpConfig.mainDcId = mainDcId;
 
 	auto readKeys = [&stream](auto &keys) {
-		auto count = Serialize::read<qint32>(stream);
+		auto count = Serialize::read<int32_t>(stream);
 		if (stream.status() != QDataStream::Ok) {
 			LOG(("MTP Error: could not read keys count from serialized mtp authorization."));
 			return;
 		}
 		keys.reserve(count);
 		for (auto i = 0; i != count; ++i) {
-			auto dcId = Serialize::read<qint32>(stream);
+			auto dcId = Serialize::read<int32_t>(stream);
 			auto keyData = Serialize::read<MTP::AuthKey::Data>(stream);
 			if (stream.status() != QDataStream::Ok) {
 				LOG(("MTP Error: could not read key from serialized mtp authorization."));
@@ -391,7 +391,7 @@ void Messenger::startMtp() {
 	_mtproto = std::make_unique<MTP::Instance>(_dcOptions.get(), MTP::Instance::Mode::Normal, base::take(_private->mtpConfig));
 	_private->mtpConfig.mainDcId = _mtproto->mainDcId();
 
-	_mtproto->setStateChangedHandler([](MTP::ShiftedDcId shiftedDcId, int32 state) {
+	_mtproto->setStateChangedHandler([](MTP::ShiftedDcId shiftedDcId, int32_t state) {
 		if (App::wnd()) {
 			App::wnd()->mtpStateChanged(shiftedDcId, state);
 		}
@@ -874,7 +874,7 @@ void Messenger::uploadProfilePhoto(const QImage &tosend, const PeerId &peerId) {
 	auto photo = MTP_photo(MTP_flags(0), MTP_long(id), MTP_long(0), MTP_int(unixtime()), MTP_vector<MTPPhotoSize>(photoSizes));
 
 	QString file, filename;
-	int32 filesize = 0;
+	int32_t filesize = 0;
 	QByteArray data;
 
 	SendMediaReady ready(SendMediaType::Photo, file, filename, filesize, data, id, id, qsl("jpg"), peerId, photo, photoThumbs, MTP_documentEmpty(MTP_long(0)), jpeg, 0);

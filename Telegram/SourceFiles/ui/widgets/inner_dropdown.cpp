@@ -27,7 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace {
 
-constexpr float64 kFadeHeight = 1. / 3;
+constexpr double kFadeHeight = 1. / 3;
 constexpr int kFadeAlphaMax = 160;
 
 } // namespace

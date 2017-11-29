@@ -30,11 +30,11 @@ FontFamilyMap fontFamilyMap;
 typedef QVector<QString> FontFamilies;
 FontFamilies fontFamilies;
 
-typedef QMap<uint32, FontData*> FontDatas;
+typedef QMap<uint32_t, FontData*> FontDatas;
 FontDatas fontsMap;
 
-uint32 fontKey(int size, uint32 flags, int family) {
-	return (((uint32(family) << 10) | uint32(size)) << 3) | flags;
+uint32_t fontKey(int size, uint32_t flags, int family) {
+	return (((uint32_t(family) << 10) | uint32_t(size)) << 3) | flags;
 }
 
 } // namespace
@@ -56,7 +56,7 @@ int registerFontFamily(const QString &family) {
 	return result;
 }
 
-FontData::FontData(int size, uint32 flags, int family, Font *other)
+FontData::FontData(int size, uint32_t flags, int family, Font *other)
 : f(Fonts::GetOverride(fontFamilies[family]))
 , m(f)
 , _size(size)
@@ -99,7 +99,7 @@ int FontData::size() const {
 	return _size;
 }
 
-uint32 FontData::flags() const {
+uint32_t FontData::flags() const {
 	return _flags;
 }
 
@@ -107,17 +107,17 @@ int FontData::family() const {
 	return _family;
 }
 
-Font FontData::otherFlagsFont(uint32 flag, bool set) const {
-	int32 newFlags = set ? (_flags | flag) : (_flags & ~flag);
+Font FontData::otherFlagsFont(uint32_t flag, bool set) const {
+	int32_t newFlags = set ? (_flags | flag) : (_flags & ~flag);
 	if (!modified[newFlags].v()) {
 		modified[newFlags] = Font(_size, newFlags, _family, modified);
 	}
 	return modified[newFlags];
 }
 
-Font::Font(int size, uint32 flags, const QString &family) {
+Font::Font(int size, uint32_t flags, const QString &family) {
 	if (fontFamilyMap.isEmpty()) {
-		for (uint32 i = 0, s = fontFamilies.size(); i != s; ++i) {
+		for (uint32_t i = 0, s = fontFamilies.size(); i != s; ++i) {
 			fontFamilyMap.insert(fontFamilies.at(i), i);
 		}
 	}
@@ -130,16 +130,16 @@ Font::Font(int size, uint32 flags, const QString &family) {
 	init(size, flags, i.value(), 0);
 }
 
-Font::Font(int size, uint32 flags, int family) {
+Font::Font(int size, uint32_t flags, int family) {
 	init(size, flags, family, 0);
 }
 
-Font::Font(int size, uint32 flags, int family, Font *modified) {
+Font::Font(int size, uint32_t flags, int family, Font *modified) {
 	init(size, flags, family, modified);
 }
 
-void Font::init(int size, uint32 flags, int family, Font *modified) {
-	uint32 key = fontKey(size, flags, family);
+void Font::init(int size, uint32_t flags, int family, Font *modified) {
+	uint32_t key = fontKey(size, flags, family);
 	auto i = fontsMap.constFind(key);
 	if (i == fontsMap.cend()) {
 		i = fontsMap.insert(key, new FontData(size, flags, family, modified));

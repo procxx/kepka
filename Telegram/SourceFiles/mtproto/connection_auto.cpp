@@ -129,7 +129,7 @@ void AutoConnection::sendData(mtpBuffer &buffer) {
 }
 
 void AutoConnection::httpSend(mtpBuffer &buffer) {
-	int32 requestSize = (buffer.size() - 3) * sizeof(mtpPrime);
+	int32_t requestSize = (buffer.size() - 3) * sizeof(mtpPrime);
 
 	QNetworkRequest request(address);
 	request.setHeader(QNetworkRequest::ContentLengthHeader, QVariant(requestSize));
@@ -250,7 +250,7 @@ void AutoConnection::requestFinished(QNetworkReply *reply) {
 	}
 }
 
-void AutoConnection::socketPacket(const char *packet, uint32 length) {
+void AutoConnection::socketPacket(const char *packet, uint32_t length) {
 	if (status == FinishedWork) return;
 
 	mtpBuffer data = AbstractTCPConnection::handleResponse(packet, length);
@@ -306,7 +306,7 @@ bool AutoConnection::needHttpWait() {
 	return (status == UsingHttp) ? requests.isEmpty() : false;
 }
 
-int32 AutoConnection::debugState() const {
+int32_t AutoConnection::debugState() const {
 	return (status == UsingHttp) ? -1 : ((status == UsingTcp) ? sock.state() : -777);
 }
 

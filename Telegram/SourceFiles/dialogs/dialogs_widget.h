@@ -171,7 +171,7 @@ private:
 	QTimer _chooseByDragTimer;
 
 	bool _dialogsFull = false;
-	int32 _dialogsOffsetDate = 0;
+	int32_t _dialogsOffsetDate = 0;
 	MsgId _dialogsOffsetId = 0;
 	PeerData *_dialogsOffsetPeer = nullptr;
 	mtpRequestId _dialogsRequestId = 0;

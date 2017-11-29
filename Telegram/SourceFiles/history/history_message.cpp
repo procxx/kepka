@@ -331,7 +331,7 @@ void HistoryMessageVia::create(UserId userId) {
 	});
 }
 
-void HistoryMessageVia::resize(int32 availw) const {
+void HistoryMessageVia::resize(int32_t availw) const {
 	if (availw < 0) {
 		_text = QString();
 		_width = 0;
@@ -457,13 +457,13 @@ void HistoryMessageReply::updateName() const {
 		replyToName.setText(st::fwdTextStyle, name, _textNameOptions);
 		replyToVersion = replyToMsg->author()->nameVersion;
 		bool hasPreview = replyToMsg->getMedia() ? replyToMsg->getMedia()->hasReplyPreview() : false;
-		int32 previewSkip = hasPreview ? (st::msgReplyBarSize.height() + st::msgReplyBarSkip - st::msgReplyBarSize.width() - st::msgReplyBarPos.x()) : 0;
-		int32 w = replyToName.maxWidth();
+		int32_t previewSkip = hasPreview ? (st::msgReplyBarSize.height() + st::msgReplyBarSkip - st::msgReplyBarSize.width() - st::msgReplyBarPos.x()) : 0;
+		int32_t w = replyToName.maxWidth();
 		if (_replyToVia) {
 			w += st::msgServiceFont->spacew + _replyToVia->_maxWidth;
 		}
 
-		_maxReplyWidth = previewSkip + qMax(w, qMin(replyToText.maxWidth(), int32(st::maxSignatureSize)));
+		_maxReplyWidth = previewSkip + qMax(w, qMin(replyToText.maxWidth(), int32_t(st::maxSignatureSize)));
 	} else {
 		_maxReplyWidth = st::msgDateFont->width(lang(replyToMsgId ? lng_profile_loading : lng_deleted_message));
 	}
@@ -559,7 +559,7 @@ int HistoryMessage::KeyboardStyle::buttonRadius() const {
 	return st::dateRadius;
 }
 
-void HistoryMessage::KeyboardStyle::paintButtonBg(Painter &p, const QRect &rect, float64 howMuchOver) const {
+void HistoryMessage::KeyboardStyle::paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const {
 	App::roundRect(p, rect, st::msgServiceBg, StickerCorners);
 	if (howMuchOver > 0) {
 		auto o = p.opacity();
@@ -823,7 +823,7 @@ bool HistoryMessage::displayFastShare() const {
 }
 
 void HistoryMessage::createComponents(const CreateConfig &config) {
-	uint64 mask = 0;
+	uint64_t mask = 0;
 	if (config.replyTo) {
 		mask |= HistoryMessageReply::Bit();
 	}
@@ -900,7 +900,7 @@ void HistoryMessage::createComponents(const CreateConfig &config) {
 	initTime();
 }
 
-QString formatViewsCount(int32 views) {
+QString formatViewsCount(int32_t views) {
 	if (views > 999999) {
 		views /= 100000;
 		if (views % 10) {
@@ -1024,7 +1024,7 @@ void HistoryMessage::initMediaFromDocument(DocumentData *doc, const QString &cap
 	}
 }
 
-int32 HistoryMessage::plainMaxWidth() const {
+int32_t HistoryMessage::plainMaxWidth() const {
 	return st::msgPadding.left() + _text.maxWidth() + st::msgPadding.right();
 }
 
@@ -1166,7 +1166,7 @@ QRect HistoryMessage::countGeometry() const {
 	return QRect(contentLeft, contentTop, contentWidth, _height - contentTop - marginBottom());
 }
 
-void HistoryMessage::fromNameUpdated(int32 width) const {
+void HistoryMessage::fromNameUpdated(int32_t width) const {
 	_authorNameVersion = author()->nameVersion;
 	if (!Has<HistoryMessageForwarded>()) {
 		if (auto via = Get<HistoryMessageVia>()) {
@@ -1265,10 +1265,10 @@ void HistoryMessage::updateMedia(const MTPMessageMedia *media) {
 	setPendingInitDimensions();
 }
 
-int32 HistoryMessage::addToOverview(AddToOverviewMethod method) {
+int32_t HistoryMessage::addToOverview(AddToOverviewMethod method) {
 	if (!indexInOverview()) return 0;
 
-	int32 result = 0;
+	int32_t result = 0;
 	if (auto media = getMedia()) {
 		result |= media->addToOverview(method);
 	}
@@ -1476,12 +1476,12 @@ int HistoryMessage::timeLeft() const {
 	return result;
 }
 
-void HistoryMessage::drawInfo(Painter &p, int32 right, int32 bottom, int32 width, bool selected, InfoDisplayType type) const {
+void HistoryMessage::drawInfo(Painter &p, int32_t right, int32_t bottom, int32_t width, bool selected, InfoDisplayType type) const {
 	p.setFont(st::msgDateFont);
 
 	bool outbg = out() && !isPost();
 	bool invertedsprites = (type == InfoDisplayOverImage || type == InfoDisplayOverBackground);
-	int32 infoRight = right, infoBottom = bottom;
+	int32_t infoRight = right, infoBottom = bottom;
 	switch (type) {
 	case InfoDisplayDefault:
 		infoRight -= st::msgPadding.right() - st::msgDateDelta.x();
@@ -1500,16 +1500,16 @@ void HistoryMessage::drawInfo(Painter &p, int32 right, int32 bottom, int32 width
 	break;
 	}
 
-	int32 infoW = HistoryMessage::infoWidth();
+	int32_t infoW = HistoryMessage::infoWidth();
 	if (rtl()) infoRight = width - infoRight + infoW;
 
-	int32 dateX = infoRight - infoW;
-	int32 dateY = infoBottom - st::msgDateFont->height;
+	int32_t dateX = infoRight - infoW;
+	int32_t dateY = infoBottom - st::msgDateFont->height;
 	if (type == InfoDisplayOverImage) {
-		int32 dateW = infoW + 2 * st::msgDateImgPadding.x(), dateH = st::msgDateFont->height + 2 * st::msgDateImgPadding.y();
+		int32_t dateW = infoW + 2 * st::msgDateImgPadding.x(), dateH = st::msgDateFont->height + 2 * st::msgDateImgPadding.y();
 		App::roundRect(p, dateX - st::msgDateImgPadding.x(), dateY - st::msgDateImgPadding.y(), dateW, dateH, selected ? st::msgDateImgBgSelected : st::msgDateImgBg, selected ? DateSelectedCorners : DateCorners);
 	} else if (type == InfoDisplayOverBackground) {
-		int32 dateW = infoW + 2 * st::msgDateImgPadding.x(), dateH = st::msgDateFont->height + 2 * st::msgDateImgPadding.y();
+		int32_t dateW = infoW + 2 * st::msgDateImgPadding.x(), dateH = st::msgDateFont->height + 2 * st::msgDateImgPadding.y();
 		App::roundRect(p, dateX - st::msgDateImgPadding.x(), dateY - st::msgDateImgPadding.y(), dateW, dateH, selected ? st::msgServiceBgSelected : st::msgServiceBg, selected ? StickerSelectedCorners : StickerCorners);
 	}
 	dateX += HistoryMessage::timeLeft();
@@ -1557,11 +1557,11 @@ void HistoryMessage::drawInfo(Painter &p, int32 right, int32 bottom, int32 width
 	}
 }
 
-void HistoryMessage::setViewsCount(int32 count) {
+void HistoryMessage::setViewsCount(int32_t count) {
 	auto views = Get<HistoryMessageViews>();
 	if (!views || views->_views == count || (count >= 0 && views->_views > count)) return;
 
-	int32 was = views->_viewsWidth;
+	int32_t was = views->_viewsWidth;
 	views->_views = count;
 	views->_viewsText = (views->_views >= 0) ? formatViewsCount(views->_views) : QString();
 	views->_viewsWidth = views->_viewsText.isEmpty() ? 0 : st::msgDateFont->width(views->_viewsText);
@@ -1623,7 +1623,7 @@ void HistoryMessage::draw(Painter &p, QRect clip, TextSelection selection, TimeM
 			auto skiptop = top - fill;
 			auto fillheight = fill + g.height() + fill;
 
-			auto dt = (animms > st::activeFadeInDuration) ? (1. - (animms - st::activeFadeInDuration) / float64(st::activeFadeOutDuration)) : (animms / float64(st::activeFadeInDuration));
+			auto dt = (animms > st::activeFadeInDuration) ? (1. - (animms - st::activeFadeInDuration) / double(st::activeFadeOutDuration)) : (animms / double(st::activeFadeInDuration));
 			auto o = p.opacity();
 			p.setOpacity(o * dt);
 			p.fillRect(0, skiptop, width(), fillheight, st::defaultTextPalette.selectOverlay);
@@ -1781,7 +1781,7 @@ void HistoryMessage::paintForwardedInfo(Painter &p, QRect &trect, bool selected)
 
 void HistoryMessage::paintReplyInfo(Painter &p, QRect &trect, bool selected) const {
 	if (auto reply = Get<HistoryMessageReply>()) {
-		int32 h = st::msgReplyPadding.top() + st::msgReplyBarSize.height() + st::msgReplyPadding.bottom();
+		int32_t h = st::msgReplyPadding.top() + st::msgReplyBarSize.height() + st::msgReplyPadding.bottom();
 
 		auto flags = HistoryMessageReply::PaintFlag::InBubble | 0;
 		if (selected) {
@@ -2173,7 +2173,7 @@ bool HistoryMessage::getStateForwardedInfo(QPoint point, QRect &trect, HistoryTe
 
 bool HistoryMessage::getStateReplyInfo(QPoint point, QRect &trect, HistoryTextState *outResult) const {
 	if (auto reply = Get<HistoryMessageReply>()) {
-		int32 h = st::msgReplyPadding.top() + st::msgReplyBarSize.height() + st::msgReplyPadding.bottom();
+		int32_t h = st::msgReplyPadding.top() + st::msgReplyBarSize.height() + st::msgReplyPadding.bottom();
 		if (point.y() >= trect.top() && point.y() < trect.top() + h) {
 			if (reply->replyToMsg && QRect(trect.x(), trect.y() + st::msgReplyPadding.top(), trect.width(), st::msgReplyBarSize.height()).contains(point)) {
 				outResult->link = reply->replyToLink();

@@ -69,7 +69,7 @@ QPointer<TabbedSelector> TabbedSection::getSelector() const {
 	return _selector.data();
 }
 
-void TabbedSection::stickersInstalled(uint64 setId) {
+void TabbedSection::stickersInstalled(uint64_t setId) {
 	_selector->stickersInstalled(setId);
 }
 

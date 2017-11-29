@@ -24,12 +24,12 @@ namespace style {
 namespace internal {
 namespace {
 
-uint32 colorKey(QColor c) {
-	return (((((uint32(c.red()) << 8) | uint32(c.green())) << 8) | uint32(c.blue())) << 8) | uint32(c.alpha());
+uint32_t colorKey(QColor c) {
+	return (((((uint32_t(c.red()) << 8) | uint32_t(c.green())) << 8) | uint32_t(c.blue())) << 8) | uint32_t(c.alpha());
 }
 
 using IconMasks = QMap<const IconMask*, QImage>;
-using IconPixmaps = QMap<QPair<const IconMask*, uint32>, QPixmap>;
+using IconPixmaps = QMap<QPair<const IconMask*, uint32_t>, QPixmap>;
 using IconDatas = OrderedSet<IconData*>;
 NeverFreedPointer<IconMasks> iconMasks;
 NeverFreedPointer<IconPixmaps> iconPixmaps;
@@ -87,7 +87,7 @@ QSize readGeneratedSize(const IconMask *mask, DBIScale scale) {
 			QDataStream stream(baForStream);
 			stream.setVersion(QDataStream::Qt_5_1);
 
-			qint32 width = 0, height = 0;
+			int32_t width = 0, height = 0;
 			stream >> width >> height;
 			Assert(stream.status() == QDataStream::Ok);
 

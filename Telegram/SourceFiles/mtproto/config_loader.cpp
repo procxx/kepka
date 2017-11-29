@@ -143,7 +143,7 @@ void ConfigLoader::sendSpecialRequest() {
 	}
 
 	auto weak = base::make_weak_unique(this);
-	auto index = rand_value<uint32>() % uint32(_specialEndpoints.size());
+	auto index = rand_value<uint32_t>() % uint32_t(_specialEndpoints.size());
 	auto endpoint = _specialEndpoints.begin() + index;
 	_specialEnumCurrent = specialToRealDcId(endpoint->dcId);
 	_instance->dcOptions()->constructAddOne(_specialEnumCurrent, MTPDdcOption::Flag::f_tcpo_only, endpoint->ip, endpoint->port);

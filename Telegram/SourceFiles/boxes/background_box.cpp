@@ -115,10 +115,10 @@ void BackgroundBox::Inner::gotWallpapers(const MTPVector<MTPWallPaper> &result) 
 			auto &d = w.c_wallPaper();
 			auto &sizes = d.vsizes.v;
 			const MTPPhotoSize *thumb = 0, *full = 0;
-			int32 thumbLevel = -1, fullLevel = -1;
+			int32_t thumbLevel = -1, fullLevel = -1;
 			for (QVector<MTPPhotoSize>::const_iterator j = sizes.cbegin(), e = sizes.cend(); j != e; ++j) {
 				char size = 0;
-				int32 w = 0, h = 0;
+				int32_t w = 0, h = 0;
 				switch (j->type()) {
 				case mtpc_photoSize: {
 					auto &s = j->c_photoSize().vtype.v;
@@ -136,7 +136,7 @@ void BackgroundBox::Inner::gotWallpapers(const MTPVector<MTPWallPaper> &result) 
 				}
 				if (!size || !w || !h) continue;
 
-				int32 newThumbLevel = qAbs((st::backgroundSize.width() * cIntRetinaFactor()) - w), newFullLevel = qAbs(2560 - w);
+				int32_t newThumbLevel = qAbs((st::backgroundSize.width() * cIntRetinaFactor()) - w), newFullLevel = qAbs(2560 - w);
 				if (thumbLevel < 0 || newThumbLevel < thumbLevel) {
 					thumbLevel = newThumbLevel;
 					thumb = &(*j);

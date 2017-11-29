@@ -37,27 +37,27 @@ public:
 	AbstractFFMpegLoader(const FileLocation &file, const QByteArray &data, base::byte_vector &&bytes) : AudioPlayerLoader(file, data, std::move(bytes)) {
 	}
 
-	bool open(qint64 &position) override;
+	bool open(int64_t &position) override;
 
-	int64 samplesCount() override {
+	int64_t samplesCount() override {
 		return _samplesCount;
 	}
 
-	int32 samplesFrequency() override {
+	int32_t samplesFrequency() override {
 		return _samplesFrequency;
 	}
 
 	~AbstractFFMpegLoader();
 
 protected:
-	int32 _samplesFrequency = Media::Player::kDefaultFrequency;
-	int64 _samplesCount = 0;
+	int32_t _samplesFrequency = Media::Player::kDefaultFrequency;
+	int64_t _samplesCount = 0;
 
 	uchar *ioBuffer = nullptr;
 	AVIOContext *ioContext = nullptr;
 	AVFormatContext *fmtContext = nullptr;
 	AVCodec *codec = nullptr;
-	int32 streamId = 0;
+	int32_t streamId = 0;
 
 	bool _opened = false;
 
@@ -75,26 +75,26 @@ class FFMpegLoader : public AbstractFFMpegLoader {
 public:
 	FFMpegLoader(const FileLocation &file, const QByteArray &data, base::byte_vector &&bytes);
 
-	bool open(qint64 &position) override;
+	bool open(int64_t &position) override;
 
-	int32 format() override {
+	int32_t format() override {
 		return fmt;
 	}
 
-	ReadResult readMore(QByteArray &result, int64 &samplesAdded) override;
+	ReadResult readMore(QByteArray &result, int64_t &samplesAdded) override;
 
 	~FFMpegLoader();
 
 protected:
-	int32 sampleSize = 2 * sizeof(uint16);
+	int32_t sampleSize = 2 * sizeof(uint16_t);
 
 private:
-	ReadResult readFromReadyFrame(QByteArray &result, int64 &samplesAdded);
+	ReadResult readFromReadyFrame(QByteArray &result, int64_t &samplesAdded);
 
-	int32 fmt = AL_FORMAT_STEREO16;
-	int32 srcRate = Media::Player::kDefaultFrequency;
-	int32 dstRate = Media::Player::kDefaultFrequency;
-	int32 maxResampleSamples = 1024;
+	int32_t fmt = AL_FORMAT_STEREO16;
+	int32_t srcRate = Media::Player::kDefaultFrequency;
+	int32_t dstRate = Media::Player::kDefaultFrequency;
+	int32_t maxResampleSamples = 1024;
 	uint8_t **dstSamplesData = nullptr;
 
 	AVCodecContext *codecContext = nullptr;

@@ -74,7 +74,7 @@ public:
 	virtual void updatePressed(QPoint point) {
 	}
 
-	virtual int32 addToOverview(AddToOverviewMethod method) {
+	virtual int32_t addToOverview(AddToOverviewMethod method) {
 		return 0;
 	}
 	virtual void eraseFromOverview() {
@@ -95,7 +95,7 @@ public:
 	virtual bool consumeMessageText(const TextWithEntities &textWithEntities) WARN_UNUSED_RESULT {
 		return false;
 	}
-	virtual uint16 fullSelectionLength() const WARN_UNUSED_RESULT {
+	virtual uint16_t fullSelectionLength() const WARN_UNUSED_RESULT {
 		return 0;
 	}
 	TextSelection skipSelection(TextSelection selection) const WARN_UNUSED_RESULT {
@@ -215,7 +215,7 @@ public:
 	}
 
 protected:
-	int32 addToOneOverview(MediaOverviewType type, AddToOverviewMethod method) {
+	int32_t addToOneOverview(MediaOverviewType type, AddToOverviewMethod method) {
 		if (_parent->history()->addToOverview(type, _parent->id, method)) {
 			return (1 << type);
 		}

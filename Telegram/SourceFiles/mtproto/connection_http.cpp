@@ -40,8 +40,8 @@ mtpBuffer HTTPConnection::handleResponse(QNetworkReply *reply) {
 	return data;
 }
 
-qint32 HTTPConnection::handleError(QNetworkReply *reply) { // returnes "maybe bad key"
-	auto result = qint32(kErrorCodeOther);
+int32_t HTTPConnection::handleError(QNetworkReply *reply) { // returnes "maybe bad key"
+	auto result = int32_t(kErrorCodeOther);
 
 	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
 	if (statusCode.isValid()) {
@@ -105,7 +105,7 @@ void HTTPConnection::sendData(mtpBuffer &buffer) {
 		return;
 	}
 
-	int32 requestSize = (buffer.size() - 3) * sizeof(mtpPrime);
+	int32_t requestSize = (buffer.size() - 3) * sizeof(mtpPrime);
 
 	QNetworkRequest request(address);
 	request.setHeader(QNetworkRequest::ContentLengthHeader, QVariant(requestSize));
@@ -197,7 +197,7 @@ bool HTTPConnection::needHttpWait() {
 	return requests.isEmpty();
 }
 
-int32 HTTPConnection::debugState() const {
+int32_t HTTPConnection::debugState() const {
 	return -1;
 }
 

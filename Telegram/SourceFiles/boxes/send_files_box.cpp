@@ -112,9 +112,9 @@ void SendFilesBox::prepareSingleFileLayout() {
 				_previewWidth = qMax(image.width(), kMinPreviewWidth);
 			}
 			auto maxthumbh = qMin(qRound(1.5 * _previewWidth), st::confirmMaxHeight);
-			_previewHeight = qRound(originalHeight * float64(_previewWidth) / originalWidth);
+			_previewHeight = qRound(originalHeight * double(_previewWidth) / originalWidth);
 			if (_previewHeight > maxthumbh) {
-				_previewWidth = qRound(_previewWidth * float64(maxthumbh) / _previewHeight);
+				_previewWidth = qRound(_previewWidth * double(maxthumbh) / _previewHeight);
 				accumulate_max(_previewWidth, kMinPreviewWidth);
 				_previewHeight = maxthumbh;
 			}
@@ -374,7 +374,7 @@ void SendFilesBox::paintEvent(QPaintEvent *e) {
 			linktop = st::msgFileThumbLinkTop;
 		}
 		auto namewidth = w - nameleft - (_fileThumb.isNull() ? st::msgFilePadding.left() : st::msgFileThumbPadding.left());
-		int32 x = (width() - w) / 2, y = st::boxPhotoPadding.top();
+		int32_t x = (width() - w) / 2, y = st::boxPhotoPadding.top();
 
 		App::roundRect(p, x, y, w, h, st::msgOutBg, MessageOutCorners, &st::msgOutShadow);
 
@@ -493,7 +493,7 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 		if (image->isNull()) {
 			_thumbw = 0;
 		} else {
-			int32 tw = image->width(), th = image->height();
+			int32_t tw = image->width(), th = image->height();
 			if (tw > th) {
 				_thumbw = (tw * st::msgFileThumbSize) / th;
 			} else {
@@ -515,10 +515,10 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 			_isAudio = (doc->voice() || doc->song());
 		}
 	} else {
-		int32 maxW = 0, maxH = 0;
+		int32_t maxW = 0, maxH = 0;
 		if (_animated) {
-			int32 limitW = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
-			int32 limitH = st::confirmMaxHeight;
+			int32_t limitW = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
+			int32_t limitH = st::confirmMaxHeight;
 			maxW = qMax(dimensions.width(), 1);
 			maxH = qMax(dimensions.height(), 1);
 			if (maxW * limitH > maxH * limitW) {
@@ -539,7 +539,7 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 			maxH = dimensions.height();
 			_thumb = image->pixNoCache(maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(), Images::Option::Smooth, maxW, maxH);
 		}
-		int32 tw = _thumb.width(), th = _thumb.height();
+		int32_t tw = _thumb.width(), th = _thumb.height();
 		if (!tw || !th) {
 			tw = th = 1;
 		}
@@ -547,10 +547,10 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 		if (_thumb.width() < _thumbw) {
 			_thumbw = (_thumb.width() > 20) ? _thumb.width() : 20;
 		}
-		int32 maxthumbh = qMin(qRound(1.5 * _thumbw), int(st::confirmMaxHeight));
-		_thumbh = qRound(th * float64(_thumbw) / tw);
+		int32_t maxthumbh = qMin(qRound(1.5 * _thumbw), int(st::confirmMaxHeight));
+		_thumbh = qRound(th * double(_thumbw) / tw);
 		if (_thumbh > maxthumbh) {
-			_thumbw = qRound(_thumbw * float64(maxthumbh) / _thumbh);
+			_thumbw = qRound(_thumbw * double(maxthumbh) / _thumbh);
 			_thumbh = maxthumbh;
 			if (_thumbw < 10) {
 				_thumbw = 10;
@@ -677,9 +677,9 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 			icon->paintInCenter(p, inner);
 		}
 	} else if (_doc) {
-		int32 w = width() - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
-		int32 h = _thumbw ? (0 + st::msgFileThumbSize + 0) : (0 + st::msgFileSize + 0);
-		int32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0;
+		int32_t w = width() - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
+		int32_t h = _thumbw ? (0 + st::msgFileThumbSize + 0) : (0 + st::msgFileSize + 0);
+		int32_t nameleft = 0, nametop = 0, nameright = 0, statustop = 0;
 		if (_thumbw) {
 			nameleft = 0 + st::msgFileThumbSize + st::msgFileThumbPadding.right();
 			nametop = st::msgFileThumbNameTop - st::msgFileThumbPadding.top();
@@ -691,12 +691,12 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 			nameright = 0;
 			statustop = st::msgFileStatusTop - st::msgFilePadding.top();
 		}
-		int32 namewidth = w - nameleft - 0;
+		int32_t namewidth = w - nameleft - 0;
 		if (namewidth > _statusw) {
 			//w -= (namewidth - _statusw);
 			//namewidth = _statusw;
 		}
-		int32 x = (width() - w) / 2, y = st::boxPhotoPadding.top();
+		int32_t x = (width() - w) / 2, y = st::boxPhotoPadding.top();
 
 //		App::roundRect(p, x, y, w, h, st::msgInBg, MessageInCorners, &st::msgInShadow);
 

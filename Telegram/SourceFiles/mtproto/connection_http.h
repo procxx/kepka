@@ -40,12 +40,12 @@ public:
 	bool usingHttpWait() override;
 	bool needHttpWait() override;
 
-	int32 debugState() const override;
+	int32_t debugState() const override;
 
 	QString transport() const override;
 
 	static mtpBuffer handleResponse(QNetworkReply *reply);
-	static qint32 handleError(QNetworkReply *reply); // returnes error code
+	static int32_t handleError(QNetworkReply *reply); // returnes error code
 
 public slots:
 	void requestFinished(QNetworkReply *reply);

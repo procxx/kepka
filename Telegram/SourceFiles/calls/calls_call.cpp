@@ -63,16 +63,16 @@ void ConvertEndpoint(std::vector<tgvoip::Endpoint> &ep, const MTPDphoneConnectio
 }
 
 constexpr auto kFingerprintDataSize = 256;
-uint64 ComputeFingerprint(const std::array<gsl::byte, kFingerprintDataSize> &authKey) {
+uint64_t ComputeFingerprint(const std::array<gsl::byte, kFingerprintDataSize> &authKey) {
 	auto hash = openssl::Sha1(authKey);
-	return (gsl::to_integer<uint64>(hash[19]) << 56)
-		| (gsl::to_integer<uint64>(hash[18]) << 48)
-		| (gsl::to_integer<uint64>(hash[17]) << 40)
-		| (gsl::to_integer<uint64>(hash[16]) << 32)
-		| (gsl::to_integer<uint64>(hash[15]) << 24)
-		| (gsl::to_integer<uint64>(hash[14]) << 16)
-		| (gsl::to_integer<uint64>(hash[13]) << 8)
-		| (gsl::to_integer<uint64>(hash[12]));
+	return (gsl::to_integer<uint64_t>(hash[19]) << 56)
+		| (gsl::to_integer<uint64_t>(hash[18]) << 48)
+		| (gsl::to_integer<uint64_t>(hash[17]) << 40)
+		| (gsl::to_integer<uint64_t>(hash[16]) << 32)
+		| (gsl::to_integer<uint64_t>(hash[15]) << 24)
+		| (gsl::to_integer<uint64_t>(hash[14]) << 16)
+		| (gsl::to_integer<uint64_t>(hash[13]) << 8)
+		| (gsl::to_integer<uint64_t>(hash[12]));
 }
 
 } // namespace
@@ -137,7 +137,7 @@ void Call::startOutgoing() {
 	Expects(_type == Type::Outgoing);
 	Expects(_state == State::Requesting);
 
-	request(MTPphone_RequestCall(_user->inputUser, MTP_int(rand_value<int32>()), MTP_bytes(_gaHash), MTP_phoneCallProtocol(MTP_flags(MTPDphoneCallProtocol::Flag::f_udp_p2p | MTPDphoneCallProtocol::Flag::f_udp_reflector), MTP_int(kMinLayer), MTP_int(kMaxLayer)))).done([this](const MTPphone_PhoneCall &result) {
+	request(MTPphone_RequestCall(_user->inputUser, MTP_int(rand_value<int32_t>()), MTP_bytes(_gaHash), MTP_phoneCallProtocol(MTP_flags(MTPDphoneCallProtocol::Flag::f_udp_p2p | MTPDphoneCallProtocol::Flag::f_udp_reflector), MTP_int(kMinLayer), MTP_int(kMaxLayer)))).done([this](const MTPphone_PhoneCall &result) {
 		Expects(result.type() == mtpc_phone_phoneCall);
 
 		setState(State::Waiting);
@@ -267,7 +267,7 @@ void Call::startWaitingTrack() {
 	_waitingTrack->playInLoop();
 }
 
-float64 Call::getWaitingSoundPeakValue() const {
+double Call::getWaitingSoundPeakValue() const {
 	if (_waitingTrack) {
 		auto when = getms() + kSoundSampleMs / 4;
 		return _waitingTrack->getPeakValue(when);

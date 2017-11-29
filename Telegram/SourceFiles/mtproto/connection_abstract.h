@@ -55,7 +55,7 @@ public:
 		return false;
 	}
 
-	virtual int32 debugState() const = 0;
+	virtual int32_t debugState() const = 0;
 
 	virtual QString transport() const = 0;
 
@@ -71,7 +71,7 @@ signals:
 	void receivedData();
 	void receivedSome(); // to stop restart timer
 
-	void error(qint32 errorCodebool);
+	void error(int32_t errorCodebool);
 
 	void connected();
 	void disconnected();

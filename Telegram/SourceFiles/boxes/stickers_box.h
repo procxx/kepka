@@ -96,19 +96,19 @@ private:
 	void rebuildList(Tab *tab = nullptr);
 	void updateTabsGeometry();
 	void switchTab();
-	void installSet(uint64 setId);
+	void installSet(uint64_t setId);
 	int getTopSkip() const;
 	void saveChanges();
 
 	QPixmap grabContentCache();
 
 	void installDone(const MTPmessages_StickerSetInstallResult &result);
-	bool installFail(uint64 setId, const RPCError &error);
+	bool installFail(uint64_t setId, const RPCError &error);
 
 	void preloadArchivedSets();
 	void requestArchivedSets();
 	void loadMoreArchived();
-	void getArchivedDone(uint64 offsetId, const MTPmessages_ArchivedStickers &result);
+	void getArchivedDone(uint64_t offsetId, const MTPmessages_ArchivedStickers &result);
 
 	object_ptr<Ui::SettingsSlider> _tabs = { nullptr };
 	QList<Section> _tabIndices;
@@ -166,7 +166,7 @@ public:
 	void setFullOrder(const Stickers::Order &order);
 	void setRemovedSets(const Stickers::Order &removed);
 
-	void setInstallSetCallback(base::lambda<void(uint64 setId)> callback) {
+	void setInstallSetCallback(base::lambda<void(uint64_t setId)> callback) {
 		_installSetCallback = std::move(callback);
 	}
 	void setLoadMoreCallback(base::lambda<void()> callback) {
@@ -199,15 +199,15 @@ public slots:
 
 private:
 	struct Row {
-		Row(uint64 id, DocumentData *sticker, int32 count, const QString &title, int titleWidth, bool installed, bool official, bool unread, bool archived, bool removed, int32 pixw, int32 pixh);
+		Row(uint64_t id, DocumentData *sticker, int32_t count, const QString &title, int titleWidth, bool installed, bool official, bool unread, bool archived, bool removed, int32_t pixw, int32_t pixh);
 		bool isRecentSet() const {
 			return (id == Stickers::CloudRecentSetId);
 		}
 		~Row();
 
-		uint64 id = 0;
+		uint64_t id = 0;
 		DocumentData *sticker = nullptr;
-		int32 count = 0;
+		int32_t count = 0;
 		QString title;
 		int titleWidth = 0;
 		bool installed = false;
@@ -215,8 +215,8 @@ private:
 		bool unread = false;
 		bool archived = false;
 		bool removed = false;
-		int32 pixw = 0;
-		int32 pixh = 0;
+		int32_t pixw = 0;
+		int32_t pixh = 0;
 		anim::value yadd;
 		std::unique_ptr<Ui::RippleAnimation> ripple;
 	};
@@ -226,7 +226,7 @@ private:
 
 	void checkLoadMore();
 	void updateScrollbarWidth();
-	int getRowIndex(uint64 setId) const;
+	int getRowIndex(uint64_t setId) const;
 	void setRowRemoved(int index, bool removed);
 
 	void setSelected(int selected);
@@ -240,8 +240,8 @@ private:
 	void paintRow(Painter &p, Row *set, int index, TimeMs ms);
 	void paintFakeButton(Painter &p, Row *set, int index, TimeMs ms);
 	void clear();
-	void setActionSel(int32 actionSel);
-	float64 aboveShadowOpacity() const;
+	void setActionSel(int32_t actionSel);
+	double aboveShadowOpacity() const;
 
 	void readVisibleSets();
 
@@ -259,7 +259,7 @@ private:
 
 	Section _section;
 
-	int32 _rowHeight;
+	int32_t _rowHeight;
 
 	std::vector<std::unique_ptr<Row>> _rows;
 	QList<TimeMs> _animStartTimes;
@@ -267,7 +267,7 @@ private:
 	anim::value _aboveShadowFadeOpacity;
 	BasicAnimation _a_shifting;
 
-	base::lambda<void(uint64 setId)> _installSetCallback;
+	base::lambda<void(uint64_t setId)> _installSetCallback;
 	base::lambda<void()> _loadMoreCallback;
 
 	int _visibleTop = 0;

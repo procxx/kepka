@@ -249,7 +249,7 @@ void repaintHistoryItem(not_null<const HistoryItem*> item) {
 
 void autoplayMediaInlineAsync(const FullMsgId &msgId) {
 	if (auto main = App::main()) {
-		QMetaObject::invokeMethod(main, "ui_autoplayMediaInlineAsync", Qt::QueuedConnection, Q_ARG(qint32, msgId.channel), Q_ARG(qint32, msgId.msg));
+		QMetaObject::invokeMethod(main, "ui_autoplayMediaInlineAsync", Qt::QueuedConnection, Q_ARG(int32_t, msgId.channel), Q_ARG(int32_t, msgId.msg));
 	}
 }
 
@@ -272,7 +272,7 @@ void showPeerHistory(const PeerId &peer, MsgId msgId, ShowWay way) {
 void showPeerHistoryAsync(const PeerId &peer, MsgId msgId, ShowWay way) {
 	if (MainWidget *m = App::main()) {
 		qRegisterMetaType<Ui::ShowWay>();
-		QMetaObject::invokeMethod(m, "ui_showPeerHistoryAsync", Qt::QueuedConnection, Q_ARG(quint64, peer), Q_ARG(qint32, msgId), Q_ARG(Ui::ShowWay, way));
+		QMetaObject::invokeMethod(m, "ui_showPeerHistoryAsync", Qt::QueuedConnection, Q_ARG(uint64_t, peer), Q_ARG(int32_t, msgId), Q_ARG(Ui::ShowWay, way));
 	}
 }
 
@@ -398,7 +398,7 @@ struct Data {
 } // namespace Sandbox
 
 std::unique_ptr<Sandbox::internal::Data> SandboxData;
-uint64 SandboxUserTag = 0;
+uint64_t SandboxUserTag = 0;
 
 namespace Sandbox {
 
@@ -413,7 +413,7 @@ bool CheckBetaVersionDir() {
 		if (beta.open(QIODevice::WriteOnly)) {
 			QDataStream dataStream(&beta);
 			dataStream.setVersion(QDataStream::Qt_5_3);
-			dataStream << quint64(cRealBetaVersion()) << cBetaPrivateKey();
+			dataStream << uint64_t(cRealBetaVersion()) << cBetaPrivateKey();
 		} else {
 			LOG(("FATAL: Could not open '%1' for writing private key!").arg(beta.fileName()));
 			return false;
@@ -424,7 +424,7 @@ bool CheckBetaVersionDir() {
 			QDataStream dataStream(&beta);
 			dataStream.setVersion(QDataStream::Qt_5_3);
 
-			quint64 v;
+			uint64_t v;
 			QByteArray k;
 			dataStream >> v >> k;
 			if (dataStream.status() == QDataStream::Ok) {
@@ -461,12 +461,12 @@ void WorkingDirReady() {
 		}
 	}
 
-	srand((int32)time(NULL));
+	srand((int32_t)time(NULL));
 
 	SandboxUserTag = 0;
 	QFile usertag(cWorkingDir() + qsl("tdata/usertag"));
 	if (usertag.open(QIODevice::ReadOnly)) {
-		if (usertag.read(reinterpret_cast<char*>(&SandboxUserTag), sizeof(uint64)) != sizeof(uint64)) {
+		if (usertag.read(reinterpret_cast<char*>(&SandboxUserTag), sizeof(uint64_t)) != sizeof(uint64_t)) {
 			SandboxUserTag = 0;
 		}
 		usertag.close();
@@ -477,7 +477,7 @@ void WorkingDirReady() {
 		} while (!SandboxUserTag);
 
 		if (usertag.open(QIODevice::WriteOnly)) {
-			usertag.write(reinterpret_cast<char*>(&SandboxUserTag), sizeof(uint64));
+			usertag.write(reinterpret_cast<char*>(&SandboxUserTag), sizeof(uint64_t));
 			usertag.close();
 		}
 	}
@@ -509,7 +509,7 @@ void finish() {
 	MainThreadTaskHandler.destroy();
 }
 
-uint64 UserTag() {
+uint64_t UserTag() {
 	return SandboxUserTag;
 }
 
@@ -538,38 +538,38 @@ struct Data {
 
 	bool ScreenIsLocked = false;
 
-	int32 DebugLoggingFlags = 0;
+	int32_t DebugLoggingFlags = 0;
 
-	float64 RememberedSongVolume = kDefaultVolume;
-	float64 SongVolume = kDefaultVolume;
+	double RememberedSongVolume = kDefaultVolume;
+	double SongVolume = kDefaultVolume;
 	base::Observable<void> SongVolumeChanged;
-	float64 VideoVolume = kDefaultVolume;
+	double VideoVolume = kDefaultVolume;
 	base::Observable<void> VideoVolumeChanged;
 
 	// config
-	int32 ChatSizeMax = 200;
-	int32 MegagroupSizeMax = 10000;
-	int32 ForwardedCountMax = 100;
-	int32 OnlineUpdatePeriod = 120000;
-	int32 OfflineBlurTimeout = 5000;
-	int32 OfflineIdleTimeout = 30000;
-	int32 OnlineFocusTimeout = 1000;
-	int32 OnlineCloudTimeout = 300000;
-	int32 NotifyCloudDelay = 30000;
-	int32 NotifyDefaultDelay = 1500;
-	int32 ChatBigSize = 10;
-	int32 PushChatPeriod = 60000;
-	int32 PushChatLimit = 2;
-	int32 SavedGifsLimit = 200;
-	int32 EditTimeLimit = 172800;
-	int32 StickersRecentLimit = 30;
-	int32 StickersFavedLimit = 5;
-	int32 PinnedDialogsCountMax = 5;
+	int32_t ChatSizeMax = 200;
+	int32_t MegagroupSizeMax = 10000;
+	int32_t ForwardedCountMax = 100;
+	int32_t OnlineUpdatePeriod = 120000;
+	int32_t OfflineBlurTimeout = 5000;
+	int32_t OfflineIdleTimeout = 30000;
+	int32_t OnlineFocusTimeout = 1000;
+	int32_t OnlineCloudTimeout = 300000;
+	int32_t NotifyCloudDelay = 30000;
+	int32_t NotifyDefaultDelay = 1500;
+	int32_t ChatBigSize = 10;
+	int32_t PushChatPeriod = 60000;
+	int32_t PushChatLimit = 2;
+	int32_t SavedGifsLimit = 200;
+	int32_t EditTimeLimit = 172800;
+	int32_t StickersRecentLimit = 30;
+	int32_t StickersFavedLimit = 5;
+	int32_t PinnedDialogsCountMax = 5;
 	QString InternalLinksDomain = qsl("https://t.me/");
-	int32 CallReceiveTimeoutMs = 20000;
-	int32 CallRingTimeoutMs = 90000;
-	int32 CallConnectTimeoutMs = 30000;
-	int32 CallPacketTimeoutMs = 10000;
+	int32_t CallReceiveTimeoutMs = 20000;
+	int32_t CallRingTimeoutMs = 90000;
+	int32_t CallConnectTimeoutMs = 30000;
+	int32_t CallPacketTimeoutMs = 10000;
 	bool PhoneCallsEnabled = true;
 	base::Observable<void> PhoneCallsEnabledChanged;
 
@@ -661,38 +661,38 @@ DefineVar(Global, bool, ModerateModeEnabled);
 
 DefineVar(Global, bool, ScreenIsLocked);
 
-DefineVar(Global, int32, DebugLoggingFlags);
+DefineVar(Global, int32_t, DebugLoggingFlags);
 
-DefineVar(Global, float64, RememberedSongVolume);
-DefineVar(Global, float64, SongVolume);
+DefineVar(Global, double, RememberedSongVolume);
+DefineVar(Global, double, SongVolume);
 DefineRefVar(Global, base::Observable<void>, SongVolumeChanged);
-DefineVar(Global, float64, VideoVolume);
+DefineVar(Global, double, VideoVolume);
 DefineRefVar(Global, base::Observable<void>, VideoVolumeChanged);
 
 // config
-DefineVar(Global, int32, ChatSizeMax);
-DefineVar(Global, int32, MegagroupSizeMax);
-DefineVar(Global, int32, ForwardedCountMax);
-DefineVar(Global, int32, OnlineUpdatePeriod);
-DefineVar(Global, int32, OfflineBlurTimeout);
-DefineVar(Global, int32, OfflineIdleTimeout);
-DefineVar(Global, int32, OnlineFocusTimeout);
-DefineVar(Global, int32, OnlineCloudTimeout);
-DefineVar(Global, int32, NotifyCloudDelay);
-DefineVar(Global, int32, NotifyDefaultDelay);
-DefineVar(Global, int32, ChatBigSize);
-DefineVar(Global, int32, PushChatPeriod);
-DefineVar(Global, int32, PushChatLimit);
-DefineVar(Global, int32, SavedGifsLimit);
-DefineVar(Global, int32, EditTimeLimit);
-DefineVar(Global, int32, StickersRecentLimit);
-DefineVar(Global, int32, StickersFavedLimit);
-DefineVar(Global, int32, PinnedDialogsCountMax);
+DefineVar(Global, int32_t, ChatSizeMax);
+DefineVar(Global, int32_t, MegagroupSizeMax);
+DefineVar(Global, int32_t, ForwardedCountMax);
+DefineVar(Global, int32_t, OnlineUpdatePeriod);
+DefineVar(Global, int32_t, OfflineBlurTimeout);
+DefineVar(Global, int32_t, OfflineIdleTimeout);
+DefineVar(Global, int32_t, OnlineFocusTimeout);
+DefineVar(Global, int32_t, OnlineCloudTimeout);
+DefineVar(Global, int32_t, NotifyCloudDelay);
+DefineVar(Global, int32_t, NotifyDefaultDelay);
+DefineVar(Global, int32_t, ChatBigSize);
+DefineVar(Global, int32_t, PushChatPeriod);
+DefineVar(Global, int32_t, PushChatLimit);
+DefineVar(Global, int32_t, SavedGifsLimit);
+DefineVar(Global, int32_t, EditTimeLimit);
+DefineVar(Global, int32_t, StickersRecentLimit);
+DefineVar(Global, int32_t, StickersFavedLimit);
+DefineVar(Global, int32_t, PinnedDialogsCountMax);
 DefineVar(Global, QString, InternalLinksDomain);
-DefineVar(Global, int32, CallReceiveTimeoutMs);
-DefineVar(Global, int32, CallRingTimeoutMs);
-DefineVar(Global, int32, CallConnectTimeoutMs);
-DefineVar(Global, int32, CallPacketTimeoutMs);
+DefineVar(Global, int32_t, CallReceiveTimeoutMs);
+DefineVar(Global, int32_t, CallRingTimeoutMs);
+DefineVar(Global, int32_t, CallConnectTimeoutMs);
+DefineVar(Global, int32_t, CallPacketTimeoutMs);
 DefineVar(Global, bool, PhoneCallsEnabled);
 DefineRefVar(Global, base::Observable<void>, PhoneCallsEnabledChanged);
 

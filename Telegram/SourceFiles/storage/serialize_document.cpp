@@ -35,36 +35,36 @@ enum StickerSetType {
 namespace Serialize {
 
 void Document::writeToStream(QDataStream &stream, DocumentData *document) {
-	stream << quint64(document->id) << quint64(document->_access) << qint32(document->date);
-	stream << qint32(document->_version);
-	stream << document->name << document->mime << qint32(document->_dc) << qint32(document->size);
-	stream << qint32(document->dimensions.width()) << qint32(document->dimensions.height());
-	stream << qint32(document->type);
+	stream << uint64_t(document->id) << uint64_t(document->_access) << int32_t(document->date);
+	stream << int32_t(document->_version);
+	stream << document->name << document->mime << int32_t(document->_dc) << int32_t(document->size);
+	stream << int32_t(document->dimensions.width()) << int32_t(document->dimensions.height());
+	stream << int32_t(document->type);
 	if (auto sticker = document->sticker()) {
 		stream << document->sticker()->alt;
 		switch (document->sticker()->set.type()) {
 		case mtpc_inputStickerSetID: {
-			stream << qint32(StickerSetTypeID);
+			stream << int32_t(StickerSetTypeID);
 		} break;
 		case mtpc_inputStickerSetShortName: {
-			stream << qint32(StickerSetTypeShortName);
+			stream << int32_t(StickerSetTypeShortName);
 		} break;
 		case mtpc_inputStickerSetEmpty:
 		default: {
-			stream << qint32(StickerSetTypeEmpty);
+			stream << int32_t(StickerSetTypeEmpty);
 		} break;
 		}
 		writeStorageImageLocation(stream, document->sticker()->loc);
 	} else {
-		stream << qint32(document->duration());
+		stream << int32_t(document->duration());
 		writeStorageImageLocation(stream, document->thumb->location());
 	}
 }
 
 DocumentData *Document::readFromStreamHelper(int streamAppVersion, QDataStream &stream, const StickerSetInfo *info) {
-	quint64 id, access;
+	uint64_t id, access;
 	QString name, mime;
-	qint32 date, dc, size, width, height, type, version;
+	int32_t date, dc, size, width, height, type, version;
 	stream >> id >> access >> date;
 	if (streamAppVersion >= 9061) {
 		stream >> version;
@@ -80,11 +80,11 @@ DocumentData *Document::readFromStreamHelper(int streamAppVersion, QDataStream &
 		attributes.push_back(MTP_documentAttributeFilename(MTP_string(name)));
 	}
 
-	qint32 duration = -1;
+	int32_t duration = -1;
 	StorageImageLocation thumb;
 	if (type == StickerDocument) {
 		QString alt;
-		qint32 typeOfSet;
+		int32_t typeOfSet;
 		stream >> alt >> typeOfSet;
 
 		thumb = readStorageImageLocation(stream);
@@ -146,22 +146,22 @@ int Document::sizeInStream(DocumentData *document) {
 	int result = 0;
 
 	// id + access + date + version
-	result += sizeof(quint64) + sizeof(quint64) + sizeof(qint32) + sizeof(qint32);
+	result += sizeof(uint64_t) + sizeof(uint64_t) + sizeof(int32_t) + sizeof(int32_t);
 	// + namelen + name + mimelen + mime + dc + size
-	result += stringSize(document->name) + stringSize(document->mime) + sizeof(qint32) + sizeof(qint32);
+	result += stringSize(document->name) + stringSize(document->mime) + sizeof(int32_t) + sizeof(int32_t);
 	// + width + height
-	result += sizeof(qint32) + sizeof(qint32);
+	result += sizeof(int32_t) + sizeof(int32_t);
 	// + type
-	result += sizeof(qint32);
+	result += sizeof(int32_t);
 
 	if (auto sticker = document->sticker()) { // type == StickerDocument
 		// + altlen + alt + type-of-set
-		result += stringSize(sticker->alt) + sizeof(qint32);
+		result += stringSize(sticker->alt) + sizeof(int32_t);
 		// + thumb loc
 		result += Serialize::storageImageLocationSize();
 	} else {
 		// + duration
-		result += sizeof(qint32);
+		result += sizeof(int32_t);
 		// + thumb loc
 		result += Serialize::storageImageLocationSize();
 	}

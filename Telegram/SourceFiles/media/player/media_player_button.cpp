@@ -105,7 +105,7 @@ void PlayButtonLayout::paintPlay(Painter &p, const QBrush &brush) {
 	p.fillPath(pathPlay, brush);
 }
 
-void PlayButtonLayout::paintPlayToPause(Painter &p, const QBrush &brush, float64 progress) {
+void PlayButtonLayout::paintPlayToPause(Painter &p, const QBrush &brush, double progress) {
 	auto playLeft = 0. + _st.playPosition.x();
 	auto playTop = 0. + _st.playPosition.y();
 	auto playWidth = _st.playOuter.width() - 2 * playLeft;
@@ -149,7 +149,7 @@ void PlayButtonLayout::paintPlayToPause(Painter &p, const QBrush &brush, float64
 	p.fillPath(anim::interpolate(pathRightPlay, pathRightPause, progress), brush);
 }
 
-void PlayButtonLayout::paintPlayToCancel(Painter &p, const QBrush &brush, float64 progress) {
+void PlayButtonLayout::paintPlayToCancel(Painter &p, const QBrush &brush, double progress) {
 	static const auto sqrt2 = sqrt(2.);
 
 	auto playLeft = 0. + _st.playPosition.x();
@@ -197,7 +197,7 @@ void PlayButtonLayout::paintPlayToCancel(Painter &p, const QBrush &brush, float6
 	p.fillPath(anim::interpolate(pathPlay, pathCancel, progress), brush);
 }
 
-void PlayButtonLayout::paintPauseToCancel(Painter &p, const QBrush &brush, float64 progress) {
+void PlayButtonLayout::paintPauseToCancel(Painter &p, const QBrush &brush, double progress) {
 	static const auto sqrt2 = sqrt(2.);
 
 	auto pauseLeft = 0. + _st.pausePosition.x();
@@ -253,7 +253,7 @@ void PlayButtonLayout::animationCallback() {
 	_callback();
 }
 
-void PlayButtonLayout::startTransform(float64 from, float64 to) {
+void PlayButtonLayout::startTransform(double from, double to) {
 	_transformProgress.start([this] { animationCallback(); }, from, to, st::mediaPlayerButtonTransformDuration);
 }
 

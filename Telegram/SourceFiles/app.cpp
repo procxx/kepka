@@ -91,10 +91,10 @@ namespace {
 	using ChannelMsgsData = QMap<ChannelId, MsgsData>;
 	ChannelMsgsData channelMsgsData;
 
-	using RandomData = QMap<uint64, FullMsgId>;
+	using RandomData = QMap<uint64_t, FullMsgId>;
 	RandomData randomData;
 
-	using SentData = QMap<uint64, QPair<PeerId, QString>>;
+	using SentData = QMap<uint64_t, QPair<PeerId, QString>>;
 	SentData sentData;
 
 	HistoryItem *hoveredItem = nullptr,
@@ -111,7 +111,7 @@ namespace {
 		QPixmap p[4];
 	};
 	QVector<CornersPixmaps> corners;
-	using CornersMap = QMap<uint32, CornersPixmaps>;
+	using CornersMap = QMap<uint32_t, CornersPixmaps>;
 	CornersMap cornersMap;
 	QImage cornersMaskLarge[4], cornersMaskSmall[4];
 
@@ -119,7 +119,7 @@ namespace {
 	EmojiImagesMap MainEmojiMap;
 	QMap<int, EmojiImagesMap> OtherEmojiMap;
 
-	int32 serviceImageCacheSize = 0;
+	int32_t serviceImageCacheSize = 0;
 
 	using LastPhotosList = QLinkedList<PhotoData*>;
 	LastPhotosList lastPhotos;
@@ -145,8 +145,8 @@ namespace App {
 		QString result;
 		result.reserve(number.size() + groups.size() + 1);
 		result.append('+');
-		int32 sum = 0;
-		for (int32 i = 0, l = groups.size(); i < l; ++i) {
+		int32_t sum = 0;
+		for (int32_t i = 0, l = groups.size(); i < l; ++i) {
 			result.append(number.midRef(sum, groups.at(i)));
 			sum += groups.at(i);
 			if (sum < number.size()) result.append(' ');
@@ -227,17 +227,17 @@ namespace {
 
 			case -2: {
 				QDate yesterday(date(now).date());
-				return int32(QDateTime(yesterday.addDays(-3)).toTime_t()) + (unixtime() - myunixtime());
+				return int32_t(QDateTime(yesterday.addDays(-3)).toTime_t()) + (unixtime() - myunixtime());
 			} break;
 
 			case -3: {
 				QDate weekago(date(now).date());
-				return int32(QDateTime(weekago.addDays(-7)).toTime_t()) + (unixtime() - myunixtime());
+				return int32_t(QDateTime(weekago.addDays(-7)).toTime_t()) + (unixtime() - myunixtime());
 			} break;
 
 			case -4: {
 				QDate monthago(date(now).date());
-				return int32(QDateTime(monthago.addDays(-30)).toTime_t()) + (unixtime() - myunixtime());
+				return int32_t(QDateTime(monthago.addDays(-30)).toTime_t()) + (unixtime() - myunixtime());
 			} break;
 			}
 			return -online;
@@ -245,14 +245,14 @@ namespace {
 		return online;
 	}
 
-	int32 onlineWillChangeIn(UserData *user, TimeId now) {
+	int32_t onlineWillChangeIn(UserData *user, TimeId now) {
 		if (isServiceUser(user->id) || user->botInfo) {
 			return 86400;
 		}
 		return onlineWillChangeIn(user->onlineTill, now);
 	}
 
-	int32 onlineWillChangeIn(TimeId online, TimeId now) {
+	int32_t onlineWillChangeIn(TimeId online, TimeId now) {
 		if (online <= 0) {
             if (-online > now) return -online - now;
             return 86400;
@@ -260,11 +260,11 @@ namespace {
 		if (online > now) {
 			return online - now;
 		}
-		int32 minutes = (now - online) / 60;
+		int32_t minutes = (now - online) / 60;
 		if (minutes < 60) {
 			return (minutes + 1) * 60 - (now - online);
 		}
-		int32 hours = (now - online) / 3600;
+		int32_t hours = (now - online) / 3600;
 		if (hours < 12) {
 			return (hours + 1) * 3600 - (now - online);
 		}
@@ -307,13 +307,13 @@ namespace {
 			}
 			return lng_status_lastseen_date_time(lt_date, dOnline.date().toString(qsl("dd.MM.yy")), lt_time, dOnline.time().toString(cTimeFormat()));
 		}
-		int32 minutes = (now - online) / 60;
+		int32_t minutes = (now - online) / 60;
 		if (!minutes) {
 			return lang(lng_status_lastseen_now);
 		} else if (minutes < 60) {
 			return lng_status_lastseen_minutes(lt_count, minutes);
 		}
-		int32 hours = (now - online) / 3600;
+		int32_t hours = (now - online) / 3600;
 		if (hours < 12) {
 			return lng_status_lastseen_hours(lt_count, hours);
 		}
@@ -790,12 +790,12 @@ namespace {
 				chat->version = d.vversion.v;
 				auto &v = d.vparticipants.v;
 				chat->count = v.size();
-				int32 pversion = chat->participants.isEmpty() ? 1 : (chat->participants.begin().value() + 1);
+				int32_t pversion = chat->participants.isEmpty() ? 1 : (chat->participants.begin().value() + 1);
 				chat->invitedByMe.clear();
 				chat->admins.clear();
 				chat->flags &= ~MTPDchat::Flag::f_admin;
 				for (auto i = v.cbegin(), e = v.cend(); i != e; ++i) {
-					int32 uid = 0, inviter = 0;
+					int32_t uid = 0, inviter = 0;
 					switch (i->type()) {
 					case mtpc_chatParticipantCreator: {
 						const auto &p(i->c_chatParticipantCreator());
@@ -835,7 +835,7 @@ namespace {
 				if (!chat->participants.isEmpty()) {
 					History *h = App::historyLoaded(chat->id);
 					bool found = !h || !h->lastKeyboardFrom;
-					int32 botStatus = -1;
+					int32_t botStatus = -1;
 					for (auto i = chat->participants.begin(), e = chat->participants.end(); i != e;) {
 						if (i.value() < pversion) {
 							i = chat->participants.erase(i);
@@ -934,7 +934,7 @@ namespace {
 						}
 					}
 					if (chat->botStatus > 0 && user->botInfo) {
-						int32 botStatus = -1;
+						int32_t botStatus = -1;
 						for (auto j = chat->participants.cbegin(), e = chat->participants.cend(); j != e; ++j) {
 							if (j.key()->botInfo) {
 								if (true || botStatus > 0/* || !j.key()->botInfo->readsAllHistory*/) {
@@ -1060,7 +1060,7 @@ namespace {
 
 	void addSavedGif(DocumentData *doc) {
 		SavedGifs &saved(cRefSavedGifs());
-		int32 index = saved.indexOf(doc);
+		int32_t index = saved.indexOf(doc);
 		if (index) {
 			if (index > 0) saved.remove(index);
 			saved.push_front(doc);
@@ -1086,8 +1086,8 @@ namespace {
 	}
 
 	void feedMsgs(const QVector<MTPMessage> &msgs, NewMessageType type) {
-		QMap<uint64, int32> msgsIds;
-		for (int32 i = 0, l = msgs.size(); i < l; ++i) {
+		QMap<uint64_t, int32_t> msgsIds;
+		for (int32_t i = 0, l = msgs.size(); i < l; ++i) {
 			const auto &msg(msgs.at(i));
 			switch (msg.type()) {
 			case mtpc_message: {
@@ -1100,14 +1100,14 @@ namespace {
 					}
 				}
 				if (needToAdd) {
-					msgsIds.insert((uint64(uint32(d.vid.v)) << 32) | uint64(i), i);
+					msgsIds.insert((uint64_t(uint32_t(d.vid.v)) << 32) | uint64_t(i), i);
 				}
 			} break;
-			case mtpc_messageEmpty: msgsIds.insert((uint64(uint32(msg.c_messageEmpty().vid.v)) << 32) | uint64(i), i); break;
-			case mtpc_messageService: msgsIds.insert((uint64(uint32(msg.c_messageService().vid.v)) << 32) | uint64(i), i); break;
+			case mtpc_messageEmpty: msgsIds.insert((uint64_t(uint32_t(msg.c_messageEmpty().vid.v)) << 32) | uint64_t(i), i); break;
+			case mtpc_messageService: msgsIds.insert((uint64_t(uint32_t(msg.c_messageService().vid.v)) << 32) | uint64_t(i), i); break;
 			}
 		}
-		for (QMap<uint64, int32>::const_iterator i = msgsIds.cbegin(), e = msgsIds.cend(); i != e; ++i) {
+		for (QMap<uint64_t, int32_t>::const_iterator i = msgsIds.cbegin(), e = msgsIds.cend(); i != e; ++i) {
 			histories().addNewMessage(msgs.at(i.value()), type);
 		}
 	}
@@ -1140,7 +1140,7 @@ namespace {
 		return ImagePtr();
 	}
 
-	StorageImageLocation imageLocation(int32 w, int32 h, const MTPFileLocation &loc) {
+	StorageImageLocation imageLocation(int32_t w, int32_t h, const MTPFileLocation &loc) {
 		if (loc.type() == mtpc_fileLocation) {
 			const auto &l(loc.c_fileLocation());
 			return StorageImageLocation(w, h, l.vdc_id.v, l.vvolume_id.v, l.vlocal_id.v, l.vsecret.v);
@@ -1279,9 +1279,9 @@ namespace {
 
 	PhotoData *feedPhoto(const MTPPhoto &photo, const PreparedPhotoThumbs &thumbs) {
 		const QPixmap *thumb = 0, *medium = 0, *full = 0;
-		int32 thumbLevel = -1, mediumLevel = -1, fullLevel = -1;
+		int32_t thumbLevel = -1, mediumLevel = -1, fullLevel = -1;
 		for (PreparedPhotoThumbs::const_iterator i = thumbs.cbegin(), e = thumbs.cend(); i != e; ++i) {
-			int32 newThumbLevel = -1, newMediumLevel = -1, newFullLevel = -1;
+			int32_t newThumbLevel = -1, newMediumLevel = -1, newFullLevel = -1;
 			switch (i.key()) {
 			case 's': newThumbLevel = 0; newMediumLevel = 5; newFullLevel = 4; break; // box 100x100
 			case 'm': newThumbLevel = 2; newMediumLevel = 0; newFullLevel = 3; break; // box 320x320
@@ -1325,7 +1325,7 @@ namespace {
 	PhotoData *feedPhoto(const MTPDphoto &photo, PhotoData *convert) {
 		auto &sizes = photo.vsizes.v;
 		const MTPPhotoSize *thumb = 0, *medium = 0, *full = 0;
-		int32 thumbLevel = -1, mediumLevel = -1, fullLevel = -1;
+		int32_t thumbLevel = -1, mediumLevel = -1, fullLevel = -1;
 		for (QVector<MTPPhotoSize>::const_iterator i = sizes.cbegin(), e = sizes.cend(); i != e; ++i) {
 			char size = 0;
 			switch (i->type()) {
@@ -1341,7 +1341,7 @@ namespace {
 			}
 			if (!size) continue;
 
-			int32 newThumbLevel = -1, newMediumLevel = -1, newFullLevel = -1;
+			int32_t newThumbLevel = -1, newMediumLevel = -1, newFullLevel = -1;
 			switch (size) {
 			case 's': newThumbLevel = 0; newMediumLevel = 5; newFullLevel = 4; break; // box 100x100
 			case 'm': newThumbLevel = 2; newMediumLevel = 0; newFullLevel = 3; break; // box 320x320
@@ -1515,7 +1515,7 @@ namespace {
 		return i.value();
 	}
 
-	PhotoData *photoSet(const PhotoId &photo, PhotoData *convert, const uint64 &access, int32 date, const ImagePtr &thumb, const ImagePtr &medium, const ImagePtr &full) {
+	PhotoData *photoSet(const PhotoId &photo, PhotoData *convert, const uint64_t &access, int32_t date, const ImagePtr &thumb, const ImagePtr &medium, const ImagePtr &full) {
 		if (convert) {
 			if (convert->id != photo) {
 				PhotosData::iterator i = ::photosData.find(convert->id);
@@ -1576,7 +1576,7 @@ namespace {
 		return i.value();
 	}
 
-	DocumentData *documentSet(const DocumentId &document, DocumentData *convert, const uint64 &access, int32 version, int32 date, const QVector<MTPDocumentAttribute> &attributes, const QString &mime, const ImagePtr &thumb, int32 dc, int32 size, const StorageImageLocation &thumbLocation) {
+	DocumentData *documentSet(const DocumentId &document, DocumentData *convert, const uint64_t &access, int32_t version, int32_t date, const QVector<MTPDocumentAttribute> &attributes, const QString &mime, const ImagePtr &thumb, int32_t dc, int32_t size, const StorageImageLocation &thumbLocation) {
 		bool versionChanged = false;
 		bool sentSticker = false;
 		if (convert) {
@@ -1698,7 +1698,7 @@ namespace {
 		return i.value();
 	}
 
-	WebPageData *webPageSet(const WebPageId &webPage, WebPageData *convert, const QString &type, const QString &url, const QString &displayUrl, const QString &siteName, const QString &title, const TextWithEntities &description, PhotoData *photo, DocumentData *document, int32 duration, const QString &author, int32 pendingTill) {
+	WebPageData *webPageSet(const WebPageId &webPage, WebPageData *convert, const QString &type, const QString &url, const QString &displayUrl, const QString &siteName, const QString &title, const TextWithEntities &description, PhotoData *photo, DocumentData *document, int32_t duration, const QString &author, int32_t pendingTill) {
 		if (convert) {
 			if (convert->id != webPage) {
 				auto i = webPagesData.find(convert->id);
@@ -1770,7 +1770,7 @@ namespace {
 		return i.value();
 	}
 
-	GameData *gameSet(const GameId &game, GameData *convert, const uint64 &accessHash, const QString &shortName, const QString &title, const QString &description, PhotoData *photo, DocumentData *document) {
+	GameData *gameSet(const GameId &game, GameData *convert, const uint64_t &accessHash, const QString &shortName, const QString &title, const QString &description, PhotoData *photo, DocumentData *document) {
 		if (convert) {
 			if (convert->id != game) {
 				auto i = gamesData.find(convert->id);
@@ -1863,7 +1863,7 @@ namespace {
 		return ::histories.findOrInsert(peer);
 	}
 
-	History *historyFromDialog(const PeerId &peer, int32 unreadCnt, int32 maxInboxRead, int32 maxOutboxRead) {
+	History *historyFromDialog(const PeerId &peer, int32_t unreadCnt, int32_t maxInboxRead, int32_t maxOutboxRead) {
 		return ::histories.findOrInsert(peer, unreadCnt, maxInboxRead, maxOutboxRead);
 	}
 
@@ -2057,15 +2057,15 @@ namespace {
 		}
 	}
 
-	void historyRegRandom(uint64 randomId, const FullMsgId &itemId) {
+	void historyRegRandom(uint64_t randomId, const FullMsgId &itemId) {
 		randomData.insert(randomId, itemId);
 	}
 
-	void historyUnregRandom(uint64 randomId) {
+	void historyUnregRandom(uint64_t randomId) {
 		randomData.remove(randomId);
 	}
 
-	FullMsgId histItemByRandom(uint64 randomId) {
+	FullMsgId histItemByRandom(uint64_t randomId) {
 		RandomData::const_iterator i = randomData.constFind(randomId);
 		if (i != randomData.cend()) {
 			return i.value();
@@ -2073,23 +2073,23 @@ namespace {
 		return FullMsgId();
 	}
 
-	void historyRegSentData(uint64 randomId, const PeerId &peerId, const QString &text) {
+	void historyRegSentData(uint64_t randomId, const PeerId &peerId, const QString &text) {
 		sentData.insert(randomId, qMakePair(peerId, text));
 	}
 
-	void historyUnregSentData(uint64 randomId) {
+	void historyUnregSentData(uint64_t randomId) {
 		sentData.remove(randomId);
 	}
 
-	void histSentDataByItem(uint64 randomId, PeerId &peerId, QString &text) {
+	void histSentDataByItem(uint64_t randomId, PeerId &peerId, QString &text) {
 		QPair<PeerId, QString> d = sentData.value(randomId);
 		peerId = d.first;
 		text = d.second;
 	}
 
-	void prepareCorners(RoundCorners index, int32 radius, const QBrush &brush, const style::color *shadow = nullptr, QImage *cors = nullptr) {
+	void prepareCorners(RoundCorners index, int32_t radius, const QBrush &brush, const style::color *shadow = nullptr, QImage *cors = nullptr) {
 		Expects(::corners.size() > index);
-		int32 r = radius * cIntRetinaFactor(), s = st::msgShadow * cIntRetinaFactor();
+		int32_t r = radius * cIntRetinaFactor(), s = st::msgShadow * cIntRetinaFactor();
 		QImage rect(r * 3, r * 3 + (shadow ? s : 0), QImage::Format_ARGB32_Premultiplied), localCors[4];
 		{
 			Painter p(&rect);
@@ -2336,7 +2336,7 @@ namespace {
 		return *::emojiLarge;
 	}
 
-	const QPixmap &emojiSingle(EmojiPtr emoji, int32 fontHeight) {
+	const QPixmap &emojiSingle(EmojiPtr emoji, int32_t fontHeight) {
 		auto &map = (fontHeight == st::msgFont->height) ? MainEmojiMap : OtherEmojiMap[fontHeight];
 		auto i = map.constFind(emoji->index());
 		if (i == map.cend()) {
@@ -2353,7 +2353,7 @@ namespace {
 	}
 
 	void checkImageCacheSize() {
-		int64 nowImageCacheSize = imageCacheSize();
+		int64_t nowImageCacheSize = imageCacheSize();
 		if (nowImageCacheSize > serviceImageCacheSize + MemoryForImageCache) {
 			App::forgetMedia();
 			serviceImageCacheSize = imageCacheSize();
@@ -2533,7 +2533,7 @@ namespace {
 		return ::gameItems;
 	}
 
-	void regSharedContactItem(int32 userId, HistoryItem *item) {
+	void regSharedContactItem(int32_t userId, HistoryItem *item) {
 		auto user = App::userLoaded(userId);
 		auto canShareThisContact = user ? user->canShareThisContact() : false;
 		::sharedContactItems[userId].insert(item);
@@ -2542,7 +2542,7 @@ namespace {
 		}
 	}
 
-	void unregSharedContactItem(int32 userId, HistoryItem *item) {
+	void unregSharedContactItem(int32_t userId, HistoryItem *item) {
 		auto user = App::userLoaded(userId);
 		auto canShareThisContact = user ? user->canShareThisContact() : false;
 		::sharedContactItems[userId].remove(item);
@@ -2576,7 +2576,7 @@ namespace {
 		}
 	}
 
-	QString phoneFromSharedContact(int32 userId) {
+	QString phoneFromSharedContact(int32_t userId) {
 		auto i = ::sharedContactItems.constFind(userId);
 		if (i != ::sharedContactItems.cend() && !i->isEmpty()) {
 			if (auto media = (*i->cbegin())->getMedia()) {
@@ -2588,7 +2588,7 @@ namespace {
 		return QString();
 	}
 
-	void regMuted(PeerData *peer, int32 changeIn) {
+	void regMuted(PeerData *peer, int32_t changeIn) {
 		::mutedPeers.insert(peer, true);
 		if (App::main()) App::main()->updateMutedIn(changeIn);
 	}
@@ -2598,9 +2598,9 @@ namespace {
 	}
 
 	void updateMuted() {
-		int32 changeInMin = 0;
+		int32_t changeInMin = 0;
 		for (MutedPeers::iterator i = ::mutedPeers.begin(); i != ::mutedPeers.end();) {
-			int32 changeIn = 0;
+			int32_t changeIn = 0;
 			History *h = App::history(i.key()->id);
 			if (isNotifyMuted(i.key()->notify, &changeIn)) {
 				h->setMute(true);
@@ -2695,7 +2695,7 @@ namespace {
 		return ::cornersMaskSmall;
 	}
 
-	void roundRect(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color bg, const CornersPixmaps &corner, const style::color *shadow, RectParts parts) {
+	void roundRect(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color bg, const CornersPixmaps &corner, const style::color *shadow, RectParts parts) {
 		auto cornerWidth = corner.p[0].width() / cIntRetinaFactor();
 		auto cornerHeight = corner.p[0].height() / cIntRetinaFactor();
 		if (w < 2 * cornerWidth || h < 2 * cornerHeight) return;
@@ -2739,11 +2739,11 @@ namespace {
 		}
 	}
 
-	void roundRect(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color bg, RoundCorners index, const style::color *shadow, RectParts parts) {
+	void roundRect(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color bg, RoundCorners index, const style::color *shadow, RectParts parts) {
 		roundRect(p, x, y, w, h, bg, ::corners[index], shadow, parts);
 	}
 
-	void roundShadow(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color shadow, RoundCorners index, RectParts parts) {
+	void roundShadow(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color shadow, RoundCorners index, RectParts parts) {
 		auto &corner = ::corners[index];
 		auto cornerWidth = corner.p[0].width() / cIntRetinaFactor();
 		auto cornerHeight = corner.p[0].height() / cIntRetinaFactor();
@@ -2760,8 +2760,8 @@ namespace {
 		}
 	}
 
-	void roundRect(Painter &p, int32 x, int32 y, int32 w, int32 h, style::color bg, ImageRoundRadius radius, RectParts parts) {
-		auto colorKey = ((uint32(bg->c.alpha()) & 0xFF) << 24) | ((uint32(bg->c.red()) & 0xFF) << 16) | ((uint32(bg->c.green()) & 0xFF) << 8) | ((uint32(bg->c.blue()) & 0xFF) << 24);
+	void roundRect(Painter &p, int32_t x, int32_t y, int32_t w, int32_t h, style::color bg, ImageRoundRadius radius, RectParts parts) {
+		auto colorKey = ((uint32_t(bg->c.alpha()) & 0xFF) << 24) | ((uint32_t(bg->c.red()) & 0xFF) << 16) | ((uint32_t(bg->c.green()) & 0xFF) << 8) | ((uint32_t(bg->c.blue()) & 0xFF) << 24);
 		auto i = cornersMap.find(colorKey);
 		if (i == cornersMap.cend()) {
 			QImage images[4];

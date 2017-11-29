@@ -51,7 +51,7 @@ bool Generator::writeSource() {
 QVector<int> phoneNumberParse(const QString &number) {\n\
 	QVector<int> result;\n\
 \n\
-	int32 len = number.size();\n\
+	int32_t len = number.size();\n\
 	if (len > 0) switch (number.at(0).unicode()) {\n";
 
 	QString already;

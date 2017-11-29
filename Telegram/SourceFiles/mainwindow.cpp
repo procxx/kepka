@@ -86,7 +86,7 @@ ConnectingWidget::ConnectingWidget(QWidget *parent, const QString &text, const Q
 void ConnectingWidget::set(const QString &text, const QString &reconnect) {
 	_text = text;
 	_textWidth = st::linkFont->width(_text) + st::linkFont->spacew;
-	int32 _reconnectWidth = 0;
+	int32_t _reconnectWidth = 0;
 	if (reconnect.isEmpty()) {
 		_reconnect->hide();
 	} else {
@@ -265,7 +265,7 @@ void MainWindow::setupIntro() {
 	}
 }
 
-void MainWindow::serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media, int32 date, bool force) {
+void MainWindow::serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media, int32_t date, bool force) {
 	if (date <= 0) date = unixtime();
 	auto h = (_main && App::userLoaded(ServiceUserId)) ? App::history(ServiceUserId).get() : nullptr;
 	if (!h || (!force && h->isEmpty())) {
@@ -366,7 +366,7 @@ void MainWindow::ui_hideSettingsAndLayer(ShowLayerOptions options) {
 	}
 }
 
-void MainWindow::mtpStateChanged(int32 dc, int32 state) {
+void MainWindow::mtpStateChanged(int32_t dc, int32_t state) {
 	if (dc == MTP::maindc()) {
 		updateConnectingStatus();
 		Global::RefConnectionTypeChanged().notify();
@@ -854,12 +854,12 @@ void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::colo
 	QPainter p(&img);
 
 	QString cnt = (count < 100) ? QString("%1").arg(count) : QString("..%1").arg(count % 10, 1, 10, QChar('0'));
-	int32 cntSize = cnt.size();
+	int32_t cntSize = cnt.size();
 
 	p.setBrush(bg->b);
 	p.setPen(Qt::NoPen);
 	p.setRenderHint(QPainter::Antialiasing);
-	int32 fontSize;
+	int32_t fontSize;
 	if (size == 16) {
 		fontSize = 8;
 	} else if (size == 32) {
@@ -868,7 +868,7 @@ void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::colo
 		fontSize = (cntSize < 2) ? 22 : 22;
 	}
 	style::font f = { fontSize, 0, 0 };
-	int32 w = f->width(cnt), d, r;
+	int32_t w = f->width(cnt), d, r;
 	if (size == 16) {
 		d = (cntSize < 2) ? 2 : 1;
 		r = (cntSize < 2) ? 4 : 3;
@@ -899,14 +899,14 @@ QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::
 
 		QString cnt = (count < 1000) ? QString("%1").arg(count) : QString("..%1").arg(count % 100, 2, 10, QChar('0'));
 		QImage result(size, size, QImage::Format_ARGB32);
-		int32 cntSize = cnt.size();
+		int32_t cntSize = cnt.size();
 		result.fill(Qt::transparent);
 		{
 			QPainter p(&result);
 			p.setBrush(bg);
 			p.setPen(Qt::NoPen);
 			p.setRenderHint(QPainter::Antialiasing);
-			int32 fontSize;
+			int32_t fontSize;
 			if (size == 16) {
 				fontSize = (cntSize < 2) ? 11 : ((cntSize < 3) ? 11 : 8);
 			} else if (size == 20) {
@@ -917,7 +917,7 @@ QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::
 				fontSize = (cntSize < 2) ? 22 : ((cntSize < 3) ? 20 : 16);
 			}
 			style::font f = { fontSize, 0, 0 };
-			int32 w = f->width(cnt), d, r;
+			int32_t w = f->width(cnt), d, r;
 			if (size == 16) {
 				d = (cntSize < 2) ? 5 : ((cntSize < 3) ? 2 : 1);
 				r = (cntSize < 2) ? 8 : ((cntSize < 3) ? 7 : 3);
@@ -1192,7 +1192,7 @@ LastCrashedWindow::LastCrashedWindow()
 		_sendingState = SendingNoReport;
 	}
 	if (_sendingState != SendingNoReport) {
-		qint64 dumpsize = 0;
+		int64_t dumpsize = 0;
 		QString dumpspath = cWorkingDir() + qsl("tdata/dumps");
 #if defined Q_OS_MAC && !defined MAC_USE_BREAKPAD
 		dumpspath += qsl("/completed");
@@ -1216,7 +1216,7 @@ LastCrashedWindow::LastCrashedWindow()
 			QString maxDump, maxDumpFull;
             QDateTime maxDumpModified, workingModified = QFileInfo(cWorkingDir() + qsl("tdata/working")).lastModified();
 			QFileInfoList list = QDir(dumpspath).entryInfoList();
-            for (int32 i = 0, l = list.size(); i < l; ++i) {
+            for (int32_t i = 0, l = list.size(); i < l; ++i) {
                 QString name = list.at(i).fileName();
                 if (name.endsWith(qstr(".dmp"))) {
                     QDateTime modified = list.at(i).lastModified();
@@ -1264,7 +1264,7 @@ LastCrashedWindow::LastCrashedWindow()
 
 	Sandbox::connect(SIGNAL(updateChecking()), this, SLOT(onUpdateChecking()));
 	Sandbox::connect(SIGNAL(updateLatest()), this, SLOT(onUpdateLatest()));
-	Sandbox::connect(SIGNAL(updateProgress(qint64,qint64)), this, SLOT(onUpdateDownloading(qint64,qint64)));
+	Sandbox::connect(SIGNAL(updateProgress(int64_t,int64_t)), this, SLOT(onUpdateDownloading(int64_t,int64_t)));
 	Sandbox::connect(SIGNAL(updateFailed()), this, SLOT(onUpdateFailed()));
 	Sandbox::connect(SIGNAL(updateReady()), this, SLOT(onUpdateReady()));
 
@@ -1348,7 +1348,7 @@ void LastCrashedWindow::onGetApp() {
 void LastCrashedWindow::excludeReportUsername() {
 	QString prefix = qstr("Username:");
 	QStringList lines = _reportText.split('\n');
-	for (int32 i = 0, l = lines.size(); i < l; ++i) {
+	for (int32_t i = 0, l = lines.size(); i < l; ++i) {
 		if (lines.at(i).trimmed().startsWith(prefix)) {
 			_reportUsername = lines.at(i).trimmed().mid(prefix.size()).trimmed();
 			lines.removeAt(i);
@@ -1360,7 +1360,7 @@ void LastCrashedWindow::excludeReportUsername() {
 
 QString LastCrashedWindow::getReportField(const QLatin1String &name, const QLatin1String &prefix) {
 	QStringList lines = _reportText.split('\n');
-	for (int32 i = 0, l = lines.size(); i < l; ++i) {
+	for (int32_t i = 0, l = lines.size(); i < l; ++i) {
 		if (lines.at(i).trimmed().startsWith(prefix)) {
 			QString data = lines.at(i).trimmed().mid(prefix.size()).trimmed();
 
@@ -1494,7 +1494,7 @@ void LastCrashedWindow::onCheckingFinished() {
 
 	connect(_sendReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onSendingError(QNetworkReply::NetworkError)));
 	connect(_sendReply, SIGNAL(finished()), this, SLOT(onSendingFinished()));
-	connect(_sendReply, SIGNAL(uploadProgress(qint64,qint64)), this, SLOT(onSendingProgress(qint64,qint64)));
+	connect(_sendReply, SIGNAL(uploadProgress(int64_t,int64_t)), this, SLOT(onSendingProgress(int64_t,int64_t)));
 
 	updateControls();
 }
@@ -1553,7 +1553,7 @@ void LastCrashedWindow::updateControls() {
 				}
 				if (_sendingState == SendingTooOld || _sendingState == SendingUnofficial) {
 					QString verStr = getReportField(qstr("version"), qstr("Version:"));
-					qint64 ver = verStr.isEmpty() ? 0 : verStr.toLongLong();
+					int64_t ver = verStr.isEmpty() ? 0 : verStr.toLongLong();
 					if (!ver || (ver == AppVersion) || (ver < 0 && (-ver / 1000) == AppVersion)) {
 						h += _getApp.height() + padding;
 						_getApp.show();
@@ -1721,11 +1721,11 @@ void LastCrashedWindow::updateControls() {
 void LastCrashedWindow::onNetworkSettings() {
 	auto &p = Sandbox::PreLaunchProxy();
 	NetworkSettingsWindow *box = new NetworkSettingsWindow(this, p.host, p.port ? p.port : 80, p.user, p.password);
-	connect(box, SIGNAL(saved(QString, quint32, QString, QString)), this, SLOT(onNetworkSettingsSaved(QString, quint32, QString, QString)));
+	connect(box, SIGNAL(saved(QString, uint32_t, QString, QString)), this, SLOT(onNetworkSettingsSaved(QString, uint32_t, QString, QString)));
 	box->show();
 }
 
-void LastCrashedWindow::onNetworkSettingsSaved(QString host, quint32 port, QString username, QString password) {
+void LastCrashedWindow::onNetworkSettingsSaved(QString host, uint32_t port, QString username, QString password) {
 	Sandbox::RefPreLaunchProxy().host = host;
 	Sandbox::RefPreLaunchProxy().port = port ? port : 80;
 	Sandbox::RefPreLaunchProxy().user = username;
@@ -1777,8 +1777,8 @@ void LastCrashedWindow::setUpdatingState(UpdatingState state, bool force) {
 	}
 }
 
-void LastCrashedWindow::setDownloadProgress(qint64 ready, qint64 total) {
-	qint64 readyTenthMb = (ready * 10 / (1024 * 1024)), totalTenthMb = (total * 10 / (1024 * 1024));
+void LastCrashedWindow::setDownloadProgress(int64_t ready, int64_t total) {
+	int64_t readyTenthMb = (ready * 10 / (1024 * 1024)), totalTenthMb = (total * 10 / (1024 * 1024));
 	QString readyStr = QString::number(readyTenthMb / 10) + '.' + QString::number(readyTenthMb % 10);
 	QString totalStr = QString::number(totalTenthMb / 10) + '.' + QString::number(totalTenthMb % 10);
 	QString res = qsl("Downloading update {ready} / {total} MB..").replace(qstr("{ready}"), readyStr).replace(qstr("{total}"), totalStr);
@@ -1815,7 +1815,7 @@ void LastCrashedWindow::onUpdateLatest() {
 	setUpdatingState(UpdatingLatest);
 }
 
-void LastCrashedWindow::onUpdateDownloading(qint64 ready, qint64 total) {
+void LastCrashedWindow::onUpdateDownloading(int64_t ready, int64_t total) {
 	setUpdatingState(UpdatingDownload);
 	setDownloadProgress(ready, total);
 }
@@ -1869,7 +1869,7 @@ void LastCrashedWindow::onSendingFinished() {
 	}
 }
 
-void LastCrashedWindow::onSendingProgress(qint64 uploaded, qint64 total) {
+void LastCrashedWindow::onSendingProgress(int64_t uploaded, int64_t total) {
 	if (_sendingState != SendingProgress && _sendingState != SendingUploading) return;
 	_sendingState = SendingUploading;
 
@@ -1939,7 +1939,7 @@ void LastCrashedWindow::resizeEvent(QResizeEvent *e) {
 	_continue.move(width() - padding - _continue.width(), height() - padding - _continue.height());
 }
 
-NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, QString host, quint32 port, QString username, QString password)
+NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, QString host, uint32_t port, QString username, QString password)
 : PreLaunchWindow(qsl("HTTP Proxy Settings"))
 , _hostLabel(this)
 , _portLabel(this)

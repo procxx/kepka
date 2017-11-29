@@ -173,10 +173,10 @@ WidgetFadeWrap<TWidget>::WidgetFadeWrap(QWidget *parent
 void WidgetFadeWrap<TWidget>::installCallbacks() {
 	if (_updateCallback) {
 		_animation.setFinishedCallback([this] { _updateCallback(); });
-		_animation.setUpdatedCallback([this](float64 opacity) { _updateCallback(); });
+		_animation.setUpdatedCallback([this](double opacity) { _updateCallback(); });
 	} else {
 		_animation.setFinishedCallback(base::lambda<void()>());
-		_animation.setUpdatedCallback(base::lambda<void(float64)>());
+		_animation.setUpdatedCallback(base::lambda<void(double)>());
 	}
 }
 

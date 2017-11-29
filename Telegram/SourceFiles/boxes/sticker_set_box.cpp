@@ -56,10 +56,10 @@ void StickerSetBox::prepare() {
 	onUpdateButtons();
 
 	connect(_inner, SIGNAL(updateButtons()), this, SLOT(onUpdateButtons()));
-	connect(_inner, SIGNAL(installed(uint64)), this, SLOT(onInstalled(uint64)));
+	connect(_inner, SIGNAL(installed(uint64_t)), this, SLOT(onInstalled(uint64_t)));
 }
 
-void StickerSetBox::onInstalled(uint64 setId) {
+void StickerSetBox::onInstalled(uint64_t setId) {
 	emit installed(setId);
 	closeBox();
 }
@@ -180,7 +180,7 @@ void StickerSetBox::Inner::gotSet(const MTPmessages_StickerSet &set) {
 	if (_pack.isEmpty()) {
 		Ui::show(Box<InformBox>(lang(lng_stickers_not_found)));
 	} else {
-		int32 rows = _pack.size() / kStickersPanelPerRow + ((_pack.size() % kStickersPanelPerRow) ? 1 : 0);
+		int32_t rows = _pack.size() / kStickersPanelPerRow + ((_pack.size() % kStickersPanelPerRow) ? 1 : 0);
 		resize(st::stickersPadding.left() + kStickersPanelPerRow * st::stickersSize.width(), st::stickersPadding.top() + rows * st::stickersSize.height() + st::stickersPadding.bottom());
 	}
 	_loaded = true;
@@ -315,7 +315,7 @@ void StickerSetBox::Inner::setSelected(int selected) {
 	}
 }
 
-void StickerSetBox::Inner::startOverAnimation(int index, float64 from, float64 to) {
+void StickerSetBox::Inner::startOverAnimation(int index, double from, double to) {
 	if (index >= 0 && index < _packOvers.size()) {
 		_packOvers[index].start([this, index] {
 			int row = index / kStickersPanelPerRow;
@@ -335,13 +335,13 @@ void StickerSetBox::Inner::onPreview() {
 	}
 }
 
-int32 StickerSetBox::Inner::stickerFromGlobalPos(const QPoint &p) const {
+int32_t StickerSetBox::Inner::stickerFromGlobalPos(const QPoint &p) const {
 	QPoint l(mapFromGlobal(p));
 	if (rtl()) l.setX(width() - l.x());
-	int32 row = (l.y() >= st::stickersPadding.top()) ? qFloor((l.y() - st::stickersPadding.top()) / st::stickersSize.height()) : -1;
-	int32 col = (l.x() >= st::stickersPadding.left()) ? qFloor((l.x() - st::stickersPadding.left()) / st::stickersSize.width()) : -1;
+	int32_t row = (l.y() >= st::stickersPadding.top()) ? qFloor((l.y() - st::stickersPadding.top()) / st::stickersSize.height()) : -1;
+	int32_t col = (l.x() >= st::stickersPadding.left()) ? qFloor((l.x() - st::stickersPadding.left()) / st::stickersSize.width()) : -1;
 	if (row >= 0 && col >= 0 && col < kStickersPanelPerRow) {
-		int32 result = row * kStickersPanelPerRow + col;
+		int32_t result = row * kStickersPanelPerRow + col;
 		return (result < _pack.size()) ? result : -1;
 	}
 	return -1;
@@ -354,12 +354,12 @@ void StickerSetBox::Inner::paintEvent(QPaintEvent *e) {
 	if (_pack.isEmpty()) return;
 
 	auto ms = getms();
-	int32 rows = _pack.size() / kStickersPanelPerRow + ((_pack.size() % kStickersPanelPerRow) ? 1 : 0);
-	int32 from = qFloor(e->rect().top() / st::stickersSize.height()), to = qFloor(e->rect().bottom() / st::stickersSize.height()) + 1;
+	int32_t rows = _pack.size() / kStickersPanelPerRow + ((_pack.size() % kStickersPanelPerRow) ? 1 : 0);
+	int32_t from = qFloor(e->rect().top() / st::stickersSize.height()), to = qFloor(e->rect().bottom() / st::stickersSize.height()) + 1;
 
-	for (int32 i = from; i < to; ++i) {
-		for (int32 j = 0; j < kStickersPanelPerRow; ++j) {
-			int32 index = i * kStickersPanelPerRow + j;
+	for (int32_t i = from; i < to; ++i) {
+		for (int32_t j = 0; j < kStickersPanelPerRow; ++j) {
+			int32_t index = i * kStickersPanelPerRow + j;
 			if (index >= _pack.size()) break;
 			Assert(index < _packOvers.size());
 
@@ -386,9 +386,9 @@ void StickerSetBox::Inner::paintEvent(QPaintEvent *e) {
 				}
 			}
 
-			float64 coef = qMin((st::stickersSize.width() - st::buttonRadius * 2) / float64(doc->dimensions.width()), (st::stickersSize.height() - st::buttonRadius * 2) / float64(doc->dimensions.height()));
+			double coef = qMin((st::stickersSize.width() - st::buttonRadius * 2) / double(doc->dimensions.width()), (st::stickersSize.height() - st::buttonRadius * 2) / double(doc->dimensions.height()));
 			if (coef > 1) coef = 1;
-			int32 w = qRound(coef * doc->dimensions.width()), h = qRound(coef * doc->dimensions.height());
+			int32_t w = qRound(coef * doc->dimensions.width()), h = qRound(coef * doc->dimensions.height());
 			if (w < 1) w = 1;
 			if (h < 1) h = 1;
 			QPoint ppos = pos + QPoint((st::stickersSize.width() - w) / 2, (st::stickersSize.height() - h) / 2);
@@ -410,7 +410,7 @@ bool StickerSetBox::Inner::loaded() const {
 	return _loaded && !_pack.isEmpty();
 }
 
-int32 StickerSetBox::Inner::notInstalled() const {
+int32_t StickerSetBox::Inner::notInstalled() const {
 	if (!_loaded) return 0;
 	auto it = Global::StickerSets().constFind(_setId);
 	if (it == Global::StickerSets().cend() || !(it->flags & MTPDstickerSet::Flag::f_installed) || (it->flags & MTPDstickerSet::Flag::f_archived)) return _pack.size();
