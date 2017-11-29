@@ -35,7 +35,9 @@ add_custom_command(
         -o${CMAKE_CURRENT_BINARY_DIR}/styles -w${CMAKE_SOURCE_DIR}
         colors.palette
     WORKING_DIRECTORY styles
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
+    DEPENDS
+        codegen_style
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
 )
 add_custom_target(palette_output
@@ -49,7 +51,9 @@ add_custom_command(
     COMMAND
         codegen_numbers -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
     WORKING_DIRECTORY .
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
+    DEPENDS
+        codegen_numbers
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
 )
 add_custom_target(numbers_output
@@ -63,7 +67,9 @@ add_custom_command(
     COMMAND
         codegen_lang -o${CMAKE_CURRENT_BINARY_DIR} -w${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
     WORKING_DIRECTORY .
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
+    DEPENDS
+        codegen_lang
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
 )
 add_custom_target(lang_output
@@ -81,6 +87,7 @@ add_custom_command(
     WORKING_DIRECTORY .
     DEPENDS
         codegen_emoji
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/emoji_autocomplete.json
     VERBATIM
 )
 add_custom_target(emoji_output
@@ -99,7 +106,9 @@ add_custom_command(
     COMMAND
         python ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     WORKING_DIRECTORY .
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
+    DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     VERBATIM
 )
@@ -139,6 +148,7 @@ foreach (src ${style_files})
             -o${CMAKE_CURRENT_BINARY_DIR}/styles -w${CMAKE_SOURCE_DIR}
             ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
         DEPENDS
+            codegen_style
             ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
         MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
     )
