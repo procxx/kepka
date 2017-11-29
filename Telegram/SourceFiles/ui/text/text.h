@@ -66,8 +66,8 @@ struct TextSelection {
 	constexpr bool empty() const {
 		return from == to;
 	}
-	uint16_t from : 16;
-	uint16_t to : 16;
+	uint16_t from;
+	uint16_t to;
 };
 inline bool operator==(TextSelection a, TextSelection b) {
 	return a.from == b.from && a.to == b.to;
