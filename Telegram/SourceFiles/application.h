@@ -23,7 +23,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "stdafx.h"
 #include <QApplication>
 
-class UpdateChecker;
 class Application : public QApplication {
 	Q_OBJECT
 
@@ -67,47 +66,6 @@ private:
 	bool _secondInstance = false;
 
 	void singleInstanceChecked();
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-
-// Autoupdating
-public:
-	void startUpdateCheck(bool forceWait);
-	void stopUpdate();
-
-	enum UpdatingState {
-		UpdatingNone,
-		UpdatingDownload,
-		UpdatingReady,
-	};
-	UpdatingState updatingState();
-	int32_t updatingSize();
-	int32_t updatingReady();
-
-signals:
-	void updateChecking();
-	void updateLatest();
-	void updateProgress(int64_t ready, int64_t total);
-	void updateReady();
-	void updateFailed();
-
-public slots:
-	void updateCheck();
-
-	void updateGotCurrent();
-	void updateFailedCurrent(QNetworkReply::NetworkError e);
-
-	void onUpdateReady();
-	void onUpdateFailed();
-
-private:
-	object_ptr<SingleTimer> _updateCheckTimer = { nullptr };
-	QNetworkReply *_updateReply = nullptr;
-	QNetworkAccessManager _updateManager;
-	QThread *_updateThread = nullptr;
-	UpdateChecker *_updateChecker = nullptr;
-
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 };
 
 namespace Sandbox {
@@ -120,23 +78,6 @@ bool isSavingSession();
 void execExternal(const QString &cmd);
 
 void adjustSingleTimers();
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-
-void startUpdateCheck();
-void stopUpdate();
-
-Application::UpdatingState updatingState();
-int32_t updatingSize();
-int32_t updatingReady();
-
-void updateChecking();
-void updateLatest();
-void updateProgress(int64_t ready, int64_t total);
-void updateFailed();
-void updateReady();
-
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 void connect(const char *signal, QObject *object, const char *method);
 

@@ -24,56 +24,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Settings {
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-class UpdateStateRow : public TWidget {
-	Q_OBJECT
-
-public:
-	UpdateStateRow(QWidget *parent);
-
-	bool isUpdateReady() const {
-		return (_state == State::Ready);
-	}
-
-protected:
-	int resizeGetHeight(int newWidth) override;
-
-	void paintEvent(QPaintEvent *e) override;
-
-signals:
-	void restart();
-
-private slots:
-	void onCheck();
-
-	void onChecking();
-	void onLatest();
-	void onDownloading(int64_t ready, int64_t total);
-	void onReady();
-	void onFailed();
-
-private:
-	enum class State {
-		None,
-		Check,
-		Latest,
-		Download,
-		Fail,
-		Ready
-	};
-	void setState(State state, bool force = false);
-	void setDownloadProgress(int64_t ready, int64_t total);
-
-	object_ptr<Ui::LinkButton> _check;
-	object_ptr<Ui::LinkButton> _restart;
-
-	State _state = State::None;
-	QString _downloadText;
-	QString _versionText;
-
-};
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
-
 class GeneralWidget : public BlockWidget {
 	Q_OBJECT
 
@@ -85,10 +35,6 @@ protected:
 
 private slots:
 	void onChangeLanguage();
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	void onUpdateAutomatically();
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 	void onEnableTrayIcon();
 	void onEnableTaskbarIcon();
@@ -106,10 +52,6 @@ private:
 	void updateWorkmode();
 
 	object_ptr<Ui::LinkButton> _changeLanguage;
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	object_ptr<Ui::Checkbox> _updateAutomatically = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<UpdateStateRow>> _updateRow = { nullptr };
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 	object_ptr<Ui::Checkbox> _enableTrayIcon = { nullptr };
 	object_ptr<Ui::Checkbox> _enableTaskbarIcon = { nullptr };
 	object_ptr<Ui::Checkbox> _autoStart = { nullptr };

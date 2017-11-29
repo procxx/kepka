@@ -23,9 +23,6 @@ cmake_policy(SET CMP0071 OLD)
 # Needs OpenAL-SOFT
 # Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
 find_package(OpenAL REQUIRED)
-find_package(ZLIB REQUIRED)
-find_package(LibZip REQUIRED)
-find_package(LibLZMA REQUIRED)
 find_package(FFmpeg REQUIRED)
 #@todo Turn into find_package(Opus REQUIRED)
 find_library(OPUS_LIB opus)
@@ -40,7 +37,5 @@ endif()
 if (NOT OPUS_LIB)
     message(FATAL_ERROR "opus codec is required")
 endif()
-
-#find_package(PortAudio REQUIRED)
 
 add_subdirectory(Telegram)

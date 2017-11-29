@@ -129,10 +129,6 @@ public slots:
 private slots:
 	void onDraggingScrollTimer();
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	void onCheckUpdateStatus();
-#endif // TDESKTOP_DISABLE_AUTOUPDATE
-
 protected:
 	void dragEnterEvent(QDragEnterEvent *e) override;
 	void dragMoveEvent(QDragMoveEvent *e) override;

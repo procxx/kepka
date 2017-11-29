@@ -55,12 +55,6 @@ int main(int argc, char *argv[]) {
 
 	DEBUG_LOG(("Telegram finished, result: %1").arg(result));
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	if (cRestartingUpdate()) {
-		DEBUG_LOG(("Application Info: executing updater to install update..."));
-		psExecUpdater();
-	} else
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 	if (cRestarting()) {
 		DEBUG_LOG(("Application Info: executing Telegram, because of restart..."));
 		psExecTelegram();

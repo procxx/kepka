@@ -444,7 +444,6 @@ set(APP_SRC
     SourceFiles/app.cpp
     SourceFiles/application.cpp
     SourceFiles/auth_session.cpp
-    SourceFiles/autoupdater.cpp
     SourceFiles/facades.cpp
     SourceFiles/layerwidget.cpp
     SourceFiles/layout.cpp
@@ -619,13 +618,10 @@ target_link_libraries(Telegram
     Qt5::Network
     Qt5::GuiPrivate
     tgvoip
-    ${LIBLZMA_LIBRARIES}
-    ${ZLIB_LIBRARIES}
     ${OPENAL_LIBRARY}
     ${FFMPEG_LIBRARIES}
     ${SWRESAMPLE_LIBRARIES}
     ${SWSCALE_LIBRARIES}
-    ${ICONV_LIBRARIES}
     ${OPENSSL_LIBRARIES}
     ${OPUS_LIB}
     ${CONAN_LIBS}
@@ -672,23 +668,3 @@ cotire(Telegram)
 # See https://github.com/sakra/cotire/blob/master/MANUAL.md#objective-c
 # ObjC and ObjC++ files cannot be cotired, so they have to include appropriate Qt and Tg
 # headers themselves, this applies to macOS platform sources.
-
-##======================
-
-# if (APPLE)
-#     set(UPD_SRC SourceFiles/_other/updater_osx.m)
-# endif()
-# if (WIN32)
-#     set(UPD_SRC SourceFiles/_other/updater.cpp)
-# endif()
-# if (LINUX)
-#     set(UPD_SRC SourceFiles/_other/updater_linux.cpp)
-# endif()
-
-##======================
-## Updater
-##======================
-
-#add_executable(Updater ${UPD_SRC})
-#cotire(Updater)
-

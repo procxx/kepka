@@ -299,17 +299,6 @@ public slots:
 	void onSendingFinished();
 	void onSendingProgress(int64_t uploaded, int64_t total);
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	void onUpdateRetry();
-	void onUpdateSkip();
-
-	void onUpdateChecking();
-	void onUpdateLatest();
-	void onUpdateDownloading(int64_t ready, int64_t total);
-	void onUpdateReady();
-	void onUpdateFailed();
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
-
 protected:
 
 	void closeEvent(QCloseEvent *e);
@@ -355,23 +344,6 @@ private:
 
 	QNetworkAccessManager _sendManager;
 	QNetworkReply *_checkReply, *_sendReply;
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	PreLaunchButton _updatingCheck, _updatingSkip;
-	enum UpdatingState {
-		UpdatingNone,
-		UpdatingCheck,
-		UpdatingLatest,
-		UpdatingDownload,
-		UpdatingFail,
-		UpdatingReady
-	};
-	UpdatingState _updatingState;
-	QString _newVersionDownload;
-
-	void setUpdatingState(UpdatingState state, bool force = false);
-	void setDownloadProgress(int64_t ready, int64_t total);
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 	QString getReportField(const QLatin1String &name, const QLatin1String &prefix);
 	void addReportFieldPart(const QLatin1String &name, const QLatin1String &prefix, QHttpMultiPart *multipart);

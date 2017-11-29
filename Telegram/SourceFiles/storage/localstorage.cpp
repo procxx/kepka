@@ -1231,11 +1231,6 @@ bool _readSetting(uint32_t blockId, QDataStream &stream, int version, ReadSettin
 		if (!_checkStreamStatus(stream)) return false;
 
 		cSetAutoUpdate(v == 1);
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-		if (!cAutoUpdate()) {
-			Sandbox::stopUpdate();
-		}
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 	} break;
 
 	case dbiLastUpdateCheck: {
