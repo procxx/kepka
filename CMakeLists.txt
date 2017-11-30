@@ -24,6 +24,7 @@ cmake_policy(SET CMP0071 OLD)
 # Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
 find_package(OpenAL REQUIRED)
 find_package(FFmpeg REQUIRED)
+find_package(Zlib REQUIRED)
 #@todo Turn into find_package(Opus REQUIRED)
 find_library(OPUS_LIB opus)
 find_path(OPUS_INCLUDE_DIR opus/opus.h)

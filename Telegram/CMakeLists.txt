@@ -620,6 +620,7 @@ target_link_libraries(Telegram
     tgvoip
     ${OPENAL_LIBRARY}
     ${FFMPEG_LIBRARIES}
+    ${ZLIB_LIBRARIES}
     ${SWRESAMPLE_LIBRARIES}
     ${SWSCALE_LIBRARIES}
     ${OPENSSL_LIBRARIES}
