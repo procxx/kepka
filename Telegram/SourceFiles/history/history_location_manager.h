@@ -27,7 +27,7 @@ void deinitLocationManager();
 class LocationCoords {
 public:
 	LocationCoords() = default;
-	LocationCoords(float64 lat, float64 lon) : _lat(lat), _lon(lon) {
+	LocationCoords(double lat, double lon) : _lat(lat), _lon(lon) {
 	}
 	LocationCoords(const MTPDgeoPoint &point) : _lat(point.vlat.v), _lon(point.vlong.v) {
 	}
@@ -43,7 +43,7 @@ public:
 	}
 
 private:
-	static QString asString(float64 value) {
+	static QString asString(double value) {
 		static constexpr auto kPrecision = 6;
 		return QString::number(value, 'f', kPrecision);
 	}
@@ -66,8 +66,8 @@ private:
 #endif // OS_MAC_OLD
 	}
 
-	float64 _lat = 0;
-	float64 _lon = 0;
+	double _lat = 0;
+	double _lon = 0;
 
 };
 
@@ -136,7 +136,7 @@ private:
 
 	QNetworkAccessManager *manager = nullptr;
 	QMap<QNetworkReply*, LocationData*> dataLoadings, imageLoadings;
-	QMap<LocationData*, int32> serverRedirects;
+	QMap<LocationData*, int32_t> serverRedirects;
 	ImagePtr *notLoadedPlaceholder = nullptr;
 
 };

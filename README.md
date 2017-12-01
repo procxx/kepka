@@ -1,6 +1,14 @@
-# [Telegram Desktop][telegram_desktop] – Official Messenger
+# [Telegram Desktop][telegram_desktop] - pro.cxx fork
 
-This is the complete source code and the build instructions for the alpha version of the official desktop client for the [Telegram][telegram] messenger, based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
+This is the complete source code and the build instructions for the alpha version of the pro.cxx fork of desktop client for the [Telegram][telegram] messenger, based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
+
+## Build instructions
+
+    mkdir _build_
+    cd _build_
+    conan install .. --build missing
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/ ..
+    ninja
 
 [![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
 [![Build Status](https://travis-ci.org/telegramdesktop/tdesktop.svg?branch=dev)](https://travis-ci.org/telegramdesktop/tdesktop)
@@ -28,7 +36,6 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * liblzma ([public domain](http://tukaani.org/xz/))
 * Google Breakpad ([License](https://chromium.googlesource.com/breakpad/breakpad/+/master/LICENSE))
 * Google Crashpad ([Apache License 2.0](https://chromium.googlesource.com/crashpad/crashpad/+/master/LICENSE))
-* GYP ([BSD License](https://github.com/bnoordhuis/gyp/blob/master/LICENSE))
 * Ninja ([Apache License 2.0](https://github.com/ninja-build/ninja/blob/master/COPYING))
 * OpenAL Soft ([LGPL](http://kcat.strangesoft.net/openal.html))
 * Opus codec ([BSD License](http://www.opus-codec.org/license/))
@@ -39,10 +46,6 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * Emoji alpha codes ([MIT License](https://github.com/emojione/emojione/blob/master/extras/alpha-codes/LICENSE.md))
 * Catch test framework ([Boost License](https://github.com/philsquared/Catch/blob/master/LICENSE.txt))
 
-## Build instructions
-
-* [Visual Studio 2017][msvc]
-* [Xcode 8][xcode]
 * [GYP/CMake on GNU/Linux][cmake]
 
 [//]: # (LINKS)

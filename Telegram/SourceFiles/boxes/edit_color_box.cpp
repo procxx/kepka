@@ -30,10 +30,10 @@ class EditColorBox::Picker : public TWidget {
 public:
 	Picker(QWidget *parent, QColor color);
 
-	float64 valueX() const {
+	double valueX() const {
 		return _x;
 	}
-	float64 valueY() const {
+	double valueY() const {
 		return _y;
 	}
 
@@ -64,8 +64,8 @@ private:
 
 	QImage _palette;
 	bool _paletteInvalidated = false;
-	float64 _x = 0.;
-	float64 _y = 0.;
+	double _x = 0.;
+	double _y = 0.;
 
 	bool _choosing = false;
 	base::Observable<void> _changed;
@@ -150,8 +150,8 @@ void EditColorBox::Picker::preparePalette() {
 	_paletteInvalidated = false;
 
 	auto size = _palette.width();
-	auto ints = reinterpret_cast<uint32*>(_palette.bits());
-	auto intsAddPerLine = (_palette.bytesPerLine() - size * sizeof(uint32)) / sizeof(uint32);
+	auto ints = reinterpret_cast<uint32_t*>(_palette.bits());
+	auto intsAddPerLine = (_palette.bytesPerLine() - size * sizeof(uint32_t)) / sizeof(uint32_t);
 
 	constexpr auto Large = 1024 * 1024;
 	constexpr auto LargeBit = 20; // n / Large == (n >> LargeBit)
@@ -190,8 +190,8 @@ void EditColorBox::Picker::preparePalette() {
 }
 
 void EditColorBox::Picker::updateCurrentPoint(QPoint localPosition) {
-	auto x = snap(localPosition.x(), 0, width()) / float64(width());
-	auto y = snap(localPosition.y(), 0, height()) / float64(height());
+	auto x = snap(localPosition.x(), 0, width()) / double(width());
+	auto y = snap(localPosition.y(), 0, height()) / double(height());
 	if (_x != x || _y != y) {
 		_x = x;
 		_y = y;
@@ -236,10 +236,10 @@ public:
 	base::Observable<void> &changed() {
 		return _changed;
 	}
-	float64 value() const {
+	double value() const {
 		return _value;
 	}
-	void setValue(float64 value) {
+	void setValue(double value) {
 		_value = snap(value, 0., 1.);
 		update();
 	}
@@ -256,8 +256,8 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e) override;
 
 private:
-	float64 valueFromColor(QColor color) const;
-	float64 valueFromHue(int hue) const;
+	double valueFromColor(QColor color) const;
+	double valueFromHue(int hue) const;
 	bool isHorizontal() const {
 		return (_direction == Direction::Horizontal);
 	}
@@ -271,7 +271,7 @@ private:
 	Type _type = Type::Hue;
 
 	QColor _color;
-	float64 _value = 0;
+	double _value = 0;
 
 	QImage _mask;
 	QPixmap _pixmap;
@@ -339,8 +339,8 @@ void EditColorBox::Slider::generatePixmap() {
 	auto size = (isHorizontal() ? width() : height()) * cIntRetinaFactor();
 	auto image = QImage(size, cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	image.setDevicePixelRatio(cRetinaFactor());
-	auto ints = reinterpret_cast<uint32*>(image.bits());
-	auto intsPerLine = image.bytesPerLine() / sizeof(uint32);
+	auto ints = reinterpret_cast<uint32_t*>(image.bits());
+	auto intsPerLine = image.bytesPerLine() / sizeof(uint32_t);
 	auto intsPerLineAdded = intsPerLine - size;
 
 	constexpr auto Large = 1024 * 1024;
@@ -408,11 +408,11 @@ void EditColorBox::Slider::colorUpdated() {
 	update();
 }
 
-float64 EditColorBox::Slider::valueFromColor(QColor color) const {
+double EditColorBox::Slider::valueFromColor(QColor color) const {
 	return (_type == Type::Hue) ? valueFromHue(color.hsvHue()) : color.alphaF();
 }
 
-float64 EditColorBox::Slider::valueFromHue(int hue) const {
+double EditColorBox::Slider::valueFromHue(int hue) const {
 	return (1. - snap(hue, 0, 360) / 360.);
 }
 
@@ -430,7 +430,7 @@ void EditColorBox::Slider::updatePixmapFromMask() {
 void EditColorBox::Slider::updateCurrentPoint(QPoint localPosition) {
 	auto coord = (isHorizontal() ? localPosition.x() : localPosition.y()) - st::colorSliderSkip;
 	auto maximum = (isHorizontal() ? width() : height()) - 2 * st::colorSliderSkip;
-	auto value = snap(coord, 0, maximum) / float64(maximum);
+	auto value = snap(coord, 0, maximum) / double(maximum);
 	if (_value != value) {
 		_value = value;
 		update();

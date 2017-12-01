@@ -73,7 +73,7 @@
 #endif
 
 #include "zlib.h"
-#include "unzip.h"
+#include "minizip/unzip.h"
 
 #ifdef STDC
 #  include <stddef.h>

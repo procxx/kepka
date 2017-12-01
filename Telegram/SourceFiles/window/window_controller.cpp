@@ -132,7 +132,7 @@ void Controller::provideChatWidth(int requestedWidth) {
 	window()->tryToExtendWidthBy(extendBy);
 	auto newLayout = computeColumnLayout();
 	if (newLayout.windowLayout != Adaptive::WindowLayout::OneColumn) {
-		dialogsWidthRatio().set(float64(newLayout.bodyWidth - requestedWidth) / newLayout.bodyWidth, true);
+		dialogsWidthRatio().set(double(newLayout.bodyWidth - requestedWidth) / newLayout.bodyWidth, true);
 	}
 }
 

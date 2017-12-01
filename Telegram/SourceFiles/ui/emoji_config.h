@@ -38,7 +38,7 @@ class One {
 
 public:
 	One(One &&other) = default;
-	One(const QString &id, uint16 x, uint16 y, bool hasPostfix, bool colorizable, EmojiPtr original, const CreationTag &)
+	One(const QString &id, uint16_t x, uint16_t y, bool hasPostfix, bool colorizable, EmojiPtr original, const CreationTag &)
 	: _id(id)
 	, _x(x)
 	, _y(y)
@@ -90,8 +90,8 @@ public:
 
 private:
 	const QString _id;
-	const uint16 _x = 0;
-	const uint16 _y = 0;
+	const uint16_t _x = 0;
+	const uint16_t _y = 0;
 	const bool _hasPostfix = false;
 	const bool _colorizable = false;
 	const EmojiPtr _original = nullptr;
@@ -116,13 +116,13 @@ inline EmojiPtr Find(const QString &text, int *outLength = nullptr) {
 	return Find(text.constBegin(), text.constEnd(), outLength);
 }
 
-QString IdFromOldKey(uint64 oldKey);
+QString IdFromOldKey(uint64_t oldKey);
 
-inline EmojiPtr FromOldKey(uint64 oldKey) {
+inline EmojiPtr FromOldKey(uint64_t oldKey) {
 	return Find(IdFromOldKey(oldKey));
 }
 
-inline int ColorIndexFromCode(uint32 code) {
+inline int ColorIndexFromCode(uint32_t code) {
 	switch (code) {
 	case 0xD83CDFFBU: return 1;
 	case 0xD83CDFFCU: return 2;
@@ -133,8 +133,8 @@ inline int ColorIndexFromCode(uint32 code) {
 	return 0;
 }
 
-inline int ColorIndexFromOldKey(uint64 oldKey) {
-	return ColorIndexFromCode(uint32(oldKey & 0xFFFFFFFFLLU));
+inline int ColorIndexFromOldKey(uint64_t oldKey) {
+	return ColorIndexFromCode(uint32_t(oldKey & 0xFFFFFFFFLLU));
 }
 
 inline int Size(int index = Index()) {

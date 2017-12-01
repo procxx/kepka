@@ -31,7 +31,7 @@ namespace InlineBots {
 Result::Result(const Creator &creator) : _queryId(creator.queryId), _type(creator.type) {
 }
 
-std::unique_ptr<Result> Result::create(uint64 queryId, const MTPBotInlineResult &mtpData) {
+std::unique_ptr<Result> Result::create(uint64_t queryId, const MTPBotInlineResult &mtpData) {
 	using StringToTypeMap = QMap<QString, Result::Type>;
 	static StaticNeverFreedPointer<StringToTypeMap> stringToTypeMap{ ([]() -> StringToTypeMap* {
 		auto result = std::make_unique<StringToTypeMap>();
@@ -194,8 +194,8 @@ std::unique_ptr<Result> Result::create(uint64 queryId, const MTPBotInlineResult 
 	}
 	LocationCoords location;
 	if (result->getLocationCoords(&location)) {
-		int32 w = st::inlineThumbSize, h = st::inlineThumbSize;
-		int32 zoom = 13, scale = 1;
+		int32_t w = st::inlineThumbSize, h = st::inlineThumbSize;
+		int32_t zoom = 13, scale = 1;
 		if (cScale() == dbisTwo || cRetina()) {
 			scale = 2;
 			w /= 2;

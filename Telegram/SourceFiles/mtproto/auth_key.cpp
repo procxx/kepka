@@ -25,7 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace MTP {
 
 void AuthKey::prepareAES_oldmtp(const MTPint128 &msgKey, MTPint256 &aesKey, MTPint256 &aesIV, bool send) const {
-	uint32 x = send ? 0 : 8;
+	uint32_t x = send ? 0 : 8;
 
 	uchar data_a[16 + 32], sha1_a[20];
 	memcpy(data_a, &msgKey, 16);
@@ -60,7 +60,7 @@ void AuthKey::prepareAES_oldmtp(const MTPint128 &msgKey, MTPint256 &aesKey, MTPi
 }
 
 void AuthKey::prepareAES(const MTPint128 &msgKey, MTPint256 &aesKey, MTPint256 &aesIV, bool send) const {
-	uint32 x = send ? 0 : 8;
+	uint32_t x = send ? 0 : 8;
 
 	uchar data_a[16 + 36], sha256_a[32];
 	memcpy(data_a, &msgKey, 16);
@@ -82,7 +82,7 @@ void AuthKey::prepareAES(const MTPint128 &msgKey, MTPint256 &aesKey, MTPint256 &
 	memcpy(iv + 8 + 16, sha256_b + 24, 8);
 }
 
-void aesIgeEncryptRaw(const void *src, void *dst, uint32 len, const void *key, const void *iv) {
+void aesIgeEncryptRaw(const void *src, void *dst, uint32_t len, const void *key, const void *iv) {
 	uchar aes_key[32], aes_iv[32];
 	memcpy(aes_key, key, 32);
 	memcpy(aes_iv, iv, 32);
@@ -92,7 +92,7 @@ void aesIgeEncryptRaw(const void *src, void *dst, uint32 len, const void *key, c
 	AES_ige_encrypt(static_cast<const uchar*>(src), static_cast<uchar*>(dst), len, &aes, aes_iv, AES_ENCRYPT);
 }
 
-void aesIgeDecryptRaw(const void *src, void *dst, uint32 len, const void *key, const void *iv) {
+void aesIgeDecryptRaw(const void *src, void *dst, uint32_t len, const void *key, const void *iv) {
 	uchar aes_key[32], aes_iv[32];
 	memcpy(aes_key, key, 32);
 	memcpy(aes_iv, iv, 32);
@@ -102,7 +102,7 @@ void aesIgeDecryptRaw(const void *src, void *dst, uint32 len, const void *key, c
 	AES_ige_encrypt(static_cast<const uchar*>(src), static_cast<uchar*>(dst), len, &aes, aes_iv, AES_DECRYPT);
 }
 
-void aesCtrEncrypt(void *data, uint32 len, const void *key, CTRState *state) {
+void aesCtrEncrypt(void *data, uint32_t len, const void *key, CTRState *state) {
 	AES_KEY aes;
 	AES_set_encrypt_key(static_cast<const uchar*>(key), 256, &aes);
 

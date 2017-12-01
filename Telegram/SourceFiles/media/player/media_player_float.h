@@ -34,13 +34,13 @@ public:
 	HistoryItem *item() const {
 		return _item;
 	}
-	void setOpacity(float64 opacity) {
+	void setOpacity(double opacity) {
 		if (_opacity != opacity) {
 			_opacity = opacity;
 			update();
 		}
 	}
-	float64 countOpacityByParent() const {
+	double countOpacityByParent() const {
 		return outRatio();
 	}
 	bool isReady() const {
@@ -73,7 +73,7 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *e) override;
 
 private:
-	float64 outRatio() const;
+	double outRatio() const;
 	Clip::Reader *getReader() const;
 	void repaintItem();
 	void prepareShadow();
@@ -86,7 +86,7 @@ private:
 	HistoryItem *_item = nullptr;
 	base::lambda<void(bool visible)> _toggleCallback;
 
-	float64 _opacity = 1.;
+	double _opacity = 1.;
 
 	QPixmap _shadow;
 	QImage _frame;

@@ -27,11 +27,11 @@ namespace internal {
 
 namespace {
 
-uint32 tcpPacketSize(const char *packet) { // must have at least 4 bytes readable
-	uint32 result = (packet[0] > 0) ? packet[0] : 0;
+uint32_t tcpPacketSize(const char *packet) { // must have at least 4 bytes readable
+	uint32_t result = (packet[0] > 0) ? packet[0] : 0;
 	if (result == 0x7f) {
 		const uchar *bytes = reinterpret_cast<const uchar*>(packet);
-		result = (((uint32(bytes[3]) << 8) | uint32(bytes[2])) << 8) | uint32(bytes[1]);
+		result = (((uint32_t(bytes[3]) << 8) | uint32_t(bytes[2])) << 8) | uint32_t(bytes[1]);
 		return (result << 2) + 4;
 	}
 	return (result << 2) + 1;
@@ -58,7 +58,7 @@ void AbstractTCPConnection::socketRead() {
 	}
 
 	do {
-		uint32 toRead = packetLeft ? packetLeft : (readingToShort ? (MTPShortBufferSize * sizeof(mtpPrime) - packetRead) : 4);
+		uint32_t toRead = packetLeft ? packetLeft : (readingToShort ? (MTPShortBufferSize * sizeof(mtpPrime) - packetRead) : 4);
 		if (readingToShort) {
 			if (currentPos + toRead > ((char*)shortBuffer) + MTPShortBufferSize * sizeof(mtpPrime)) {
 				longBuffer.resize(((packetRead + toRead) >> 2) + 1);
@@ -72,7 +72,7 @@ void AbstractTCPConnection::socketRead() {
 				currentPos = ((char*)&longBuffer[0]) + packetRead;
 			}
 		}
-		int32 bytes = (int32)sock.read(currentPos, toRead);
+		int32_t bytes = (int32_t)sock.read(currentPos, toRead);
 		if (bytes > 0) {
 			aesCtrEncrypt(currentPos, bytes, _receiveKey, &_receiveState);
 			TCP_LOG(("TCP Info: read %1 bytes").arg(bytes));
@@ -94,7 +94,7 @@ void AbstractTCPConnection::socketRead() {
 			} else {
 				bool move = false;
 				while (packetRead >= 4) {
-					uint32 packetSize = tcpPacketSize(currentPos - packetRead);
+					uint32_t packetSize = tcpPacketSize(currentPos - packetRead);
 					if (packetSize < 5 || packetSize > MTPPacketSizeMax) {
 						LOG(("TCP Error: packet size = %1").arg(packetSize));
 						emit error(kErrorCodeOther);
@@ -136,18 +136,18 @@ void AbstractTCPConnection::socketRead() {
 	} while (sock.state() == QAbstractSocket::ConnectedState && sock.bytesAvailable());
 }
 
-mtpBuffer AbstractTCPConnection::handleResponse(const char *packet, uint32 length) {
+mtpBuffer AbstractTCPConnection::handleResponse(const char *packet, uint32_t length) {
 	if (length < 5 || length > MTPPacketSizeMax) {
 		LOG(("TCP Error: bad packet size %1").arg(length));
 		return mtpBuffer(1, -500);
 	}
-	int32 size = packet[0], len = length - 1;
+	int32_t size = packet[0], len = length - 1;
 	if (size == 0x7f) {
 		const uchar *bytes = reinterpret_cast<const uchar*>(packet);
-		size = (((uint32(bytes[3]) << 8) | uint32(bytes[2])) << 8) | uint32(bytes[1]);
+		size = (((uint32_t(bytes[3]) << 8) | uint32_t(bytes[2])) << 8) | uint32_t(bytes[1]);
 		len -= 3;
 	}
-	if (size * int32(sizeof(mtpPrime)) != len) {
+	if (size * int32_t(sizeof(mtpPrime)) != len) {
 		LOG(("TCP Error: bad packet header"));
 		TCP_LOG(("TCP Error: bad packet header, packet: %1").arg(Logs::mb(packet, length).str()));
 		return mtpBuffer(1, -500);
@@ -277,9 +277,9 @@ void AbstractTCPConnection::tcpSend(mtpBuffer &buffer) {
 	if (!packetNum) {
 		// prepare random part
 		char nonce[64];
-		uint32 *first = reinterpret_cast<uint32*>(nonce), *second = first + 1;
-		uint32 first1 = 0x44414548U, first2 = 0x54534f50U, first3 = 0x20544547U, first4 = 0x20544547U, first5 = 0xeeeeeeeeU;
-		uint32 second1 = 0;
+		uint32_t *first = reinterpret_cast<uint32_t*>(nonce), *second = first + 1;
+		uint32_t first1 = 0x44414548U, first2 = 0x54534f50U, first3 = 0x20544547U, first4 = 0x20544547U, first5 = 0xeeeeeeeeU;
+		uint32_t second1 = 0;
 		do {
 			memset_rand(nonce, sizeof(nonce));
 		} while (*first == first1 || *first == first2 || *first == first3 || *first == first4 || *first == first5 || *second == second1 || *reinterpret_cast<uchar*>(nonce) == 0xef);
@@ -297,7 +297,7 @@ void AbstractTCPConnection::tcpSend(mtpBuffer &buffer) {
 		memcpy(_receiveState.ivec, reversed + CTRState::KeySize, CTRState::IvecSize);
 
 		// write protocol identifier
-		*reinterpret_cast<uint32*>(nonce + 56) = 0xefefefefU;
+		*reinterpret_cast<uint32_t*>(nonce + 56) = 0xefefefefU;
 
 		sock.write(nonce, 56);
 		aesCtrEncrypt(nonce, 64, _sendKey, &_sendState);
@@ -305,7 +305,7 @@ void AbstractTCPConnection::tcpSend(mtpBuffer &buffer) {
 	}
 	++packetNum;
 
-	uint32 size = buffer.size() - 3, len = size * 4;
+	uint32_t size = buffer.size() - 3, len = size * 4;
 	char *data = reinterpret_cast<char*>(&buffer[0]);
 	if (size < 0x7f) {
 		data[7] = char(size);
@@ -342,7 +342,7 @@ void TCPConnection::connectTcp(const DcOptions::Endpoint &endpoint) {
 	sock.connectToHost(QHostAddress(_addr), _port);
 }
 
-void TCPConnection::socketPacket(const char *packet, uint32 length) {
+void TCPConnection::socketPacket(const char *packet, uint32_t length) {
 	if (status == FinishedWork) return;
 
 	mtpBuffer data = handleResponse(packet, length);
@@ -372,7 +372,7 @@ bool TCPConnection::isConnected() const {
 	return (status == UsingTcp);
 }
 
-int32 TCPConnection::debugState() const {
+int32_t TCPConnection::debugState() const {
 	return sock.state();
 }
 

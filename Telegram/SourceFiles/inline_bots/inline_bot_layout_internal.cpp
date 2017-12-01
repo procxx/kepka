@@ -104,17 +104,17 @@ Gif::Gif(not_null<Context*> context, DocumentData *document, bool hasDeleteButto
 }
 
 void Gif::initDimensions() {
-	int32 w = content_width(), h = content_height();
+	int32_t w = content_width(), h = content_height();
 	if (w <= 0 || h <= 0) {
 		_maxw = 0;
 	} else {
 		w = w * st::inlineMediaHeight / h;
-		_maxw = qMax(w, int32(st::inlineResultsMinWidth));
+		_maxw = qMax(w, int32_t(st::inlineResultsMinWidth));
 	}
 	_minh = st::inlineMediaHeight + st::inlineResultsSkip;
 }
 
-void Gif::setPosition(int32 position) {
+void Gif::setPosition(int32_t position) {
 	ItemBase::setPosition(position);
 	if (_position < 0) {
 		_gif.reset();
@@ -154,7 +154,7 @@ void Gif::paint(Painter &p, const QRect &clip, const PaintContext *context) cons
 	}
 	bool radial = isRadialAnimation(context->ms);
 
-	int32 height = st::inlineMediaHeight;
+	int32_t height = st::inlineMediaHeight;
 	QSize frame = countFrameSize();
 
 	QRect r(0, 0, _width, height);
@@ -256,14 +256,14 @@ void Gif::clickHandlerActiveChanged(const ClickHandlerPtr &p, bool active) {
 
 QSize Gif::countFrameSize() const {
 	bool animating = (_gif && _gif->ready());
-	int32 framew = animating ? _gif->width() : content_width(), frameh = animating ? _gif->height() : content_height(), height = st::inlineMediaHeight;
+	int32_t framew = animating ? _gif->width() : content_width(), frameh = animating ? _gif->height() : content_height(), height = st::inlineMediaHeight;
 	if (framew * height > frameh * _width) {
 		if (framew < st::maxStickerSize || frameh > height) {
 			if (frameh > height || (framew * height / frameh) <= st::maxStickerSize) {
 				framew = framew * height / frameh;
 				frameh = height;
 			} else {
-				frameh = int32(frameh * st::maxStickerSize) / framew;
+				frameh = int32_t(frameh * st::maxStickerSize) / framew;
 				framew = st::maxStickerSize;
 			}
 		}
@@ -273,7 +273,7 @@ QSize Gif::countFrameSize() const {
 				frameh = frameh * _width / framew;
 				framew = _width;
 			} else {
-				framew = int32(framew * st::maxStickerSize) / frameh;
+				framew = int32_t(framew * st::maxStickerSize) / frameh;
 				frameh = st::maxStickerSize;
 			}
 		}
@@ -281,7 +281,7 @@ QSize Gif::countFrameSize() const {
 	return QSize(framew, frameh);
 }
 
-void Gif::prepareThumb(int32 width, int32 height, const QSize &frame) const {
+void Gif::prepareThumb(int32_t width, int32_t height, const QSize &frame) const {
 	if (DocumentData *document = getShownDocument()) {
 		if (!document->thumb->isNull()) {
 			if (document->thumb->loaded()) {
@@ -424,9 +424,9 @@ void Sticker::clickHandlerActiveChanged(const ClickHandlerPtr &p, bool active) {
 
 QSize Sticker::getThumbSize() const {
 	int width = qMax(content_width(), 1), height = qMax(content_height(), 1);
-	float64 coefw = (st::stickerPanSize.width() - st::buttonRadius * 2) / float64(width);
-	float64 coefh = (st::stickerPanSize.height() - st::buttonRadius * 2) / float64(height);
-	float64 coef = qMin(qMin(coefw, coefh), 1.);
+	double coefw = (st::stickerPanSize.width() - st::buttonRadius * 2) / double(width);
+	double coefh = (st::stickerPanSize.height() - st::buttonRadius * 2) / double(height);
+	double coef = qMin(qMin(coefw, coefh), 1.);
 	int w = qRound(coef * content_width()), h = qRound(coef * content_height());
 	return QSize(qMax(w, 1), qMax(h, 1));
 }
@@ -465,18 +465,18 @@ Photo::Photo(not_null<Context*> context, Result *result) : ItemBase(context, res
 
 void Photo::initDimensions() {
 	PhotoData *photo = getShownPhoto();
-	int32 w = photo->full->width(), h = photo->full->height();
+	int32_t w = photo->full->width(), h = photo->full->height();
 	if (w <= 0 || h <= 0) {
 		_maxw = 0;
 	} else {
 		w = w * st::inlineMediaHeight / h;
-		_maxw = qMax(w, int32(st::inlineResultsMinWidth));
+		_maxw = qMax(w, int32_t(st::inlineResultsMinWidth));
 	}
 	_minh = st::inlineMediaHeight + st::inlineResultsSkip;
 }
 
 void Photo::paint(Painter &p, const QRect &clip, const PaintContext *context) const {
-	int32 height = st::inlineMediaHeight;
+	int32_t height = st::inlineMediaHeight;
 	QSize frame = countFrameSize();
 
 	QRect r(0, 0, _width, height);
@@ -504,14 +504,14 @@ PhotoData *Photo::getShownPhoto() const {
 
 QSize Photo::countFrameSize() const {
 	PhotoData *photo = getShownPhoto();
-	int32 framew = photo->full->width(), frameh = photo->full->height(), height = st::inlineMediaHeight;
+	int32_t framew = photo->full->width(), frameh = photo->full->height(), height = st::inlineMediaHeight;
 	if (framew * height > frameh * _width) {
 		if (framew < st::maxStickerSize || frameh > height) {
 			if (frameh > height || (framew * height / frameh) <= st::maxStickerSize) {
 				framew = framew * height / frameh;
 				frameh = height;
 			} else {
-				frameh = int32(frameh * st::maxStickerSize) / framew;
+				frameh = int32_t(frameh * st::maxStickerSize) / framew;
 				framew = st::maxStickerSize;
 			}
 		}
@@ -521,7 +521,7 @@ QSize Photo::countFrameSize() const {
 				frameh = frameh * _width / framew;
 				framew = _width;
 			} else {
-				framew = int32(framew * st::maxStickerSize) / frameh;
+				framew = int32_t(framew * st::maxStickerSize) / frameh;
 				frameh = st::maxStickerSize;
 			}
 		}
@@ -529,7 +529,7 @@ QSize Photo::countFrameSize() const {
 	return QSize(framew, frameh);
 }
 
-void Photo::prepareThumb(int32 width, int32 height, const QSize &frame) const {
+void Photo::prepareThumb(int32_t width, int32_t height, const QSize &frame) const {
 	if (PhotoData *photo = getShownPhoto()) {
 		if (photo->medium->loaded()) {
 			if (!_thumbLoaded || _thumb.width() != width * cIntRetinaFactor() || _thumb.height() != height * cIntRetinaFactor()) {
@@ -570,16 +570,16 @@ void Video::initDimensions() {
 	bool withThumb = !content_thumb()->isNull();
 
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	int32 textWidth = _maxw - (withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
+	int32_t textWidth = _maxw - (withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
 	TextParseOptions titleOpts = { 0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	auto title = TextUtilities::SingleLine(_result->getLayoutTitle());
 	if (title.isEmpty()) {
 		title = lang(lng_media_video);
 	}
 	_title.setText(st::semiboldTextStyle, title, titleOpts);
-	int32 titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
+	int32_t titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
 
-	int32 descriptionLines = withThumb ? (titleHeight > st::semiboldFont->height ? 1 : 2) : 3;
+	int32_t descriptionLines = withThumb ? (titleHeight > st::semiboldFont->height ? 1 : 2) : 3;
 
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, descriptionLines * st::normalFont->height, Qt::LayoutDirectionAuto };
 	QString description = _result->getLayoutDescription();
@@ -587,7 +587,7 @@ void Video::initDimensions() {
 		description = _duration;
 	}
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	int32 descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
+	int32_t descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = st::inlineThumbSize;
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
@@ -620,10 +620,10 @@ void Video::paint(Painter &p, const QRect &clip, const PaintContext *context) co
 
 	p.setPen(st::inlineTitleFg);
 	_title.drawLeftElided(p, left, st::inlineRowMargin, _width - left, _width, 2);
-	int32 titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+	int32_t titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 
 	p.setPen(st::inlineDescriptionFg);
-	int32 descriptionLines = withThumb ? (titleHeight > st::semiboldFont->height ? 1 : 2) : 3;
+	int32_t descriptionLines = withThumb ? (titleHeight > st::semiboldFont->height ? 1 : 2) : 3;
 	_description.drawLeftElided(p, left, st::inlineRowMargin + titleHeight, _width - left, _width, descriptionLines);
 
 	if (!context->lastRow) {
@@ -642,11 +642,11 @@ void Video::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint p
 	}
 }
 
-void Video::prepareThumb(int32 width, int32 height) const {
+void Video::prepareThumb(int32_t width, int32_t height) const {
 	ImagePtr thumb = content_thumb();
 	if (thumb->loaded()) {
 		if (_thumb.width() != width * cIntRetinaFactor() || _thumb.height() != height * cIntRetinaFactor()) {
-			int32 w = qMax(convertScale(thumb->width()), 1), h = qMax(convertScale(thumb->height()), 1);
+			int32_t w = qMax(convertScale(thumb->width()), 1), h = qMax(convertScale(thumb->height()), 1);
 			if (w * height > h * width) {
 				if (height < h) {
 					w = w * height / h;
@@ -697,7 +697,7 @@ void File::initDimensions() {
 }
 
 void File::paint(Painter &p, const QRect &clip, const PaintContext *context) const {
-	int32 left = st::msgFileSize + st::inlineThumbSkip;
+	int32_t left = st::msgFileSize + st::inlineThumbSkip;
 
 	DocumentData *document = getShownDocument();
 	bool loaded = document->loaded(), displayLoading = document->displayLoading();
@@ -826,7 +826,7 @@ void File::checkAnimationFinished() const {
 
 bool File::updateStatusText() const {
 	bool showPause = false;
-	int32 statusSize = 0, realDuration = 0;
+	int32_t statusSize = 0, realDuration = 0;
 	DocumentData *document = getShownDocument();
 	if (document->status == FileDownloadFailed || document->status == FileUploadFailed) {
 		statusSize = FileStatusSizeFailed;
@@ -862,13 +862,13 @@ bool File::updateStatusText() const {
 		statusSize = FileStatusSizeReady;
 	}
 	if (statusSize != _statusSize) {
-		int32 duration = document->song() ? document->song()->duration : (document->voice() ? document->voice()->duration : -1);
+		int32_t duration = document->song() ? document->song()->duration : (document->voice() ? document->voice()->duration : -1);
 		setStatusSize(statusSize, document->size, duration, realDuration);
 	}
 	return showPause;
 }
 
-void File::setStatusSize(int32 newSize, int32 fullSize, int32 duration, qint64 realDuration) const {
+void File::setStatusSize(int32_t newSize, int32_t fullSize, int32_t duration, int64_t realDuration) const {
 	_statusSize = newSize;
 	if (_statusSize == FileStatusSizeReady) {
 		_statusText = (duration >= 0) ? formatDurationAndSizeText(duration, fullSize) : (duration < -1 ? formatGifAndSizeText(fullSize) : formatSizeText(fullSize));
@@ -890,27 +890,27 @@ Contact::Contact(not_null<Context*> context, Result *result) : ItemBase(context,
 
 void Contact::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	int32 textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
+	int32_t textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
 	TextParseOptions titleOpts = { 0, _maxw, st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	int32 titleHeight = qMin(_title.countHeight(_maxw), st::semiboldFont->height);
+	int32_t titleHeight = qMin(_title.countHeight(_maxw), st::semiboldFont->height);
 
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, st::normalFont->height, Qt::LayoutDirectionAuto };
 	_description.setText(st::defaultTextStyle, _result->getLayoutDescription(), descriptionOpts);
-	int32 descriptionHeight = qMin(_description.countHeight(_maxw), st::normalFont->height);
+	int32_t descriptionHeight = qMin(_description.countHeight(_maxw), st::normalFont->height);
 
 	_minh = st::msgFileSize;
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
 }
 
-int32 Contact::resizeGetHeight(int32 width) {
+int32_t Contact::resizeGetHeight(int32_t width) {
 	_width = qMin(width, _maxw);
 	_height = _minh;
 	return _height;
 }
 
 void Contact::paint(Painter &p, const QRect &clip, const PaintContext *context) const {
-	int32 left = st::emojiPanHeaderLeft - st::inlineResultsLeft;
+	int32_t left = st::emojiPanHeaderLeft - st::inlineResultsLeft;
 
 	left = st::msgFileSize + st::inlineThumbSkip;
 	prepareThumb(st::msgFileSize, st::msgFileSize);
@@ -987,24 +987,24 @@ Article::Article(not_null<Context*> context, Result *result, bool withThumb) : I
 
 void Article::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	int32 textWidth = _maxw - (_withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
+	int32_t textWidth = _maxw - (_withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
 	TextParseOptions titleOpts = { 0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	int32 titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
+	int32_t titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
 
-	int32 descriptionLines = (_withThumb || _url) ? 2 : 3;
+	int32_t descriptionLines = (_withThumb || _url) ? 2 : 3;
 	QString description = _result->getLayoutDescription();
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, descriptionLines * st::normalFont->height, Qt::LayoutDirectionAuto };
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	int32 descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
+	int32_t descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = titleHeight + descriptionHeight;
 	if (_url) _minh += st::normalFont->height;
-	if (_withThumb) _minh = qMax(_minh, int32(st::inlineThumbSize));
+	if (_withThumb) _minh = qMax(_minh, int32_t(st::inlineThumbSize));
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
 }
 
-int32 Article::resizeGetHeight(int32 width) {
+int32_t Article::resizeGetHeight(int32_t width) {
 	_width = qMin(width, _maxw);
 	if (_url) {
 		_urlText = getResultUrl();
@@ -1019,7 +1019,7 @@ int32 Article::resizeGetHeight(int32 width) {
 }
 
 void Article::paint(Painter &p, const QRect &clip, const PaintContext *context) const {
-	int32 left = st::emojiPanHeaderLeft - st::inlineResultsLeft;
+	int32_t left = st::emojiPanHeaderLeft - st::inlineResultsLeft;
 	if (_withThumb) {
 		left = st::inlineThumbSize + st::inlineThumbSkip;
 		prepareThumb(st::inlineThumbSize, st::inlineThumbSize);
@@ -1027,7 +1027,7 @@ void Article::paint(Painter &p, const QRect &clip, const PaintContext *context) 
 		if (_thumb.isNull()) {
 			ImagePtr thumb = getResultThumb();
 			if (thumb->isNull() && !_thumbLetter.isEmpty()) {
-				int32 index = (_thumbLetter.at(0).unicode() % 4);
+				int32_t index = (_thumbLetter.at(0).unicode() % 4);
 				style::color colors[] = {
 					st::msgFile3Bg,
 					st::msgFile4Bg,
@@ -1051,14 +1051,14 @@ void Article::paint(Painter &p, const QRect &clip, const PaintContext *context) 
 
 	p.setPen(st::inlineTitleFg);
 	_title.drawLeftElided(p, left, st::inlineRowMargin, _width - left, _width, 2);
-	int32 titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+	int32_t titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 
 	p.setPen(st::inlineDescriptionFg);
-	int32 descriptionLines = (_withThumb || _url) ? 2 : 3;
+	int32_t descriptionLines = (_withThumb || _url) ? 2 : 3;
 	_description.drawLeftElided(p, left, st::inlineRowMargin + titleHeight, _width - left, _width, descriptionLines);
 
 	if (_url) {
-		int32 descriptionHeight = qMin(_description.countHeight(_width - left), st::normalFont->height * descriptionLines);
+		int32_t descriptionHeight = qMin(_description.countHeight(_width - left), st::normalFont->height * descriptionLines);
 		p.drawTextLeft(left, st::inlineRowMargin + titleHeight + descriptionHeight, _width, _urlText, _urlWidth);
 	}
 
@@ -1155,23 +1155,23 @@ void Game::countFrameSize() {
 
 void Game::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	int32 textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
+	int32_t textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
 	TextParseOptions titleOpts = { 0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	int32 titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
+	int32_t titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
 
-	int32 descriptionLines = 2;
+	int32_t descriptionLines = 2;
 	QString description = _result->getLayoutDescription();
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, descriptionLines * st::normalFont->height, Qt::LayoutDirectionAuto };
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	int32 descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
+	int32_t descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = titleHeight + descriptionHeight;
 	accumulate_max(_minh, st::inlineThumbSize);
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
 }
 
-void Game::setPosition(int32 position) {
+void Game::setPosition(int32_t position) {
 	ItemBase::setPosition(position);
 	if (_position < 0) {
 		_gif.reset();
@@ -1179,7 +1179,7 @@ void Game::setPosition(int32 position) {
 }
 
 void Game::paint(Painter &p, const QRect &clip, const PaintContext *context) const {
-	int32 left = st::emojiPanHeaderLeft - st::inlineResultsLeft;
+	int32_t left = st::emojiPanHeaderLeft - st::inlineResultsLeft;
 
 	left = st::inlineThumbSize + st::inlineThumbSkip;
 	auto rthumb = rtlrect(0, st::inlineRowMargin, st::inlineThumbSize, st::inlineThumbSize, _width);
@@ -1240,10 +1240,10 @@ void Game::paint(Painter &p, const QRect &clip, const PaintContext *context) con
 
 	p.setPen(st::inlineTitleFg);
 	_title.drawLeftElided(p, left, st::inlineRowMargin, _width - left, _width, 2);
-	int32 titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+	int32_t titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 
 	p.setPen(st::inlineDescriptionFg);
-	int32 descriptionLines = 2;
+	int32_t descriptionLines = 2;
 	_description.drawLeftElided(p, left, st::inlineRowMargin + titleHeight, _width - left, _width, descriptionLines);
 
 	if (!context->lastRow) {

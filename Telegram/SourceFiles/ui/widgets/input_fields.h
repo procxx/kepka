@@ -284,7 +284,7 @@ protected:
 		return _st.font;
 	}
 
-	void phPrepare(Painter &p, float64 placeholderFocused);
+	void phPrepare(Painter &p, double placeholderFocused);
 
 private:
 	void updatePalette();

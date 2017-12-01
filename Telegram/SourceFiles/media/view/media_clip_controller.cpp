@@ -43,31 +43,31 @@ Controller::Controller(QWidget *parent) : TWidget(parent)
 , _fadeAnimation(std::make_unique<Ui::FadeAnimation>(this)) {
 	_fadeAnimation->show();
 	_fadeAnimation->setFinishedCallback([this] { fadeFinished(); });
-	_fadeAnimation->setUpdatedCallback([this](float64 opacity) { fadeUpdated(opacity); });
+	_fadeAnimation->setUpdatedCallback([this](double opacity) { fadeUpdated(opacity); });
 
 	_volumeController->setVolume(Global::VideoVolume());
 
 	connect(_playPauseResume, SIGNAL(clicked()), this, SIGNAL(playPressed()));
 	connect(_fullScreenToggle, SIGNAL(clicked()), this, SIGNAL(toFullScreenPressed()));
-	connect(_volumeController, SIGNAL(volumeChanged(float64)), this, SIGNAL(volumeChanged(float64)));
+	connect(_volumeController, SIGNAL(volumeChanged(double)), this, SIGNAL(volumeChanged(double)));
 
 	_playback->setInLoadingStateChangedCallback([this](bool loading) {
 		_playbackSlider->setDisabled(loading);
 	});
-	_playback->setValueChangedCallback([this](float64 value) {
+	_playback->setValueChangedCallback([this](double value) {
 		_playbackSlider->setValue(value);
 	});
-	_playbackSlider->setChangeProgressCallback([this](float64 value) {
+	_playbackSlider->setChangeProgressCallback([this](double value) {
 		_playback->setValue(value, false);
 		handleSeekProgress(value); // This may destroy Controller.
 	});
-	_playbackSlider->setChangeFinishedCallback([this](float64 value) {
+	_playbackSlider->setChangeFinishedCallback([this](double value) {
 		_playback->setValue(value, false);
 		handleSeekFinished(value);
 	});
 }
 
-void Controller::handleSeekProgress(float64 progress) {
+void Controller::handleSeekProgress(double progress) {
 	if (!_lastDurationMs) return;
 
 	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
@@ -78,7 +78,7 @@ void Controller::handleSeekProgress(float64 progress) {
 	}
 }
 
-void Controller::handleSeekFinished(float64 progress) {
+void Controller::handleSeekFinished(double progress) {
 	if (!_lastDurationMs) return;
 
 	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
@@ -109,7 +109,7 @@ void Controller::fadeFinished() {
 	fadeUpdated(1.);
 }
 
-void Controller::fadeUpdated(float64 opacity) {
+void Controller::fadeUpdated(double opacity) {
 	_playbackSlider->setFadeOpacity(opacity);
 }
 
@@ -131,7 +131,7 @@ void Controller::updatePlayPauseResumeState(const Player::TrackState &state) {
 }
 
 void Controller::updateTimeTexts(const Player::TrackState &state) {
-	qint64 position = 0, length = state.length;
+	int64_t position = 0, length = state.length;
 
 	if (Player::IsStoppedAtEnd(state.state)) {
 		position = state.length;

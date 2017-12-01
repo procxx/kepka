@@ -78,7 +78,7 @@ private:
 	void showMenu();
 
 	void updateAdaptiveLayout();
-	int countSelectedButtonsTop(float64 selectedShown);
+	int countSelectedButtonsTop(double selectedShown);
 
 	not_null<Window::Controller*> _controller;
 

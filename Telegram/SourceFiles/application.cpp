@@ -24,13 +24,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwidget.h"
 #include "mainwindow.h"
 #include "storage/localstorage.h"
-#include "autoupdater.h"
 #include "window/notifications_manager.h"
 #include "messenger.h"
 #include "base/timer.h"
 
 namespace {
 
+// @todo are there no other ways to get/set hex?
 QChar _toHex(ushort v) {
 	v = v & 0x000F;
 	return QChar::fromLatin1((v >= 10) ? ('a' + (v - 10)) : ('0' + v));
@@ -39,6 +39,7 @@ ushort _fromHex(QChar c) {
 	return ((c.unicode() >= uchar('a')) ? (c.unicode() - uchar('a') + 10) : (c.unicode() - uchar('0'))) & 0x000F;
 }
 
+// @todo urlencode/decode functions might help here??
 QString _escapeTo7bit(const QString &str) {
 	QString result;
 	result.reserve(str.size() * 2);
@@ -85,19 +86,12 @@ Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
 	connect(&_localSocket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	connect(&_localSocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
 	connect(&_localSocket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socketError(QLocalSocket::LocalSocketError)));
-	connect(&_localSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(socketWritten(qint64)));
+	connect(&_localSocket, SIGNAL(bytesWritten(int64_t)), this, SLOT(socketWritten(int64_t)));
 	connect(&_localSocket, SIGNAL(readyRead()), this, SLOT(socketReading()));
 	connect(&_localServer, SIGNAL(newConnection()), this, SLOT(newInstanceConnected()));
 
 	QTimer::singleShot(0, this, SLOT(startApplication()));
 	connect(this, SIGNAL(aboutToQuit()), this, SLOT(closeApplication()));
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	_updateCheckTimer.create(this);
-	connect(_updateCheckTimer, SIGNAL(timeout()), this, SLOT(updateCheck()));
-	connect(this, SIGNAL(updateFailed()), this, SLOT(onUpdateFailed()));
-	connect(this, SIGNAL(updateReady()), this, SLOT(onUpdateReady()));
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 	if (cManyInstance()) {
 		LOG(("Many instance allowed, starting..."));
@@ -135,7 +129,7 @@ void Application::socketConnected() {
 	_localSocket.write(commands.toLatin1());
 }
 
-void Application::socketWritten(qint64/* bytes*/) {
+void Application::socketWritten(int64_t/* bytes*/) {
 	if (_localSocket.state() != QLocalSocket::ConnectedState) {
 		LOG(("Socket is not connected %1").arg(_localSocket.state()));
 		return;
@@ -153,7 +147,7 @@ void Application::socketReading() {
 	}
 	_localSocketReadData.append(_localSocket.readAll());
 	if (QRegularExpression("RES:(\\d+);").match(_localSocketReadData).hasMatch()) {
-		uint64 pid = _localSocketReadData.mid(4, _localSocketReadData.length() - 5).toULongLong();
+		uint64_t pid = _localSocketReadData.mid(4, _localSocketReadData.length() - 5).toULongLong();
 		psActivateProcess(pid);
 		LOG(("Show command response received, pid = %1, activating and quitting...").arg(pid));
 		return App::quit();
@@ -184,14 +178,6 @@ void Application::socketError(QLocalSocket::LocalSocketError e) {
 		return App::quit();
 	}
 #endif // !Q_OS_WINRT
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	if (!cNoStartUpdate() && checkReadyUpdate()) {
-		cSetRestartingUpdate(true);
-		DEBUG_LOG(("Application Info: installing update instead of starting app..."));
-		return App::quit();
-	}
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 	singleInstanceChecked();
 }
@@ -249,8 +235,8 @@ void Application::readClients() {
 		i->second.append(i->first->readAll());
 		if (i->second.size()) {
 			QString cmds(QString::fromLatin1(i->second));
-			int32 from = 0, l = cmds.length();
-			for (int32 to = cmds.indexOf(QChar(';'), from); to >= from; to = (from < l) ? cmds.indexOf(QChar(';'), from) : -1) {
+			int32_t from = 0, l = cmds.length();
+			for (int32_t to = cmds.indexOf(QChar(';'), from); to >= from; to = (from < l) ? cmds.indexOf(QChar(';'), from) : -1) {
 				QStringRef cmd(&cmds, from, to - from);
 				if (cmd.startsWith(qsl("CMD:"))) {
 					Sandbox::execExternal(cmds.mid(from + 4, to - from - 4));
@@ -332,170 +318,7 @@ void Application::closeApplication() {
 	_localClients.clear();
 
 	_localSocket.close();
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	delete _updateReply;
-	_updateReply = 0;
-	if (_updateChecker) _updateChecker->deleteLater();
-	_updateChecker = 0;
-	if (_updateThread) {
-		_updateThread->quit();
-	}
-	_updateThread = 0;
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 }
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-void Application::updateCheck() {
-	startUpdateCheck(false);
-}
-
-void Application::updateGotCurrent() {
-	if (!_updateReply || _updateThread) return;
-
-	cSetLastUpdateCheck(unixtime());
-	QRegularExpressionMatch m = QRegularExpression(qsl("^\\s*(\\d+)\\s*:\\s*([\\x21-\\x7f]+)\\s*$")).match(QString::fromLatin1(_updateReply->readAll()));
-	if (m.hasMatch()) {
-		uint64 currentVersion = m.captured(1).toULongLong();
-		QString url = m.captured(2);
-		bool betaVersion = false;
-		if (url.startsWith(qstr("beta_"))) {
-			betaVersion = true;
-			url = url.mid(5) + '_' + countBetaVersionSignature(currentVersion);
-		}
-		if ((!betaVersion || cBetaVersion()) && currentVersion > (betaVersion ? cBetaVersion() : uint64(AppVersion))) {
-			_updateThread = new QThread();
-			connect(_updateThread, SIGNAL(finished()), _updateThread, SLOT(deleteLater()));
-			_updateChecker = new UpdateChecker(_updateThread, url);
-			_updateThread->start();
-		}
-	}
-	if (_updateReply) _updateReply->deleteLater();
-	_updateReply = 0;
-	if (!_updateThread) {
-		QDir updates(cWorkingDir() + "tupdates");
-		if (updates.exists()) {
-			QFileInfoList list = updates.entryInfoList(QDir::Files);
-			for (QFileInfoList::iterator i = list.begin(), e = list.end(); i != e; ++i) {
-                if (QRegularExpression("^(tupdate|tmacupd|tmac32upd|tlinuxupd|tlinux32upd)\\d+(_[a-z\\d]+)?$", QRegularExpression::CaseInsensitiveOption).match(i->fileName()).hasMatch()) {
-					QFile(i->absoluteFilePath()).remove();
-				}
-			}
-		}
-		emit updateLatest();
-	}
-	startUpdateCheck(true);
-	Local::writeSettings();
-}
-
-void Application::updateFailedCurrent(QNetworkReply::NetworkError e) {
-	LOG(("App Error: could not get current version (update check): %1").arg(e));
-	if (_updateReply) _updateReply->deleteLater();
-	_updateReply = 0;
-
-	emit updateFailed();
-	startUpdateCheck(true);
-}
-
-void Application::onUpdateReady() {
-	if (_updateChecker) {
-		_updateChecker->deleteLater();
-		_updateChecker = nullptr;
-	}
-	_updateCheckTimer->stop();
-
-	cSetLastUpdateCheck(unixtime());
-	Local::writeSettings();
-}
-
-void Application::onUpdateFailed() {
-	if (_updateChecker) {
-		_updateChecker->deleteLater();
-		_updateChecker = 0;
-		if (_updateThread) _updateThread->quit();
-		_updateThread = 0;
-	}
-
-	cSetLastUpdateCheck(unixtime());
-	Local::writeSettings();
-}
-
-Application::UpdatingState Application::updatingState() {
-	if (!_updateThread) return Application::UpdatingNone;
-	if (!_updateChecker) return Application::UpdatingReady;
-	return Application::UpdatingDownload;
-}
-
-int32 Application::updatingSize() {
-	if (!_updateChecker) return 0;
-	return _updateChecker->size();
-}
-
-int32 Application::updatingReady() {
-	if (!_updateChecker) return 0;
-	return _updateChecker->ready();
-}
-
-void Application::stopUpdate() {
-	if (_updateReply) {
-		_updateReply->abort();
-		_updateReply->deleteLater();
-		_updateReply = 0;
-	}
-	if (_updateChecker) {
-		_updateChecker->deleteLater();
-		_updateChecker = 0;
-		if (_updateThread) _updateThread->quit();
-		_updateThread = 0;
-	}
-}
-
-void Application::startUpdateCheck(bool forceWait) {
-	if (!Sandbox::started()) return;
-
-	_updateCheckTimer->stop();
-	if (_updateThread || _updateReply || !cAutoUpdate() || cExeName().isEmpty()) return;
-
-	int32 constDelay = cBetaVersion() ? 600 : UpdateDelayConstPart, randDelay = cBetaVersion() ? 300 : UpdateDelayRandPart;
-	int32 updateInSecs = cLastUpdateCheck() + constDelay + int32(rand() % randDelay) - unixtime();
-	bool sendRequest = (updateInSecs <= 0 || updateInSecs > (constDelay + randDelay));
-	if (!sendRequest && !forceWait) {
-		QDir updates(cWorkingDir() + "tupdates");
-		if (updates.exists()) {
-			QFileInfoList list = updates.entryInfoList(QDir::Files);
-			for (QFileInfoList::iterator i = list.begin(), e = list.end(); i != e; ++i) {
-				if (QRegularExpression("^(tupdate|tmacupd|tmac32upd|tlinuxupd|tlinux32upd)\\d+(_[a-z\\d]+)?$", QRegularExpression::CaseInsensitiveOption).match(i->fileName()).hasMatch()) {
-					sendRequest = true;
-				}
-			}
-		}
-	}
-	if (cManyInstance() && !cDebug()) return; // only main instance is updating
-
-	if (sendRequest) {
-		QUrl url(cUpdateURL());
-		if (cBetaVersion()) {
-			url.setQuery(qsl("version=%1&beta=%2").arg(AppVersion).arg(cBetaVersion()));
-		} else if (cAlphaVersion()) {
-			url.setQuery(qsl("version=%1&alpha=1").arg(AppVersion));
-		} else {
-			url.setQuery(qsl("version=%1").arg(AppVersion));
-		}
-		QString u = url.toString();
-		QNetworkRequest checkVersion(url);
-		if (_updateReply) _updateReply->deleteLater();
-
-		App::setProxySettings(_updateManager);
-		_updateReply = _updateManager.get(checkVersion);
-		connect(_updateReply, SIGNAL(finished()), this, SLOT(updateGotCurrent()));
-		connect(_updateReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(updateFailedCurrent(QNetworkReply::NetworkError)));
-		emit updateChecking();
-	} else {
-		_updateCheckTimer->start((updateInSecs + 5) * 1000);
-	}
-}
-
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 
 inline Application *application() {
 	return qobject_cast<Application*>(QApplication::instance());
@@ -548,73 +371,6 @@ void adjustSingleTimers() {
 	base::Timer::Adjust();
 }
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-
-void startUpdateCheck() {
-	if (auto a = application()) {
-		return a->startUpdateCheck(false);
-	}
-}
-
-void stopUpdate() {
-	if (auto a = application()) {
-		return a->stopUpdate();
-	}
-}
-
-Application::UpdatingState updatingState() {
-	if (auto a = application()) {
-		return a->updatingState();
-	}
-	return Application::UpdatingNone;
-}
-
-int32 updatingSize() {
-	if (auto a = application()) {
-		return a->updatingSize();
-	}
-	return 0;
-}
-
-int32 updatingReady() {
-	if (auto a = application()) {
-		return a->updatingReady();
-	}
-	return 0;
-}
-
-void updateChecking() {
-	if (auto a = application()) {
-		emit a->updateChecking();
-	}
-}
-
-void updateLatest() {
-	if (auto a = application()) {
-		emit a->updateLatest();
-	}
-}
-
-void updateProgress(qint64 ready, qint64 total) {
-	if (auto a = application()) {
-		emit a->updateProgress(ready, total);
-	}
-}
-
-void updateFailed() {
-	if (auto a = application()) {
-		emit a->updateFailed();
-	}
-}
-
-void updateReady() {
-	if (auto a = application()) {
-		emit a->updateReady();
-	}
-}
-
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
-
 void connect(const char *signal, QObject *object, const char *method) {
 	if (auto a = application()) {
 		a->connect(a, signal, object, method);
@@ -624,7 +380,7 @@ void connect(const char *signal, QObject *object, const char *method) {
 void launch() {
 	Assert(application() != 0);
 
-	float64 dpi = Application::primaryScreen()->logicalDotsPerInch();
+	double dpi = Application::primaryScreen()->logicalDotsPerInch();
 	if (dpi <= 108) { // 0-96-108
 		cSetScreenScale(dbisOne);
 	} else if (dpi <= 132) { // 108-120-132
@@ -646,7 +402,7 @@ void launch() {
 		}
 		cSetRetina(true);
 		cSetRetinaFactor(devicePixelRatio);
-		cSetIntRetinaFactor(int32(cRetinaFactor()));
+		cSetIntRetinaFactor(int32_t(cRetinaFactor()));
 		cSetConfigScale(dbisOne);
 		cSetRealScale(dbisOne);
 	}

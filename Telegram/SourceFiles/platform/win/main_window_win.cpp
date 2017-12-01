@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
 #include "platform/win/main_window_win.h"
 
 #include "styles/style_window.h"
@@ -33,17 +34,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/themes/window_theme.h"
 
 #include <qpa/qplatformnativeinterface.h>
-
-#include <Shobjidl.h>
-#include <shellapi.h>
-#include <WtsApi32.h>
-
-#include <roapi.h>
-#include <wrl\client.h>
-#include <wrl\implements.h>
-#include <windows.ui.notifications.h>
-
-#include <Windowsx.h>
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) < (b) ? (b) : (a))
@@ -106,7 +96,7 @@ enum {
 	_PsInitVer = 0x02,
 };
 
-int32 _psSize = 0;
+int32_t _psSize = 0;
 class _PsShadowWindows {
 public:
 
@@ -155,13 +145,13 @@ public:
 		_metaSize = _fullsize + 2 * _shift;
 		_alphas.reserve(_metaSize);
 		_colors.reserve(_metaSize * _metaSize);
-		for (int32 j = 0; j < _metaSize; ++j) {
-			for (int32 i = 0; i < _metaSize; ++i) {
+		for (int32_t j = 0; j < _metaSize; ++j) {
+			for (int32_t i = 0; i < _metaSize; ++i) {
 				_colors.push_back((i < 2 * _shift || j < 2 * _shift) ? 1 : qMax(BYTE(1), BYTE(cornersImage.pixel(QPoint(i - 2 * _shift, j - 2 * _shift)) >> 24)));
 			}
 		}
 		uchar prev = 0;
-		for (int32 i = 0; i < _metaSize; ++i) {
+		for (int32_t i = 0; i < _metaSize; ++i) {
 			uchar a = _colors[(_metaSize - 1) * _metaSize + i];
 			if (a < prev) break;
 
@@ -229,7 +219,7 @@ public:
 				destroy();
 				return false;
 			}
-			SetWindowLong(hwnds[i], GWL_HWNDPARENT, (LONG)hwnd);
+            SetWindowLong(hwnds[i], GWLP_HWNDPARENT, (LONG)hwnd);
 
 			dcs[i] = CreateCompatibleDC(screenDC);
 			if (!dcs[i]) {
@@ -549,7 +539,7 @@ LRESULT CALLBACK _PsShadowWindows::wndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	break;
 
 	case WM_NCHITTEST: {
-		int32 xPos = GET_X_LPARAM(lParam), yPos = GET_Y_LPARAM(lParam);
+		int32_t xPos = GET_X_LPARAM(lParam), yPos = GET_Y_LPARAM(lParam);
 		switch (i) {
 		case 0: return HTTOP;
 		case 1: return (yPos < _psShadowWindows._y + _psSize) ? HTTOPRIGHT : ((yPos >= _psShadowWindows._y + _psShadowWindows._h - _psSize) ? HTBOTTOMRIGHT : HTRIGHT);
@@ -646,7 +636,7 @@ void MainWindow::psShowTrayMenu() {
 	trayIconMenu->popup(QCursor::pos());
 }
 
-int32 MainWindow::screenNameChecksum(const QString &name) const {
+int32_t MainWindow::screenNameChecksum(const QString &name) const {
 	constexpr int DeviceNameSize = base::array_size(MONITORINFOEX().szDevice);
 	wchar_t buffer[DeviceNameSize] = { 0 };
 	if (name.size() < DeviceNameSize) {
@@ -705,18 +695,18 @@ void MainWindow::workmodeUpdated(DBIWorkMode mode) {
 	switch (mode) {
 	case dbiwmWindowAndTray: {
 		psSetupTrayIcon();
-		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWL_HWNDPARENT);
+        HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWLP_HWNDPARENT);
 		if (psOwner) {
-			SetWindowLong(ps_hWnd, GWL_HWNDPARENT, 0);
+            SetWindowLong(ps_hWnd, GWLP_HWNDPARENT, 0);
 			psRefreshTaskbarIcon();
 		}
 	} break;
 
 	case dbiwmTrayOnly: {
 		psSetupTrayIcon();
-		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWL_HWNDPARENT);
+        HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWLP_HWNDPARENT);
 		if (!psOwner) {
-			SetWindowLong(ps_hWnd, GWL_HWNDPARENT, (LONG)ps_tbHider_hWnd);
+            SetWindowLong(ps_hWnd, GWLP_HWNDPARENT, (LONG)ps_tbHider_hWnd);
 		}
 	} break;
 
@@ -727,9 +717,9 @@ void MainWindow::workmodeUpdated(DBIWorkMode mode) {
 		}
 		trayIcon = 0;
 
-		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWL_HWNDPARENT);
+        HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWLP_HWNDPARENT);
 		if (psOwner) {
-			SetWindowLong(ps_hWnd, GWL_HWNDPARENT, 0);
+            SetWindowLong(ps_hWnd, GWLP_HWNDPARENT, 0);
 			psRefreshTaskbarIcon();
 		}
 	} break;

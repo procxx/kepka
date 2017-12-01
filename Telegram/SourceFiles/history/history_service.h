@@ -98,7 +98,7 @@ public:
 	void applyEdition(const MTPDmessageService &message) override;
 	TimeMs getSelfDestructIn(TimeMs now) override;
 
-	int32 addToOverview(AddToOverviewMethod method) override;
+	int32_t addToOverview(AddToOverviewMethod method) override;
 	void eraseFromOverview() override;
 
 	bool needCheck() const override {

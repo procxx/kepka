@@ -129,10 +129,6 @@ public slots:
 private slots:
 	void onDraggingScrollTimer();
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	void onCheckUpdateStatus();
-#endif // TDESKTOP_DISABLE_AUTOUPDATE
-
 protected:
 	void dragEnterEvent(QDragEnterEvent *e) override;
 	void dragMoveEvent(QDragMoveEvent *e) override;
@@ -171,7 +167,7 @@ private:
 	QTimer _chooseByDragTimer;
 
 	bool _dialogsFull = false;
-	int32 _dialogsOffsetDate = 0;
+	int32_t _dialogsOffsetDate = 0;
 	MsgId _dialogsOffsetId = 0;
 	PeerData *_dialogsOffsetPeer = nullptr;
 	mtpRequestId _dialogsRequestId = 0;

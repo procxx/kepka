@@ -27,14 +27,14 @@ RadialAnimation::RadialAnimation(AnimationCallbacks &&callbacks)
 	, _animation(std::move(callbacks)) {
 }
 
-void RadialAnimation::start(float64 prg) {
+void RadialAnimation::start(double prg) {
 	_firstStart = _lastStart = _lastTime = getms();
-	int32 iprg = qRound(qMax(prg, 0.0001) * AlmostFullArcLength), iprgstrict = qRound(prg * AlmostFullArcLength);
+	int32_t iprg = qRound(qMax(prg, 0.0001) * AlmostFullArcLength), iprgstrict = qRound(prg * AlmostFullArcLength);
 	a_arcEnd = anim::value(iprgstrict, iprg);
 	_animation.start();
 }
 
-void RadialAnimation::update(float64 prg, bool finished, TimeMs ms) {
+void RadialAnimation::update(double prg, bool finished, TimeMs ms) {
 	auto iprg = qRound(qMax(prg, 0.0001) * AlmostFullArcLength);
 	if (iprg != qRound(a_arcEnd.to())) {
 		a_arcEnd.start(iprg);
@@ -42,8 +42,8 @@ void RadialAnimation::update(float64 prg, bool finished, TimeMs ms) {
 	}
 	_lastTime = ms;
 
-	auto dt = float64(ms - _lastStart);
-	auto fulldt = float64(ms - _firstStart);
+	auto dt = double(ms - _lastStart);
+	auto fulldt = double(ms - _firstStart);
 	_opacity = qMin(fulldt / st::radialDuration, 1.);
 	if (!finished) {
 		a_arcEnd.update(1. - (st::radialDuration / (st::radialDuration + dt)), anim::linear);
@@ -69,7 +69,7 @@ void RadialAnimation::step(TimeMs ms) {
 	_animation.step(ms);
 }
 
-void RadialAnimation::draw(Painter &p, const QRect &inner, int32 thickness, style::color color) {
+void RadialAnimation::draw(Painter &p, const QRect &inner, int32_t thickness, style::color color) {
 	auto o = p.opacity();
 	p.setOpacity(o * _opacity);
 

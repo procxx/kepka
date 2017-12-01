@@ -137,7 +137,7 @@ void ReplyKeyboard::resize(int width, int height) {
 	_width = width;
 
 	auto markup = _item->Get<HistoryMessageReplyMarkup>();
-	float64 y = 0, buttonHeight = _rows.isEmpty() ? _st->buttonHeight() : (float64(height + _st->buttonSkip()) / _rows.size());
+	double y = 0, buttonHeight = _rows.isEmpty() ? _st->buttonHeight() : (double(height + _st->buttonSkip()) / _rows.size());
 	for (auto &row : _rows) {
 		int s = row.size();
 
@@ -154,20 +154,20 @@ void ReplyKeyboard::resize(int width, int height) {
 		bool exact = (widthForText == widthOfText);
 		bool enough = (widthForButtons - s * maxMinButtonWidth) >= widthOfText;
 
-		float64 x = 0;
+		double x = 0;
 		for (Button &button : row) {
 			int buttonw = qMax(button.text.maxWidth(), 1);
-			float64 textw = buttonw, minw = _st->minButtonWidth(button.type);
-			float64 w = textw;
+			double textw = buttonw, minw = _st->minButtonWidth(button.type);
+			double w = textw;
 			if (exact) {
 				w += minw;
 			} else if (enough) {
-				w = (widthForButtons / float64(s));
+				w = (widthForButtons / double(s));
 				textw = w - minw;
 			} else {
-				textw = (widthForText / float64(s));
+				textw = (widthForText / double(s));
 				w = minw + textw;
-				accumulate_max(w, 2 * float64(_st->buttonPadding()));
+				accumulate_max(w, 2 * double(_st->buttonPadding()));
 			}
 
 			int rectx = static_cast<int>(std::floor(x));
@@ -328,7 +328,7 @@ void ReplyKeyboard::startAnimation(int i, int j, int direction) {
 void ReplyKeyboard::step_selected(TimeMs ms, bool timer) {
 	for (Animations::iterator i = _animations.begin(); i != _animations.end();) {
 		int index = qAbs(i.key()) - 1, row = (index / MatrixRowShift), col = index % MatrixRowShift;
-		float64 dt = float64(ms - i.value()) / st::botKbDuration;
+		double dt = double(ms - i.value()) / st::botKbDuration;
 		if (dt >= 1) {
 			_rows[row][col].howMuchOver = (i.key() > 0) ? 1 : 0;
 			i = _animations.erase(i);
@@ -525,7 +525,7 @@ void HistoryMessageUnreadBar::paint(Painter &p, int y, int w) const {
 	int left = st::msgServiceMargin.left();
 	int maxwidth = w;
 	if (Adaptive::ChatWide()) {
-		maxwidth = qMin(maxwidth, int32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+		maxwidth = qMin(maxwidth, int32_t(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 	}
 	w = maxwidth;
 
@@ -586,14 +586,14 @@ HistoryMediaPtr::~HistoryMediaPtr() {
 
 namespace internal {
 
-TextSelection unshiftSelection(TextSelection selection, uint16 byLength) {
+TextSelection unshiftSelection(TextSelection selection, uint16_t byLength) {
 	if (selection == FullSelection) {
 		return selection;
 	}
 	return ::unshiftSelection(selection, byLength);
 }
 
-TextSelection shiftSelection(TextSelection selection, uint16 byLength) {
+TextSelection shiftSelection(TextSelection selection, uint16_t byLength) {
 	if (selection == FullSelection) {
 		return selection;
 	}

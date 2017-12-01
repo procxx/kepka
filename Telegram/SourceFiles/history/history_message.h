@@ -53,9 +53,9 @@ public:
 	void initTime();
 	void initMedia(const MTPMessageMedia *media);
 	void initMediaFromDocument(DocumentData *doc, const QString &caption);
-	void fromNameUpdated(int32 width) const;
+	void fromNameUpdated(int32_t width) const;
 
-	int32 plainMaxWidth() const;
+	int32_t plainMaxWidth() const;
 	QRect countGeometry() const;
 
 	bool drawBubble() const;
@@ -71,9 +71,9 @@ public:
 	bool uploading() const;
 	bool displayFastShare() const override;
 
-	void drawInfo(Painter &p, int32 right, int32 bottom, int32 width, bool selected, InfoDisplayType type) const override;
+	void drawInfo(Painter &p, int32_t right, int32_t bottom, int32_t width, bool selected, InfoDisplayType type) const override;
 	void drawFastShare(Painter &p, int left, int top, int outerWidth) const override;
-	void setViewsCount(int32 count) override;
+	void setViewsCount(int32_t count) override;
 	void setId(MsgId newId) override;
 	void draw(Painter &p, QRect clip, TextSelection selection, TimeMs ms) const override;
 	ClickHandlerPtr fastShareLink() const override;
@@ -100,7 +100,7 @@ public:
 	void updateReplyMarkup(const MTPReplyMarkup *markup) override {
 		setReplyMarkup(markup);
 	}
-	int32 addToOverview(AddToOverviewMethod method) override;
+	int32_t addToOverview(AddToOverviewMethod method) override;
 	void eraseFromOverview() override;
 
 	TextWithEntities selectedText(TextSelection selection) const override;
@@ -219,7 +219,7 @@ private:
 		void repaint(not_null<const HistoryItem*> item) const override;
 
 	protected:
-		void paintButtonBg(Painter &p, const QRect &rect, float64 howMuchOver) const override;
+		void paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const override;
 		void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth, HistoryMessageReplyMarkup::Button::Type type) const override;
 		void paintButtonLoading(Painter &p, const QRect &rect) const override;
 		int minButtonWidth(HistoryMessageReplyMarkup::Button::Type type) const override;

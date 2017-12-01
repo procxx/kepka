@@ -22,11 +22,6 @@
     [ 'build_linux', {
       'variables': {
         'linux_common_flags': [
-          '-pipe',
-          '-g',
-          '-Wall',
-          '-Werror',
-          '-W',
           '-fPIC',
           '-Wno-unused-variable',
           '-Wno-unused-parameter',
@@ -61,7 +56,6 @@
       ],
       'defines': [
         '_REENTRANT',
-        'QT_STATICPLUGIN',
         'QT_PLUGIN',
       ],
       'cflags_c': [
@@ -71,6 +65,8 @@
       'cflags_cc': [
         '<@(linux_common_flags)',
         '-std=gnu++14',
+      ],
+      'ldflags': [
       ],
       'configurations': {
         'Debug': {

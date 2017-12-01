@@ -76,11 +76,11 @@ protected:
 	// 0x7FFFFFF0 will contain status for not yet downloaded file
 	// 0x7FFFFFF1 will contain status for already downloaded file
 	// 0x7FFFFFF2 will contain status for failed to download / upload file
-	mutable int32 _statusSize;
+	mutable int32_t _statusSize;
 	mutable QString _statusText;
 
 	// duration = -1 - no duration, duration = -2 - "GIF" duration
-	void setStatusSize(int32 newSize, int32 fullSize, int32 duration, qint64 realDuration) const;
+	void setStatusSize(int32_t newSize, int32_t fullSize, int32_t duration, int64_t realDuration) const;
 
 	void step_radial(TimeMs ms, bool timer);
 	void thumbAnimationCallback();
@@ -104,7 +104,7 @@ protected:
 		return false;
 	}
 
-	virtual float64 dataProgress() const = 0;
+	virtual double dataProgress() const = 0;
 	virtual bool dataFinished() const = 0;
 	virtual bool dataLoaded() const = 0;
 
@@ -143,7 +143,7 @@ public:
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT {
 		return _caption.adjustSelection(selection, type);
 	}
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _caption.length();
 	}
 	bool hasTextForCopy() const override {
@@ -154,7 +154,7 @@ public:
 	QString inDialogsText() const override;
 	TextWithEntities selectedText(TextSelection selection) const override;
 
-	int32 addToOverview(AddToOverviewMethod method) override;
+	int32_t addToOverview(AddToOverviewMethod method) override;
 	void eraseFromOverview() override;
 
 	PhotoData *photo() const {
@@ -190,7 +190,7 @@ public:
 	}
 
 protected:
-	float64 dataProgress() const override {
+	double dataProgress() const override {
 		return _data->progress();
 	}
 	bool dataFinished() const override {
@@ -202,8 +202,8 @@ protected:
 
 private:
 	not_null<PhotoData*> _data;
-	int16 _pixw = 1;
-	int16 _pixh = 1;
+	int16_t _pixw = 1;
+	int16_t _pixh = 1;
 	Text _caption;
 
 };
@@ -228,7 +228,7 @@ public:
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT {
 		return _caption.adjustSelection(selection, type);
 	}
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _caption.length();
 	}
 	bool hasTextForCopy() const override {
@@ -239,7 +239,7 @@ public:
 	QString inDialogsText() const override;
 	TextWithEntities selectedText(TextSelection selection) const override;
 
-	int32 addToOverview(AddToOverviewMethod method) override;
+	int32_t addToOverview(AddToOverviewMethod method) override;
 	void eraseFromOverview() override;
 
 	DocumentData *getDocument() override {
@@ -276,7 +276,7 @@ public:
 	}
 
 protected:
-	float64 dataProgress() const override {
+	double dataProgress() const override {
 		return _data->progress();
 	}
 	bool dataFinished() const override {
@@ -288,10 +288,10 @@ protected:
 
 private:
 	not_null<DocumentData*> _data;
-	int32 _thumbw;
+	int32_t _thumbw;
 	Text _caption;
 
-	void setStatusSize(int32 newSize) const;
+	void setStatusSize(int32_t newSize) const;
 	void updateStatusText() const;
 
 };
@@ -316,13 +316,13 @@ class HistoryDocument;
 struct HistoryDocumentVoicePlayback {
 	HistoryDocumentVoicePlayback(const HistoryDocument *that);
 
-	int32 _position = 0;
+	int32_t _position = 0;
 	anim::value a_progress;
 	BasicAnimation _a_progress;
 };
 class HistoryDocumentVoice : public RuntimeComponent<HistoryDocumentVoice> {
-	// We don't use float64 because components should align to pointer even on 32bit systems.
-	static constexpr float64 kFloatToIntMultiplier = 65536.;
+	// We don't use double because components should align to pointer even on 32bit systems.
+	static constexpr double kFloatToIntMultiplier = 65536.;
 
 public:
 	void ensurePlayback(const HistoryDocument *interfaces) const;
@@ -337,16 +337,16 @@ public:
 	}
 	void startSeeking();
 	void stopSeeking();
-	float64 seekingStart() const {
+	double seekingStart() const {
 		return _seekingStart / kFloatToIntMultiplier;
 	}
-	void setSeekingStart(float64 seekingStart) const {
+	void setSeekingStart(double seekingStart) const {
 		_seekingStart = qRound(seekingStart * kFloatToIntMultiplier);
 	}
-	float64 seekingCurrent() const {
+	double seekingCurrent() const {
 		return _seekingCurrent / kFloatToIntMultiplier;
 	}
-	void setSeekingCurrent(float64 seekingCurrent) {
+	void setSeekingCurrent(double seekingCurrent) {
 		_seekingCurrent = qRound(seekingCurrent * kFloatToIntMultiplier);
 	}
 
@@ -382,7 +382,7 @@ public:
 		}
 		return selection;
 	}
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		if (auto captioned = Get<HistoryDocumentCaptioned>()) {
 			return captioned->_caption.length();
 		}
@@ -396,7 +396,7 @@ public:
 	QString inDialogsText() const override;
 	TextWithEntities selectedText(TextSelection selection) const override;
 
-	int32 addToOverview(AddToOverviewMethod method) override;
+	int32_t addToOverview(AddToOverviewMethod method) override;
 	void eraseFromOverview() override;
 
 	bool uploading() const override {
@@ -440,12 +440,12 @@ public:
 		return true;
 	}
 
-	void step_voiceProgress(float64 ms, bool timer);
+	void step_voiceProgress(double ms, bool timer);
 
 	void clickHandlerPressedChanged(const ClickHandlerPtr &p, bool pressed) override;
 
 protected:
-	float64 dataProgress() const override {
+	double dataProgress() const override {
 		return _data->progress();
 	}
 	bool dataFinished() const override {
@@ -459,7 +459,7 @@ private:
 	void createComponents(bool caption);
 	void fillNamedFromData(HistoryDocumentNamed *named);
 
-	void setStatusSize(int32 newSize, qint64 realDuration = 0) const;
+	void setStatusSize(int32_t newSize, int64_t realDuration = 0) const;
 	bool updateStatusText() const; // returns showPause
 
 								   // Callback is a void(const QString &, const QString &, const Text &) functor.
@@ -491,7 +491,7 @@ public:
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT {
 		return _caption.adjustSelection(selection, type);
 	}
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _caption.length();
 	}
 	bool hasTextForCopy() const override {
@@ -502,7 +502,7 @@ public:
 	QString inDialogsText() const override;
 	TextWithEntities selectedText(TextSelection selection) const override;
 
-	int32 addToOverview(AddToOverviewMethod method) override;
+	int32_t addToOverview(AddToOverviewMethod method) override;
 	void eraseFromOverview() override;
 
 	bool uploading() const override {
@@ -553,7 +553,7 @@ public:
 	~HistoryGif();
 
 protected:
-	float64 dataProgress() const override;
+	double dataProgress() const override;
 	bool dataFinished() const override;
 	bool dataLoaded() const override;
 
@@ -572,14 +572,14 @@ private:
 
 	not_null<DocumentData*> _data;
 	ClickHandlerPtr _openInMediaviewLink;
-	int32 _thumbw = 1;
-	int32 _thumbh = 1;
+	int32_t _thumbw = 1;
+	int32_t _thumbh = 1;
 	Text _caption;
 
 	mutable std::unique_ptr<Media::Clip::Playback> _roundPlayback;
 	Media::Clip::ReaderPointer _gif;
 
-	void setStatusSize(int32 newSize) const;
+	void setStatusSize(int32_t newSize) const;
 	void updateStatusText() const;
 
 };
@@ -645,8 +645,8 @@ private:
 	}
 	QString toString() const;
 
-	int16 _pixw = 1;
-	int16 _pixh = 1;
+	int16_t _pixw = 1;
+	int16_t _pixh = 1;
 	ClickHandlerPtr _packLink;
 	not_null<DocumentData*> _data;
 	QString _emoji;
@@ -655,7 +655,7 @@ private:
 
 class HistoryContact : public HistoryMedia {
 public:
-	HistoryContact(not_null<HistoryItem*> parent, int32 userId, const QString &first, const QString &last, const QString &phone);
+	HistoryContact(not_null<HistoryItem*> parent, int32_t userId, const QString &first, const QString &last, const QString &phone);
 	HistoryMediaType type() const override {
 		return MediaTypeContact;
 	}
@@ -701,7 +701,7 @@ public:
 	}
 
 private:
-	int32 _userId = 0;
+	int32_t _userId = 0;
 	UserData *_contact = nullptr;
 
 	int _phonew = 0;
@@ -788,7 +788,7 @@ public:
 	HistoryTextState getState(QPoint point, HistoryStateRequest request) const override;
 
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT;
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _title.length() + _description.length();
 	}
 	bool hasTextForCopy() const override {
@@ -863,16 +863,16 @@ private:
 	std::unique_ptr<HistoryMedia> _attach;
 
 	bool _asArticle = false;
-	int32 _titleLines, _descriptionLines;
+	int32_t _titleLines, _descriptionLines;
 
 	Text _title, _description;
-	int32 _siteNameWidth = 0;
+	int32_t _siteNameWidth = 0;
 
 	QString _duration;
-	int32 _durationWidth = 0;
+	int32_t _durationWidth = 0;
 
-	int16 _pixw = 0;
-	int16 _pixh = 0;
+	int16_t _pixw = 0;
+	int16_t _pixh = 0;
 
 };
 
@@ -895,7 +895,7 @@ public:
 	HistoryTextState getState(QPoint point, HistoryStateRequest request) const override;
 
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT;
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _title.length() + _description.length();
 	}
 	bool isAboveMessage() const override {
@@ -975,7 +975,7 @@ private:
 	ClickHandlerPtr _openl;
 	std::unique_ptr<HistoryMedia> _attach;
 
-	int32 _titleLines, _descriptionLines;
+	int32_t _titleLines, _descriptionLines;
 
 	Text _title, _description;
 
@@ -1009,7 +1009,7 @@ public:
 	HistoryTextState getState(QPoint point, HistoryStateRequest request) const override;
 
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT;
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _title.length() + _description.length();
 	}
 	bool hasTextForCopy() const override {
@@ -1089,13 +1089,13 @@ public:
 	}
 
 	void initDimensions() override;
-	int resizeGetHeight(int32 width) override;
+	int resizeGetHeight(int32_t width) override;
 
 	void draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const override;
 	HistoryTextState getState(QPoint point, HistoryStateRequest request) const override;
 
 	TextSelection adjustSelection(TextSelection selection, TextSelectType type) const override WARN_UNUSED_RESULT;
-	uint16 fullSelectionLength() const override {
+	uint16_t fullSelectionLength() const override {
 		return _title.length() + _description.length();
 	}
 	bool hasTextForCopy() const override {
@@ -1134,7 +1134,7 @@ private:
 	Text _title, _description;
 	ClickHandlerPtr _link;
 
-	int32 fullWidth() const;
-	int32 fullHeight() const;
+	int32_t fullWidth() const;
+	int32_t fullHeight() const;
 
 };

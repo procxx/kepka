@@ -36,7 +36,7 @@ public:
 	bool checked() const {
 		return _checked;
 	}
-	float64 currentAnimationValue(TimeMs ms);
+	double currentAnimationValue(TimeMs ms);
 
 	virtual QSize getSize() const = 0;
 
@@ -109,7 +109,7 @@ public:
 	bool checkRippleStartPosition(QPoint position) const override;
 
 private:
-	void paintXV(Painter &p, int left, int top, int outerWidth, float64 toggled, const QBrush &brush);
+	void paintXV(Painter &p, int left, int top, int outerWidth, double toggled, const QBrush &brush);
 	QSize rippleSize() const;
 
 	not_null<const style::Toggle*> _st;

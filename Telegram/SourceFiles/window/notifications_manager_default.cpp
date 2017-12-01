@@ -132,7 +132,7 @@ void Manager::demoMasterOpacityCallback() {
 	}
 }
 
-float64 Manager::demoMasterOpacity() const {
+double Manager::demoMasterOpacity() const {
 	return _demoMasterOpacity.current(Global::NotificationsDemoIsShown() ? 0. : 1.);
 }
 
@@ -389,8 +389,8 @@ void Widget::opacityAnimationCallback() {
 	}
 }
 
-void Widget::step_shift(float64 ms, bool timer) {
-	float64 dt = ms / float64(st::notifyFastAnim);
+void Widget::step_shift(double ms, bool timer) {
+	double dt = ms / double(st::notifyFastAnim);
 	if (dt >= 1) {
 		a_shift.finish();
 	} else {
@@ -414,7 +414,7 @@ void Widget::hideStop() {
 	}
 }
 
-void Widget::hideAnimated(float64 duration, const anim::transition &func) {
+void Widget::hideAnimated(double duration, const anim::transition &func) {
 	_hiding = true;
 	_a_opacity.start([this] { opacityAnimationCallback(); }, 1., 0., duration, func);
 }
@@ -629,7 +629,7 @@ void Notification::updateNotifyDisplay() {
 	auto options = Manager::getNotificationOptions(_item);
 	_hideReplyButton = options.hideReplyButton;
 
-	int32 w = width(), h = height();
+	int32_t w = width(), h = height();
 	QImage img(w * cIntRetinaFactor(), h * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	if (cRetina()) img.setDevicePixelRatio(cRetinaFactor());
 	img.fill(st::notificationBg->c);
@@ -648,7 +648,7 @@ void Notification::updateNotifyDisplay() {
 			p.drawPixmap(st::notifyPhotoPos.x(), st::notifyPhotoPos.y(), manager()->hiddenUserpicPlaceholder());
 		}
 
-		int32 itemWidth = w - st::notifyPhotoPos.x() - st::notifyPhotoSize - st::notifyTextLeft - st::notifyClosePos.x() - st::notifyClose.width;
+		int32_t itemWidth = w - st::notifyPhotoPos.x() - st::notifyPhotoSize - st::notifyTextLeft - st::notifyClosePos.x() - st::notifyClose.width;
 
 		QRect rectForName(st::notifyPhotoPos.x() + st::notifyPhotoSize + st::notifyTextLeft, st::notifyTextTop, itemWidth, st::msgNameFont->height);
 		if (!options.hideNameAndPhoto) {

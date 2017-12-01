@@ -130,11 +130,11 @@
             ],
           }, {
             'include_dirs': [
-              '/usr/local/include',
-              '<(libs_loc)/openssl-xcode/include'
+              '/usr/include',
             ],
             'library_dirs': [
-              '/usr/local/lib',
+              '/usr/lib64',
+              '/usr/lib',
             ],
           }]
         ],
@@ -152,11 +152,11 @@
             ],
           }, {
             'include_dirs': [
-              '/usr/local/include',
-              '<(libs_loc)/openssl-xcode/include'
+              '/usr/include',
             ],
             'library_dirs': [
-              '/usr/local/lib',
+              '/usr/lib64',
+              '/usr/lib',
             ],
           }]
         ],

@@ -38,8 +38,8 @@ class VoIPController;
 namespace Calls {
 
 struct DhConfig {
-	int32 version = 0;
-	int32 g = 0;
+	int32_t version = 0;
+	int32_t g = 0;
 	std::vector<gsl::byte> p;
 };
 
@@ -115,7 +115,7 @@ public:
 	}
 
 	TimeMs getDurationMs() const;
-	float64 getWaitingSoundPeakValue() const;
+	double getWaitingSoundPeakValue() const;
 
 	void answer();
 	void hangup();
@@ -179,9 +179,9 @@ private:
 	MTP::AuthKey::Data _authKey;
 	MTPPhoneCallProtocol _protocol;
 
-	uint64 _id = 0;
-	uint64 _accessHash = 0;
-	uint64 _keyFingerprint = 0;
+	uint64_t _id = 0;
+	uint64_t _accessHash = 0;
+	uint64_t _keyFingerprint = 0;
 
 	std::unique_ptr<tgvoip::VoIPController> _controller;
 

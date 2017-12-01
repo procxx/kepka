@@ -56,7 +56,7 @@ constexpr auto kNewBlockEachMessage = 50;
 
 auto GlobalPinnedIndex = 0;
 
-HistoryItem *createUnsupportedMessage(History *history, MsgId msgId, MTPDmessage::Flags flags, MsgId replyTo, int32 viaBotId, QDateTime date, int32 from) {
+HistoryItem *createUnsupportedMessage(History *history, MsgId msgId, MTPDmessage::Flags flags, MsgId replyTo, int32_t viaBotId, QDateTime date, int32_t from) {
 	auto text = TextWithEntities { lng_message_unsupported(lt_link, qsl("https://desktop.telegram.org")) };
 	TextUtilities::ParseEntities(text, _historyTextNoMonoOptions.flags);
 	text.entities.push_front(EntityInText(EntityInTextItalic, 0, text.text.size()));
@@ -421,7 +421,7 @@ void ChannelHistory::getRangeDifference() {
 	}
 }
 
-void ChannelHistory::getRangeDifferenceNext(int32 pts) {
+void ChannelHistory::getRangeDifferenceNext(int32_t pts) {
 	if (!App::main() || _rangeDifferenceToId < _rangeDifferenceFromId) return;
 
 	int limit = _rangeDifferenceToId + 1 - _rangeDifferenceFromId;
@@ -598,7 +598,7 @@ not_null<History*> Histories::findOrInsert(const PeerId &peerId) {
 	return i.value();
 }
 
-not_null<History*> Histories::findOrInsert(const PeerId &peerId, int32 unreadCount, int32 maxInboxRead, int32 maxOutboxRead) {
+not_null<History*> Histories::findOrInsert(const PeerId &peerId, int32_t unreadCount, int32_t maxInboxRead, int32_t maxOutboxRead) {
 	auto i = map.constFind(peerId);
 	if (i == map.cend()) {
 		auto history = peerIsChannel(peerId) ? static_cast<History*>(new ChannelHistory(peerId)) : (new History(peerId));
@@ -1443,7 +1443,7 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 		oldLoaded = true;
 	} else if (loadedAtBottom()) { // add photos to overview and authors to lastAuthors
 		bool channel = isChannel();
-		int32 mask = 0;
+		int32_t mask = 0;
 		QList<not_null<UserData*>> *lastAuthors = nullptr;
 		OrderedSet<not_null<PeerData*>> *markupSenders = nullptr;
 		if (peer->isChat()) {
@@ -1585,7 +1585,7 @@ void History::checkAddAllToOverview() {
 		return;
 	}
 
-	int32 mask = 0;
+	int32_t mask = 0;
 	for_const (auto block, blocks) {
 		for_const (auto item, block->items) {
 			mask |= item->addToOverview(AddToOverviewBack);
@@ -1660,7 +1660,7 @@ MsgId History::inboxRead(HistoryItem *wasRead) {
 	return inboxRead(wasRead ? wasRead->id : 0);
 }
 
-MsgId History::outboxRead(int32 upTo) {
+MsgId History::outboxRead(int32_t upTo) {
 	if (upTo < 0) return upTo;
 	if (!upTo) upTo = msgIdForRead();
 	accumulate_max(outboxReadBefore, upTo + 1);
@@ -1698,7 +1698,7 @@ void History::setUnreadCount(int newUnreadCount) {
 			main->unreadCountChanged(this);
 		}
 		if (unreadBar) {
-			int32 count = _unreadCount;
+			int32_t count = _unreadCount;
 			if (peer->migrateTo()) {
 				if (History *h = App::historyLoaded(peer->migrateTo()->id)) {
 					count += h->unreadCount();
@@ -1812,7 +1812,7 @@ void History::countScrollTopItem(int top) {
 	}
 }
 
-void History::getNextScrollTopItem(HistoryBlock *block, int32 i) {
+void History::getNextScrollTopItem(HistoryBlock *block, int32_t i) {
 	++i;
 	if (i > 0 && i < block->items.size()) {
 		scrollTopItem = block->items[i];
@@ -1829,7 +1829,7 @@ void History::getNextScrollTopItem(HistoryBlock *block, int32 i) {
 void History::addUnreadBar() {
 	if (unreadBar || !showFrom || showFrom->detached() || !unreadCount()) return;
 
-	int32 count = unreadCount();
+	int32_t count = unreadCount();
 	if (peer->migrateTo()) {
 		if (History *h = App::historyLoaded(peer->migrateTo()->id)) {
 			count += h->unreadCount();
@@ -1845,7 +1845,7 @@ void History::destroyUnreadBar() {
 	}
 }
 
-HistoryItem *History::addNewInTheMiddle(HistoryItem *newItem, int32 blockIndex, int32 itemIndex) {
+HistoryItem *History::addNewInTheMiddle(HistoryItem *newItem, int32_t blockIndex, int32_t itemIndex) {
 	Expects(blockIndex >= 0);
 	Expects(blockIndex < blocks.size());
 	Expects(itemIndex >= 0);
@@ -1972,15 +1972,15 @@ void History::setNotLoadedAtBottom() {
 }
 
 namespace {
-	uint32 _dialogsPosToTopShift = 0x80000000UL;
+	uint32_t _dialogsPosToTopShift = 0x80000000UL;
 }
 
-inline uint64 dialogPosFromDate(const QDateTime &date) {
+inline uint64_t dialogPosFromDate(const QDateTime &date) {
 	if (date.isNull()) return 0;
-	return (uint64(date.toTime_t()) << 32) | (++_dialogsPosToTopShift);
+	return (uint64_t(date.toTime_t()) << 32) | (++_dialogsPosToTopShift);
 }
 
-inline uint64 pinnedDialogPos(int pinnedIndex) {
+inline uint64_t pinnedDialogPos(int pinnedIndex) {
 	return 0xFFFFFFFF00000000ULL + pinnedIndex;
 }
 
@@ -2201,9 +2201,9 @@ void History::clearOnDestroy() {
 History::PositionInChatListChange History::adjustByPosInChatList(Dialogs::Mode list, Dialogs::IndexedList *indexed) {
 	Assert(indexed != nullptr);
 	Dialogs::Row *lnk = mainChatListLink(list);
-	int32 movedFrom = lnk->pos();
+	int32_t movedFrom = lnk->pos();
 	indexed->adjustByPos(chatListLinks(list));
-	int32 movedTo = lnk->pos();
+	int32_t movedTo = lnk->pos();
 	return { movedFrom, movedTo };
 }
 
@@ -2277,7 +2277,7 @@ void History::setPinnedIndex(int pinnedIndex) {
 	}
 }
 
-void History::overviewSliceDone(int32 overviewIndex, const MTPmessages_Messages &result, bool onlyCounts) {
+void History::overviewSliceDone(int32_t overviewIndex, const MTPmessages_Messages &result, bool onlyCounts) {
 	const QVector<MTPMessage> *v = 0;
 	switch (result.type()) {
 	case mtpc_messages_messages: {

@@ -52,7 +52,7 @@ public:
 	void setFinalImages(Direction direction, QImage &&left, QImage &&right, QRect inner, bool wasSectionIcons);
 
 	void start();
-	void paintFrame(QPainter &p, float64 dt, float64 opacity);
+	void paintFrame(QPainter &p, double dt, double opacity);
 
 private:
 	Direction _direction = Direction::LeftToRight;
@@ -133,7 +133,7 @@ void TabbedSelector::SlideAnimation::start() {
 	_frameIntsPerLineAdd = (_width - _innerWidth) + _frameIntsPerLineAdded;
 }
 
-void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, float64 dt, float64 opacity) {
+void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, double dt, double opacity) {
 	Expects(started());
 	Expects(dt >= 0.);
 
@@ -219,15 +219,15 @@ void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, float64 dt, float64
 	if (opacity == 1.) {
 		// Fill above the frame top with transparent.
 		auto fillTopInts = (_frameInts + outerTop * _frameIntsPerLine + outerLeft);
-		auto fillWidth = (outerRight - outerLeft) * sizeof(uint32);
+		auto fillWidth = (outerRight - outerLeft) * sizeof(uint32_t);
 		for (auto fillTop = _innerTop - outerTop; fillTop != 0; --fillTop) {
 			memset(fillTopInts, 0, fillWidth);
 			fillTopInts += _frameIntsPerLine;
 		}
 
 		// Fill to the left and to the right of the frame with transparent.
-		auto fillLeft = (_innerLeft - outerLeft) * sizeof(uint32);
-		auto fillRight = (outerRight - _innerRight) * sizeof(uint32);
+		auto fillLeft = (_innerLeft - outerLeft) * sizeof(uint32_t);
+		auto fillRight = (outerRight - _innerRight) * sizeof(uint32_t);
 		if (fillLeft || fillRight) {
 			auto fillInts = _frameInts + _innerTop * _frameIntsPerLine;
 			for (auto y = _innerTop; y != _innerBottom; ++y) {
@@ -250,7 +250,7 @@ void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, float64 dt, float64
 
 	// Debug
 	//frameInts = _frameInts;
-	//auto pattern = anim::shifted((static_cast<uint32>(0xFF) << 24) | (static_cast<uint32>(0xFF) << 16) | (static_cast<uint32>(0xFF) << 8) | static_cast<uint32>(0xFF));
+	//auto pattern = anim::shifted((static_cast<uint32_t>(0xFF) << 24) | (static_cast<uint32_t>(0xFF) << 16) | (static_cast<uint32_t>(0xFF) << 8) | static_cast<uint32_t>(0xFF));
 	//for (auto y = 0; y != _finalHeight; ++y) {
 	//	for (auto x = 0; x != _finalWidth; ++x) {
 	//		auto source = *frameInts;
@@ -514,7 +514,7 @@ void TabbedSelector::afterShown() {
 	}
 }
 
-void TabbedSelector::stickersInstalled(uint64 setId) {
+void TabbedSelector::stickersInstalled(uint64_t setId) {
 	_tabsSlider->setActiveSection(static_cast<int>(SelectorTab::Stickers));
 	stickers()->showStickerSet(setId);
 }

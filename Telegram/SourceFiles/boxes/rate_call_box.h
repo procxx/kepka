@@ -33,7 +33,7 @@ class RateCallBox : public BoxContent, private MTP::Sender {
 	Q_OBJECT
 
 public:
-	RateCallBox(QWidget*, uint64 callId, uint64 callAccessHash);
+	RateCallBox(QWidget*, uint64_t callId, uint64_t callAccessHash);
 
 private slots:
 	void onSend();
@@ -52,8 +52,8 @@ private:
 	void updateMaxHeight();
 	void ratingChanged(int value);
 
-	uint64 _callId = 0;
-	uint64 _callAccessHash = 0;
+	uint64_t _callId = 0;
+	uint64_t _callAccessHash = 0;
 	int _rating = 0;
 
 	std::vector<object_ptr<Ui::IconButton>> _stars;

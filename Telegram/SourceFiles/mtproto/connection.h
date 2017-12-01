@@ -79,7 +79,7 @@ public:
 
 	static const int UpdateAlways = 666;
 
-	int32 state() const;
+	int32_t state() const;
 	QString transport() const;
 
 private:
@@ -98,24 +98,24 @@ public:
 
 	void stop();
 
-	int32 getShiftedDcId() const;
+	int32_t getShiftedDcId() const;
 
-	int32 getState() const;
+	int32_t getState() const;
 	QString transport() const;
 
 signals:
 	void needToReceive();
 	void needToRestart();
-	void stateChanged(qint32 newState);
+	void stateChanged(int32_t newState);
 	void sessionResetDone();
 
 	void needToSendAsync();
-	void sendAnythingAsync(qint64 msWait);
+	void sendAnythingAsync(int64_t msWait);
 	void sendHttpWaitAsync();
-	void sendPongAsync(quint64 msgId, quint64 pingId);
-	void sendMsgsStateInfoAsync(quint64 msgId, QByteArray data);
-	void resendAsync(quint64 msgId, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo);
-	void resendManyAsync(QVector<quint64> msgIds, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo);
+	void sendPongAsync(uint64_t msgId, uint64_t pingId);
+	void sendMsgsStateInfoAsync(uint64_t msgId, QByteArray data);
+	void resendAsync(uint64_t msgId, int64_t msCanWait, bool forceContainer, bool sendMsgStateInfo);
+	void resendManyAsync(QVector<uint64_t> msgIds, int64_t msCanWait, bool forceContainer, bool sendMsgStateInfo);
 	void resendAllAsync();
 
 	void finished(internal::Connection *connection);
@@ -132,7 +132,7 @@ public slots:
 	void onWaitIPv4Failed();
 
 	void onOldConnection();
-	void onSentSome(uint64 size);
+	void onSentSome(uint64_t size);
 	void onReceivedSome();
 
 	void onReadyData();
@@ -141,8 +141,8 @@ public slots:
 	void onConnected6();
 	void onDisconnected4();
 	void onDisconnected6();
-	void onError4(qint32 errorCode);
-	void onError6(qint32 errorCode);
+	void onError4(int32_t errorCode);
+	void onError6(int32_t errorCode);
 
 	// Auth key creation packet receive slots
 	void pqAnswered();
@@ -184,13 +184,13 @@ private:
 		RestartConnection,
 		ResetSession,
 	};
-	HandleResult handleOneReceived(const mtpPrime *from, const mtpPrime *end, uint64 msgId, int32 serverTime, uint64 serverSalt, bool badTime);
+	HandleResult handleOneReceived(const mtpPrime *from, const mtpPrime *end, uint64_t msgId, int32_t serverTime, uint64_t serverSalt, bool badTime);
 	mtpBuffer ungzip(const mtpPrime *from, const mtpPrime *end) const;
 	void handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states, QVector<MTPlong> &acked);
 
 	void clearMessages();
 
-	bool setState(int32 state, int32 ifState = Connection::UpdateAlways);
+	bool setState(int32_t state, int32_t ifState = Connection::UpdateAlways);
 
 	base::byte_vector encryptPQInnerRSA(const MTPP_Q_inner_data &data, const MTP::internal::RSAPublicKey &key);
 	std::string encryptClientDHInner(const MTPClient_DH_Inner_Data &data);
@@ -199,7 +199,7 @@ private:
 	DcType _dcType = DcType::Regular;
 
 	mutable QReadWriteLock stateConnMutex;
-	int32 _state = DisconnectedState;
+	int32_t _state = DisconnectedState;
 
 	bool _needSessionReset = false;
 	void resetSession();
@@ -212,19 +212,19 @@ private:
 
 	SingleTimer retryTimer; // exp retry timer
 	int retryTimeout = 1;
-	qint64 retryWillFinish;
+	int64_t retryWillFinish;
 
 	SingleTimer oldConnectionTimer;
 	bool oldConnection = true;
 
 	SingleTimer _waitForConnectedTimer, _waitForReceivedTimer, _waitForIPv4Timer;
-	uint32 _waitForReceived, _waitForConnected;
+	uint32_t _waitForReceived, _waitForConnected;
 	TimeMs firstSentAt = -1;
 
 	QVector<MTPlong> ackRequestData, resendRequestData;
 
 	// if badTime received - search for ids in sessionData->haveSent and sessionData->wereAcked and sync time/salt, return true if found
-	bool requestsFixTimeSalt(const QVector<MTPlong> &ids, int32 serverTime, uint64 serverSalt);
+	bool requestsFixTimeSalt(const QVector<MTPlong> &ids, int32_t serverTime, uint64_t serverSalt);
 
 	// remove msgs with such ids from sessionData->haveSent, add to sessionData->wereAcked
 	void requestsAcked(const QVector<MTPlong> &ids, bool byResponse = false);
@@ -235,8 +235,8 @@ private:
 	mtpMsgId _pingMsgId = 0;
 	SingleTimer _pingSender;
 
-	void resend(quint64 msgId, qint64 msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
-	void resendMany(QVector<quint64> msgIds, qint64 msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
+	void resend(uint64_t msgId, int64_t msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
+	void resendMany(QVector<uint64_t> msgIds, int64_t msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
 
 	template <typename TRequest>
 	void sendRequestNotSecure(const TRequest &request);
@@ -247,7 +247,7 @@ private:
 	bool restarted = false;
 	bool _finished = false;
 
-	uint64 keyId = 0;
+	uint64_t keyId = 0;
 	QReadWriteLock sessionDataMutex;
 	SessionData *sessionData = nullptr;
 
@@ -266,17 +266,17 @@ private:
 		MTPint256 &new_nonce;
 		MTPlong &auth_key_aux_hash;
 
-		uint32 retries = 0;
+		uint32_t retries = 0;
 		MTPlong retry_id;
 
-		int32 g = 0;
+		int32_t g = 0;
 
 		uchar aesKey[32] = { 0 };
 		uchar aesIV[32] = { 0 };
 		MTPlong auth_key_hash;
 
-		uint32 req_num = 0; // sent not encrypted request number
-		uint32 msgs_sent = 0;
+		uint32_t req_num = 0; // sent not encrypted request number
+		uint32_t msgs_sent = 0;
 	};
 	struct AuthKeyCreateStrings {
 		std::vector<gsl::byte> dh_prime;

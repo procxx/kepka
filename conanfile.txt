@@ -1,0 +1,8 @@
+[requires]
+#openal-soft/1.18.2@procxx/stable
+OpenSSL/1.0.2m@conan/stable
+Catch/2.0.1@bincrafters/stable
+gsl_microsoft/20171020@bincrafters/stable
+
+[generators]
+cmake

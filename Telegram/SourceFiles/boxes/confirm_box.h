@@ -115,7 +115,7 @@ private:
 	not_null<ChannelData*> _channel;
 
 	Text _text;
-	int32 _textWidth, _textHeight;
+	int32_t _textWidth, _textHeight;
 
 	QRect _invitationLink;
 	bool _linkOver = false;
@@ -141,7 +141,7 @@ private:
 
 	ChatData *_chat;
 	Text _text, _note;
-	int32 _textWidth, _textHeight;
+	int32_t _textWidth, _textHeight;
 
 };
 

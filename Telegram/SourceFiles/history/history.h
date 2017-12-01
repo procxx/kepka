@@ -55,7 +55,7 @@ public:
 
 	History *find(const PeerId &peerId);
 	not_null<History*> findOrInsert(const PeerId &peerId);
-	not_null<History*> findOrInsert(const PeerId &peerId, int32 unreadCount, int32 maxInboxRead, int32 maxOutboxRead);
+	not_null<History*> findOrInsert(const PeerId &peerId, int32_t unreadCount, int32_t maxInboxRead, int32_t maxOutboxRead);
 
 	void clear();
 	void remove(const PeerId &peer);
@@ -71,13 +71,13 @@ public:
 		return _unreadMuted;
 	}
 	bool unreadOnlyMuted() const;
-	void unreadIncrement(int32 count, bool muted) {
+	void unreadIncrement(int32_t count, bool muted) {
 		_unreadFull += count;
 		if (muted) {
 			_unreadMuted += count;
 		}
 	}
-	void unreadMuteChanged(int32 count, bool muted) {
+	void unreadMuteChanged(int32_t count, bool muted) {
 		if (muted) {
 			_unreadMuted += count;
 		} else {
@@ -275,7 +275,7 @@ public:
 	bool needUpdateInChatList() const;
 	void updateChatListSortPosition();
 	void setChatsListDate(const QDateTime &date);
-	uint64 sortKeyInChatList() const {
+	uint64_t sortKeyInChatList() const {
 		return _sortKeyInChatList;
 	}
 	struct PositionInChatListChange {
@@ -342,7 +342,7 @@ public:
 		setHasPendingResizedItems();
 	}
 
-	void paintDialog(Painter &p, int32 w, bool sel) const;
+	void paintDialog(Painter &p, int32_t w, bool sel) const;
 	bool updateSendActionNeedsAnimating(TimeMs ms, bool force = false);
 	void unregSendAction(UserData *from);
 	bool updateSendActionNeedsAnimating(UserData *user, const MTPSendMessageAction &action);
@@ -380,7 +380,7 @@ public:
 
 	int width = 0;
 	int height = 0;
-	int32 msgCount = 0;
+	int32_t msgCount = 0;
 	MsgId inboxReadBefore = 1;
 	MsgId outboxReadBefore = 1;
 	HistoryItem *showFrom = nullptr;
@@ -450,7 +450,7 @@ protected:
 	// and scrollTopOffset remains the same
 	// if we are at the bottom of the window scrollTopItem == nullptr and
 	// scrollTopOffset is undefined
-	void getNextScrollTopItem(HistoryBlock *block, int32 i);
+	void getNextScrollTopItem(HistoryBlock *block, int32_t i);
 
 	// helper method for countScrollState(int top)
 	void countScrollTopItem(int top);
@@ -467,13 +467,13 @@ public:
 	mutable const HistoryItem *textCachedFor = nullptr; // cache
 	mutable Text lastItemTextCache;
 
-	bool overviewCountLoaded(int32 overviewIndex) const {
+	bool overviewCountLoaded(int32_t overviewIndex) const {
 		return _overviewCountData[overviewIndex] >= 0;
 	}
-	bool overviewLoaded(int32 overviewIndex) const {
+	bool overviewLoaded(int32_t overviewIndex) const {
 		return overviewCount(overviewIndex) == _overview[overviewIndex].size();
 	}
-	int overviewCount(int32 overviewIndex, int32 defaultValue = -1) const {
+	int overviewCount(int32_t overviewIndex, int32_t defaultValue = -1) const {
 		auto result = _overviewCountData[overviewIndex];
 		auto loaded = _overview[overviewIndex].size();
 		if (result < 0) return defaultValue;
@@ -485,14 +485,14 @@ public:
 		}
 		return result;
 	}
-	const OrderedSet<MsgId> &overview(int32 overviewIndex) const {
+	const OrderedSet<MsgId> &overview(int32_t overviewIndex) const {
 		return _overview[overviewIndex];
 	}
-	MsgId overviewMinId(int32 overviewIndex) const {
+	MsgId overviewMinId(int32_t overviewIndex) const {
 		return _overview[overviewIndex].empty() ? 0 : *_overview[overviewIndex].begin();
 	}
-	void overviewSliceDone(int32 overviewIndex, const MTPmessages_Messages &result, bool onlyCounts = false);
-	bool overviewHasMsgId(int32 overviewIndex, MsgId msgId) const {
+	void overviewSliceDone(int32_t overviewIndex, const MTPmessages_Messages &result, bool onlyCounts = false);
+	bool overviewHasMsgId(int32_t overviewIndex, MsgId msgId) const {
 		return _overview[overviewIndex].contains(msgId);
 	}
 
@@ -519,7 +519,7 @@ protected:
 	HistoryItem *createItemGame(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, GameData *game, const MTPReplyMarkup &markup);
 
 	HistoryItem *addNewItem(HistoryItem *adding, bool newMsg);
-	HistoryItem *addNewInTheMiddle(HistoryItem *newItem, int32 blockIndex, int32 itemIndex);
+	HistoryItem *addNewInTheMiddle(HistoryItem *newItem, int32_t blockIndex, int32_t itemIndex);
 
 	// All this methods add a new item to the first or last block
 	// depending on if we are in isBuildingFronBlock() state.
@@ -571,10 +571,10 @@ private:
 		Assert(it != chatListLinks(list).cend());
 		return it.value();
 	}
-	uint64 _sortKeyInChatList = 0; // like ((unixtime) << 32) | (incremented counter)
+	uint64_t _sortKeyInChatList = 0; // like ((unixtime) << 32) | (incremented counter)
 
 	OrderedSet<MsgId> _overview[OverviewCount];
-	int32 _overviewCountData[OverviewCount]; // -1 - not loaded, 0 - all loaded, > 0 - count, but not all loaded
+	int32_t _overviewCountData[OverviewCount]; // -1 - not loaded, 0 - all loaded, > 0 - count, but not all loaded
 
 	// A pointer to the block that is currently being built.
 	// We hold this pointer so we can destroy it while building
@@ -614,7 +614,7 @@ public:
 	void messageDetached(HistoryItem *msg);
 
 	void getRangeDifference();
-	void getRangeDifferenceNext(int32 pts);
+	void getRangeDifferenceNext(int32_t pts);
 
 	HistoryJoined *insertJoinedMessage(bool unread);
 	void checkJoinedMessage(bool createUnread = false);
@@ -636,7 +636,7 @@ private:
 	HistoryJoined *_joinedMessage = nullptr;
 
 	MsgId _rangeDifferenceFromId, _rangeDifferenceToId;
-	int32 _rangeDifferencePts;
+	int32_t _rangeDifferencePts;
 	mtpRequestId _rangeDifferenceRequestId;
 
 };

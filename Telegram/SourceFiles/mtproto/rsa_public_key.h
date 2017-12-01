@@ -36,7 +36,7 @@ public:
 	RSAPublicKey &operator=(const RSAPublicKey &other) = default;
 
 	bool isValid() const;
-	uint64 getFingerPrint() const;
+	uint64_t getFingerPrint() const;
 	base::byte_vector getN() const;
 	base::byte_vector getE() const;
 

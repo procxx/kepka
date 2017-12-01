@@ -34,7 +34,7 @@ struct PeerUpdate {
 	}
 	PeerData *peer;
 
-	enum class Flag : uint32 {
+	enum class Flag : uint32_t {
 		None                      = 0,
 
 		// Common flags
@@ -85,7 +85,7 @@ struct PeerUpdate {
 	PeerData::NameFirstChars oldNameFirstChars;
 
 	// SharedMediaChanged data
-	int32 mediaTypesMask = 0;
+	int32_t mediaTypesMask = 0;
 
 };
 

@@ -71,7 +71,7 @@ QString filedialogDefaultName(const QString &prefix, const QString &extension, c
 
 QString filedialogNextFilename(const QString &name, const QString &cur, const QString &path) {
 	QDir dir(path.isEmpty() ? cDialogLastPath() : path);
-	int32 extIndex = name.lastIndexOf('.');
+	int32_t extIndex = name.lastIndexOf('.');
 	QString prefix = name, extension;
 	if (extIndex >= 0) {
 		extension = name.mid(extIndex);

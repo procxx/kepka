@@ -56,7 +56,7 @@ void PhotoCropBox::prepare() {
 		connect(this, SIGNAL(ready(const QImage&)), this, SLOT(onReady(const QImage&)));
 	}
 
-	int32 s = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
+	int32_t s = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
 	_thumb = App::pixmapFromImageInPlace(_img.scaled(s * cIntRetinaFactor(), s * cIntRetinaFactor(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 	_thumb.setDevicePixelRatio(cRetinaFactor());
 	_mask = QImage(_thumb.size(), QImage::Format_ARGB32_Premultiplied);
@@ -94,7 +94,7 @@ void PhotoCropBox::mousePressEvent(QMouseEvent *e) {
 
 int PhotoCropBox::mouseState(QPoint p) {
 	p -= QPoint(_thumbx, _thumby);
-	int32 delta = st::cropPointSize, mdelta(-delta / 2);
+	int32_t delta = st::cropPointSize, mdelta(-delta / 2);
 	if (QRect(_cropx + mdelta, _cropy + mdelta, delta, delta).contains(p)) {
 		return 1;
 	} else if (QRect(_cropx + _cropw + mdelta, _cropy + mdelta, delta, delta).contains(p)) {
@@ -122,7 +122,7 @@ void PhotoCropBox::mouseMoveEvent(QMouseEvent *e) {
 	}
 	if (_downState) {
 		if (_downState == 1) {
-			int32 dx = e->pos().x() - _fromposx, dy = e->pos().y() - _fromposy, d = (dx < dy) ? dx : dy;
+			int32_t dx = e->pos().x() - _fromposx, dy = e->pos().y() - _fromposy, d = (dx < dy) ? dx : dy;
 			if (_fromcropx + d < 0) {
 				d = -_fromcropx;
 			}
@@ -139,7 +139,7 @@ void PhotoCropBox::mouseMoveEvent(QMouseEvent *e) {
 				update();
 			}
 		} else if (_downState == 2) {
-			int32 dx = _fromposx - e->pos().x(), dy = e->pos().y() - _fromposy, d = (dx < dy) ? dx : dy;
+			int32_t dx = _fromposx - e->pos().x(), dy = e->pos().y() - _fromposy, d = (dx < dy) ? dx : dy;
 			if (_fromcropx + _fromcropw - d > _thumbw) {
 				d = _fromcropx + _fromcropw - _thumbw;
 			}
@@ -155,7 +155,7 @@ void PhotoCropBox::mouseMoveEvent(QMouseEvent *e) {
 				update();
 			}
 		} else if (_downState == 3) {
-			int32 dx = _fromposx - e->pos().x(), dy = _fromposy - e->pos().y(), d = (dx < dy) ? dx : dy;
+			int32_t dx = _fromposx - e->pos().x(), dy = _fromposy - e->pos().y(), d = (dx < dy) ? dx : dy;
 			if (_fromcropx + _fromcropw - d > _thumbw) {
 				d = _fromcropx + _fromcropw - _thumbw;
 			}
@@ -170,7 +170,7 @@ void PhotoCropBox::mouseMoveEvent(QMouseEvent *e) {
 				update();
 			}
 		} else if (_downState == 4) {
-			int32 dx = e->pos().x() - _fromposx, dy = _fromposy - e->pos().y(), d = (dx < dy) ? dx : dy;
+			int32_t dx = e->pos().x() - _fromposx, dy = _fromposy - e->pos().y(), d = (dx < dy) ? dx : dy;
 			if (_fromcropx + d < 0) {
 				d = -_fromcropx;
 			}
@@ -186,7 +186,7 @@ void PhotoCropBox::mouseMoveEvent(QMouseEvent *e) {
 				update();
 			}
 		} else if (_downState == 5) {
-			int32 dx = e->pos().x() - _fromposx, dy = e->pos().y() - _fromposy;
+			int32_t dx = e->pos().x() - _fromposx, dy = e->pos().y() - _fromposy;
 			if (_fromcropx + dx < 0) {
 				dx = -_fromcropx;
 			} else if (_fromcropx + _fromcropw + dx > _thumbw) {
@@ -204,7 +204,7 @@ void PhotoCropBox::mouseMoveEvent(QMouseEvent *e) {
 			}
 		}
 	}
-	int32 cursorState = _downState ? _downState : mouseState(e->pos());
+	int32_t cursorState = _downState ? _downState : mouseState(e->pos());
 	QCursor cur(style::cur_default);
 	if (cursorState == 1 || cursorState == 3) {
 		cur = style::cur_sizefdiag;
@@ -260,8 +260,8 @@ void PhotoCropBox::sendPhoto() {
 	if (_img.width() < _thumb.width()) {
 		from = _thumb.toImage();
 	}
-	float64 x = float64(_cropx) / _thumbw, y = float64(_cropy) / _thumbh, w = float64(_cropw) / _thumbw;
-	int32 ix = int32(x * from.width()), iy = int32(y * from.height()), iw = int32(w * from.width());
+	double x = double(_cropx) / _thumbw, y = double(_cropy) / _thumbh, w = double(_cropw) / _thumbw;
+	int32_t ix = int32_t(x * from.width()), iy = int32_t(y * from.height()), iw = int32_t(w * from.width());
 	if (ix < 0) {
 		ix = 0;
 	}
@@ -274,7 +274,7 @@ void PhotoCropBox::sendPhoto() {
 	if (iy + iw > from.height()) {
 		iw = from.height() - iy;
 	}
-	int32 offset = ix * from.depth() / 8 + iy * from.bytesPerLine();
+	int32_t offset = ix * from.depth() / 8 + iy * from.bytesPerLine();
 	QImage cropped(from.constBits() + offset, iw, iw, from.bytesPerLine(), from.format()), tosend;
 	if (from.format() == QImage::Format_Indexed8) {
 		cropped.setColorCount(from.colorCount());

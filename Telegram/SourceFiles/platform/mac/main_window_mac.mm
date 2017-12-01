@@ -15,6 +15,7 @@ GNU General Public License for more details.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
 #include "platform/mac/main_window_mac.h"
 
 #include "styles/style_window.h"
@@ -161,7 +162,7 @@ void MainWindow::Private::setWindowBadge(const QString &str) {
 }
 
 void MainWindow::Private::initCustomTitle(NSWindow *window, NSView *view) {
-	[window setStyleMask:[window styleMask] | NSFullSizeContentViewWindowMask];
+	[window setStyleMask:[window styleMask] | NSWindowStyleMaskFullSizeContentView];
 	[window setTitlebarAppearsTransparent:YES];
 	auto inner = [window contentLayoutRect];
 	auto full = [view frame];
@@ -197,7 +198,7 @@ void MainWindow::Private::enableShadow(WId winId) {
 
 bool MainWindow::Private::filterNativeEvent(void *event) {
 	NSEvent *e = static_cast<NSEvent*>(event);
-	if (e && [e type] == NSSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
+	if (e && [e type] == NSEventTypeSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
 #ifndef OS_MAC_STORE
 		// If event tap is not installed, handle events that reach the app instead
 		if (![SPMediaKeyTap usesGlobalMediaKeyTap]) {
@@ -225,7 +226,7 @@ MainWindow::MainWindow()
 void MainWindow::closeWithoutDestroy() {
 	NSWindow *nsWindow = [reinterpret_cast<NSView*>(winId()) window];
 
-	auto isFullScreen = (([nsWindow styleMask] & NSFullScreenWindowMask) == NSFullScreenWindowMask);
+	auto isFullScreen = (([nsWindow styleMask] & NSWindowStyleMaskFullScreen) == NSWindowStyleMaskFullScreen);
 	if (isFullScreen) {
 		_hideAfterFullScreenTimer.callOnce(kHideAfterFullscreenTimeoutMs);
 		[nsWindow toggleFullScreen:nsWindow];
@@ -315,7 +316,7 @@ void _placeCounter(QImage &img, int size, int count, style::color bg, style::col
 
 		p.setBrush(bg);
 		p.setPen(Qt::NoPen);
-		int32 fontSize, skip;
+		int32_t fontSize, skip;
 		if (size == 22) {
 			skip = 1;
 			fontSize = 8;
@@ -324,7 +325,7 @@ void _placeCounter(QImage &img, int size, int count, style::color bg, style::col
 			fontSize = 16;
 		}
 		style::font f(fontSize, 0, 0);
-		int32 w = f->width(cnt), d, r;
+		int32_t w = f->width(cnt), d, r;
 		if (size == 22) {
 			d = (cntSize < 2) ? 3 : 2;
 			r = (cntSize < 2) ? 6 : 5;
@@ -366,7 +367,7 @@ void MainWindow::updateIconCounters() {
 		QImage img(psTrayIcon(dm)), imgsel(psTrayIcon(true));
 		img.detach();
 		imgsel.detach();
-		int32 size = cRetina() ? 44 : 22;
+		int32_t size = cRetina() ? 44 : 22;
 		_placeCounter(img, size, counter, bg, (dm && muted) ? st::trayCounterFgMacInvert : st::trayCounterFg);
 		_placeCounter(imgsel, size, counter, st::trayCounterBgMacInvert, st::trayCounterFgMacInvert);
 		icon.addPixmap(App::pixmapFromImageInPlace(std::move(img)));

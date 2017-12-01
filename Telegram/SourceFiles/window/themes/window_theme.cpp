@@ -338,7 +338,7 @@ QImage prepareBackgroundImage(QImage &&image) {
 	return std::move(image);
 }
 
-void adjustColor(style::color color, float64 hue, float64 saturation) {
+void adjustColor(style::color color, double hue, double saturation) {
 	auto original = color->c;
 	original.setHslF(hue, saturation, original.lightnessF(), original.alphaF());
 	color.set(original.red(), original.green(), original.blue(), original.alpha());
@@ -347,8 +347,8 @@ void adjustColor(style::color color, float64 hue, float64 saturation) {
 void adjustColorsUsingBackground(const QImage &img) {
 	Assert(img.format() == QImage::Format_ARGB32_Premultiplied);
 
-	uint64 components[3] = { 0 };
-	uint64 componentsScroll[3] = { 0 };
+	uint64_t components[3] = { 0 };
+	uint64_t componentsScroll[3] = { 0 };
 	auto w = img.width();
 	auto h = img.height();
 	auto size = w * h;
@@ -392,7 +392,7 @@ void ChatBackground::start() {
 	}
 }
 
-void ChatBackground::setImage(int32 id, QImage &&image) {
+void ChatBackground::setImage(int32_t id, QImage &&image) {
 	auto resetPalette = (id == kDefaultBackground && _id != kDefaultBackground && !Local::hasTheme());
 	if (id == kThemeBackground && _themeImage.isNull()) {
 		id = kDefaultBackground;
@@ -477,12 +477,12 @@ void ChatBackground::setPreparedImage(QImage &&image) {
 	Assert(width > 0 && height > 0);
 	auto isSmallForTiled = (width < kMinimumTiledSize || height < kMinimumTiledSize);
 	if (isSmallForTiled) {
-		auto repeatTimesX = qCeil(kMinimumTiledSize / float64(width));
-		auto repeatTimesY = qCeil(kMinimumTiledSize / float64(height));
+		auto repeatTimesX = qCeil(kMinimumTiledSize / double(width));
+		auto repeatTimesY = qCeil(kMinimumTiledSize / double(height));
 		auto imageForTiled = QImage(width * repeatTimesX, height * repeatTimesY, QImage::Format_ARGB32_Premultiplied);
 		imageForTiled.setDevicePixelRatio(image.devicePixelRatio());
 		auto imageForTiledBytes = imageForTiled.bits();
-		auto bytesInLine = width * sizeof(uint32);
+		auto bytesInLine = width * sizeof(uint32_t);
 		for (auto timesY = 0; timesY != repeatTimesY; ++timesY) {
 			auto imageBytes = image.constBits();
 			for (auto y = 0; y != height; ++y) {
@@ -502,7 +502,7 @@ void ChatBackground::setPreparedImage(QImage &&image) {
 	}
 }
 
-int32 ChatBackground::id() const {
+int32_t ChatBackground::id() const {
 	return _id;
 }
 
@@ -785,8 +785,8 @@ bool IsPaletteTestingPath(const QString &path) {
 }
 
 void ComputeBackgroundRects(QRect wholeFill, QSize imageSize, QRect &to, QRect &from) {
-	if (uint64(imageSize.width()) * wholeFill.height() > uint64(imageSize.height()) * wholeFill.width()) {
-		float64 pxsize = wholeFill.height() / float64(imageSize.height());
+	if (uint64_t(imageSize.width()) * wholeFill.height() > uint64_t(imageSize.height()) * wholeFill.width()) {
+		double pxsize = wholeFill.height() / double(imageSize.height());
 		int takewidth = qCeil(wholeFill.width() / pxsize);
 		if (takewidth > imageSize.width()) {
 			takewidth = imageSize.width();
@@ -796,7 +796,7 @@ void ComputeBackgroundRects(QRect wholeFill, QSize imageSize, QRect &to, QRect &
 		to = QRect(int((wholeFill.width() - takewidth * pxsize) / 2.), 0, qCeil(takewidth * pxsize), wholeFill.height());
 		from = QRect((imageSize.width() - takewidth) / 2, 0, takewidth, imageSize.height());
 	} else {
-		float64 pxsize = wholeFill.width() / float64(imageSize.width());
+		double pxsize = wholeFill.width() / double(imageSize.width());
 		int takeheight = qCeil(wholeFill.height() / pxsize);
 		if (takeheight > imageSize.height()) {
 			takeheight = imageSize.height();

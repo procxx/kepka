@@ -29,7 +29,7 @@ public:
 	void setCornerMasks(const QImage &topLeft, const QImage &topRight, const QImage &bottomLeft, const QImage &bottomRight);
 
 protected:
-	void start(int frameWidth, int frameHeight, float64 devicePixelRatio);
+	void start(int frameWidth, int frameHeight, double devicePixelRatio);
 	void setShadow(const style::Shadow &st);
 
 	bool started() const {
@@ -73,7 +73,7 @@ protected:
 	Corner _bottomRight;
 
 	QImage _frame;
-	uint32 *_frameInts = nullptr;
+	uint32_t *_frameInts = nullptr;
 	int _frameWidth = 0;
 	int _frameHeight = 0;
 	int _frameAlpha = 0; // recounted each getFrame()
@@ -97,7 +97,7 @@ public:
 	void setSkipShadow(bool skipShadow);
 
 	void start();
-	void paintFrame(QPainter &p, int x, int y, int outerWidth, float64 dt, float64 opacity);
+	void paintFrame(QPainter &p, int x, int y, int outerWidth, double dt, double opacity);
 
 private:
 	void setStartWidth();
@@ -132,9 +132,9 @@ private:
 	int _fadeHeight = 0;
 	QBrush _fadeFirst, _fadeLast;
 
-	float64 _widthDuration = 1.;
-	float64 _heightDuration = 1.;
-	float64 _alphaDuration = 1.;
+	double _widthDuration = 1.;
+	double _heightDuration = 1.;
+	double _alphaDuration = 1.;
 
 };
 

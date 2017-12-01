@@ -35,7 +35,7 @@ Playback::Playback() : _a_value(animation(this, &Playback::step_value)) {
 }
 
 void Playback::updateState(const Player::TrackState &state) {
-	qint64 position = 0, length = state.length;
+	int64_t position = 0, length = state.length;
 
 	auto wasInLoadingState = _inLoadingState;
 	if (wasInLoadingState) {
@@ -58,10 +58,10 @@ void Playback::updateState(const Player::TrackState &state) {
 	if (position > length) {
 		progress = 1.;
 	} else if (length) {
-		progress = snap(float64(position) / length, 0., 1.);
+		progress = snap(double(position) / length, 0., 1.);
 	}
 	auto animatedPosition = position + (state.frequency * kPlaybackAnimationDurationMs / 1000);
-	auto animatedProgress = length ? qMax(float64(animatedPosition) / length, 0.) : 0.;
+	auto animatedProgress = length ? qMax(double(animatedPosition) / length, 0.) : 0.;
 	if (length != _length || position != _position || wasInLoadingState) {
 		if (auto animated = (length && _length && animatedProgress > value())) {
 			setValue(animatedProgress, animated);
@@ -73,7 +73,7 @@ void Playback::updateState(const Player::TrackState &state) {
 	}
 }
 
-void Playback::updateLoadingState(float64 progress) {
+void Playback::updateLoadingState(double progress) {
 	if (!_inLoadingState) {
 		_inLoadingState = true;
 		if (_inLoadingStateChanged) {
@@ -84,16 +84,16 @@ void Playback::updateLoadingState(float64 progress) {
 	setValue(progress, animated);
 }
 
-float64 Playback::value() const {
+double Playback::value() const {
 	return qMin(a_value.current(), 1.);
 }
 
-float64 Playback::value(TimeMs ms) {
+double Playback::value(TimeMs ms) {
 	_a_value.step(ms);
 	return value();
 }
 
-void Playback::setValue(float64 value, bool animated) {
+void Playback::setValue(double value, bool animated) {
 	if (animated) {
 		a_value.start(value);
 		_a_value.start();
@@ -106,7 +106,7 @@ void Playback::setValue(float64 value, bool animated) {
 	}
 }
 
-void Playback::step_value(float64 ms, bool timer) {
+void Playback::step_value(double ms, bool timer) {
 	auto dt = ms / kPlaybackAnimationDurationMs;
 	if (dt >= 1.) {
 		_a_value.stop();

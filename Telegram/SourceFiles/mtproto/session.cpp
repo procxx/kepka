@@ -29,7 +29,7 @@ namespace internal {
 
 void SessionData::setKey(const AuthKeyPtr &key) {
 	if (_authKey != key) {
-		uint64 session = rand_value<uint64>();
+		uint64_t session = rand_value<uint64_t>();
 		_authKey = key;
 
 		DEBUG_LOG(("MTP Info: new auth key set in SessionData, id %1, setting random server_session %2").arg(key ? key->keyId() : 0).arg(session));
@@ -175,7 +175,7 @@ void Session::unpaused() {
 	}
 }
 
-void Session::sendAnything(qint64 msCanWait) {
+void Session::sendAnything(int64_t msCanWait) {
 	if (_killed) {
 		DEBUG_LOG(("Session Error: can't send anything in a killed session"));
 		return;
@@ -224,11 +224,11 @@ void Session::needToResumeAndSend() {
 	}
 }
 
-void Session::sendPong(quint64 msgId, quint64 pingId) {
+void Session::sendPong(uint64_t msgId, uint64_t pingId) {
 	send(MTP_pong(MTP_long(msgId), MTP_long(pingId)));
 }
 
-void Session::sendMsgsStateInfo(quint64 msgId, QByteArray data) {
+void Session::sendMsgsStateInfo(uint64_t msgId, QByteArray data) {
 	auto info = std::string();
 	if (!data.isEmpty()) {
 		info.resize(data.size());
@@ -248,7 +248,7 @@ void Session::checkRequestsByTimer() {
 	{
 		QReadLocker locker(data.haveSentMutex());
 		mtpRequestMap &haveSent(data.haveSentMap());
-		uint32 haveSentCount(haveSent.size());
+		uint32_t haveSentCount(haveSent.size());
 		auto ms = getms(true);
 		for (mtpRequestMap::iterator i = haveSent.begin(), e = haveSent.end(); i != e; ++i) {
 			mtpRequest &req(i.value());
@@ -263,7 +263,7 @@ void Session::checkRequestsByTimer() {
 						stateRequestIds.push_back(i.key());
 					}
 				}
-			} else if (unixtime() > (int32)(i.key() >> 32) + MTPContainerLives) {
+			} else if (unixtime() > (int32_t)(i.key() >> 32) + MTPContainerLives) {
 				removingIds.reserve(haveSentCount);
 				removingIds.push_back(i.key());
 			}
@@ -274,14 +274,14 @@ void Session::checkRequestsByTimer() {
 		DEBUG_LOG(("MTP Info: requesting state of msgs: %1").arg(Logs::vector(stateRequestIds)));
 		{
 			QWriteLocker locker(data.stateRequestMutex());
-			for (uint32 i = 0, l = stateRequestIds.size(); i < l; ++i) {
+			for (uint32_t i = 0, l = stateRequestIds.size(); i < l; ++i) {
 				data.stateRequestMap().insert(stateRequestIds[i], true);
 			}
 		}
 		sendAnything(MTPCheckResendWaiting);
 	}
 	if (!resendingIds.isEmpty()) {
-		for (uint32 i = 0, l = resendingIds.size(); i < l; ++i) {
+		for (uint32_t i = 0, l = resendingIds.size(); i < l; ++i) {
 			DEBUG_LOG(("MTP Info: resending request %1").arg(resendingIds[i]));
 			resend(resendingIds[i], MTPCheckResendWaiting);
 		}
@@ -291,7 +291,7 @@ void Session::checkRequestsByTimer() {
 		{
 			QWriteLocker locker(data.haveSentMutex());
 			mtpRequestMap &haveSent(data.haveSentMap());
-			for (uint32 i = 0, l = removingIds.size(); i < l; ++i) {
+			for (uint32_t i = 0, l = removingIds.size(); i < l; ++i) {
 				mtpRequestMap::iterator j = haveSent.find(removingIds[i]);
 				if (j != haveSent.cend()) {
 					if (j.value()->requestId) {
@@ -305,7 +305,7 @@ void Session::checkRequestsByTimer() {
 	}
 }
 
-void Session::onConnectionStateChange(qint32 newState) {
+void Session::onConnectionStateChange(int32_t newState) {
 	_instance->onStateChange(dcWithShift, newState);
 }
 
@@ -329,12 +329,12 @@ void Session::ping() {
 	sendAnything(0);
 }
 
-int32 Session::requestState(mtpRequestId requestId) const {
-	int32 result = MTP::RequestSent;
+int32_t Session::requestState(mtpRequestId requestId) const {
+	int32_t result = MTP::RequestSent;
 
 	bool connected = false;
 	if (_connection) {
-		int32 s = _connection->state();
+		int32_t s = _connection->state();
 		if (s == ConnectedState) {
 			connected = true;
 		} else if (s == ConnectingState || s == DisconnectedState) {
@@ -362,11 +362,11 @@ int32 Session::requestState(mtpRequestId requestId) const {
 	}
 }
 
-int32 Session::getState() const {
-	int32 result = -86400000;
+int32_t Session::getState() const {
+	int32_t result = -86400000;
 
 	if (_connection) {
-		int32 s = _connection->state();
+		int32_t s = _connection->state();
 		if (s == ConnectedState) {
 			return s;
 		} else if (s == ConnectingState || s == DisconnectedState) {
@@ -389,7 +389,7 @@ QString Session::transport() const {
 	return _connection ? _connection->transport() : QString();
 }
 
-mtpRequestId Session::resend(quint64 msgId, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo) {
+mtpRequestId Session::resend(uint64_t msgId, int64_t msCanWait, bool forceContainer, bool sendMsgStateInfo) {
 	mtpRequest request;
 	{
 		QWriteLocker locker(data.haveSentMutex());
@@ -412,7 +412,7 @@ mtpRequestId Session::resend(quint64 msgId, qint64 msCanWait, bool forceContaine
 	if (mtpRequestData::isSentContainer(request)) { // for container just resend all messages we can
 		DEBUG_LOG(("Message Info: resending container from haveSent, msgId %1").arg(msgId));
 		const mtpMsgId *ids = (const mtpMsgId *)(request->constData() + 8);
-		for (uint32 i = 0, l = (request->size() - 8) >> 1; i < l; ++i) {
+		for (uint32_t i = 0, l = (request->size() - 8) >> 1; i < l; ++i) {
 			resend(ids[i], 10, true);
 		}
 		return 0xFFFFFFFF;
@@ -429,8 +429,8 @@ mtpRequestId Session::resend(quint64 msgId, qint64 msCanWait, bool forceContaine
 	}
 }
 
-void Session::resendMany(QVector<quint64> msgIds, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo) {
-	for (int32 i = 0, l = msgIds.size(); i < l; ++i) {
+void Session::resendMany(QVector<uint64_t> msgIds, int64_t msCanWait, bool forceContainer, bool sendMsgStateInfo) {
+	for (int32_t i = 0, l = msgIds.size(); i < l; ++i) {
 		resend(msgIds.at(i), msCanWait, forceContainer, sendMsgStateInfo);
 	}
 }
@@ -445,7 +445,7 @@ void Session::resendAll() {
 			if (i.value()->requestId) toResend.push_back(i.key());
 		}
 	}
-	for (uint32 i = 0, l = toResend.size(); i < l; ++i) {
+	for (uint32_t i = 0, l = toResend.size(); i < l; ++i) {
 		resend(toResend[i], 10, true);
 	}
 }
@@ -504,7 +504,7 @@ void Session::destroyKey() {
 	}
 }
 
-int32 Session::getDcWithShift() const {
+int32_t Session::getDcWithShift() const {
 	return dcWithShift;
 }
 

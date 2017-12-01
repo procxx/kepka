@@ -93,17 +93,17 @@ QPixmap PrepareFrame(const FrameRequest &request, const QImage &original, bool h
 
 } // namespace
 
-Reader::Reader(const QString &filepath, Callback &&callback, Mode mode, int64 seekMs)
+Reader::Reader(const QString &filepath, Callback &&callback, Mode mode, int64_t seekMs)
 : _callback(std::move(callback))
 , _mode(mode)
 , _seekPositionMs(seekMs) {
 	init(FileLocation(filepath), QByteArray());
 }
 
-Reader::Reader(not_null<DocumentData*> document, FullMsgId msgId, Callback &&callback, Mode mode, int64 seekMs)
+Reader::Reader(not_null<DocumentData*> document, FullMsgId msgId, Callback &&callback, Mode mode, int64_t seekMs)
 : _callback(std::move(callback))
 , _mode(mode)
-, _audioMsgId(document, msgId, (mode == Mode::Video) ? rand_value<uint32>() : 0)
+, _audioMsgId(document, msgId, (mode == Mode::Video) ? rand_value<uint32_t>() : 0)
 , _seekPositionMs(seekMs) {
 	init(document->location(), document->data());
 }
@@ -115,10 +115,10 @@ void Reader::init(const FileLocation &location, const QByteArray &data) {
 		managers.push_back(new Manager(threads.back()));
 		threads.back()->start();
 	} else {
-		_threadIndex = int32(rand_value<uint32>() % threads.size());
-		int32 loadLevel = 0x7FFFFFFF;
-		for (int32 i = 0, l = threads.size(); i < l; ++i) {
-			int32 level = managers.at(i)->loadLevel();
+		_threadIndex = int32_t(rand_value<uint32_t>() % threads.size());
+		int32_t loadLevel = 0x7FFFFFFF;
+		for (int32_t i = 0, l = threads.size(); i < l; ++i) {
+			int32_t level = managers.at(i)->loadLevel();
 			if (level < loadLevel) {
 				_threadIndex = i;
 				loadLevel = level;
@@ -128,7 +128,7 @@ void Reader::init(const FileLocation &location, const QByteArray &data) {
 	managers.at(_threadIndex)->append(this, location, data);
 }
 
-Reader::Frame *Reader::frameToShow(int32 *index) const { // 0 means not ready
+Reader::Frame *Reader::frameToShow(int32_t *index) const { // 0 means not ready
 	int step = _step.loadAcquire(), i;
 	if (step == WaitingForDimensionsStep) {
 		if (index) *index = 0;
@@ -144,8 +144,8 @@ Reader::Frame *Reader::frameToShow(int32 *index) const { // 0 means not ready
 	return _frames + i;
 }
 
-Reader::Frame *Reader::frameToWrite(int32 *index) const { // 0 means not ready
-	int32 step = _step.loadAcquire(), i;
+Reader::Frame *Reader::frameToWrite(int32_t *index) const { // 0 means not ready
+	int32_t step = _step.loadAcquire(), i;
 	if (step == WaitingForDimensionsStep) {
 		i = 0;
 	} else if (step == WaitingForRequestStep) {
@@ -160,8 +160,8 @@ Reader::Frame *Reader::frameToWrite(int32 *index) const { // 0 means not ready
 	return _frames + i;
 }
 
-Reader::Frame *Reader::frameToWriteNext(bool checkNotWriting, int32 *index) const {
-	int32 step = _step.loadAcquire(), i;
+Reader::Frame *Reader::frameToWriteNext(bool checkNotWriting, int32_t *index) const {
+	int32_t step = _step.loadAcquire(), i;
 	if (step == WaitingForDimensionsStep || step == WaitingForRequestStep || (checkNotWriting && (step % 2))) {
 		if (index) *index = 0;
 		return nullptr;
@@ -172,7 +172,7 @@ Reader::Frame *Reader::frameToWriteNext(bool checkNotWriting, int32 *index) cons
 }
 
 void Reader::moveToNextShow() const {
-	int32 step = _step.loadAcquire();
+	int32_t step = _step.loadAcquire();
 	if (step == WaitingForDimensionsStep) {
 	} else if (step == WaitingForRequestStep) {
 		_step.storeRelease(WaitingForFirstFrameStep);
@@ -183,7 +183,7 @@ void Reader::moveToNextShow() const {
 }
 
 void Reader::moveToNextWrite() const {
-	int32 step = _step.loadAcquire();
+	int32_t step = _step.loadAcquire();
 	if (step == WaitingForDimensionsStep) {
 		_step.storeRelease(WaitingForRequestStep);
 	} else if (step == WaitingForRequestStep) {
@@ -197,14 +197,14 @@ void Reader::moveToNextWrite() const {
 	}
 }
 
-void Reader::callback(Reader *reader, int32 threadIndex, Notification notification) {
+void Reader::callback(Reader *reader, int32_t threadIndex, Notification notification) {
 	// check if reader is not deleted already
 	if (managers.size() > threadIndex && managers.at(threadIndex)->carries(reader) && reader->_callback) {
 		reader->_callback(notification);
 	}
 }
 
-void Reader::start(int32 framew, int32 frameh, int32 outerw, int32 outerh, ImageRoundRadius radius, ImageRoundCorners corners) {
+void Reader::start(int32_t framew, int32_t frameh, int32_t outerw, int32_t outerh, ImageRoundRadius radius, ImageRoundCorners corners) {
 	if (managers.size() <= _threadIndex) error();
 	if (_state == State::Error) return;
 
@@ -224,7 +224,7 @@ void Reader::start(int32 framew, int32 frameh, int32 outerw, int32 outerh, Image
 	}
 }
 
-QPixmap Reader::current(int32 framew, int32 frameh, int32 outerw, int32 outerh, ImageRoundRadius radius, ImageRoundCorners corners, TimeMs ms) {
+QPixmap Reader::current(int32_t framew, int32_t frameh, int32_t outerw, int32_t outerh, ImageRoundRadius radius, ImageRoundCorners corners, TimeMs ms) {
 	Expects(outerw > 0);
 	Expects(outerh > 0);
 
@@ -327,11 +327,11 @@ bool Reader::videoPaused() const {
 	return _videoPauseRequest.loadAcquire() != 0;
 }
 
-int32 Reader::width() const {
+int32_t Reader::width() const {
 	return _width;
 }
 
-int32 Reader::height() const {
+int32_t Reader::height() const {
 	return _height;
 }
 
@@ -697,7 +697,7 @@ bool Manager::handleProcessResult(ReaderPrivate *reader, ProcessResult result, T
 	}
 	// See if we need to pause GIF because it is not displayed right now.
 	if (!reader->_autoPausedGif && reader->_mode == Reader::Mode::Gif && result == ProcessResult::Repaint) {
-		int32 ishowing, iprevious;
+		int32_t ishowing, iprevious;
 		auto showing = it.key()->frameToShow(&ishowing), previous = it.key()->frameToWriteNext(false, &iprevious);
 		Assert(previous != nullptr && showing != nullptr && ishowing >= 0 && iprevious >= 0);
 		if (reader->_frames[ishowing].when > 0 && showing->displayed.loadAcquire() <= 0) { // current frame was not shown
@@ -748,7 +748,7 @@ Manager::ResultHandleState Manager::handleResult(ReaderPrivate *reader, ProcessR
 			QMutexLocker lock(&_readerPointersMutex);
 			auto it = constUnsafeFindReaderPointer(reader);
 			if (it != _readerPointers.cend()) {
-				int32 index = 0;
+				int32_t index = 0;
 				Reader *r = it.key();
 				Reader::Frame *frame = it.key()->frameToWrite(&index);
 				if (frame) {
@@ -910,7 +910,7 @@ FileLoadTask::Video PrepareForSending(const QString &fname, const QByteArray &da
 
 void Finish() {
 	if (!threads.isEmpty()) {
-		for (int32 i = 0, l = threads.size(); i < l; ++i) {
+		for (int32_t i = 0, l = threads.size(); i < l; ++i) {
 			threads.at(i)->quit();
 			DEBUG_LOG(("Waiting for clipThread to finish: %1").arg(i));
 			threads.at(i)->wait();

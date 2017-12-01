@@ -112,16 +112,16 @@ ushort Offsets[] = {
 620, 622, 624, 626, 628, 630, 632, 634, 636, 638, 640, 641,
 642, 643, 644, 646, 648, 650, 652, 654, 656, 658 };
 
-uint64 ComputeEmojiIndex(base::const_byte_span bytes) {
+uint64_t ComputeEmojiIndex(base::const_byte_span bytes) {
 	Expects(bytes.size() == 8);
-	return ((gsl::to_integer<uint64>(bytes[0]) & 0x7F) << 56)
-		| (gsl::to_integer<uint64>(bytes[1]) << 48)
-		| (gsl::to_integer<uint64>(bytes[2]) << 40)
-		| (gsl::to_integer<uint64>(bytes[3]) << 32)
-		| (gsl::to_integer<uint64>(bytes[4]) << 24)
-		| (gsl::to_integer<uint64>(bytes[5]) << 16)
-		| (gsl::to_integer<uint64>(bytes[6]) << 8)
-		| (gsl::to_integer<uint64>(bytes[7]));
+	return ((gsl::to_integer<uint64_t>(bytes[0]) & 0x7F) << 56)
+		| (gsl::to_integer<uint64_t>(bytes[1]) << 48)
+		| (gsl::to_integer<uint64_t>(bytes[2]) << 40)
+		| (gsl::to_integer<uint64_t>(bytes[3]) << 32)
+		| (gsl::to_integer<uint64_t>(bytes[4]) << 24)
+		| (gsl::to_integer<uint64_t>(bytes[5]) << 16)
+		| (gsl::to_integer<uint64_t>(bytes[6]) << 8)
+		| (gsl::to_integer<uint64_t>(bytes[7]));
 }
 
 } // namespace

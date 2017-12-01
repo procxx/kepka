@@ -161,7 +161,7 @@ private:
 	int _selected = -1;
 	int _pressed = -1;
 
-	int32 _preloadGroupId = 0;
+	int32_t _preloadGroupId = 0;
 	mtpRequestId _preloadRequestId = 0;
 	bool _allLoaded = true;
 

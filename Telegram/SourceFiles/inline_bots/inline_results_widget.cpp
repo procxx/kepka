@@ -290,7 +290,7 @@ void Inner::hideFinish(bool completely) {
 	}
 }
 
-bool Inner::inlineRowsAddItem(Result *result, Row &row, int32 &sumWidth) {
+bool Inner::inlineRowsAddItem(Result *result, Row &row, int32_t &sumWidth) {
 	auto layout = layoutPrepareInlineResult(result, (_rows.size() * MatrixRowShift) + row.items.size());
 	if (!layout) return false;
 
@@ -308,7 +308,7 @@ bool Inner::inlineRowsAddItem(Result *result, Row &row, int32 &sumWidth) {
 	return true;
 }
 
-bool Inner::inlineRowFinalize(Row &row, int32 &sumWidth, bool force) {
+bool Inner::inlineRowFinalize(Row &row, int32_t &sumWidth, bool force) {
 	if (row.items.isEmpty()) return false;
 
 	auto full = (row.items.size() >= kInlineItemsMaxPerRow);
@@ -341,7 +341,7 @@ void Inner::clearInlineRows(bool resultsDeleted) {
 	_rows.clear();
 }
 
-ItemBase *Inner::layoutPrepareInlineResult(Result *result, int32 position) {
+ItemBase *Inner::layoutPrepareInlineResult(Result *result, int32_t position) {
 	auto it = _inlineLayouts.find(result);
 	if (it == _inlineLayouts.cend()) {
 		if (auto layout = ItemBase::createLayout(this, result, _inlineWithThumb)) {
@@ -373,7 +373,7 @@ void Inner::deleteUnusedInlineLayouts() {
 	}
 }
 
-Inner::Row &Inner::layoutInlineRow(Row &row, int32 sumWidth) {
+Inner::Row &Inner::layoutInlineRow(Row &row, int32_t sumWidth) {
 	auto count = int(row.items.size());
 	Assert(count <= kInlineItemsMaxPerRow);
 
@@ -582,7 +582,7 @@ void Inner::inlineItemRepaint(const ItemBase *layout) {
 }
 
 bool Inner::inlineItemVisible(const ItemBase *layout) {
-	int32 position = layout->position();
+	int32_t position = layout->position();
 	if (position < 0 || !isVisible()) {
 		return false;
 	}
@@ -592,7 +592,7 @@ bool Inner::inlineItemVisible(const ItemBase *layout) {
 
 	auto &inlineItems = _rows[row].items;
 	int top = st::stickerPanPadding;
-	for (int32 i = 0; i < row; ++i) {
+	for (int32_t i = 0; i < row; ++i) {
 		top += _rows.at(i).height;
 	}
 

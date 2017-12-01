@@ -418,7 +418,7 @@ void GifsListWidget::processPanelHideFinished() {
 	}
 }
 
-bool GifsListWidget::inlineRowsAddItem(DocumentData *savedGif, InlineResult *result, Row &row, int32 &sumWidth) {
+bool GifsListWidget::inlineRowsAddItem(DocumentData *savedGif, InlineResult *result, Row &row, int32_t &sumWidth) {
 	LayoutItem *layout = nullptr;
 	if (savedGif) {
 		layout = layoutPrepareSavedGif(savedGif, (_rows.size() * MatrixRowShift) + row.items.size());
@@ -441,7 +441,7 @@ bool GifsListWidget::inlineRowsAddItem(DocumentData *savedGif, InlineResult *res
 	return true;
 }
 
-bool GifsListWidget::inlineRowFinalize(Row &row, int32 &sumWidth, bool force) {
+bool GifsListWidget::inlineRowFinalize(Row &row, int32_t &sumWidth, bool force) {
 	if (row.items.isEmpty()) return false;
 
 	auto full = (row.items.size() >= kInlineItemsMaxPerRow);
@@ -502,7 +502,7 @@ void GifsListWidget::clearInlineRows(bool resultsDeleted) {
 	_rows.clear();
 }
 
-GifsListWidget::LayoutItem *GifsListWidget::layoutPrepareSavedGif(DocumentData *doc, int32 position) {
+GifsListWidget::LayoutItem *GifsListWidget::layoutPrepareSavedGif(DocumentData *doc, int32_t position) {
 	auto it = _gifLayouts.find(doc);
 	if (it == _gifLayouts.cend()) {
 		if (auto layout = LayoutItem::createLayoutGif(this, doc)) {
@@ -518,7 +518,7 @@ GifsListWidget::LayoutItem *GifsListWidget::layoutPrepareSavedGif(DocumentData *
 	return it->second.get();
 }
 
-GifsListWidget::LayoutItem *GifsListWidget::layoutPrepareInlineResult(InlineResult *result, int32 position) {
+GifsListWidget::LayoutItem *GifsListWidget::layoutPrepareInlineResult(InlineResult *result, int32_t position) {
 	auto it = _inlineLayouts.find(result);
 	if (it == _inlineLayouts.cend()) {
 		if (auto layout = LayoutItem::createLayout(this, result, _inlineWithThumb)) {
@@ -562,7 +562,7 @@ void GifsListWidget::deleteUnusedInlineLayouts() {
 	}
 }
 
-GifsListWidget::Row &GifsListWidget::layoutInlineRow(Row &row, int32 sumWidth) {
+GifsListWidget::Row &GifsListWidget::layoutInlineRow(Row &row, int32_t sumWidth) {
 	auto count = int(row.items.size());
 	Assert(count <= kInlineItemsMaxPerRow);
 
@@ -640,7 +640,7 @@ int GifsListWidget::refreshInlineRows(const InlineCacheEntry *entry, bool result
 		inlineRowFinalize(row, sumWidth, true);
 	}
 
-	int32 h = countHeight();
+	int32_t h = countHeight();
 	if (h != height()) resize(width(), h);
 	update();
 
@@ -763,7 +763,7 @@ void GifsListWidget::beforeHiding() {
 	}
 }
 
-bool GifsListWidget::refreshInlineRows(int32 *added) {
+bool GifsListWidget::refreshInlineRows(int32_t *added) {
 	auto it = _inlineCache.find(_inlineQuery);
 	const InlineCacheEntry *entry = nullptr;
 	if (it != _inlineCache.cend()) {
@@ -775,7 +775,7 @@ bool GifsListWidget::refreshInlineRows(int32 *added) {
 	return (entry != nullptr);
 }
 
-int32 GifsListWidget::showInlineRows(bool newResults) {
+int32_t GifsListWidget::showInlineRows(bool newResults) {
 	auto added = 0;
 	auto clear = !refreshInlineRows(&added);
 	if (newResults) {

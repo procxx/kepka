@@ -73,7 +73,7 @@ ReaderImplementation::ReadResult QtGifReaderImplementation::readNextFrame() {
 bool QtGifReaderImplementation::renderFrame(QImage &to, bool &hasAlpha, const QSize &size) {
 	Assert(!_frame.isNull());
 	if (size.isEmpty() || size == _frame.size()) {
-		int32 w = _frame.width(), h = _frame.height();
+		int32_t w = _frame.width(), h = _frame.height();
 		if (to.width() == w && to.height() == h && to.format() == _frame.format()) {
 			if (to.byteCount() != _frame.byteCount()) {
 				int bpl = qMin(to.bytesPerLine(), _frame.bytesPerLine());

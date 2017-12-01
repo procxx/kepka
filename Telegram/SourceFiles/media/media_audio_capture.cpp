@@ -63,8 +63,8 @@ Instance::Instance() : _inner(new Inner(&_thread)) {
 	CaptureInstance = this;
 	connect(this, SIGNAL(start()), _inner, SLOT(onStart()));
 	connect(this, SIGNAL(stop(bool)), _inner, SLOT(onStop(bool)));
-	connect(_inner, SIGNAL(done(QByteArray, VoiceWaveform, qint32)), this, SIGNAL(done(QByteArray, VoiceWaveform, qint32)));
-	connect(_inner, SIGNAL(updated(quint16, qint32)), this, SIGNAL(updated(quint16, qint32)));
+	connect(_inner, SIGNAL(done(QByteArray, VoiceWaveform, int32_t)), this, SIGNAL(done(QByteArray, VoiceWaveform, int32_t)));
+	connect(_inner, SIGNAL(updated(uint16_t, int32_t)), this, SIGNAL(updated(uint16_t, int32_t)));
 	connect(_inner, SIGNAL(error()), this, SIGNAL(error()));
 	connect(&_thread, SIGNAL(started()), _inner, SLOT(onInit()));
 	connect(&_thread, SIGNAL(finished()), _inner, SLOT(deleteLater()));
@@ -112,21 +112,21 @@ struct Instance::Inner::Private {
 	uint8_t **dstSamplesData = nullptr;
 	SwrContext *swrContext = nullptr;
 
-	int32 lastUpdate = 0;
-	uint16 levelMax = 0;
+	int32_t lastUpdate = 0;
+	uint16_t levelMax = 0;
 
 	QByteArray data;
-	int32 dataPos = 0;
+	int32_t dataPos = 0;
 
-	int64 waveformMod = 0;
-	int64 waveformEach = (kCaptureFrequency / 100);
-	uint16 waveformPeak = 0;
+	int64_t waveformMod = 0;
+	int64_t waveformEach = (kCaptureFrequency / 100);
+	uint16_t waveformPeak = 0;
 	QVector<uchar> waveform;
 
 	static int _read_data(void *opaque, uint8_t *buf, int buf_size) {
 		auto l = reinterpret_cast<Private*>(opaque);
 
-		int32 nbytes = qMin(l->data.size() - l->dataPos, int32(buf_size));
+		int32_t nbytes = qMin(l->data.size() - l->dataPos, int32_t(buf_size));
 		if (nbytes <= 0) {
 			return 0;
 		}
@@ -149,7 +149,7 @@ struct Instance::Inner::Private {
 	static int64_t _seek_data(void *opaque, int64_t offset, int whence) {
 		auto l = reinterpret_cast<Private*>(opaque);
 
-		int32 newPos = -1;
+		int32_t newPos = -1;
 		switch (whence) {
 		case SEEK_SET: newPos = offset; break;
 		case SEEK_CUR: newPos = l->dataPos + offset; break;
@@ -357,18 +357,18 @@ void Instance::Inner::onStop(bool needResult) {
 			d->waveformPeak = 0;
 			d->waveform.clear();
 		} else {
-			float64 coef = 1. / fadeSamples, fadedFrom = 0;
+			double coef = 1. / fadeSamples, fadedFrom = 0;
 			for (short *ptr = ((short*)_captured.data()) + capturedSamples, *end = ptr - fadeSamples; ptr != end; ++fadedFrom) {
 				--ptr;
 				*ptr = qRound(fadedFrom * coef * *ptr);
 			}
 			if (capturedSamples % d->srcSamples) {
-				int32 s = _captured.size();
+				int32_t s = _captured.size();
 				_captured.resize(s + (d->srcSamples - (capturedSamples % d->srcSamples)) * sizeof(short));
 				memset(_captured.data() + s, 0, _captured.size() - s);
 			}
 
-			int32 framesize = d->srcSamples * d->codecContext->channels * sizeof(short), encoded = 0;
+			int32_t framesize = d->srcSamples * d->codecContext->channels * sizeof(short), encoded = 0;
 			while (_captured.size() >= encoded + framesize) {
 				processFrame(encoded, framesize);
 				encoded += framesize;
@@ -394,16 +394,16 @@ void Instance::Inner::onStop(bool needResult) {
 
 	QByteArray result = d->fullSamples ? d->data : QByteArray();
 	VoiceWaveform waveform;
-	qint32 samples = d->fullSamples;
+	int32_t samples = d->fullSamples;
 	if (samples && !d->waveform.isEmpty()) {
-		int64 count = d->waveform.size(), sum = 0;
+		int64_t count = d->waveform.size(), sum = 0;
 		if (count >= Player::kWaveformSamplesCount) {
-			QVector<uint16> peaks;
+			QVector<uint16_t> peaks;
 			peaks.reserve(Player::kWaveformSamplesCount);
 
-			uint16 peak = 0;
-			for (int32 i = 0; i < count; ++i) {
-				uint16 sample = uint16(d->waveform.at(i)) * 256;
+			uint16_t peak = 0;
+			for (int32_t i = 0; i < count; ++i) {
+				uint16_t sample = uint16_t(d->waveform.at(i)) * 256;
 				if (peak < sample) {
 					peak = sample;
 				}
@@ -416,11 +416,11 @@ void Instance::Inner::onStop(bool needResult) {
 			}
 
 			auto sum = std::accumulate(peaks.cbegin(), peaks.cend(), 0LL);
-			peak = qMax(int32(sum * 1.8 / peaks.size()), 2500);
+			peak = qMax(int32_t(sum * 1.8 / peaks.size()), 2500);
 
 			waveform.resize(peaks.size());
-			for (int32 i = 0, l = peaks.size(); i != l; ++i) {
-				waveform[i] = char(qMin(31U, uint32(qMin(peaks.at(i), peak)) * 31 / peak));
+			for (int32_t i = 0, l = peaks.size(); i != l; ++i) {
+				waveform[i] = char(qMin(31U, uint32_t(qMin(peaks.at(i), peak)) * 31 / peak));
 			}
 		}
 	}
@@ -515,31 +515,31 @@ void Instance::Inner::onTimeout() {
 		auto levelindex = d->fullSamples + static_cast<int>(s / sizeof(short));
 		for (auto ptr = (const short*)(_captured.constData() + s), end = (const short*)(_captured.constData() + news); ptr < end; ++ptr, ++levelindex) {
 			if (levelindex > skipSamples) {
-				uint16 value = qAbs(*ptr);
+				uint16_t value = qAbs(*ptr);
 				if (levelindex < skipSamples + fadeSamples) {
-					value = qRound(value * float64(levelindex - skipSamples) / fadeSamples);
+					value = qRound(value * double(levelindex - skipSamples) / fadeSamples);
 				}
 				if (d->levelMax < value) {
 					d->levelMax = value;
 				}
 			}
 		}
-		qint32 samplesFull = d->fullSamples + _captured.size() / sizeof(short), samplesSinceUpdate = samplesFull - d->lastUpdate;
+		int32_t samplesFull = d->fullSamples + _captured.size() / sizeof(short), samplesSinceUpdate = samplesFull - d->lastUpdate;
 		if (samplesSinceUpdate > AudioVoiceMsgUpdateView * kCaptureFrequency / 1000) {
 			emit updated(d->levelMax, samplesFull);
 			d->lastUpdate = samplesFull;
 			d->levelMax = 0;
 		}
 		// Write frames
-		int32 framesize = d->srcSamples * d->codecContext->channels * sizeof(short), encoded = 0;
-		while (uint32(_captured.size()) >= encoded + framesize + fadeSamples * sizeof(short)) {
+		int32_t framesize = d->srcSamples * d->codecContext->channels * sizeof(short), encoded = 0;
+		while (uint32_t(_captured.size()) >= encoded + framesize + fadeSamples * sizeof(short)) {
 			processFrame(encoded, framesize);
 			encoded += framesize;
 		}
 
 		// Collapse the buffer
 		if (encoded > 0) {
-			int32 goodSize = _captured.size() - encoded;
+			int32_t goodSize = _captured.size() - encoded;
 			memmove(_captured.data(), _captured.constData() + encoded, goodSize);
 			_captured.resize(goodSize);
 		}
@@ -548,7 +548,7 @@ void Instance::Inner::onTimeout() {
 	}
 }
 
-void Instance::Inner::processFrame(int32 offset, int32 framesize) {
+void Instance::Inner::processFrame(int32_t offset, int32_t framesize) {
 	// Prepare audio frame
 
 	if (framesize % sizeof(short)) { // in the middle of a sample
@@ -569,8 +569,8 @@ void Instance::Inner::processFrame(int32 offset, int32 framesize) {
 	auto skipSamples = static_cast<int>(kCaptureSkipDuration * kCaptureFrequency / 1000);
 	auto fadeSamples = static_cast<int>(kCaptureFadeInDuration * kCaptureFrequency / 1000);
 	if (d->fullSamples < skipSamples + fadeSamples) {
-		int32 fadedCnt = qMin(samplesCnt, skipSamples + fadeSamples - d->fullSamples);
-		float64 coef = 1. / fadeSamples, fadedFrom = d->fullSamples - skipSamples;
+		int32_t fadedCnt = qMin(samplesCnt, skipSamples + fadeSamples - d->fullSamples);
+		double coef = 1. / fadeSamples, fadedFrom = d->fullSamples - skipSamples;
 		short *ptr = srcSamplesDataChannel, *zeroEnd = ptr + qMin(samplesCnt, qMax(0, skipSamples - d->fullSamples)), *end = ptr + fadedCnt;
 		for (; ptr != zeroEnd; ++ptr, ++fadedFrom) {
 			*ptr = 0;
@@ -582,7 +582,7 @@ void Instance::Inner::processFrame(int32 offset, int32 framesize) {
 
 	d->waveform.reserve(d->waveform.size() + (samplesCnt / d->waveformEach) + 1);
 	for (short *ptr = srcSamplesDataChannel, *end = ptr + samplesCnt; ptr != end; ++ptr) {
-		uint16 value = qAbs(*ptr);
+		uint16_t value = qAbs(*ptr);
 		if (d->waveformPeak < value) {
 			d->waveformPeak = value;
 		}

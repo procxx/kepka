@@ -93,9 +93,9 @@ public:
 	FlatButton(QWidget *parent, const QString &text, const style::FlatButton &st);
 
 	void setText(const QString &text);
-	void setWidth(int32 w);
+	void setWidth(int32_t w);
 
-	int32 textWidth() const;
+	int32_t textWidth() const;
 
 protected:
 	void paintEvent(QPaintEvent *e) override;

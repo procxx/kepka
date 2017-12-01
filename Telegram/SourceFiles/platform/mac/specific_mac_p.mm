@@ -15,6 +15,7 @@ GNU General Public License for more details.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
 #include "platform/mac/specific_mac_p.h"
 
 #include "mainwindow.h"
@@ -176,7 +177,7 @@ ApplicationDelegate *_sharedDelegate = nil;
 }
 
 - (void) mediaKeyTap:(SPMediaKeyTap*)keyTap receivedMediaKeyEvent:(NSEvent*)e {
-	if (e && [e type] == NSSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
+	if (e && [e type] == NSEventTypeSystemDefined && [e subtype] == SPSystemDefinedEventMediaKeys) {
 		objc_handleMediaKeyEvent(e);
 	}
 }
@@ -255,7 +256,7 @@ void objc_showOverAll(WId winId, bool canFocus) {
 	NSWindow *wnd = [reinterpret_cast<NSView *>(winId) window];
 	[wnd setLevel:NSPopUpMenuWindowLevel];
 	if (!canFocus) {
-		[wnd setStyleMask:NSUtilityWindowMask | NSNonactivatingPanelMask];
+		[wnd setStyleMask:NSWindowStyleMaskUtilityWindow | NSWindowStyleMaskNonactivatingPanel];
 		[wnd setCollectionBehavior:NSWindowCollectionBehaviorMoveToActiveSpace|NSWindowCollectionBehaviorStationary|NSWindowCollectionBehaviorFullScreenAuxiliary|NSWindowCollectionBehaviorIgnoresCycle];
 	}
 }
@@ -346,7 +347,7 @@ bool objc_idleTime(TimeMs &idleTime) { // taken from https://github.com/trueinte
 		return false;
 	}
 
-	uint64 err = ~0L, result = err;
+	uint64_t err = ~0L, result = err;
 	if (obj) {
 		CFTypeID type = CFGetTypeID(obj);
 

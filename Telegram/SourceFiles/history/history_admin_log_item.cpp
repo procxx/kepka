@@ -43,7 +43,7 @@ TextWithEntities PrepareText(const QString &value, const QString &emptyValue) {
 	return result;
 }
 
-MTPMessage PrepareLogMessage(const MTPMessage &message, MsgId newId, int32 newDate) {
+MTPMessage PrepareLogMessage(const MTPMessage &message, MsgId newId, int32_t newDate) {
 	switch (message.type()) {
 	case mtpc_messageEmpty: return MTP_messageEmpty(MTP_int(newId));
 	case mtpc_messageService: {
@@ -87,10 +87,10 @@ TextWithEntities ExtractEditedText(const MTPMessage &message) {
 	return { text, entities };
 }
 
-PhotoData *GenerateChatPhoto(ChannelId channelId, uint64 logEntryId, MTPint date, const MTPDchatPhoto &photo) {
+PhotoData *GenerateChatPhoto(ChannelId channelId, uint64_t logEntryId, MTPint date, const MTPDchatPhoto &photo) {
 	// We try to make a unique photoId that will stay the same for each pair (channelId, logEntryId).
-	static const auto RandomIdPart = rand_value<uint64>();
-	auto mixinIdPart = (static_cast<uint64>(static_cast<uint32>(channelId)) << 32) ^ logEntryId;
+	static const auto RandomIdPart = rand_value<uint64_t>();
+	auto mixinIdPart = (static_cast<uint64_t>(static_cast<uint32_t>(channelId)) << 32) ^ logEntryId;
 	auto photoId = RandomIdPart ^ mixinIdPart;
 
 	auto photoSizes = QVector<MTPPhotoSize>();

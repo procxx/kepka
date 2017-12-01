@@ -66,8 +66,8 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e) override;
 
 private:
-	void handleSeekProgress(float64 progress);
-	void handleSeekFinished(float64 progress);
+	void handleSeekProgress(double progress);
+	void handleSeekFinished(double progress);
 
 	int getLabelsLeft() const;
 	int getLabelsRight() const;

@@ -46,7 +46,7 @@ public:
 	void clearSelection() override;
 	object_ptr<TabbedSelector::InnerFooter> createFooter() override;
 
-	void showStickerSet(uint64 setId);
+	void showStickerSet(uint64_t setId);
 	void showMegagroupSet(ChannelData *megagroup);
 
 	void refreshStickers();
@@ -56,10 +56,10 @@ public:
 
 	void setVisibleTopBottom(int visibleTop, int visibleBottom) override;
 
-	uint64 currentSet(int yOffset) const;
+	uint64_t currentSet(int yOffset) const;
 
-	void installedLocally(uint64 setId);
-	void notInstalledLocally(uint64 setId);
+	void installedLocally(uint64_t setId);
+	void notInstalledLocally(uint64_t setId);
 	void clearInstalledLocally();
 
 	~StickersListWidget();
@@ -133,9 +133,9 @@ private:
 	};
 
 	struct Set {
-		Set(uint64 id, MTPDstickerSet::Flags flags, const QString &title, int32 hoversSize, const StickerPack &pack = StickerPack()) : id(id), flags(flags), title(title), pack(pack) {
+		Set(uint64_t id, MTPDstickerSet::Flags flags, const QString &title, int32_t hoversSize, const StickerPack &pack = StickerPack()) : id(id), flags(flags), title(title), pack(pack) {
 		}
-		uint64 id;
+		uint64_t id;
 		MTPDstickerSet::Flags flags;
 		QString title;
 		StickerPack pack;
@@ -148,10 +148,10 @@ private:
 	SectionInfo sectionInfo(int section) const;
 	SectionInfo sectionInfoByOffset(int yOffset) const;
 
-	void displaySet(uint64 setId);
-	void installSet(uint64 setId);
+	void displaySet(uint64_t setId);
+	void installSet(uint64_t setId);
 	void removeMegagroupSet(bool locally);
-	void removeSet(uint64 setId);
+	void removeSet(uint64_t setId);
 
 	bool setHasTitle(const Set &set) const;
 	bool stickerHasDeleteButton(const Set &set, int index) const;
@@ -204,7 +204,7 @@ private:
 		Archived,
 		Installed,
 	};
-	void appendSet(Sets &to, uint64 setId, AppendSkip skip = AppendSkip::None);
+	void appendSet(Sets &to, uint64_t setId, AppendSkip skip = AppendSkip::None);
 
 	void selectEmoji(EmojiPtr emoji);
 	int stickersLeft() const;
@@ -216,14 +216,14 @@ private:
 	ChannelData *_megagroupSet = nullptr;
 	Sets _mySets;
 	Sets _featuredSets;
-	OrderedSet<uint64> _installedLocallySets;
+	OrderedSet<uint64_t> _installedLocallySets;
 	QList<bool> _custom;
 	base::flat_set<not_null<DocumentData*>> _favedStickersMap;
 
 	Section _section = Section::Stickers;
 
-	uint64 _displayingSetId = 0;
-	uint64 _removingSetId = 0;
+	uint64_t _displayingSetId = 0;
+	uint64_t _removingSetId = 0;
 
 	Footer *_footer = nullptr;
 

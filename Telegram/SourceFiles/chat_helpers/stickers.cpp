@@ -43,7 +43,7 @@ void ApplyArchivedResult(const MTPDmessages_stickerSetInstallResultArchive &d) {
 	auto &order = Global::RefStickerSetsOrder();
 	Order archived;
 	archived.reserve(v.size());
-	QMap<uint64, uint64> setsToRequest;
+	QMap<uint64_t, uint64_t> setsToRequest;
 	for_const (auto &stickerSet, v) {
 		const MTPDstickerSet *setData = nullptr;
 		switch (stickerSet.type()) {
@@ -96,7 +96,7 @@ bool ApplyArchivedResultFake() {
 	auto sets = QVector<MTPStickerSetCovered>();
 	for (auto &set : Global::RefStickerSets()) {
 		if ((set.flags & MTPDstickerSet::Flag::f_installed) && !(set.flags & MTPDstickerSet_ClientFlag::f_special)) {
-			if (rand_value<uint32>() % 128 < 64) {
+			if (rand_value<uint32_t>() % 128 < 64) {
 				auto data = MTP_stickerSet(MTP_flags(set.flags | MTPDstickerSet::Flag::f_archived), MTP_long(set.id), MTP_long(set.access), MTP_string(set.title), MTP_string(set.shortName), MTP_int(set.count), MTP_int(set.hash));
 				sets.push_back(MTP_stickerSetCovered(data, MTP_documentEmpty(MTP_long(0))));
 			}
@@ -108,7 +108,7 @@ bool ApplyArchivedResultFake() {
 	return true;
 }
 
-void InstallLocally(uint64 setId) {
+void InstallLocally(uint64_t setId) {
 	auto &sets = Global::RefStickerSets();
 	auto it = sets.find(setId);
 	if (it == sets.end()) {
@@ -151,7 +151,7 @@ void InstallLocally(uint64 setId) {
 	Auth().data().stickersUpdated().notify(true);
 }
 
-void UndoInstallLocally(uint64 setId) {
+void UndoInstallLocally(uint64_t setId) {
 	auto &sets = Global::RefStickerSets();
 	auto it = sets.find(setId);
 	if (it == sets.end()) {
@@ -172,7 +172,7 @@ void UndoInstallLocally(uint64 setId) {
 	Ui::show(Box<InformBox>(lang(lng_stickers_not_found)), KeepOtherLayers);
 }
 
-void MarkFeaturedAsRead(uint64 setId) {
+void MarkFeaturedAsRead(uint64_t setId) {
 	if (!FeaturedReaderInstance) {
 		if (auto main = App::main()) {
 			FeaturedReaderInstance = object_ptr<internal::FeaturedReader>(main);
@@ -338,12 +338,12 @@ void SetFaved(not_null<DocumentData*> document, bool faved) {
 	}
 }
 
-void SetsReceived(const QVector<MTPStickerSet> &data, int32 hash) {
+void SetsReceived(const QVector<MTPStickerSet> &data, int32_t hash) {
 	auto &setsOrder = Global::RefStickerSetsOrder();
 	setsOrder.clear();
 
 	auto &sets = Global::RefStickerSets();
-	QMap<uint64, uint64> setsToRequest;
+	QMap<uint64_t, uint64_t> setsToRequest;
 	for (auto &set : sets) {
 		if (!(set.flags & MTPDstickerSet::Flag::f_archived)) {
 			set.flags &= ~MTPDstickerSet::Flag::f_installed; // mark for removing
@@ -425,7 +425,7 @@ void SetPackAndEmoji(Set &set, StickerPack &&pack, const QVector<MTPStickerPack>
 	}
 }
 
-void SpecialSetReceived(uint64 setId, const QString &setTitle, const QVector<MTPDocument> &items, int32 hash, const QVector<MTPStickerPack> &packs) {
+void SpecialSetReceived(uint64_t setId, const QString &setTitle, const QVector<MTPDocument> &items, int32_t hash, const QVector<MTPStickerPack> &packs) {
 	auto &sets = Global::RefStickerSets();
 	auto it = sets.find(setId);
 
@@ -503,8 +503,8 @@ void SpecialSetReceived(uint64 setId, const QString &setTitle, const QVector<MTP
 	Auth().data().stickersUpdated().notify(true);
 }
 
-void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVector<MTPlong> &unread, int32 hash) {
-	OrderedSet<uint64> unreadMap;
+void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVector<MTPlong> &unread, int32_t hash) {
+	OrderedSet<uint64_t> unreadMap;
 	for_const (auto &unreadSetId, unread) {
 		unreadMap.insert(unreadSetId.v);
 	}
@@ -513,7 +513,7 @@ void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVect
 	setsOrder.clear();
 
 	auto &sets = Global::RefStickerSets();
-	QMap<uint64, uint64> setsToRequest;
+	QMap<uint64_t, uint64_t> setsToRequest;
 	for (auto &set : sets) {
 		set.flags &= ~MTPDstickerSet_ClientFlag::f_featured; // mark for removing
 	}
@@ -606,7 +606,7 @@ void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVect
 	Auth().data().stickersUpdated().notify(true);
 }
 
-void GifsReceived(const QVector<MTPDocument> &items, int32 hash) {
+void GifsReceived(const QVector<MTPDocument> &items, int32_t hash) {
 	auto &saved = cRefSavedGifs();
 	saved.clear();
 
@@ -632,7 +632,7 @@ void GifsReceived(const QVector<MTPDocument> &items, int32 hash) {
 StickerPack GetListByEmoji(not_null<EmojiPtr> emoji) {
 	auto original = emoji->original();
 	auto result = StickerPack();
-	auto setsToRequest = QMap<uint64, uint64>();
+	auto setsToRequest = QMap<uint64_t, uint64_t>();
 	auto &sets = Global::RefStickerSets();
 
 	auto faved = StickerPack();
@@ -840,7 +840,7 @@ FeaturedReader::FeaturedReader(QObject *parent) : QObject(parent)
 	_timer->setTimeoutHandler([this] { readSets(); });
 }
 
-void FeaturedReader::scheduleRead(uint64 setId) {
+void FeaturedReader::scheduleRead(uint64_t setId) {
 	if (!_setIds.contains(setId)) {
 		_setIds.insert(setId);
 		_timer->start(kReadFeaturedSetsTimeoutMs);

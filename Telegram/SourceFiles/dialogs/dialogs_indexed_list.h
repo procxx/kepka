@@ -63,7 +63,7 @@ public:
 	bool isEmpty() const { return all().isEmpty(); }
 	bool contains(PeerId peerId) const { return all().contains(peerId); }
 	Row *getRow(PeerId peerId) const { return all().getRow(peerId); }
-	Row *rowAtY(int32 y, int32 h) const { return all().rowAtY(y, h); }
+	Row *rowAtY(int32_t y, int32_t h) const { return all().rowAtY(y, h); }
 
 	using iterator = List::iterator;
 	using const_iterator = List::const_iterator;

@@ -71,7 +71,7 @@ void BackgroundRow::paintEvent(QPaintEvent *e) {
 	Painter p(this);
 
 	bool radial = false;
-	float64 radialOpacity = 0;
+	double radialOpacity = 0;
 	if (_radial.animating()) {
 		_radial.step(getms());
 		radial = _radial.animating();
@@ -126,7 +126,7 @@ int BackgroundRow::resizeGetHeight(int newWidth) {
 	return st::settingsBackgroundSize;
 }
 
-float64 BackgroundRow::radialProgress() const {
+double BackgroundRow::radialProgress() const {
 	if (auto m = App::main()) {
 		return m->chatBackgroundProgress();
 	}
@@ -172,7 +172,7 @@ void BackgroundRow::step_radial(TimeMs ms, bool timer) {
 }
 
 void BackgroundRow::updateImage() {
-	int32 size = st::settingsBackgroundSize * cIntRetinaFactor();
+	int32_t size = st::settingsBackgroundSize * cIntRetinaFactor();
 	QImage back(size, size, QImage::Format_ARGB32_Premultiplied);
 	back.setDevicePixelRatio(cRetinaFactor());
 	{

@@ -34,10 +34,10 @@ List::List(SortMode sortMode)
 , _current(_last.get()) {
 }
 
-void List::adjustCurrent(int32 y, int32 h) const {
+void List::adjustCurrent(int32_t y, int32_t h) const {
 	if (isEmpty()) return;
 
-	int32 pos = (y > 0) ? (y / h) : 0;
+	int32_t pos = (y > 0) ? (y / h) : 0;
 	while (_current->_pos > pos && _current != _begin) {
 		_current = _current->_prev;
 	}

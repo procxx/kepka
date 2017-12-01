@@ -137,7 +137,7 @@ void EmptyUserpic::Impl::paintSquare(Painter &p, int x, int y, int size) {
 
 StorageKey EmptyUserpic::Impl::uniqueKey() const {
 	auto first = 0xFFFFFFFF00000000ULL | anim::getPremultiplied(_color->c);
-	auto second = uint64(0);
+	auto second = uint64_t(0);
 	memcpy(&second, _string.constData(), qMin(sizeof(second), _string.size() * sizeof(QChar)));
 	return StorageKey(first, second);
 }
@@ -561,8 +561,8 @@ void UserData::setBotInfo(const MTPBotInfo &info) {
 		auto &v = d.vcommands.v;
 		botInfo->commands.reserve(v.size());
 		auto changedCommands = false;
-		int32 j = 0;
-		for (int32 i = 0, l = v.size(); i < l; ++i) {
+		int32_t j = 0;
+		for (int32_t i = 0, l = v.size(); i < l; ++i) {
 			if (v.at(i).type() != mtpc_botCommand) continue;
 
 			QString cmd = qs(v.at(i).c_botCommand().vcommand), desc = qs(v.at(i).c_botCommand().vdescription);
@@ -787,7 +787,7 @@ void ChannelData::setKickedCount(int newKickedCount) {
 MTPChannelBannedRights ChannelData::KickedRestrictedRights() {
 	using Flag = MTPDchannelBannedRights::Flag;
 	auto flags = Flag::f_view_messages | Flag::f_send_messages | Flag::f_send_media | Flag::f_embed_links | Flag::f_send_stickers | Flag::f_send_gifs | Flag::f_send_games | Flag::f_send_inline;
-	return MTP_channelBannedRights(MTP_flags(flags), MTP_int(std::numeric_limits<int32>::max()));
+	return MTP_channelBannedRights(MTP_flags(flags), MTP_int(std::numeric_limits<int32_t>::max()));
 }
 
 void ChannelData::applyEditAdmin(not_null<UserData*> user, const MTPChannelAdminRights &oldRights, const MTPChannelAdminRights &newRights) {
@@ -988,11 +988,11 @@ void ChannelData::setRestrictedRights(const MTPChannelBannedRights &rights) {
 	Notify::peerUpdatedDelayed(this, UpdateFlag::ChannelRightsChanged | UpdateFlag::AdminsChanged | UpdateFlag::BannedUsersChanged);
 }
 
-uint64 PtsWaiter::ptsKey(PtsSkippedQueue queue, int32 pts) {
-	return _queue.insert(uint64(uint32(pts)) << 32 | (++_skippedKey), queue).key();
+uint64_t PtsWaiter::ptsKey(PtsSkippedQueue queue, int32_t pts) {
+	return _queue.insert(uint64_t(uint32_t(pts)) << 32 | (++_skippedKey), queue).key();
 }
 
-void PtsWaiter::setWaitingForSkipped(ChannelData *channel, int32 ms) {
+void PtsWaiter::setWaitingForSkipped(ChannelData *channel, int32_t ms) {
 	if (ms >= 0) {
 		if (App::main()) {
 			App::main()->ptsWaiterStartTimerFor(channel, ms);
@@ -1004,7 +1004,7 @@ void PtsWaiter::setWaitingForSkipped(ChannelData *channel, int32 ms) {
 	}
 }
 
-void PtsWaiter::setWaitingForShortPoll(ChannelData *channel, int32 ms) {
+void PtsWaiter::setWaitingForShortPoll(ChannelData *channel, int32_t ms) {
 	if (ms >= 0) {
 		if (App::main()) {
 			App::main()->ptsWaiterStartTimerFor(channel, ms);
@@ -1047,7 +1047,7 @@ void PtsWaiter::clearSkippedUpdates() {
 	_applySkippedLevel = 0;
 }
 
-bool PtsWaiter::updated(ChannelData *channel, int32 pts, int32 count, const MTPUpdates &updates) {
+bool PtsWaiter::updated(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdates &updates) {
 	if (_requesting || _applySkippedLevel) {
 		return true;
 	} else if (pts <= _good && count > 0) {
@@ -1059,7 +1059,7 @@ bool PtsWaiter::updated(ChannelData *channel, int32 pts, int32 count, const MTPU
 	return false;
 }
 
-bool PtsWaiter::updated(ChannelData *channel, int32 pts, int32 count, const MTPUpdate &update) {
+bool PtsWaiter::updated(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdate &update) {
 	if (_requesting || _applySkippedLevel) {
 		return true;
 	} else if (pts <= _good && count > 0) {
@@ -1071,7 +1071,7 @@ bool PtsWaiter::updated(ChannelData *channel, int32 pts, int32 count, const MTPU
 	return false;
 }
 
-bool PtsWaiter::updated(ChannelData *channel, int32 pts, int32 count) {
+bool PtsWaiter::updated(ChannelData *channel, int32_t pts, int32_t count) {
 	if (_requesting || _applySkippedLevel) {
 		return true;
 	} else if (pts <= _good && count > 0) {
@@ -1080,7 +1080,7 @@ bool PtsWaiter::updated(ChannelData *channel, int32 pts, int32 count) {
 	return check(channel, pts, count);
 }
 
-bool PtsWaiter::updateAndApply(ChannelData *channel, int32 pts, int32 count, const MTPUpdates &updates) {
+bool PtsWaiter::updateAndApply(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdates &updates) {
 	if (!updated(channel, pts, count, updates)) {
 		return false;
 	}
@@ -1094,7 +1094,7 @@ bool PtsWaiter::updateAndApply(ChannelData *channel, int32 pts, int32 count, con
 	return true;
 }
 
-bool PtsWaiter::updateAndApply(ChannelData *channel, int32 pts, int32 count, const MTPUpdate &update) {
+bool PtsWaiter::updateAndApply(ChannelData *channel, int32_t pts, int32_t count, const MTPUpdate &update) {
 	if (!updated(channel, pts, count, update)) {
 		return false;
 	}
@@ -1108,7 +1108,7 @@ bool PtsWaiter::updateAndApply(ChannelData *channel, int32 pts, int32 count, con
 	return true;
 }
 
-bool PtsWaiter::updateAndApply(ChannelData *channel, int32 pts, int32 count) {
+bool PtsWaiter::updateAndApply(ChannelData *channel, int32_t pts, int32_t count) {
 	if (!updated(channel, pts, count)) {
 		return false;
 	}
@@ -1116,7 +1116,7 @@ bool PtsWaiter::updateAndApply(ChannelData *channel, int32 pts, int32 count) {
 	return true;
 }
 
-bool PtsWaiter::check(ChannelData *channel, int32 pts, int32 count) { // return false if need to save that update and apply later
+bool PtsWaiter::check(ChannelData *channel, int32_t pts, int32_t count) { // return false if need to save that update and apply later
 	if (!inited()) {
 		init(pts);
 		return true;
@@ -1135,7 +1135,7 @@ bool PtsWaiter::check(ChannelData *channel, int32 pts, int32 count) { // return 
 	return !count;
 }
 
-PhotoData::PhotoData(const PhotoId &id, const uint64 &access, int32 date, const ImagePtr &thumb, const ImagePtr &medium, const ImagePtr &full)
+PhotoData::PhotoData(const PhotoId &id, const uint64_t &access, int32_t date, const ImagePtr &thumb, const ImagePtr &medium, const ImagePtr &full)
 : id(id)
 , access(access)
 , date(date)
@@ -1191,17 +1191,17 @@ void PhotoData::notifyLayoutChanged() const {
 	}
 }
 
-float64 PhotoData::progress() const {
+double PhotoData::progress() const {
 	if (uploading()) {
 		if (uploadingData->size > 0) {
-			return float64(uploadingData->offset) / uploadingData->size;
+			return double(uploadingData->offset) / uploadingData->size;
 		}
 		return 0;
 	}
 	return full->progress();
 }
 
-int32 PhotoData::loadOffset() const {
+int32_t PhotoData::loadOffset() const {
 	return full->loadOffset();
 }
 
@@ -1263,13 +1263,13 @@ QString joinList(const QStringList &list, const QString &sep) {
 	QString result;
 	if (list.isEmpty()) return result;
 
-	int32 l = list.size(), s = sep.size() * (l - 1);
-	for (int32 i = 0; i < l; ++i) {
+	int32_t l = list.size(), s = sep.size() * (l - 1);
+	for (int32_t i = 0; i < l; ++i) {
 		s += list.at(i).size();
 	}
 	result.reserve(s);
 	result.append(list.at(0));
-	for (int32 i = 1; i < l; ++i) {
+	for (int32_t i = 1; i < l; ++i) {
 		result.append(sep).append(list.at(i));
 	}
 	return result;
@@ -1303,12 +1303,12 @@ QString saveFileName(const QString &title, const QString &filter, const QString 
 				QStringList filters = filter.split(sep);
 				if (filters.size() > 1) {
 					QString first = filters.at(0);
-					int32 start = first.indexOf(qsl("(*."));
+					int32_t start = first.indexOf(qsl("(*."));
 					if (start >= 0) {
 						if (!QRegularExpression(qsl("\\(\\*\\.") + ext + qsl("[\\)\\s]"), QRegularExpression::CaseInsensitiveOption).match(first).hasMatch()) {
 							QRegularExpressionMatch m = QRegularExpression(qsl(" \\*\\.") + ext + qsl("[\\)\\s]"), QRegularExpression::CaseInsensitiveOption).match(first);
 							if (m.hasMatch() && m.capturedStart() > start + 3) {
-								int32 oldpos = m.capturedStart(), oldend = m.capturedEnd();
+								int32_t oldpos = m.capturedStart(), oldend = m.capturedEnd();
 								fil = first.mid(0, start + 3) + ext + qsl(" *.") + first.mid(start + 3, oldpos - start - 3) + first.mid(oldend - 1) + sep + joinList(filters.mid(1), sep);
 							} else {
 								fil = first.mid(0, start + 3) + ext + qsl(" *.") + first.mid(start + 3) + sep + joinList(filters.mid(1), sep);
@@ -1345,7 +1345,7 @@ QString saveFileName(const QString &title, const QString &filter, const QString 
 	}
 
 	QString nameStart, extension;
-	int32 extPos = name.lastIndexOf('.');
+	int32_t extPos = name.lastIndexOf('.');
 	if (extPos >= 0) {
 		nameStart = name.mid(0, extPos);
 		extension = name.mid(extPos);
@@ -1582,14 +1582,14 @@ void DocumentCancelClickHandler::onClickImpl() const {
 }
 
 VoiceData::~VoiceData() {
-	if (!waveform.isEmpty() && waveform.at(0) == -1 && waveform.size() > int32(sizeof(TaskId))) {
+	if (!waveform.isEmpty() && waveform.at(0) == -1 && waveform.size() > int32_t(sizeof(TaskId))) {
 		TaskId taskId = 0;
 		memcpy(&taskId, waveform.constData() + 1, sizeof(taskId));
 		Local::cancelTask(taskId);
 	}
 }
 
-DocumentData::DocumentData(DocumentId id, int32 dc, uint64 accessHash, int32 version, const QString &url, const QVector<MTPDocumentAttribute> &attributes)
+DocumentData::DocumentData(DocumentId id, int32_t dc, uint64_t accessHash, int32_t version, const QString &url, const QVector<MTPDocumentAttribute> &attributes)
 : id(id)
 , _dc(dc)
 , _access(accessHash)
@@ -1605,7 +1605,7 @@ DocumentData *DocumentData::create(DocumentId id) {
 	return new DocumentData(id, 0, 0, 0, QString(), QVector<MTPDocumentAttribute>());
 }
 
-DocumentData *DocumentData::create(DocumentId id, int32 dc, uint64 accessHash, int32 version, const QVector<MTPDocumentAttribute> &attributes) {
+DocumentData *DocumentData::create(DocumentId id, int32_t dc, uint64_t accessHash, int32_t version, const QVector<MTPDocumentAttribute> &attributes) {
 	return new DocumentData(id, dc, accessHash, version, QString(), attributes);
 }
 
@@ -1614,7 +1614,7 @@ DocumentData *DocumentData::create(DocumentId id, const QString &url, const QVec
 }
 
 void DocumentData::setattributes(const QVector<MTPDocumentAttribute> &attributes) {
-	for (int32 i = 0, l = attributes.size(); i < l; ++i) {
+	for (int32_t i = 0, l = attributes.size(); i < l; ++i) {
 		switch (attributes[i].type()) {
 		case mtpc_documentAttributeImageSize: {
 			auto &d = attributes[i].c_documentAttributeImageSize();
@@ -1660,7 +1660,7 @@ void DocumentData::setattributes(const QVector<MTPDocumentAttribute> &attributes
 				voice()->duration = d.vduration.v;
 				VoiceWaveform waveform = documentWaveformDecode(qba(d.vwaveform));
 				uchar wavemax = 0;
-				for (int32 i = 0, l = waveform.size(); i < l; ++i) {
+				for (int32_t i = 0, l = waveform.size(); i < l; ++i) {
 					uchar waveat = waveform.at(i);
 					if (wavemax < waveat) wavemax = waveat;
 				}
@@ -1860,14 +1860,14 @@ bool DocumentData::displayLoading() const {
 	return loading() ? (!_loader->loadingLocal() || !_loader->autoLoading()) : uploading();
 }
 
-float64 DocumentData::progress() const {
+double DocumentData::progress() const {
 	if (uploading()) {
-		return snap((size > 0) ? float64(uploadOffset) / size : 0., 0., 1.);
+		return snap((size > 0) ? double(uploadOffset) / size : 0., 0., 1.);
 	}
 	return loading() ? _loader->currentProgress() : (loaded() ? 1. : 0.);
 }
 
-int32 DocumentData::loadOffset() const {
+int32_t DocumentData::loadOffset() const {
 	return loading() ? _loader->currentOffset() : 0;
 }
 
@@ -1966,9 +1966,9 @@ VoiceWaveform documentWaveformDecode(const QByteArray &encoded5bit) {
 
 	// Read each 5 bit of encoded5bit as 0-31 unsigned char.
 	// We count the index of the byte in which the desired 5-bit sequence starts.
-	// And then we read a uint16 starting from that byte to guarantee to get all of those 5 bits.
+	// And then we read a uint16_t starting from that byte to guarantee to get all of those 5 bits.
 	//
-	// BUT! if it is the last byte we have, we're not allowed to read a uint16 starting with it.
+	// BUT! if it is the last byte we have, we're not allowed to read a uint16_t starting with it.
 	// Because it will be an overflow (we'll access one byte after the available memory).
 	// We see, that only the last 5 bits could start in the last available byte and be problematic.
 	// So we read in a general way all the entries in a general way except the last one.
@@ -1977,14 +1977,14 @@ VoiceWaveform documentWaveformDecode(const QByteArray &encoded5bit) {
 	for (auto i = 0, l = valuesCount - 1; i != l; ++i) {
 		auto byteIndex = (i * 5) / 8;
 		auto bitShift = (i * 5) % 8;
-		auto value = *reinterpret_cast<const uint16*>(bitsData + byteIndex);
+		auto value = *reinterpret_cast<const uint16_t*>(bitsData + byteIndex);
 		result[i] = static_cast<char>((value >> bitShift) & 0x1F);
 	}
 	auto lastByteIndex = ((valuesCount - 1) * 5) / 8;
 	auto lastBitShift = ((valuesCount - 1) * 5) % 8;
 	auto lastValue = (lastByteIndex == encoded5bit.size() - 1)
-		? static_cast<uint16>(*reinterpret_cast<const uchar*>(bitsData + lastByteIndex))
-		: *reinterpret_cast<const uint16*>(bitsData + lastByteIndex);
+		? static_cast<uint16_t>(*reinterpret_cast<const uchar*>(bitsData + lastByteIndex))
+		: *reinterpret_cast<const uint16_t*>(bitsData + lastByteIndex);
 	result[valuesCount - 1] = static_cast<char>((lastValue >> lastBitShift) & 0x1F);
 
 	return result;
@@ -1998,12 +1998,12 @@ QByteArray documentWaveformEncode5bit(const VoiceWaveform &waveform) {
 
 	// Write each 0-31 unsigned char as 5 bit to result.
 	// We reserve one extra byte to be able to dereference any of required bytes
-	// as a uint16 without overflowing, even the byte with index "bytesCount - 1".
+	// as a uint16_t without overflowing, even the byte with index "bytesCount - 1".
 	for (auto i = 0, l = waveform.size(); i < l; ++i) {
 		auto byteIndex = (i * 5) / 8;
 		auto bitShift = (i * 5) % 8;
-		auto value = (static_cast<uint16>(waveform[i]) & 0x1F) << bitShift;
-		*reinterpret_cast<uint16*>(bitsData + byteIndex) |= value;
+		auto value = (static_cast<uint16_t>(waveform[i]) & 0x1F) << bitShift;
+		*reinterpret_cast<uint16_t*>(bitsData + byteIndex) |= value;
 	}
 	result.resize(bytesCount);
 	return result;
@@ -2099,7 +2099,7 @@ void DocumentData::recountIsImage() {
 	_duration = fileIsImage(name, mime) ? 1 : -1; // hack
 }
 
-bool DocumentData::setRemoteVersion(int32 version) {
+bool DocumentData::setRemoteVersion(int32_t version) {
 	if (_version == version) {
 		return false;
 	}
@@ -2113,7 +2113,7 @@ bool DocumentData::setRemoteVersion(int32 version) {
 	return true;
 }
 
-void DocumentData::setRemoteLocation(int32 dc, uint64 access) {
+void DocumentData::setRemoteLocation(int32_t dc, uint64_t access) {
 	_dc = dc;
 	_access = access;
 	if (isValid()) {
@@ -2169,7 +2169,7 @@ QString DocumentData::composeNameString(const QString &filename, const QString &
 	return songPerformer + QString::fromUtf8(" \xe2\x80\x93 ") + trackTitle;
 }
 
-WebPageData::WebPageData(const WebPageId &id, WebPageType type, const QString &url, const QString &displayUrl, const QString &siteName, const QString &title, const TextWithEntities &description, DocumentData *document, PhotoData *photo, int32 duration, const QString &author, int32 pendingTill) : id(id)
+WebPageData::WebPageData(const WebPageId &id, WebPageType type, const QString &url, const QString &displayUrl, const QString &siteName, const QString &title, const TextWithEntities &description, DocumentData *document, PhotoData *photo, int32_t duration, const QString &author, int32_t pendingTill) : id(id)
 , type(type)
 , url(url)
 , displayUrl(displayUrl)
@@ -2183,7 +2183,7 @@ WebPageData::WebPageData(const WebPageId &id, WebPageType type, const QString &u
 , pendingTill(pendingTill) {
 }
 
-GameData::GameData(const GameId &id, const uint64 &accessHash, const QString &shortName, const QString &title, const QString &description, PhotoData *photo, DocumentData *document) : id(id)
+GameData::GameData(const GameId &id, const uint64_t &accessHash, const QString &shortName, const QString &title, const QString &description, PhotoData *photo, DocumentData *document) : id(id)
 , accessHash(accessHash)
 , shortName(shortName)
 , title(title)

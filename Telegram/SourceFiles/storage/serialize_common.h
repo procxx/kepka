@@ -26,15 +26,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Serialize {
 
 inline int stringSize(const QString &str) {
-	return sizeof(quint32) + str.size() * sizeof(ushort);
+	return sizeof(uint32_t) + str.size() * sizeof(ushort);
 }
 
 inline int bytearraySize(const QByteArray &arr) {
-	return sizeof(quint32) + arr.size();
+	return sizeof(uint32_t) + arr.size();
 }
 
 inline int bytesSize(base::const_byte_span bytes) {
-	return sizeof(quint32) + bytes.size();
+	return sizeof(uint32_t) + bytes.size();
 }
 
 struct ReadBytesVectorWrap {
@@ -49,14 +49,14 @@ inline ReadBytesVectorWrap bytes(base::byte_vector &bytes) {
 inline QDataStream &operator>>(QDataStream &stream, ReadBytesVectorWrap data) {
 	auto &bytes = data.bytes;
 	bytes.clear();
-	quint32 len;
+	uint32_t len;
 	stream >> len;
 	if (stream.status() != QDataStream::Ok || len == 0xFFFFFFFF) {
 		return stream;
 	}
 
-	constexpr auto kStep = quint32(1024 * 1024);
-	for (auto allocated = quint32(0); allocated < len;) {
+	constexpr auto kStep = uint32_t(1024 * 1024);
+	for (auto allocated = uint32_t(0); allocated < len;) {
 		auto blockSize = qMin(kStep, len - allocated);
 		bytes.resize(allocated + blockSize);
 		if (stream.readRawData(reinterpret_cast<char*>(bytes.data()) + allocated, blockSize) != blockSize) {
@@ -81,9 +81,9 @@ inline WriteBytesWrap bytes(base::const_byte_span bytes) {
 inline QDataStream &operator<<(QDataStream &stream, WriteBytesWrap data) {
 	auto bytes = data.bytes;
 	if (bytes.empty()) {
-		stream << quint32(0xFFFFFFFF);
+		stream << uint32_t(0xFFFFFFFF);
 	} else {
-		auto size = quint32(bytes.size());
+		auto size = uint32_t(bytes.size());
 		stream << size;
 		stream.writeRawData(reinterpret_cast<const char*>(bytes.data()), size);
 	}
@@ -95,7 +95,7 @@ inline QDataStream &operator<<(QDataStream &stream, ReadBytesVectorWrap data) {
 }
 
 inline int dateTimeSize() {
-	return (sizeof(qint64) + sizeof(quint32) + sizeof(qint8));
+	return (sizeof(int64_t) + sizeof(uint32_t) + sizeof(qint8));
 }
 
 void writeStorageImageLocation(QDataStream &stream, const StorageImageLocation &loc);

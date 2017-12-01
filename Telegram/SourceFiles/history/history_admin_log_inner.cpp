@@ -1396,7 +1396,7 @@ void InnerWidget::performDrag() {
 	//				) {
 	//				uponSelected = false;
 	//			} else {
-	//				uint16 selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
+	//				uint16_t selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
 	//				if (dragState.symbol < selFrom || dragState.symbol >= selTo) {
 	//					uponSelected = false;
 	//				}

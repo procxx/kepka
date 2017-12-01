@@ -243,10 +243,10 @@ QString Instance::cloudLangCode() const {
 
 QByteArray Instance::serialize() const {
 	auto size = Serialize::stringSize(_id);
-	size += sizeof(qint32); // version
+	size += sizeof(int32_t); // version
 	size += Serialize::stringSize(_customFilePathAbsolute) + Serialize::stringSize(_customFilePathRelative);
 	size += Serialize::bytearraySize(_customFileContent);
-	size += sizeof(qint32); // _nonDefaultValues.size()
+	size += sizeof(int32_t); // _nonDefaultValues.size()
 	for (auto &nonDefault : _nonDefaultValues) {
 		size += Serialize::bytearraySize(nonDefault.first) + Serialize::bytearraySize(nonDefault.second);
 	}
@@ -256,9 +256,9 @@ QByteArray Instance::serialize() const {
 	{
 		QDataStream stream(&result, QIODevice::WriteOnly);
 		stream.setVersion(QDataStream::Qt_5_1);
-		stream << _id << qint32(_version);
+		stream << _id << int32_t(_version);
 		stream << _customFilePathAbsolute << _customFilePathRelative << _customFileContent;
-		stream << qint32(_nonDefaultValues.size());
+		stream << int32_t(_nonDefaultValues.size());
 		for (auto &nonDefault : _nonDefaultValues) {
 			stream << nonDefault.first << nonDefault.second;
 		}
@@ -270,10 +270,10 @@ void Instance::fillFromSerialized(const QByteArray &data) {
 	QDataStream stream(data);
 	stream.setVersion(QDataStream::Qt_5_1);
 	QString id;
-	qint32 version = 0;
+	int32_t version = 0;
 	QString customFilePathAbsolute, customFilePathRelative;
 	QByteArray customFileContent;
-	qint32 nonDefaultValuesCount = 0;
+	int32_t nonDefaultValuesCount = 0;
 	stream >> id >> version;
 	stream >> customFilePathAbsolute >> customFilePathRelative >> customFileContent;
 	stream >> nonDefaultValuesCount;

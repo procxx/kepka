@@ -55,11 +55,6 @@ protected:
 signals:
 	void countryChanged();
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-private slots:
-	void onCheckUpdateStatus();
-#endif // TDESKTOP_DISABLE_AUTOUPDATE
-
 	// Internal interface.
 public:
 	struct Data {
@@ -177,7 +172,7 @@ public:
 			QPixmap contentSnapshotNow;
 		};
 		void updateLabelsPosition();
-		void paintContentSnapshot(Painter &p, const QPixmap &snapshot, float64 alpha, float64 howMuchHidden);
+		void paintContentSnapshot(Painter &p, const QPixmap &snapshot, double alpha, double howMuchHidden);
 		void refreshError();
 		void refreshTitle();
 		void refreshDescription();

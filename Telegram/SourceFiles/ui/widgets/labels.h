@@ -36,12 +36,12 @@ public:
 	};
 	void addLine(Part was, Part now);
 
-	void paintFrame(Painter &p, float64 dt) {
+	void paintFrame(Painter &p, double dt) {
 		auto progress = anim::linear(1., dt);
 		paintFrame(p, progress, 1. - progress, progress);
 	}
 
-	void paintFrame(Painter &p, float64 positionReady, float64 alphaWas, float64 alphaNow);
+	void paintFrame(Painter &p, double positionReady, double alphaWas, double alphaNow);
 
 private:
 	struct Line {
@@ -50,7 +50,7 @@ private:
 		Part was;
 		Part now;
 	};
-	void paintLine(Painter &p, const Line &line, float64 positionReady, float64 alphaWas, float64 alphaNow);
+	void paintLine(Painter &p, const Line &line, double positionReady, double alphaWas, double alphaNow);
 
 	style::color _bg;
 	QList<Line> _lines;
@@ -90,7 +90,7 @@ public:
 	};
 	FlatLabel(QWidget *parent, const QString &text, InitType initType, const style::FlatLabel &st = st::defaultFlatLabel);
 
-	void setOpacity(float64 o);
+	void setOpacity(double o);
 
 	void setText(const QString &text);
 	void setRichText(const QString &text);
@@ -103,7 +103,7 @@ public:
 
 	int naturalWidth() const override;
 
-	void setLink(uint16 lnkIndex, const ClickHandlerPtr &lnk);
+	void setLink(uint16_t lnkIndex, const ClickHandlerPtr &lnk);
 
 	using ClickHandlerHook = base::lambda<bool(const ClickHandlerPtr&, Qt::MouseButton)>;
 	void setClickHandlerHook(ClickHandlerHook &&hook);
@@ -164,7 +164,7 @@ private:
 
 	Text _text;
 	const style::FlatLabel &_st;
-	float64 _opacity = 1.;
+	double _opacity = 1.;
 
 	int _allowedWidth = 0;
 	int _fullTextHeight = 0;
@@ -184,7 +184,7 @@ private:
 	};
 	DragAction _dragAction = NoDrag;
 	QPoint _dragStartPosition;
-	uint16 _dragSymbol = 0;
+	uint16_t _dragSymbol = 0;
 	bool _dragWasInactive = false;
 
 	QPoint _lastMousePos;

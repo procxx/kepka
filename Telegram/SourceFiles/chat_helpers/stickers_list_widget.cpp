@@ -46,11 +46,11 @@ constexpr auto kInlineItemsMaxPerRow = 5;
 } // namespace
 
 struct StickerIcon {
-	StickerIcon(uint64 setId) : setId(setId) {
+	StickerIcon(uint64_t setId) : setId(setId) {
 	}
-	StickerIcon(uint64 setId, DocumentData *sticker, int32 pixw, int32 pixh) : setId(setId), sticker(sticker), pixw(pixw), pixh(pixh) {
+	StickerIcon(uint64_t setId, DocumentData *sticker, int32_t pixw, int32_t pixh) : setId(setId), sticker(sticker), pixw(pixw), pixh(pixh) {
 	}
-	uint64 setId = 0;
+	uint64_t setId = 0;
 	DocumentData *sticker = nullptr;
 	ChannelData *megagroup = nullptr;
 	int pixw = 0;
@@ -63,7 +63,7 @@ public:
 	Footer(not_null<StickersListWidget*> parent);
 
 	void preloadImages();
-	void validateSelectedIcon(uint64 setId, ValidateIconAnimations animations);
+	void validateSelectedIcon(uint64_t setId, ValidateIconAnimations animations);
 	void refreshIcons(ValidateIconAnimations animations);
 	bool hasOnlyFeaturedSets() const;
 
@@ -143,7 +143,7 @@ void StickersListWidget::Footer::preloadImages() {
 	});
 }
 
-void StickersListWidget::Footer::validateSelectedIcon(uint64 setId, ValidateIconAnimations animations) {
+void StickersListWidget::Footer::validateSelectedIcon(uint64_t setId, ValidateIconAnimations animations) {
 	auto newSel = 0;
 	for (auto i = 0, l = _icons.size(); i != l; ++i) {
 		if (_icons[i].setId == setId) {
@@ -214,7 +214,7 @@ void StickersListWidget::Footer::paintEvent(QPaintEvent *e) {
 		} else if (icon.megagroup) {
 			icon.megagroup->paintUserpicLeft(p, x + (st::emojiCategory.width - st::stickerGroupCategorySize) / 2, _iconsTop + (st::emojiCategory.height - st::stickerGroupCategorySize) / 2, width(), st::stickerGroupCategorySize);
 		} else {
-			auto getSpecialSetIcon = [](uint64 setId) {
+			auto getSpecialSetIcon = [](uint64_t setId) {
 				if (setId == Stickers::FeaturedSetId) {
 					return &st::stickersTrending;
 				} else if (setId == Stickers::FavedSetId) {
@@ -344,7 +344,7 @@ void StickersListWidget::Footer::updateSelected() {
 	}
 
 	auto p = mapFromGlobal(_iconsMousePos);
-	int32 x = p.x(), y = p.y(), newOver = -1;
+	int32_t x = p.x(), y = p.y(), newOver = -1;
 	if (rtl()) x = width() - x;
 	x -= _iconsLeft;
 	if (x >= st::emojiCategory.width * (kVisibleIconsCount - 1) && x < st::emojiCategory.width * kVisibleIconsCount && y >= _iconsTop && y < _iconsTop + st::emojiCategory.height) {
@@ -416,7 +416,7 @@ void StickersListWidget::validateSelectedIcon(ValidateIconAnimations animations)
 
 void StickersListWidget::Footer::step_icons(TimeMs ms, bool timer) {
 	if (_iconsStartAnim) {
-		auto dt = (ms - _iconsStartAnim) / float64(st::stickerIconMove);
+		auto dt = (ms - _iconsStartAnim) / double(st::stickerIconMove);
 		if (dt >= 1) {
 			_iconsStartAnim = 0;
 			_iconsX.finish();
@@ -575,11 +575,11 @@ int StickersListWidget::countHeight() {
 	return qMax(minimalLastHeight, countResult()) + st::stickerPanPadding;
 }
 
-void StickersListWidget::installedLocally(uint64 setId) {
+void StickersListWidget::installedLocally(uint64_t setId) {
 	_installedLocallySets.insert(setId);
 }
 
-void StickersListWidget::notInstalledLocally(uint64 setId) {
+void StickersListWidget::notInstalledLocally(uint64_t setId) {
 	_installedLocallySets.remove(setId);
 }
 
@@ -827,7 +827,7 @@ void StickersListWidget::paintSticker(Painter &p, Set &set, int y, int index, bo
 		sticker->checkSticker();
 	}
 
-	auto coef = qMin((st::stickerPanSize.width() - st::buttonRadius * 2) / float64(sticker->dimensions.width()), (st::stickerPanSize.height() - st::buttonRadius * 2) / float64(sticker->dimensions.height()));
+	auto coef = qMin((st::stickerPanSize.width() - st::buttonRadius * 2) / double(sticker->dimensions.width()), (st::stickerPanSize.height() - st::buttonRadius * 2) / double(sticker->dimensions.height()));
 	if (coef > 1) coef = 1;
 	auto w = qMax(qRound(coef * sticker->dimensions.width()), 1);
 	auto h = qMax(qRound(coef * sticker->dimensions.height()), 1);
@@ -1041,7 +1041,7 @@ void StickersListWidget::removeRecentSticker(int section, int index) {
 	bool refresh = false;
 	auto sticker = _mySets[section].pack[index];
 	auto &recent = cGetRecentStickers();
-	for (int32 i = 0, l = recent.size(); i < l; ++i) {
+	for (int32_t i = 0, l = recent.size(); i < l; ++i) {
 		if (recent.at(i).first == sticker) {
 			recent.removeAt(i);
 			Local::writeUserSettings();
@@ -1198,14 +1198,14 @@ void StickersListWidget::preloadImages() {
 	}
 }
 
-uint64 StickersListWidget::currentSet(int yOffset) const {
+uint64_t StickersListWidget::currentSet(int yOffset) const {
 	if (_section == Section::Featured) {
 		return Stickers::FeaturedSetId;
 	}
 	return _mySets.isEmpty() ? Stickers::RecentSetId : _mySets[sectionInfoByOffset(yOffset).section].id;
 }
 
-void StickersListWidget::appendSet(Sets &to, uint64 setId, AppendSkip skip) {
+void StickersListWidget::appendSet(Sets &to, uint64_t setId, AppendSkip skip) {
 	auto &sets = Global::StickerSets();
 	auto it = sets.constFind(setId);
 	if (it == sets.cend() || it->stickers.isEmpty()) return;
@@ -1281,7 +1281,7 @@ void StickersListWidget::refreshRecentStickers(bool performResize) {
 	}
 
 	if (performResize && (_section == Section::Stickers || _section == Section::Featured)) {
-		int32 h = countHeight();
+		int32_t h = countHeight();
 		if (h != height()) {
 			resize(width(), h);
 			update();
@@ -1545,7 +1545,7 @@ void StickersListWidget::onPreview() {
 	}
 }
 
-void StickersListWidget::showStickerSet(uint64 setId) {
+void StickersListWidget::showStickerSet(uint64_t setId) {
 	clearSelection();
 
 	if (setId == Stickers::FeaturedSetId) {
@@ -1615,7 +1615,7 @@ void StickersListWidget::showMegagroupSet(ChannelData *megagroup) {
 	}
 }
 
-void StickersListWidget::displaySet(uint64 setId) {
+void StickersListWidget::displaySet(uint64_t setId) {
 	if (setId == Stickers::MegagroupSetId) {
 		if (_megagroupSet->canEditStickers()) {
 			_displayingSetId = setId;
@@ -1643,7 +1643,7 @@ void StickersListWidget::displaySet(uint64 setId) {
 	}
 }
 
-void StickersListWidget::installSet(uint64 setId) {
+void StickersListWidget::installSet(uint64_t setId) {
 	auto &sets = Global::StickerSets();
 	auto it = sets.constFind(setId);
 	if (it != sets.cend()) {
@@ -1683,7 +1683,7 @@ void StickersListWidget::removeMegagroupSet(bool locally) {
 	})));
 }
 
-void StickersListWidget::removeSet(uint64 setId) {
+void StickersListWidget::removeSet(uint64_t setId) {
 	auto &sets = Global::StickerSets();
 	auto it = sets.constFind(setId);
 	if (it != sets.cend()) {

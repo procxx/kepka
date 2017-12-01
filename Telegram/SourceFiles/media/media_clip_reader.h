@@ -169,7 +169,7 @@ private:
 
 	QAtomicInt _autoPausedGif = 0;
 	QAtomicInt _videoPauseRequest = 0;
-	int32 _threadIndex;
+	int32_t _threadIndex;
 
 	bool _autoplay = false;
 
@@ -200,7 +200,7 @@ class Manager : public QObject {
 public:
 
 	Manager(QThread *thread);
-	int32 loadLevel() const {
+	int32_t loadLevel() const {
 		return _loadLevel.load();
 	}
 	void append(Reader *reader, const FileLocation &location, const QByteArray &data);
@@ -213,7 +213,7 @@ public:
 signals:
 	void processDelayed();
 
-	void callback(Media::Clip::Reader *reader, qint32 threadIndex, qint32 notification);
+	void callback(Media::Clip::Reader *reader, int32_t threadIndex, int32_t notification);
 
 public slots:
 	void process();

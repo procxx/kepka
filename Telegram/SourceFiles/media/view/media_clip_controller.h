@@ -59,7 +59,7 @@ signals:
 	void pausePressed();
 	void seekProgress(TimeMs positionMs);
 	void seekFinished(TimeMs positionMs);
-	void volumeChanged(float64 volume);
+	void volumeChanged(double volume);
 	void toFullScreenPressed();
 	void fromFullScreenPressed();
 
@@ -69,13 +69,13 @@ protected:
 	void mousePressEvent(QMouseEvent *e) override;
 
 private:
-	void handleSeekProgress(float64 progress);
-	void handleSeekFinished(float64 progress);
+	void handleSeekProgress(double progress);
+	void handleSeekFinished(double progress);
 
 	template <typename Callback>
 	void startFading(Callback start);
 	void fadeFinished();
-	void fadeUpdated(float64 opacity);
+	void fadeUpdated(double opacity);
 
 	void updatePlayPauseResumeState(const Player::TrackState &state);
 	void updateTimeTexts(const Player::TrackState &state);

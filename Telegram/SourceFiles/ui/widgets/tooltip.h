@@ -40,7 +40,7 @@ class Tooltip : public TWidget {
 	Q_OBJECT
 
 public:
-	static void Show(int32 delay, const AbstractTooltipShower *shower);
+	static void Show(int32_t delay, const AbstractTooltipShower *shower);
 	static void Hide();
 
 private slots:

@@ -123,11 +123,11 @@ QRect computeSourceRect(const QImage &image) {
 	return result;
 }
 
-uint32 Crc32Table[256];
+uint32_t Crc32Table[256];
 class Crc32Initializer {
 public:
 	Crc32Initializer() {
-		uint32 poly = 0x04C11DB7U;
+		uint32_t poly = 0x04C11DB7U;
 		for (auto i = 0; i != 256; ++i) {
 			Crc32Table[i] = reflect(i, 8) << 24;
 			for (auto j = 0; j != 8; ++j) {
@@ -138,8 +138,8 @@ public:
 	}
 
 private:
-	uint32 reflect(uint32 val, char ch) {
-		uint32 result = 0;
+	uint32_t reflect(uint32_t val, char ch) {
+		uint32_t result = 0;
 		for (int i = 1; i < (ch + 1); ++i) {
 			if (val & 1) {
 				result |= 1 << (ch - i);
@@ -151,11 +151,11 @@ private:
 
 };
 
-uint32 countCrc32(const void *data, std::size_t size) {
+uint32_t countCrc32(const void *data, std::size_t size) {
 	static Crc32Initializer InitTable;
 
 	auto buffer = static_cast<const unsigned char*>(data);
-	auto result = uint32(0xFFFFFFFFU);
+	auto result = uint32_t(0xFFFFFFFFU);
 	for (auto i = std::size_t(0); i != size; ++i) {
 		result = (result >> 8) ^ Crc32Table[(result & 0xFFU) ^ buffer[i]];
 	}
@@ -363,7 +363,7 @@ void Init() {\n\
 \n\
 	Items.reserve(base::array_size(Data));\n\
 	for (auto &data : Data) {\n\
-		Items.emplace_back(takeString(data.idSize), uint16(data.column), uint16(data.row), bool(data.postfixed), bool(data.variated), data.original ? &Items[data.original - 1] : nullptr, One::CreationTag());\n\
+		Items.emplace_back(takeString(data.idSize), uint16_t(data.column), uint16_t(data.row), bool(data.postfixed), bool(data.variated), data.original ? &Items[data.original - 1] : nullptr, One::CreationTag());\n\
 	}\n\
 	InitReplacements();\n\
 }\n\
@@ -806,9 +806,9 @@ bool Generator::writeReplacements() {
 	QMap<QChar, QVector<int>> byCharIndices;
 	suggestionsSource_->stream() << "\
 struct ReplacementStruct {\n\
-	small emojiSize;\n\
-	small replacementSize;\n\
-	small wordsCount;\n\
+    smallchar emojiSize;\n\
+    smallchar replacementSize;\n\
+    smallchar wordsCount;\n\
 };\n\
 \n\
 const utf16char ReplacementData[] = {";
@@ -833,7 +833,7 @@ const utf16char ReplacementData[] = {";
 	}
 	suggestionsSource_->stream() << " };\n\
 \n\
-const small ReplacementWordLengths[] = {";
+const smallchar ReplacementWordLengths[] = {";
 	startBinary();
 	for (auto &replace : replaces_.list) {
 		auto wordLengths = QStringList();
@@ -846,7 +846,7 @@ const small ReplacementWordLengths[] = {";
 const ReplacementStruct ReplacementInitData[] = {\n";
 	for (auto &replace : replaces_.list) {
 		suggestionsSource_->stream() << "\
-	{ small(" << replace.id.size() << "), small(" << replace.replacement.size() << "), small(" << replace.words.size() << ") },\n";
+    { smallchar(" << replace.id.size() << "), smallchar(" << replace.replacement.size() << "), smallchar(" << replace.words.size() << ") },\n";
 	}
 	suggestionsSource_->stream() << "};\n\
 \n\
@@ -984,7 +984,7 @@ void Generator::writeIntBinary(common::CppFile *source, int data) {
 	++_binaryFullLength;
 }
 
-void Generator::writeUintBinary(common::CppFile *source, uint32 data) {
+void Generator::writeUintBinary(common::CppFile *source, uint32_t data) {
 	if (_binaryFullLength > 0) source->stream() << ",";
 	if (!_binaryCount++) {
 		source->stream() << "\n";

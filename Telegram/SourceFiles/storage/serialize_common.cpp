@@ -23,20 +23,20 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Serialize {
 
 void writeStorageImageLocation(QDataStream &stream, const StorageImageLocation &loc) {
-	stream << qint32(loc.width()) << qint32(loc.height());
-	stream << qint32(loc.dc()) << quint64(loc.volume()) << qint32(loc.local()) << quint64(loc.secret());
+	stream << int32_t(loc.width()) << int32_t(loc.height());
+	stream << int32_t(loc.dc()) << uint64_t(loc.volume()) << int32_t(loc.local()) << uint64_t(loc.secret());
 }
 
 StorageImageLocation readStorageImageLocation(QDataStream &stream) {
-	qint32 width, height, dc, local;
-	quint64 volume, secret;
+	int32_t width, height, dc, local;
+	uint64_t volume, secret;
 	stream >> width >> height >> dc >> volume >> local >> secret;
 	return StorageImageLocation(width, height, dc, volume, local, secret);
 }
 
 int storageImageLocationSize() {
 	// width + height + dc + volume + local + secret
-	return sizeof(qint32) + sizeof(qint32) + sizeof(qint32) + sizeof(quint64) + sizeof(qint32) + sizeof(quint64);
+	return sizeof(int32_t) + sizeof(int32_t) + sizeof(int32_t) + sizeof(uint64_t) + sizeof(int32_t) + sizeof(uint64_t);
 }
 
 } // namespace Serialize

@@ -162,7 +162,7 @@ private:
 	int _chooseWidth = 0;
 
 	Text _toText;
-	int32 _toTextWidth = 0;
+	int32_t _toTextWidth = 0;
 	QPixmap _cacheForAnim;
 
 };
@@ -211,11 +211,11 @@ public:
 	int minimalWidthForTabbedSelectorSection() const;
 	bool willSwitchToTabbedSelectorWithWidth(int newWidth) const;
 
-	void updateSendAction(History *history, SendAction::Type type, int32 progress = 0);
+	void updateSendAction(History *history, SendAction::Type type, int32_t progress = 0);
 	void cancelSendAction(History *history, SendAction::Type type);
 
 	void updateRecentStickers();
-	void stickersInstalled(uint64 setId);
+	void stickersInstalled(uint64_t setId);
 	void sendActionDone(const MTPBool &result, mtpRequestId req);
 
 	void destroyData();
@@ -241,7 +241,7 @@ public:
 
 	void onShareContact(const PeerId &peer, UserData *contact);
 
-	void shareContact(const PeerId &peer, const QString &phone, const QString &fname, const QString &lname, MsgId replyTo, int32 userId = 0);
+	void shareContact(const PeerId &peer, const QString &phone, const QString &fname, const QString &lname, MsgId replyTo, int32_t userId = 0);
 
 	History *history() const;
 	PeerData *peer() const;
@@ -289,7 +289,7 @@ public:
 	void updatePreview();
 	void previewCancel();
 
-	void step_recording(float64 ms, bool timer);
+	void step_recording(double ms, bool timer);
 	void stopRecording(bool send);
 
 	void onListEscapePressed();
@@ -451,8 +451,8 @@ public slots:
 	void onCloudDraftSave();
 
 	void onRecordError();
-	void onRecordDone(QByteArray result, VoiceWaveform waveform, qint32 samples);
-	void onRecordUpdate(quint16 level, qint32 samples);
+	void onRecordDone(QByteArray result, VoiceWaveform waveform, int32_t samples);
+	void onRecordUpdate(uint16_t level, int32_t samples);
 
 	void onUpdateHistoryItems();
 
@@ -593,7 +593,7 @@ private:
 
 	void drawField(Painter &p, const QRect &rect);
 	void paintEditHeader(Painter &p, const QRect &rect, int left, int top) const;
-	void drawRecording(Painter &p, float64 recordActive);
+	void drawRecording(Painter &p, double recordActive);
 	void drawPinnedBar(Painter &p);
 	void drawRestrictedWrite(Painter &p);
 
@@ -836,7 +836,7 @@ private:
 	TaskQueue _fileLoader;
 	TextUpdateEvents _textUpdateEvents = (TextUpdateEvents() | TextUpdateEvent::SaveDraft | TextUpdateEvent::SendTyping);
 
-	int64 _serviceImageCacheSize = 0;
+	int64_t _serviceImageCacheSize = 0;
 	QString _confirmSource;
 
 	QString _titlePeerText;
@@ -848,7 +848,7 @@ private:
 	QPixmap _cacheUnder, _cacheOver;
 
 	QTimer _scrollTimer;
-	int32 _scrollDelta = 0;
+	int32_t _scrollDelta = 0;
 
 	MsgId _highlightedMessageId = 0;
 	std::deque<MsgId> _highlightQueue;

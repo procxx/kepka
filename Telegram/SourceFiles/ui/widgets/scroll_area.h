@@ -100,7 +100,7 @@ private:
 	QPoint _dragStart;
 	QScrollBar *_connected;
 
-	int32 _startFrom, _scrollMax;
+	int32_t _startFrom, _scrollMax;
 
 	TimeMs _hideIn = 0;
 	QTimer _hideTimer;
@@ -119,7 +119,7 @@ public:
 	SplittedWidget(QWidget *parent) : TWidget(parent) {
 		setAttribute(Qt::WA_OpaquePaintEvent);
 	}
-	void setHeight(int32 newHeight) {
+	void setHeight(int32_t newHeight) {
 		resize(width(), newHeight);
 		emit resizeOther();
 	}
@@ -250,7 +250,7 @@ private:
 
 	void touchResetSpeed();
 	void touchUpdateSpeed();
-	void touchDeaccelerate(int32 elapsed);
+	void touchDeaccelerate(int32_t elapsed);
 
 	bool _disabled = false;
 	bool _movingByScrollBar = false;

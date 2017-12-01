@@ -50,7 +50,7 @@ void CrossFadeAnimation::addLine(Part was, Part now) {
 	_lines.push_back(Line(std::move(was), std::move(now)));
 }
 
-void CrossFadeAnimation::paintFrame(Painter &p, float64 positionReady, float64 alphaWas, float64 alphaNow) {
+void CrossFadeAnimation::paintFrame(Painter &p, double positionReady, double alphaWas, double alphaNow) {
 	if (_lines.isEmpty()) return;
 
 	for_const (auto &line, _lines) {
@@ -58,7 +58,7 @@ void CrossFadeAnimation::paintFrame(Painter &p, float64 positionReady, float64 a
 	}
 }
 
-void CrossFadeAnimation::paintLine(Painter &p, const Line &line, float64 positionReady, float64 alphaWas, float64 alphaNow) {
+void CrossFadeAnimation::paintLine(Painter &p, const Line &line, double positionReady, double alphaWas, double alphaNow) {
 	auto &snapshotWas = line.was.snapshot;
 	auto &snapshotNow = line.now.snapshot;
 	if (snapshotWas.isNull() && snapshotNow.isNull()) {
@@ -233,7 +233,7 @@ void FlatLabel::refreshSize() {
 	resize(fullWidth, fullHeight);
 }
 
-void FlatLabel::setLink(uint16 lnkIndex, const ClickHandlerPtr &lnk) {
+void FlatLabel::setLink(uint16_t lnkIndex, const ClickHandlerPtr &lnk) {
 	_text.setLink(lnkIndex, lnk);
 }
 
@@ -686,7 +686,7 @@ void FlatLabel::updateHover(const Text::StateResult &state) {
 		}
 	} else {
 		if (_dragAction == Selecting) {
-			uint16 second = state.symbol;
+			uint16_t second = state.symbol;
 			if (state.afterSymbol && _selectionType == TextSelectType::Letters) {
 				++second;
 			}
@@ -758,7 +758,7 @@ Text::StateResult FlatLabel::getTextState(const QPoint &m) const {
 	return state;
 }
 
-void FlatLabel::setOpacity(float64 o) {
+void FlatLabel::setOpacity(double o) {
 	_opacity = o;
 	update();
 }

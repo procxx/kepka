@@ -31,8 +31,8 @@ class Font {
 public:
 	Font(Qt::Initialization = Qt::Uninitialized) : ptr(0) {
 	}
-	Font(int size, uint32 flags, const QString &family);
-	Font(int size, uint32 flags, int family);
+	Font(int size, uint32_t flags, const QString &family);
+	Font(int size, uint32_t flags, int family);
 
 	Font &operator=(const Font &other) {
 		ptr = other.ptr;
@@ -55,12 +55,12 @@ public:
 private:
 	FontData *ptr;
 
-	void init(int size, uint32 flags, int family, Font *modified);
+	void init(int size, uint32_t flags, int family, Font *modified);
 	friend void startManager();
 
 	Font(FontData *p) : ptr(p) {
 	}
-	Font(int size, uint32 flags, int family, Font *modified);
+	Font(int size, uint32_t flags, int family, Font *modified);
 	friend class FontData;
 
 };
@@ -76,16 +76,16 @@ enum FontFlags {
 class FontData {
 public:
 
-	int32 width(const QString &str) const {
+	int32_t width(const QString &str) const {
 		return m.width(str);
 	}
-	int32 width(const QString &str, int32 from, int32 to) const {
+	int32_t width(const QString &str, int32_t from, int32_t to) const {
 		return width(str.mid(from, to));
 	}
-	int32 width(QChar ch) const {
+	int32_t width(QChar ch) const {
 		return m.width(ch);
 	}
-	QString elided(const QString &str, int32 width, Qt::TextElideMode mode = Qt::ElideRight) const {
+	QString elided(const QString &str, int32_t width, Qt::TextElideMode mode = Qt::ElideRight) const {
 		return m.elidedText(str, mode, width);
 	}
 
@@ -94,22 +94,22 @@ public:
 	Font underline(bool set = true) const;
 
 	int size() const;
-	uint32 flags() const;
+	uint32_t flags() const;
 	int family() const;
 
 	QFont f;
 	QFontMetrics m;
-	int32 height, ascent, descent, spacew, elidew;
+	int32_t height, ascent, descent, spacew, elidew;
 
 private:
 	mutable Font modified[FontDifferentFlags];
 
-	Font otherFlagsFont(uint32 flag, bool set) const;
-	FontData(int size, uint32 flags, int family, Font *other);
+	Font otherFlagsFont(uint32_t flag, bool set) const;
+	FontData(int size, uint32_t flags, int family, Font *other);
 
 	friend class Font;
 	int _size;
-	uint32 _flags;
+	uint32_t _flags;
 	int _family;
 
 };

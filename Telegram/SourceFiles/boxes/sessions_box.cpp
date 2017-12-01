@@ -115,7 +115,7 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 		//		deviceModel = qsl("Linux");
 		//	}
 			if (appVer == QString::number(appVer.toInt())) {
-				int32 ver = appVer.toInt();
+				int32_t ver = appVer.toInt();
 				appVer = QString("%1.%2").arg(ver / 1000000).arg((ver % 1000000) / 1000) + ((ver % 1000) ? ('.' + QString::number(ver % 1000)) : QString());
 			//} else {
 			//	appVer = QString();
@@ -140,7 +140,7 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 		if (!data.hash || (d.vflags.v & 1)) {
 			data.active = lang(lng_sessions_header);
 			data.activeWidth = st::sessionWhenFont->width(lang(lng_sessions_header));
-			int32 availForName = availCurrent - st::sessionPadding.right() - data.activeWidth;
+			int32_t availForName = availCurrent - st::sessionPadding.right() - data.activeWidth;
 			if (data.nameWidth > availForName) {
 				data.name = st::sessionNameFont->elided(data.name, availForName);
 				data.nameWidth = st::sessionNameFont->width(data.name);
@@ -168,7 +168,7 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 				data.active = lastDate.toString(qsl("d.MM.yy"));
 			}
 			data.activeWidth = st::sessionWhenFont->width(data.active);
-			int32 availForName = availOther - st::sessionPadding.right() - data.activeWidth;
+			int32_t availForName = availOther - st::sessionPadding.right() - data.activeWidth;
 			if (data.nameWidth > availForName) {
 				data.name = st::sessionNameFont->elided(data.name, availForName);
 				data.nameWidth = st::sessionNameFont->width(data.name);
@@ -185,7 +185,7 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 			}
 
 			_list.push_back(data);
-			for (int32 i = _list.size(); i > 1;) {
+			for (int32_t i = _list.size(); i > 1;) {
 				--i;
 				if (_list.at(i).activeTime > _list.at(i - 1).activeTime) {
 					qSwap(_list[i], _list[i - 1]);
@@ -242,8 +242,8 @@ void SessionsBox::Inner::paintEvent(QPaintEvent *e) {
 	Painter p(this);
 
 	p.fillRect(r, st::boxBg);
-	int32 x = st::sessionPadding.left(), xact = st::sessionTerminateSkip + st::sessionTerminate.iconPosition.x();// st::sessionTerminateSkip + st::sessionTerminate.width + st::sessionTerminateSkip;
-	int32 w = width();
+	int32_t x = st::sessionPadding.left(), xact = st::sessionTerminateSkip + st::sessionTerminate.iconPosition.x();// st::sessionTerminateSkip + st::sessionTerminate.width + st::sessionTerminateSkip;
+	int32_t w = width();
 
 	if (_current->active.isEmpty() && _list->isEmpty()) {
 		p.setFont(st::noContactsFont->f);
@@ -277,11 +277,11 @@ void SessionsBox::Inner::paintEvent(QPaintEvent *e) {
 	}
 
 	p.setFont(st::linkFont->f);
-	int32 count = _list->size();
-	int32 from = floorclamp(r.y() - st::sessionCurrentHeight, st::sessionHeight, 0, count);
-	int32 to = ceilclamp(r.y() + r.height() - st::sessionCurrentHeight, st::sessionHeight, 0, count);
+	int32_t count = _list->size();
+	int32_t from = floorclamp(r.y() - st::sessionCurrentHeight, st::sessionHeight, 0, count);
+	int32_t to = ceilclamp(r.y() + r.height() - st::sessionCurrentHeight, st::sessionHeight, 0, count);
 	p.translate(0, from * st::sessionHeight);
-	for (int32 i = from; i < to; ++i) {
+	for (int32_t i = from; i < to; ++i) {
 		const SessionsBox::Data &auth(_list->at(i));
 
 		p.setFont(st::sessionNameFont);
@@ -334,8 +334,8 @@ void SessionsBox::Inner::onTerminateAll() {
 	})), KeepOtherLayers);
 }
 
-void SessionsBox::Inner::terminateDone(uint64 hash, const MTPBool &result) {
-	for (int32 i = 0, l = _list->size(); i < l; ++i) {
+void SessionsBox::Inner::terminateDone(uint64_t hash, const MTPBool &result) {
+	for (int32_t i = 0, l = _list->size(); i < l; ++i) {
 		if (_list->at(i).hash == hash) {
 			_list->removeAt(i);
 			break;
@@ -345,7 +345,7 @@ void SessionsBox::Inner::terminateDone(uint64 hash, const MTPBool &result) {
 	emit oneTerminated();
 }
 
-bool SessionsBox::Inner::terminateFail(uint64 hash, const RPCError &error) {
+bool SessionsBox::Inner::terminateFail(uint64_t hash, const RPCError &error) {
 	if (MTP::isDefaultHandledError(error)) return false;
 
 	TerminateButtons::iterator i = _terminateButtons.find(hash);
@@ -379,7 +379,7 @@ void SessionsBox::Inner::listUpdated() {
 	for (TerminateButtons::iterator i = _terminateButtons.begin(), e = _terminateButtons.end(); i != e; ++i) {
 		i.value()->move(0, -1);
 	}
-	for (int32 i = 0, l = _list->size(); i < l; ++i) {
+	for (int32_t i = 0, l = _list->size(); i < l; ++i) {
 		TerminateButtons::iterator j = _terminateButtons.find(_list->at(i).hash);
 		if (j == _terminateButtons.cend()) {
 			j = _terminateButtons.insert(_list->at(i).hash, new Ui::IconButton(this, st::sessionTerminate));

@@ -54,10 +54,10 @@ public:
 		return _failed;
 	}
 
-	int64 getLengthMs() const {
+	int64_t getLengthMs() const {
 		return _lengthMs;
 	}
-	float64 getPeakValue(TimeMs when) const;
+	double getPeakValue(TimeMs when) const;
 
 	void detachFromDevice();
 	void reattachToDevice();
@@ -75,25 +75,25 @@ private:
 	bool _failed = false;
 	bool _active = false;
 	bool _looping = false;
-	float64 _volume = 1.;
+	double _volume = 1.;
 
-	int64 _samplesCount = 0;
-	int32 _sampleRate = 0;
+	int64_t _samplesCount = 0;
+	int32_t _sampleRate = 0;
 	base::byte_vector _samples;
 
 	TimeMs _peakDurationMs = 0;
 	int _peakEachPosition = 0;
-	std::vector<uint16> _peaks;
-	uint16 _peakValueMin = 0;
-	uint16 _peakValueMax = 0;
+	std::vector<uint16_t> _peaks;
+	uint16_t _peakValueMin = 0;
+	uint16_t _peakValueMax = 0;
 
 	TimeMs _lengthMs = 0;
 	TimeMs _stateUpdatedAt = 0;
 
-	int32 _alFormat = 0;
-	int64 _alPosition = 0;
-	uint32 _alSource = 0;
-	uint32 _alBuffer = 0;
+	int32_t _alFormat = 0;
+	int64_t _alPosition = 0;
+	uint32_t _alSource = 0;
+	uint32_t _alBuffer = 0;
 
 };
 

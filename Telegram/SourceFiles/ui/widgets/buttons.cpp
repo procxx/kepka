@@ -155,7 +155,7 @@ void FlatButton::setText(const QString &text) {
 	update();
 }
 
-void FlatButton::setWidth(int32 w) {
+void FlatButton::setWidth(int32_t w) {
 	_width = w;
 	if (_width < 0) {
 		_width = textWidth() - _st.width;
@@ -165,7 +165,7 @@ void FlatButton::setWidth(int32 w) {
 	resize(_width, height());
 }
 
-int32 FlatButton::textWidth() const {
+int32_t FlatButton::textWidth() const {
 	return _st.font->width(_text);
 }
 
@@ -673,7 +673,7 @@ void CrossButton::paintEvent(QPaintEvent *e) {
 		if (stopLoadingAnimation(ms)) {
 			_a_loading.stop();
 		} else {
-			loading = ((ms - _loadingStartMs) % _st.loadingPeriod) / float64(_st.loadingPeriod);
+			loading = ((ms - _loadingStartMs) % _st.loadingPeriod) / double(_st.loadingPeriod);
 		}
 	}
 	CrossAnimation::paint(p, _st.cross, over ? _st.crossFgOver : _st.crossFg, _st.crossPosition.x(), _st.crossPosition.y(), width(), shown, loading);

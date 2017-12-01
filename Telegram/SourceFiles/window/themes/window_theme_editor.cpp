@@ -614,7 +614,7 @@ void ThemeExportBox::resizeEvent(QResizeEvent *e) {
 }
 
 void ThemeExportBox::updateThumbnail() {
-	int32 size = st::settingsBackgroundSize * cIntRetinaFactor();
+	int32_t size = st::settingsBackgroundSize * cIntRetinaFactor();
 	QImage back(size, size, QImage::Format_ARGB32_Premultiplied);
 	back.setDevicePixelRatio(cRetinaFactor());
 	{

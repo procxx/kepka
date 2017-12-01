@@ -34,15 +34,15 @@ extern "C" {
 
 struct VideoSoundData {
 	AVCodecContext *context = nullptr;
-	int32 frequency = Media::Player::kDefaultFrequency;
-	int64 length = 0;
+	int32_t frequency = Media::Player::kDefaultFrequency;
+	int64_t length = 0;
 	~VideoSoundData();
 };
 
 struct VideoSoundPart {
 	AVPacket *packet = nullptr;
 	AudioMsgId audio;
-	uint32 playId = 0;
+	uint32_t playId = 0;
 };
 
 namespace FFMpeg {
@@ -85,25 +85,25 @@ class ChildFFMpegLoader : public AudioPlayerLoader {
 public:
 	ChildFFMpegLoader(std::unique_ptr<VideoSoundData> &&data);
 
-	bool open(qint64 &position) override;
+	bool open(int64_t &position) override;
 
 	bool check(const FileLocation &file, const QByteArray &data) override {
 		return true;
 	}
 
-	int32 format() override {
+	int32_t format() override {
 		return _format;
 	}
 
-	int64 samplesCount() override {
+	int64_t samplesCount() override {
 		return _parentData->length;
 	}
 
-	int32 samplesFrequency() override {
+	int32_t samplesFrequency() override {
 		return _parentData->frequency;
 	}
 
-	ReadResult readMore(QByteArray &result, int64 &samplesAdded) override;
+	ReadResult readMore(QByteArray &result, int64_t &samplesAdded) override;
 	void enqueuePackets(QQueue<FFMpeg::AVPacketDataWrap> &packets) override;
 
 	bool eofReached() const {
@@ -113,15 +113,15 @@ public:
 	~ChildFFMpegLoader();
 
 private:
-	ReadResult readFromReadyFrame(QByteArray &result, int64 &samplesAdded);
+	ReadResult readFromReadyFrame(QByteArray &result, int64_t &samplesAdded);
 
 	bool _eofReached = false;
 
-	int32 _sampleSize = 2 * sizeof(uint16);
-	int32 _format = AL_FORMAT_STEREO16;
-	int32 _srcRate = Media::Player::kDefaultFrequency;
-	int32 _dstRate = Media::Player::kDefaultFrequency;
-	int32 _maxResampleSamples = 1024;
+	int32_t _sampleSize = 2 * sizeof(uint16_t);
+	int32_t _format = AL_FORMAT_STEREO16;
+	int32_t _srcRate = Media::Player::kDefaultFrequency;
+	int32_t _dstRate = Media::Player::kDefaultFrequency;
+	int32_t _maxResampleSamples = 1024;
 	uint8_t **_dstSamplesData = nullptr;
 
 	std::unique_ptr<VideoSoundData> _parentData;

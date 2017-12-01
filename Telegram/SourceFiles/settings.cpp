@@ -28,8 +28,8 @@ Qt::LayoutDirection gLangDir = gRtl ? Qt::RightToLeft : Qt::LeftToRight;
 QString gArguments;
 
 bool gAlphaVersion = AppAlphaVersion;
-uint64 gBetaVersion = AppBetaVersion;
-uint64 gRealBetaVersion = AppBetaVersion;
+uint64_t gBetaVersion = AppBetaVersion;
+uint64_t gRealBetaVersion = AppBetaVersion;
 QByteArray gBetaPrivateKey;
 
 bool gTestMode = false;
@@ -54,14 +54,14 @@ LaunchMode gLaunchMode = LaunchModeNormal;
 bool gSupportTray = true;
 bool gSeenTrayTooltip = false;
 bool gRestartingUpdate = false, gRestarting = false, gRestartingToSettings = false, gWriteProtected = false;
-int32 gLastUpdateCheck = 0;
+int32_t gLastUpdateCheck = 0;
 bool gNoStartUpdate = false;
 bool gStartToSettings = false;
 bool gReplaceEmojis = true;
 
 bool gCtrlEnter = false;
 
-uint32 gConnectionsInSession = 1;
+uint32_t gConnectionsInSession = 1;
 QString gLoggedPhoneNumber;
 
 QByteArray gLocalSalt;
@@ -85,12 +85,12 @@ RecentHashtagPack gRecentWriteHashtags, gRecentSearchHashtags;
 RecentInlineBots gRecentInlineBots;
 
 bool gPasswordRecovered = false;
-int32 gPasscodeBadTries = 0;
+int32_t gPasscodeBadTries = 0;
 TimeMs gPasscodeLastTry = 0;
 
 bool gRetina = false;
-float64 gRetinaFactor = 1.;
-int32 gIntRetinaFactor = 1;
+double gRetinaFactor = 1.;
+int32_t gIntRetinaFactor = 1;
 
 #ifdef Q_OS_WIN
 DBIPlatform gPlatform = dbipWindows;
@@ -114,9 +114,9 @@ SavedPeersByTime gSavedPeersByTime;
 
 ReportSpamStatuses gReportSpamStatuses;
 
-int32 gAutoDownloadPhoto = 0; // all auto download
-int32 gAutoDownloadAudio = 0;
-int32 gAutoDownloadGif = 0;
+int32_t gAutoDownloadPhoto = 0; // all auto download
+int32_t gAutoDownloadAudio = 0;
+int32_t gAutoDownloadGif = 0;
 bool gAutoPlayGif = true;
 
 void ParseCommandLineArguments(const QStringList &arguments) {

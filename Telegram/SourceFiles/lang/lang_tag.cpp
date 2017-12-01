@@ -154,7 +154,7 @@ int FindTagReplacementPosition(const QString &original, ushort tag) {
 
 }
 
-PluralResult Plural(ushort keyBase, float64 value) {
+PluralResult Plural(ushort keyBase, double value) {
 	// Simplified.
 	auto n = qAbs(value);
 	auto i = qFloor(n);

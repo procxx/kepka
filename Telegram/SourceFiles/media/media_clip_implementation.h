@@ -60,7 +60,7 @@ public:
 
 	virtual ~ReaderImplementation() {
 	}
-	int64 dataSize() const {
+	int64_t dataSize() const {
 		return _dataSize;
 	}
 
@@ -70,7 +70,7 @@ protected:
 	QFile _file;
 	QBuffer _buffer;
 	QIODevice *_device = nullptr;
-	int64 _dataSize = 0;
+	int64_t _dataSize = 0;
 
 	void initDevice();
 

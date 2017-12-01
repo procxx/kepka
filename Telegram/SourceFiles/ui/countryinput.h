@@ -97,8 +97,8 @@ public:
 
 	void updateFilter(QString filter = QString());
 
-	void selectSkip(int32 dir);
-	void selectSkipPage(int32 h, int32 dir);
+	void selectSkip(int32_t dir);
+	void selectSkipPage(int32_t h, int32_t dir);
 
 	void chooseCountry();
 

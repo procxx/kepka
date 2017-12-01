@@ -181,7 +181,7 @@ private:
 	not_null<ChannelData*> _channel;
 	not_null<History*> _history;
 	std::vector<HistoryItemOwned> _items;
-	std::map<uint64, HistoryItem*> _itemsByIds;
+	std::map<uint64_t, HistoryItem*> _itemsByIds;
 	int _itemsTop = 0;
 	int _itemsHeight = 0;
 
@@ -200,8 +200,8 @@ private:
 	int _scrollDateLastItemTop = 0;
 
 	// Up - max, Down - min.
-	uint64 _maxId = 0;
-	uint64 _minId = 0;
+	uint64_t _maxId = 0;
+	uint64_t _minId = 0;
 	mtpRequestId _preloadUpRequestId = 0;
 	mtpRequestId _preloadDownRequestId = 0;
 
@@ -217,7 +217,7 @@ private:
 	QPoint _mousePosition;
 	HistoryItem *_mouseActionItem = nullptr;
 	HistoryCursorState _mouseCursorState = HistoryDefaultCursorState;
-	uint16 _mouseTextSymbol = 0;
+	uint16_t _mouseTextSymbol = 0;
 	bool _pressWasInactive = false;
 
 	HistoryItem *_selectedItem = nullptr;

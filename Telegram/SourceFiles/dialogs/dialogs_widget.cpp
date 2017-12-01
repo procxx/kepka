@@ -29,7 +29,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwindow.h"
 #include "mainwidget.h"
 #include "ui/widgets/input_fields.h"
-#include "autoupdater.h"
 #include "auth_session.h"
 #include "messenger.h"
 #include "ui/effects/widget_fade_wrap.h"
@@ -118,13 +117,6 @@ DialogsWidget::DialogsWidget(QWidget *parent, not_null<Window::Controller*> cont
 	connect(_filter, SIGNAL(changed()), this, SLOT(onFilterUpdate()));
 	connect(_filter, SIGNAL(cursorPositionChanged(int,int)), this, SLOT(onFilterCursorMoved(int,int)));
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	Sandbox::connect(SIGNAL(updateLatest()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::connect(SIGNAL(updateFailed()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::connect(SIGNAL(updateReady()), this, SLOT(onCheckUpdateStatus()));
-	onCheckUpdateStatus();
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
-
 	subscribe(Adaptive::Changed(), [this] { updateForwardBar(); });
 
 	_cancelSearch->setClickedCallback([this] { onCancelSearch(); });
@@ -161,24 +153,6 @@ DialogsWidget::DialogsWidget(QWidget *parent, not_null<Window::Controller*> cont
 	updateJumpToDateVisibility(true);
 	updateSearchFromVisibility(true);
 }
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-void DialogsWidget::onCheckUpdateStatus() {
-	if (Sandbox::updatingState() == Application::UpdatingReady) {
-		if (_updateTelegram) return;
-		_updateTelegram.create(this);
-		_updateTelegram->show();
-		_updateTelegram->setClickedCallback([] {
-			checkReadyUpdate();
-			App::restart();
-		});
-	} else {
-		if (!_updateTelegram) return;
-		_updateTelegram.destroy();
-	}
-	updateControlsGeometry();
-}
-#endif // TDESKTOP_DISABLE_AUTOUPDATE
 
 void DialogsWidget::activate() {
 	_filter->setFocus();
@@ -462,7 +436,7 @@ void DialogsWidget::onDraggingScrollDelta(int delta) {
 }
 
 void DialogsWidget::onDraggingScrollTimer() {
-	auto delta = (_draggingScrollDelta > 0) ? qMin(_draggingScrollDelta * 3 / 20 + 1, int32(MaxScrollSpeed)) : qMax(_draggingScrollDelta * 3 / 20 - 1, -int32(MaxScrollSpeed));
+	auto delta = (_draggingScrollDelta > 0) ? qMin(_draggingScrollDelta * 3 / 20 + 1, int32_t(MaxScrollSpeed)) : qMax(_draggingScrollDelta * 3 / 20 - 1, -int32_t(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + delta);
 }
 
@@ -966,7 +940,7 @@ void DialogsWidget::updateControlsGeometry() {
 		filterAreaTop += st::dialogsForwardHeight;
 	}
 	auto smallLayoutWidth = (st::dialogsPadding.x() + st::dialogsPhotoSize + st::dialogsPadding.x());
-	auto smallLayoutRatio = (width() < st::dialogsWidthMin) ? (st::dialogsWidthMin - width()) / float64(st::dialogsWidthMin - smallLayoutWidth) : 0.;
+	auto smallLayoutRatio = (width() < st::dialogsWidthMin) ? (st::dialogsWidthMin - width()) / double(st::dialogsWidthMin - smallLayoutWidth) : 0.;
 	auto filterLeft = st::dialogsFilterPadding.x() + _mainMenuToggle->width() + st::dialogsFilterPadding.x();
 	auto filterRight = (Global::LocalPasscode() ? (st::dialogsFilterPadding.x() + _lockUnlock->width()) : st::dialogsFilterSkip) + st::dialogsFilterPadding.x();
 	auto filterWidth = qMax(width(), st::dialogsWidthMin) - filterLeft - filterRight;
@@ -1174,7 +1148,7 @@ void DialogsWidget::onCancelSearchInPeer() {
 }
 
 void DialogsWidget::onDialogMoved(int movedFrom, int movedTo) {
-	int32 st = _scroll->scrollTop();
+	int32_t st = _scroll->scrollTop();
 	if (st > movedTo && st < movedFrom) {
 		_scroll->scrollToY(st + st::dialogsRowHeight);
 	}

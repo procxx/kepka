@@ -26,15 +26,15 @@ class RadialAnimation {
 public:
 	RadialAnimation(AnimationCallbacks &&callbacks);
 
-	float64 opacity() const {
+	double opacity() const {
 		return _opacity;
 	}
 	bool animating() const {
 		return _animation.animating();
 	}
 
-	void start(float64 prg);
-	void update(float64 prg, bool finished, TimeMs ms);
+	void start(double prg);
+	void update(double prg, bool finished, TimeMs ms);
 	void stop();
 
 	void step(TimeMs ms);
@@ -42,13 +42,13 @@ public:
 		step(getms());
 	}
 
-	void draw(Painter &p, const QRect &inner, int32 thickness, style::color color);
+	void draw(Painter &p, const QRect &inner, int32_t thickness, style::color color);
 
 private:
 	TimeMs _firstStart = 0;
 	TimeMs _lastStart = 0;
 	TimeMs _lastTime = 0;
-	float64 _opacity = 0.;
+	double _opacity = 0.;
 	anim::value a_arcEnd;
 	anim::value a_arcStart;
 	BasicAnimation _animation;

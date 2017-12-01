@@ -211,7 +211,7 @@ void start();
 bool started();
 void finish();
 
-uint64 UserTag();
+uint64_t UserTag();
 
 DeclareVar(QByteArray, LastCrashDump);
 DeclareVar(ProxyData, PreLaunchProxy);
@@ -250,7 +250,7 @@ constexpr auto FeaturedSetId = 0xFFFFFFFFFFFFFFFBULL; // for emoji/stickers pane
 constexpr auto FavedSetId = 0xFFFFFFFFFFFFFFFAULL; // for cloud-stored faved stickers
 constexpr auto MegagroupSetId = 0xFFFFFFFFFFFFFFEFULL; // for setting up megagroup sticker set
 struct Set {
-	Set(uint64 id, uint64 access, const QString &title, const QString &shortName, int32 count, int32 hash, MTPDstickerSet::Flags flags)
+	Set(uint64_t id, uint64_t access, const QString &title, const QString &shortName, int32_t count, int32_t hash, MTPDstickerSet::Flags flags)
 		: id(id)
 		, access(access)
 		, title(title)
@@ -259,15 +259,15 @@ struct Set {
 		, hash(hash)
 		, flags(flags) {
 	}
-	uint64 id, access;
+	uint64_t id, access;
 	QString title, shortName;
-	int32 count, hash;
+	int32_t count, hash;
 	MTPDstickerSet::Flags flags;
 	StickerPack stickers;
 	StickersByEmojiMap emoji;
 };
-using Sets = QMap<uint64, Set>;
-using Order = QList<uint64>;
+using Sets = QMap<uint64_t, Set>;
+using Order = QList<uint64_t>;
 
 inline MTPInputStickerSet inputSetId(const Set &set) {
 	if (set.id && set.access) {
@@ -300,40 +300,40 @@ DeclareVar(bool, ModerateModeEnabled);
 
 DeclareVar(bool, ScreenIsLocked);
 
-DeclareVar(int32, DebugLoggingFlags);
+DeclareVar(int32_t, DebugLoggingFlags);
 
-constexpr float64 kDefaultVolume = 0.9;
+constexpr double kDefaultVolume = 0.9;
 
-DeclareVar(float64, RememberedSongVolume);
-DeclareVar(float64, SongVolume);
+DeclareVar(double, RememberedSongVolume);
+DeclareVar(double, SongVolume);
 DeclareRefVar(base::Observable<void>, SongVolumeChanged);
-DeclareVar(float64, VideoVolume);
+DeclareVar(double, VideoVolume);
 DeclareRefVar(base::Observable<void>, VideoVolumeChanged);
 
 // config
-DeclareVar(int32, ChatSizeMax);
-DeclareVar(int32, MegagroupSizeMax);
-DeclareVar(int32, ForwardedCountMax);
-DeclareVar(int32, OnlineUpdatePeriod);
-DeclareVar(int32, OfflineBlurTimeout);
-DeclareVar(int32, OfflineIdleTimeout);
-DeclareVar(int32, OnlineFocusTimeout); // not from config
-DeclareVar(int32, OnlineCloudTimeout);
-DeclareVar(int32, NotifyCloudDelay);
-DeclareVar(int32, NotifyDefaultDelay);
-DeclareVar(int32, ChatBigSize);
-DeclareVar(int32, PushChatPeriod);
-DeclareVar(int32, PushChatLimit);
-DeclareVar(int32, SavedGifsLimit);
-DeclareVar(int32, EditTimeLimit);
-DeclareVar(int32, StickersRecentLimit);
-DeclareVar(int32, StickersFavedLimit);
-DeclareVar(int32, PinnedDialogsCountMax);
+DeclareVar(int32_t, ChatSizeMax);
+DeclareVar(int32_t, MegagroupSizeMax);
+DeclareVar(int32_t, ForwardedCountMax);
+DeclareVar(int32_t, OnlineUpdatePeriod);
+DeclareVar(int32_t, OfflineBlurTimeout);
+DeclareVar(int32_t, OfflineIdleTimeout);
+DeclareVar(int32_t, OnlineFocusTimeout); // not from config
+DeclareVar(int32_t, OnlineCloudTimeout);
+DeclareVar(int32_t, NotifyCloudDelay);
+DeclareVar(int32_t, NotifyDefaultDelay);
+DeclareVar(int32_t, ChatBigSize);
+DeclareVar(int32_t, PushChatPeriod);
+DeclareVar(int32_t, PushChatLimit);
+DeclareVar(int32_t, SavedGifsLimit);
+DeclareVar(int32_t, EditTimeLimit);
+DeclareVar(int32_t, StickersRecentLimit);
+DeclareVar(int32_t, StickersFavedLimit);
+DeclareVar(int32_t, PinnedDialogsCountMax);
 DeclareVar(QString, InternalLinksDomain);
-DeclareVar(int32, CallReceiveTimeoutMs);
-DeclareVar(int32, CallRingTimeoutMs);
-DeclareVar(int32, CallConnectTimeoutMs);
-DeclareVar(int32, CallPacketTimeoutMs);
+DeclareVar(int32_t, CallReceiveTimeoutMs);
+DeclareVar(int32_t, CallRingTimeoutMs);
+DeclareVar(int32_t, CallConnectTimeoutMs);
+DeclareVar(int32_t, CallPacketTimeoutMs);
 DeclareVar(bool, PhoneCallsEnabled);
 DeclareRefVar(base::Observable<void>, PhoneCallsEnabledChanged);
 
@@ -354,7 +354,7 @@ DeclareRefVar(base::Observable<void>, FeaturedStickerSetsUnreadCountChanged);
 DeclareVar(TimeMs, LastFeaturedStickersUpdate);
 DeclareVar(Stickers::Order, ArchivedStickerSetsOrder);
 
-typedef QMap<uint64, QPixmap> CircleMasksMap;
+typedef QMap<uint64_t, QPixmap> CircleMasksMap;
 DeclareRefVar(CircleMasksMap, CircleMasks);
 
 DeclareRefVar(base::Observable<void>, SelfChanged);

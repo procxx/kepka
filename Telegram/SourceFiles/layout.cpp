@@ -90,27 +90,27 @@ const TextParseOptions &itemTextNoMonoOptions(const HistoryItem *item) {
 	return itemTextNoMonoOptions(item->history(), item->author());
 }
 
-QString formatSizeText(qint64 size) {
+QString formatSizeText(int64_t size) {
 	if (size >= 1024 * 1024) { // more than 1 mb
-		qint64 sizeTenthMb = (size * 10 / (1024 * 1024));
+		int64_t sizeTenthMb = (size * 10 / (1024 * 1024));
 		return QString::number(sizeTenthMb / 10) + '.' + QString::number(sizeTenthMb % 10) + qsl(" MB");
 	}
 	if (size >= 1024) {
-		qint64 sizeTenthKb = (size * 10 / 1024);
+		int64_t sizeTenthKb = (size * 10 / 1024);
 		return QString::number(sizeTenthKb / 10) + '.' + QString::number(sizeTenthKb % 10) + qsl(" KB");
 	}
 	return QString::number(size) + qsl(" B");
 }
 
-QString formatDownloadText(qint64 ready, qint64 total) {
+QString formatDownloadText(int64_t ready, int64_t total) {
 	QString readyStr, totalStr, mb;
 	if (total >= 1024 * 1024) { // more than 1 mb
-		qint64 readyTenthMb = (ready * 10 / (1024 * 1024)), totalTenthMb = (total * 10 / (1024 * 1024));
+		int64_t readyTenthMb = (ready * 10 / (1024 * 1024)), totalTenthMb = (total * 10 / (1024 * 1024));
 		readyStr = QString::number(readyTenthMb / 10) + '.' + QString::number(readyTenthMb % 10);
 		totalStr = QString::number(totalTenthMb / 10) + '.' + QString::number(totalTenthMb % 10);
 		mb = qsl("MB");
 	} else if (total >= 1024) {
-		qint64 readyKb = (ready / 1024), totalKb = (total / 1024);
+		int64_t readyKb = (ready / 1024), totalKb = (total / 1024);
 		readyStr = QString::number(readyKb);
 		totalStr = QString::number(totalKb);
 		mb = qsl("KB");
@@ -122,12 +122,12 @@ QString formatDownloadText(qint64 ready, qint64 total) {
 	return lng_save_downloaded(lt_ready, readyStr, lt_total, totalStr, lt_mb, mb);
 }
 
-QString formatDurationText(qint64 duration) {
-	qint64 hours = (duration / 3600), minutes = (duration % 3600) / 60, seconds = duration % 60;
+QString formatDurationText(int64_t duration) {
+	int64_t hours = (duration / 3600), minutes = (duration % 3600) / 60, seconds = duration % 60;
 	return (hours ? QString::number(hours) + ':' : QString()) + (minutes >= 10 ? QString() : QString('0')) + QString::number(minutes) + ':' + (seconds >= 10 ? QString() : QString('0')) + QString::number(seconds);
 }
 
-QString formatDurationWords(qint64 duration) {
+QString formatDurationWords(int64_t duration) {
 	if (duration > 59) {
 		auto minutes = (duration / 60);
 		auto minutesCount = lng_duration_minsec_minutes(lt_count, minutes);
@@ -138,24 +138,24 @@ QString formatDurationWords(qint64 duration) {
 	return lng_duration_seconds(lt_count, duration);
 }
 
-QString formatDurationAndSizeText(qint64 duration, qint64 size) {
+QString formatDurationAndSizeText(int64_t duration, int64_t size) {
 	return lng_duration_and_size(lt_duration, formatDurationText(duration), lt_size, formatSizeText(size));
 }
 
-QString formatGifAndSizeText(qint64 size) {
+QString formatGifAndSizeText(int64_t size) {
 	return lng_duration_and_size(lt_duration, qsl("GIF"), lt_size, formatSizeText(size));
 }
 
-QString formatPlayedText(qint64 played, qint64 duration) {
+QString formatPlayedText(int64_t played, int64_t duration) {
 	return lng_duration_played(lt_played, formatDurationText(played), lt_duration, formatDurationText(duration));
 }
 
-int32 documentColorIndex(DocumentData *document, QString &ext) {
-	int32 colorIndex = 0;
+int32_t documentColorIndex(DocumentData *document, QString &ext) {
+	int32_t colorIndex = 0;
 
 	QString name = document ? (document->name.isEmpty() ? (document->sticker() ? lang(lng_in_dlg_sticker) : qsl("Unknown File")) : document->name) : lang(lng_message_empty);
 	name = name.toLower();
-	int32 lastDot = name.lastIndexOf('.');
+	int32_t lastDot = name.lastIndexOf('.');
 	QString mime = document ? document->mime.toLower() : QString();
 	if (name.endsWith(qstr(".doc")) ||
 		name.endsWith(qstr(".txt")) ||
@@ -193,7 +193,7 @@ int32 documentColorIndex(DocumentData *document, QString &ext) {
 	return colorIndex;
 }
 
-style::color documentColor(int32 colorIndex) {
+style::color documentColor(int32_t colorIndex) {
 	const style::color colors[] = {
 		st::msgFile1Bg,
 		st::msgFile2Bg,
@@ -203,7 +203,7 @@ style::color documentColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-style::color documentDarkColor(int32 colorIndex) {
+style::color documentDarkColor(int32_t colorIndex) {
 	static style::color colors[] = {
 		st::msgFile1BgDark,
 		st::msgFile2BgDark,
@@ -213,7 +213,7 @@ style::color documentDarkColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-style::color documentOverColor(int32 colorIndex) {
+style::color documentOverColor(int32_t colorIndex) {
 	static style::color colors[] = {
 		st::msgFile1BgOver,
 		st::msgFile2BgOver,
@@ -223,7 +223,7 @@ style::color documentOverColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-style::color documentSelectedColor(int32 colorIndex) {
+style::color documentSelectedColor(int32_t colorIndex) {
 	static style::color colors[] = {
 		st::msgFile1BgSelected,
 		st::msgFile2BgSelected,
@@ -233,7 +233,7 @@ style::color documentSelectedColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-RoundCorners documentCorners(int32 colorIndex) {
+RoundCorners documentCorners(int32_t colorIndex) {
 	return RoundCorners(Doc1Corners + (colorIndex & 3));
 }
 

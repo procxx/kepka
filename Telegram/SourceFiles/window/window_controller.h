@@ -84,10 +84,10 @@ public:
 
 	void showJumpToDate(not_null<PeerData*> peer, QDate requestedDate);
 
-	base::Variable<float64> &dialogsWidthRatio() {
+	base::Variable<double> &dialogsWidthRatio() {
 		return _dialogsWidthRatio;
 	}
-	const base::Variable<float64> &dialogsWidthRatio() const {
+	const base::Variable<double> &dialogsWidthRatio() const {
 		return _dialogsWidthRatio;
 	}
 	base::Variable<bool> &dialogsListFocused() {
@@ -113,7 +113,7 @@ private:
 	base::Observable<void> _gifPauseLevelChanged;
 	base::Observable<void> _floatPlayerAreaUpdated;
 
-	base::Variable<float64> _dialogsWidthRatio = { kDefaultDialogsWidthRatio };
+	base::Variable<double> _dialogsWidthRatio = { kDefaultDialogsWidthRatio };
 	base::Variable<bool> _dialogsListFocused = { false };
 	base::Variable<bool> _dialogsListDisplayForced = { false };
 

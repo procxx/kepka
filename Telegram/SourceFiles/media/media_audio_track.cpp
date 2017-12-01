@@ -65,7 +65,7 @@ void Track::samplePeakEach(TimeMs peakDuration) {
 void Track::fillFromData(base::byte_vector &&data) {
 	FFMpegLoader loader(FileLocation(), QByteArray(), std::move(data));
 
-	auto position = qint64(0);
+	auto position = int64_t(0);
 	if (!loader.open(position)) {
 		_failed = true;
 		return;
@@ -74,12 +74,12 @@ void Track::fillFromData(base::byte_vector &&data) {
 	_peakEachPosition = _peakDurationMs ? ((loader.samplesFrequency() * _peakDurationMs) / 1000) : 0;
 	auto peaksCount = _peakEachPosition ? (loader.samplesCount() / _peakEachPosition) : 0;
 	_peaks.reserve(peaksCount);
-	auto peakValue = uint16(0);
+	auto peakValue = uint16_t(0);
 	auto peakSamples = 0;
 	auto peakEachSample = (format == AL_FORMAT_STEREO8 || format == AL_FORMAT_STEREO16) ? (_peakEachPosition * 2) : _peakEachPosition;
 	_peakValueMin = 0x7FFF;
 	_peakValueMax = 0;
-	auto peakCallback = [this, &peakValue, &peakSamples, peakEachSample](uint16 sample) {
+	auto peakCallback = [this, &peakValue, &peakSamples, peakEachSample](uint16_t sample) {
 		accumulate_max(peakValue, sample);
 		if (++peakSamples >= peakEachSample) {
 			peakSamples -= peakEachSample;
@@ -91,7 +91,7 @@ void Track::fillFromData(base::byte_vector &&data) {
 	};
 	do {
 		auto buffer = QByteArray();
-		auto samplesAdded = int64(0);
+		auto samplesAdded = int64_t(0);
 		auto result = loader.readMore(buffer, samplesAdded);
 		if (samplesAdded > 0) {
 			auto sampleBytes = gsl::as_bytes(gsl::make_span(buffer));
@@ -101,7 +101,7 @@ void Track::fillFromData(base::byte_vector &&data) {
 				if (format == AL_FORMAT_MONO8 || format == AL_FORMAT_STEREO8) {
 					Media::Audio::IterateSamples<uchar>(sampleBytes, peakCallback);
 				} else if (format == AL_FORMAT_MONO16 || format == AL_FORMAT_STEREO16) {
-					Media::Audio::IterateSamples<int16>(sampleBytes, peakCallback);
+					Media::Audio::IterateSamples<int16_t>(sampleBytes, peakCallback);
 				}
 			}
 		}
@@ -216,7 +216,7 @@ void Track::updateState() {
 	}
 }
 
-float64 Track::getPeakValue(TimeMs when) const {
+double Track::getPeakValue(TimeMs when) const {
 	if (!isActive() || !_samplesCount || _peaks.empty() || _peakValueMin == _peakValueMax) {
 		return 0.;
 	}
@@ -226,7 +226,7 @@ float64 Track::getPeakValue(TimeMs when) const {
 	}
 	sampleIndex = sampleIndex % _samplesCount;
 	auto peakIndex = (sampleIndex / _peakEachPosition) % _peaks.size();
-	return (_peaks[peakIndex] - _peakValueMin) / float64(_peakValueMax - _peakValueMin);
+	return (_peaks[peakIndex] - _peakValueMin) / double(_peakValueMax - _peakValueMin);
 }
 
 void Track::detachFromDevice() {

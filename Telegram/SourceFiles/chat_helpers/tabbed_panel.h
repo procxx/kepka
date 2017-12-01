@@ -51,7 +51,7 @@ public:
 		return _hiding || _hideTimer.isActive();
 	}
 
-	void stickersInstalled(uint64 setId);
+	void stickersInstalled(uint64_t setId);
 
 	bool overlaps(const QRect &globalRect) const;
 

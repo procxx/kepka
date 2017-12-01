@@ -141,8 +141,8 @@ void PasscodeBox::paintEvent(QPaintEvent *e) {
 
 	Painter p(this);
 
-	int32 w = st::boxWidth - st::boxPadding.left() * 1.5;
-	int32 abouty = (_passwordHint->isHidden() ? ((_reenterPasscode->isHidden() ? (_oldPasscode->y() + (_hasRecovery && !_hintText.isEmpty() ? st::passcodeTextLine : 0)) : _reenterPasscode->y()) + st::passcodeSkip) : _passwordHint->y()) + _oldPasscode->height() + st::passcodeLittleSkip + st::passcodeAboutSkip;
+	int32_t w = st::boxWidth - st::boxPadding.left() * 1.5;
+	int32_t abouty = (_passwordHint->isHidden() ? ((_reenterPasscode->isHidden() ? (_oldPasscode->y() + (_hasRecovery && !_hintText.isEmpty() ? st::passcodeTextLine : 0)) : _reenterPasscode->y()) + st::passcodeSkip) : _passwordHint->y()) + _oldPasscode->height() + st::passcodeLittleSkip + st::passcodeAboutSkip;
 	p.setPen(st::boxTextFg);
 	_about.drawLeft(p, st::boxPadding.left(), abouty, w, width());
 
@@ -170,7 +170,7 @@ void PasscodeBox::resizeEvent(QResizeEvent *e) {
 	BoxContent::resizeEvent(e);
 
 	bool has = _cloudPwd ? (!_curSalt.isEmpty()) : Global::LocalPasscode();
-	int32 w = st::boxWidth - st::boxPadding.left() - st::boxPadding.right();
+	int32_t w = st::boxWidth - st::boxPadding.left() - st::boxPadding.right();
 	_oldPasscode->resize(w, _oldPasscode->height());
 	_oldPasscode->moveToLeft(st::boxPadding.left(), st::passcodePadding.top());
 	_newPasscode->resize(w, _newPasscode->height());
@@ -443,7 +443,7 @@ void RecoverBox::paintEvent(QPaintEvent *e) {
 
 	p.setFont(st::normalFont);
 	p.setPen(st::boxTextFg);
-	int32 w = st::boxWidth - st::boxPadding.left() * 1.5;
+	int32_t w = st::boxWidth - st::boxPadding.left() * 1.5;
 	p.drawText(QRect(st::boxPadding.left(), _recoverCode->y() - st::passcodeTextLine - st::passcodePadding.top(), w, st::passcodePadding.top() + st::passcodeTextLine), _pattern, style::al_left);
 
 	if (!_error.isEmpty()) {

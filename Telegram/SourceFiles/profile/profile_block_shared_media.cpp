@@ -43,15 +43,18 @@ QString getButtonText(MediaOverviewType type, int count) {
 	case OverviewFiles: return lng_profile_files(lt_count, count);
 	case OverviewVoiceFiles: return lng_profile_audios(lt_count, count);
 	case OverviewLinks: return lng_profile_shared_links(lt_count, count);
+	case OverviewChatPhotos: case OverviewCount: return QString(); // temp
 	}
 	return QString();
 }
 
 } // namespace
 
-SharedMediaWidget::SharedMediaWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_shared_media))
-, _history(App::history(peer))
-, _migrated(_history->migrateFrom()) {
+SharedMediaWidget::SharedMediaWidget(QWidget *parent, PeerData *peer)
+	: BlockWidget(parent, peer, lang(lng_profile_shared_media))
+	, _history(App::history(peer))
+	, _migrated(_history->migrateFrom())
+{
 	auto observeEvents = Notify::PeerUpdate::Flag::SharedMediaChanged
 		| Notify::PeerUpdate::Flag::UserCommonChatsChanged;
 	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {

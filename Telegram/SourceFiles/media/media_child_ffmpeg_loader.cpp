@@ -22,7 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 constexpr AVSampleFormat AudioToFormat = AV_SAMPLE_FMT_S16;
 constexpr int64_t AudioToChannelLayout = AV_CH_LAYOUT_STEREO;
-constexpr int32 AudioToChannels = 2;
+constexpr int32_t AudioToChannels = 2;
 
 VideoSoundData::~VideoSoundData() {
 	if (context) {
@@ -37,7 +37,7 @@ ChildFFMpegLoader::ChildFFMpegLoader(std::unique_ptr<VideoSoundData> &&data) : A
 	_frame = av_frame_alloc();
 }
 
-bool ChildFFMpegLoader::open(qint64 &position) {
+bool ChildFFMpegLoader::open(int64_t &position) {
 	int res = 0;
 	char err[AV_ERROR_MAX_STRING_SIZE] = { 0 };
 
@@ -57,7 +57,7 @@ bool ChildFFMpegLoader::open(qint64 &position) {
 		case AV_SAMPLE_FMT_U8:
 		case AV_SAMPLE_FMT_U8P: _format = AL_FORMAT_MONO8; _sampleSize = 1; break;
 		case AV_SAMPLE_FMT_S16:
-		case AV_SAMPLE_FMT_S16P: _format = AL_FORMAT_MONO16; _sampleSize = sizeof(uint16); break;
+		case AV_SAMPLE_FMT_S16P: _format = AL_FORMAT_MONO16; _sampleSize = sizeof(uint16_t); break;
 		default:
 			_sampleSize = -1; // convert needed
 		break;
@@ -66,7 +66,7 @@ bool ChildFFMpegLoader::open(qint64 &position) {
 	case AV_CH_LAYOUT_STEREO:
 		switch (_inputFormat) {
 		case AV_SAMPLE_FMT_U8: _format = AL_FORMAT_STEREO8; _sampleSize = 2; break;
-		case AV_SAMPLE_FMT_S16: _format = AL_FORMAT_STEREO16; _sampleSize = 2 * sizeof(uint16); break;
+		case AV_SAMPLE_FMT_S16: _format = AL_FORMAT_STEREO16; _sampleSize = 2 * sizeof(uint16_t); break;
 		default:
 			_sampleSize = -1; // convert needed
 		break;
@@ -119,7 +119,7 @@ bool ChildFFMpegLoader::open(qint64 &position) {
 	return true;
 }
 
-AudioPlayerLoader::ReadResult ChildFFMpegLoader::readMore(QByteArray &result, int64 &samplesAdded) {
+AudioPlayerLoader::ReadResult ChildFFMpegLoader::readMore(QByteArray &result, int64_t &samplesAdded) {
 	int res;
 
 	av_frame_unref(_frame);
@@ -166,7 +166,7 @@ AudioPlayerLoader::ReadResult ChildFFMpegLoader::readMore(QByteArray &result, in
 	return ReadResult::Ok;
 }
 
-AudioPlayerLoader::ReadResult ChildFFMpegLoader::readFromReadyFrame(QByteArray &result, int64 &samplesAdded) {
+AudioPlayerLoader::ReadResult ChildFFMpegLoader::readFromReadyFrame(QByteArray &result, int64_t &samplesAdded) {
 	int res = 0;
 
 	if (_dstSamplesData) { // convert needed
@@ -185,7 +185,7 @@ AudioPlayerLoader::ReadResult ChildFFMpegLoader::readFromReadyFrame(QByteArray &
 			LOG(("Audio Error: Unable to swr_convert for file '%1', data size '%2', error %3, %4").arg(_file.name()).arg(_data.size()).arg(res).arg(av_make_error_string(err, sizeof(err), res)));
 			return ReadResult::Error;
 		}
-		int32 resultLen = av_samples_get_buffer_size(0, AudioToChannels, res, AudioToFormat, 1);
+		int32_t resultLen = av_samples_get_buffer_size(0, AudioToChannels, res, AudioToFormat, 1);
 		result.append((const char*)_dstSamplesData[0], resultLen);
 		samplesAdded += resultLen / _sampleSize;
 	} else {

@@ -179,18 +179,18 @@ MsgId OverviewInner::itemMsgId(MsgId msgId) const {
 	return itemMigrated(msgId) ? -msgId : msgId;
 }
 
-int32 OverviewInner::migratedIndexSkip() const {
+int32_t OverviewInner::migratedIndexSkip() const {
 	return (_migrated && _history->overviewLoaded(_type)) ? _migrated->overview(_type).size() : 0;
 }
 
-void OverviewInner::fixItemIndex(int32 &current, MsgId msgId) const {
+void OverviewInner::fixItemIndex(int32_t &current, MsgId msgId) const {
 	if (!msgId) {
 		current = -1;
 	} else {
-		int32 l = _items.size();
+		int32_t l = _items.size();
 		if (current < 0 || current >= l || complexMsgId(_items.at(current)->getItem()) != msgId) {
 			current = -1;
-			for (int32 i = 0; i < l; ++i) {
+			for (int32_t i = 0; i < l; ++i) {
 				if (complexMsgId(_items.at(i)->getItem()) == msgId) {
 					current = i;
 					break;
@@ -296,7 +296,7 @@ bool OverviewInner::searchFailed(SearchRequestType type, const RPCError &error, 
 	return true;
 }
 
-bool OverviewInner::itemHasPoint(MsgId msgId, int32 index, int32 x, int32 y) const {
+bool OverviewInner::itemHasPoint(MsgId msgId, int32_t index, int32_t x, int32_t y) const {
 	fixItemIndex(index, msgId);
 	if (index < 0) return false;
 
@@ -312,7 +312,7 @@ bool OverviewInner::itemHasPoint(MsgId msgId, int32 index, int32 x, int32 y) con
 	return false;
 }
 
-int32 OverviewInner::itemHeight(MsgId msgId, int32 index) const {
+int32_t OverviewInner::itemHeight(MsgId msgId, int32_t index) const {
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		return _rowWidth;
 	}
@@ -321,7 +321,7 @@ int32 OverviewInner::itemHeight(MsgId msgId, int32 index) const {
 	return (index < 0) ? 0 : _items.at(index)->height();
 }
 
-void OverviewInner::moveToNextItem(MsgId &msgId, int32 &index, MsgId upTo, int32 delta) const {
+void OverviewInner::moveToNextItem(MsgId &msgId, int32_t &index, MsgId upTo, int32_t delta) const {
 	fixItemIndex(index, msgId);
 	if (msgId == upTo || index < 0) {
 		msgId = 0;
@@ -341,16 +341,16 @@ void OverviewInner::moveToNextItem(MsgId &msgId, int32 &index, MsgId upTo, int32
 	}
 }
 
-void OverviewInner::repaintItem(MsgId itemId, int32 itemIndex) {
+void OverviewInner::repaintItem(MsgId itemId, int32_t itemIndex) {
 	fixItemIndex(itemIndex, itemId);
 	if (itemIndex >= 0) {
 		if (_type == OverviewPhotos || _type == OverviewVideos) {
-			float64 w = (float64(_width - st::overviewPhotoSkip) / _photosInRow);
-			int32 vsize = (_rowWidth + st::overviewPhotoSkip);
-			int32 row = itemIndex / _photosInRow, col = itemIndex % _photosInRow;
-			update(int32(col * w), _marginTop + int32(row * vsize), qCeil(w), vsize);
+			double w = (double(_width - st::overviewPhotoSkip) / _photosInRow);
+			int32_t vsize = (_rowWidth + st::overviewPhotoSkip);
+			int32_t row = itemIndex / _photosInRow, col = itemIndex % _photosInRow;
+			update(int32_t(col * w), _marginTop + int32_t(row * vsize), qCeil(w), vsize);
 		} else {
-			int32 top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
+			int32_t top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) top = _height - top;
 			update(_rowsLeft, _marginTop + top, _rowWidth, _items.at(itemIndex)->height());
 		}
@@ -362,9 +362,9 @@ void OverviewInner::touchResetSpeed() {
 	_touchPrevPosValid = false;
 }
 
-void OverviewInner::touchDeaccelerate(int32 elapsed) {
-	int32 x = _touchSpeed.x();
-	int32 y = _touchSpeed.y();
+void OverviewInner::touchDeaccelerate(int32_t elapsed) {
+	int32_t x = _touchSpeed.x();
+	int32_t y = _touchSpeed.y();
 	_touchSpeed.setX((x == 0) ? x : (x > 0) ? qMax(0, x - elapsed) : qMin(0, x + elapsed));
 	_touchSpeed.setY((y == 0) ? y : (y > 0) ? qMax(0, y - elapsed) : qMin(0, y + elapsed));
 }
@@ -648,9 +648,9 @@ void OverviewInner::touchScrollUpdated(const QPoint &screenPos) {
 	touchUpdateSpeed();
 }
 
-void OverviewInner::addSelectionRange(int32 selFrom, int32 selTo, History *history) {
+void OverviewInner::addSelectionRange(int32_t selFrom, int32_t selTo, History *history) {
 	if (selFrom < 0 || selTo < 0) return;
-	for (int32 i = selFrom; i <= selTo; ++i) {
+	for (int32_t i = selFrom; i <= selTo; ++i) {
 		MsgId msgid = complexMsgId(_items.at(i)->getItem());
 		if (!msgid) continue;
 
@@ -683,17 +683,17 @@ void OverviewInner::applyDragSelection() {
 	_overview->updateTopBarSelection();
 }
 
-QPoint OverviewInner::mapMouseToItem(QPoint p, MsgId itemId, int32 itemIndex) {
+QPoint OverviewInner::mapMouseToItem(QPoint p, MsgId itemId, int32_t itemIndex) {
 	fixItemIndex(itemIndex, itemId);
 	if (itemIndex < 0) return QPoint(0, 0);
 
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-		int32 row = itemIndex / _photosInRow, col = itemIndex % _photosInRow;
-		float64 w = (_width - st::overviewPhotoSkip) / float64(_photosInRow);
-		p.setX(p.x() - int32(col * w) - st::overviewPhotoSkip);
+		int32_t row = itemIndex / _photosInRow, col = itemIndex % _photosInRow;
+		double w = (_width - st::overviewPhotoSkip) / double(_photosInRow);
+		p.setX(p.x() - int32_t(col * w) - st::overviewPhotoSkip);
 		p.setY(p.y() - _marginTop - row * (_rowWidth + st::overviewPhotoSkip) - st::overviewPhotoSkip);
 	} else {
-		int32 top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
+		int32_t top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
 		if (_reversed) top = _height - top;
 		p.setY(p.y() - _marginTop - top);
 	}
@@ -726,12 +726,12 @@ void OverviewInner::clear() {
 	App::clearMousedItems();
 }
 
-int32 OverviewInner::itemTop(const FullMsgId &msgId) const {
+int32_t OverviewInner::itemTop(const FullMsgId &msgId) const {
 	if (_type == OverviewMusicFiles) {
-		int32 itemIndex = -1;
+		int32_t itemIndex = -1;
 		fixItemIndex(itemIndex, (msgId.channel == _channel) ? msgId.msg : ((_migrated && msgId.channel == _migrated->channelId()) ? -msgId.msg : 0));
 		if (itemIndex >= 0) {
-			int32 top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
+			int32_t top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) top = _height - top;
 			return _marginTop + top;
 		}
@@ -768,8 +768,8 @@ bool OverviewInner::preloadLocal() {
 	return true;
 }
 
-TextSelection OverviewInner::itemSelectedValue(int32 index) const {
-	int32 selfrom = -1, selto = -1;
+TextSelection OverviewInner::itemSelectedValue(int32_t index) const {
+	int32_t selfrom = -1, selto = -1;
 	if (_dragSelFromIndex >= 0 && _dragSelToIndex >= 0) {
 		selfrom = _dragSelToIndex;
 		selto = _dragSelFromIndex;
@@ -810,7 +810,7 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 		return;
 	}
 
-	int32 selfrom = -1, selto = -1;
+	int32_t selfrom = -1, selto = -1;
 	if (_dragSelFromIndex >= 0 && _dragSelToIndex >= 0) {
 		selfrom = _dragSelToIndex;
 		selto = _dragSelFromIndex;
@@ -820,18 +820,18 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 	bool hasSel = !_selected.isEmpty();
 
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-		int32 count = _items.size(), rowsCount = count / _photosInRow + ((count % _photosInRow) ? 1 : 0);
-		int32 rowFrom = floorclamp(r.y() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
-		int32 rowTo = ceilclamp(r.y() + r.height() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
-		float64 w = float64(_width - st::overviewPhotoSkip) / _photosInRow;
-		for (int32 row = rowFrom; row < rowTo; ++row) {
+		int32_t count = _items.size(), rowsCount = count / _photosInRow + ((count % _photosInRow) ? 1 : 0);
+		int32_t rowFrom = floorclamp(r.y() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
+		int32_t rowTo = ceilclamp(r.y() + r.height() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
+		double w = double(_width - st::overviewPhotoSkip) / _photosInRow;
+		for (int32_t row = rowFrom; row < rowTo; ++row) {
 			if (row * _photosInRow >= count) break;
-			for (int32 col = 0; col < _photosInRow; ++col) {
-				int32 i = row * _photosInRow + col;
+			for (int32_t col = 0; col < _photosInRow; ++col) {
+				int32_t i = row * _photosInRow + col;
 				if (i < 0) continue;
 				if (i >= count) break;
 
-				QPoint pos(int32(col * w + st::overviewPhotoSkip), _marginTop + row * (_rowWidth + st::overviewPhotoSkip) + st::overviewPhotoSkip);
+				QPoint pos(int32_t(col * w + st::overviewPhotoSkip), _marginTop + row * (_rowWidth + st::overviewPhotoSkip) + st::overviewPhotoSkip);
 				p.translate(pos.x(), pos.y());
 				_items.at(i)->paint(p, r.translated(-pos.x(), -pos.y()), itemSelectedValue(i), &context);
 				p.translate(-pos.x(), -pos.y());
@@ -839,14 +839,14 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 		}
 	} else {
 		p.translate(_rowsLeft, _marginTop);
-		int32 y = 0, w = _rowWidth;
-		for (int32 j = 0, l = _items.size(); j < l; ++j) {
-			int32 i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
-			int32 nextItemTop = (j + 1 == l) ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
+		int32_t y = 0, w = _rowWidth;
+		for (int32_t j = 0, l = _items.size(); j < l; ++j) {
+			int32_t i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
+			int32_t nextItemTop = (j + 1 == l) ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) nextItemTop = _height - nextItemTop;
 			if (_marginTop + nextItemTop > r.top()) {
 				auto info = _items.at(i)->Get<Overview::Layout::Info>();
-				int32 curY = info->top;
+				int32_t curY = info->top;
 				if (_reversed) curY = _height - curY;
 				if (_marginTop + curY >= r.y() + r.height()) break;
 
@@ -875,18 +875,18 @@ void OverviewInner::onUpdateSelected() {
 	ClickHandlerPtr lnk;
 	ClickHandlerHost *lnkhost = nullptr;
 	HistoryItem *item = 0;
-	int32 index = -1;
-	int32 newsel = 0;
+	int32_t index = -1;
+	int32_t newsel = 0;
 	HistoryCursorState cursorState = HistoryDefaultCursorState;
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-		float64 w = (float64(_width - st::overviewPhotoSkip) / _photosInRow);
-		int32 col = int32((m.x() - (st::overviewPhotoSkip / 2)) / w), vsize = (_rowWidth + st::overviewPhotoSkip);
-		int32 row = int32((m.y() - _marginTop - (st::overviewPhotoSkip / 2)) / vsize);
+		double w = (double(_width - st::overviewPhotoSkip) / _photosInRow);
+		int32_t col = int32_t((m.x() - (st::overviewPhotoSkip / 2)) / w), vsize = (_rowWidth + st::overviewPhotoSkip);
+		int32_t row = int32_t((m.y() - _marginTop - (st::overviewPhotoSkip / 2)) / vsize);
 		if (col < 0) col = 0;
 		if (row < 0) row = 0;
 		bool upon = true;
 
-		int32 count = _items.size(), i = row * _photosInRow + col;
+		int32_t count = _items.size(), i = row * _photosInRow + col;
 		if (i < 0) {
 			i = 0;
 			upon = false;
@@ -906,16 +906,16 @@ void OverviewInner::onUpdateSelected() {
 			}
 		}
 	} else {
-		for (int32 j = 0, l = _items.size(); j < l; ++j) {
+		for (int32_t j = 0, l = _items.size(); j < l; ++j) {
 			bool lastItem = (j + 1 == l);
-			int32 i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
-			int32 nextItemTop = lastItem ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
+			int32_t i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
+			int32_t nextItemTop = lastItem ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) nextItemTop = _height - nextItemTop;
 			if (_marginTop + nextItemTop > m.y() || lastItem) {
-				int32 top = _items.at(i)->Get<Overview::Layout::Info>()->top;
+				int32_t top = _items.at(i)->Get<Overview::Layout::Info>()->top;
 				if (_reversed) top = _height - top;
 				if (!_items.at(i)->toMediaItem()) { // day item
-					int32 h = _items.at(i)->height();
+					int32_t h = _items.at(i)->height();
 					bool beforeItem = (_marginTop + top + h / 2) >= m.y();
 					if (_reversed) beforeItem = !beforeItem;
 					if (i > 0 && (beforeItem || i == _items.size() - 1)) {
@@ -945,7 +945,7 @@ void OverviewInner::onUpdateSelected() {
 	}
 
 	MsgId oldMousedItem = _mousedItem;
-	int32 oldMousedItemIndex = _mousedItemIndex;
+	int32_t oldMousedItemIndex = _mousedItemIndex;
 	_mousedItem = item ? ((item->history() == _migrated) ? -item->id : item->id) : 0;
 	_mousedItemIndex = index;
 	m = mapMouseToItem(m, _mousedItem, _mousedItemIndex);
@@ -994,13 +994,13 @@ void OverviewInner::onUpdateSelected() {
 			bool canSelectMany = (_peer != 0);
 			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() && _selected.cbegin().value() != FullSelection) {
 				bool afterSymbol = false, uponSymbol = false;
-				uint16 second = 0;
+				uint16_t second = 0;
 				_selected[_dragItem] = { 0, 0 };
 				updateDragSelection(0, -1, 0, -1, false);
 			} else if (canSelectMany) {
 				bool selectingDown = (_reversed ? (_mousedItemIndex < _dragItemIndex) : (_mousedItemIndex > _dragItemIndex)) || (_mousedItemIndex == _dragItemIndex && ((_type == OverviewPhotos || _type == OverviewVideos) ? (_dragStartPos.x() < m.x()) : (_dragStartPos.y() < m.y())));
 				MsgId dragSelFrom = _dragItem, dragSelTo = _mousedItem;
-				int32 dragSelFromIndex = _dragItemIndex, dragSelToIndex = _mousedItemIndex;
+				int32_t dragSelFromIndex = _dragItemIndex, dragSelToIndex = _mousedItemIndex;
 				if (!itemHasPoint(dragSelFrom, dragSelFromIndex, _dragStartPos.x(), _dragStartPos.y())) { // maybe exclude dragSelFrom
 					if (selectingDown) {
 						if (_type == OverviewPhotos || _type == OverviewVideos) {
@@ -1049,7 +1049,7 @@ void OverviewInner::onUpdateSelected() {
 				}
 				bool dragSelecting = false;
 				MsgId dragFirstAffected = dragSelFrom;
-				int32 dragFirstAffectedIndex = dragSelFromIndex;
+				int32_t dragFirstAffectedIndex = dragSelFromIndex;
 				while (dragFirstAffectedIndex >= 0 && itemMsgId(dragFirstAffected) <= 0) {
 					moveToNextItem(dragFirstAffected, dragFirstAffectedIndex, dragSelTo, selectingDown ? (_reversed ? -1 : 1) : (_reversed ? 1 : -1));
 				}
@@ -1097,7 +1097,7 @@ QString OverviewInner::tooltipText() const {
 	return QString();
 }
 
-void OverviewInner::updateDragSelection(MsgId dragSelFrom, int32 dragSelFromIndex, MsgId dragSelTo, int32 dragSelToIndex, bool dragSelecting) {
+void OverviewInner::updateDragSelection(MsgId dragSelFrom, int32_t dragSelFromIndex, MsgId dragSelTo, int32_t dragSelToIndex, bool dragSelecting) {
 	if (_dragSelFrom != dragSelFrom || _dragSelFromIndex != dragSelFromIndex || _dragSelTo != dragSelTo || _dragSelToIndex != dragSelToIndex || _dragSelecting != dragSelecting) {
 		_dragSelFrom = dragSelFrom;
 		_dragSelFromIndex = dragSelFromIndex;
@@ -1180,7 +1180,7 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 	auto selectedState = getSelectionState();
 
 	// -2 - has full selected items, but not over, 0 - no selection, 2 - over full selected items
-	int32 isUponSelected = 0, hasSelected = 0;
+	int32_t isUponSelected = 0, hasSelected = 0;
 	if (!_selected.isEmpty()) {
 		isUponSelected = -1;
 		if (_selected.cbegin().value() == FullSelection) {
@@ -1293,19 +1293,19 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 	}
 }
 
-int32 OverviewInner::resizeToWidth(int32 nwidth, int32 scrollTop, int32 minHeight, bool force) {
+int32_t OverviewInner::resizeToWidth(int32_t nwidth, int32_t scrollTop, int32_t minHeight, bool force) {
 	if (!force && _width == nwidth && minHeight == _minHeight) return scrollTop;
 
 	if ((_type == OverviewPhotos || _type == OverviewVideos) && _resizeIndex < 0) {
-		_resizeIndex = _photosInRow * ((scrollTop + minHeight) / int32(_rowWidth + st::overviewPhotoSkip)) + _photosInRow - 1;
-		_resizeSkip = (scrollTop + minHeight) - ((scrollTop + minHeight) / int32(_rowWidth + st::overviewPhotoSkip)) * int32(_rowWidth + st::overviewPhotoSkip);
+		_resizeIndex = _photosInRow * ((scrollTop + minHeight) / int32_t(_rowWidth + st::overviewPhotoSkip)) + _photosInRow - 1;
+		_resizeSkip = (scrollTop + minHeight) - ((scrollTop + minHeight) / int32_t(_rowWidth + st::overviewPhotoSkip)) * int32_t(_rowWidth + st::overviewPhotoSkip);
 	}
 
 	_width = nwidth;
 	_minHeight = minHeight;
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-		_photosInRow = int32(_width - st::overviewPhotoSkip) / int32(st::overviewPhotoMinSize + st::overviewPhotoSkip);
-		_rowWidth = (int32(_width - st::overviewPhotoSkip) / _photosInRow) - st::overviewPhotoSkip;
+		_photosInRow = int32_t(_width - st::overviewPhotoSkip) / int32_t(st::overviewPhotoMinSize + st::overviewPhotoSkip);
+		_rowWidth = (int32_t(_width - st::overviewPhotoSkip) / _photosInRow) - st::overviewPhotoSkip;
 		_rowsLeft = st::overviewPhotoSkip;
 	} else {
 		auto contentLeftMin = st::overviewLeftMin;
@@ -1316,7 +1316,7 @@ int32 OverviewInner::resizeToWidth(int32 nwidth, int32 scrollTop, int32 minHeigh
 		}
 		auto widthWithMin = st::windowMinWidth;
 		auto widthWithMax = st::overviewFileLayout.maxWidth + 2 * contentLeftMax;
-		_rowsLeft = anim::interpolate(contentLeftMax, contentLeftMin, qMax(widthWithMax - _width, 0) / float64(widthWithMax - widthWithMin));
+		_rowsLeft = anim::interpolate(contentLeftMax, contentLeftMin, qMax(widthWithMax - _width, 0) / double(widthWithMax - widthWithMin));
 		_rowWidth = qMin(_width - 2 * _rowsLeft, st::overviewFileLayout.maxWidth);
 	}
 
@@ -1329,8 +1329,8 @@ int32 OverviewInner::resizeToWidth(int32 nwidth, int32 scrollTop, int32 minHeigh
 	resize(_width, _marginTop + _height + _marginBottom);
 
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-        int32 newRow = _resizeIndex / _photosInRow;
-        return newRow * int32(_rowWidth + st::overviewPhotoSkip) + _resizeSkip - minHeight;
+        int32_t newRow = _resizeIndex / _photosInRow;
+        return newRow * int32_t(_rowWidth + st::overviewPhotoSkip) + _resizeSkip - minHeight;
     }
     return scrollTop;
 }
@@ -1608,7 +1608,7 @@ void OverviewInner::onTouchScrollTimer() {
 		_touchScrollState = Ui::TouchScrollState::Manual;
 		touchResetSpeed();
 	} else if (_touchScrollState == Ui::TouchScrollState::Auto || _touchScrollState == Ui::TouchScrollState::Acceleration) {
-		int32 elapsed = int32(nowTime - _touchTime);
+		int32_t elapsed = int32_t(nowTime - _touchTime);
 		QPoint delta = _touchSpeed * elapsed / 1000;
 		bool hasScrolled = _overview->touchScroll(delta);
 
@@ -1742,7 +1742,7 @@ void OverviewInner::mediaOverviewUpdated() {
 	fixItemIndex(_dragItemIndex, _dragItem);
 
 	recountMargins();
-	int32 newHeight = _marginTop + _height + _marginBottom, deltaHeight = newHeight - height();
+	int32_t newHeight = _marginTop + _height + _marginBottom, deltaHeight = newHeight - height();
 	if (deltaHeight) {
 		resize(_width, newHeight);
 		if (_type == OverviewMusicFiles || _type == OverviewVoiceFiles) {
@@ -1798,7 +1798,7 @@ void OverviewInner::itemRemoved(HistoryItem *item) {
 
 	auto j = _layoutItems.find(item);
 	if (j != _layoutItems.cend()) {
-		int32 index = _items.indexOf(j.value());
+		int32_t index = _items.indexOf(j.value());
 		if (index >= 0) {
 			_items.remove(index);
 		}
@@ -1825,25 +1825,25 @@ void OverviewInner::repaintItem(const HistoryItem *msg) {
 	History *history = (msg->history() == _history) ? _history : (msg->history() == _migrated ? _migrated : 0);
 	if (!history) return;
 
-	int32 migrateindex = migratedIndexSkip();
+	int32_t migrateindex = migratedIndexSkip();
 	MsgId msgid = msg->id;
 	if ((history == _history || migrateindex > 0) && (_inSearch || history->overviewHasMsgId(_type, msgid))) {
 		if (_type == OverviewPhotos || _type == OverviewVideos) {
 			if (history == _migrated) msgid = -msgid;
-			for (int32 i = 0, l = _items.size(); i != l; ++i) {
+			for (int32_t i = 0, l = _items.size(); i != l; ++i) {
 				if (complexMsgId(_items.at(i)->getItem()) == msgid) {
-					float64 w = (float64(width() - st::overviewPhotoSkip) / _photosInRow);
-					int32 vsize = (_rowWidth + st::overviewPhotoSkip);
-					int32 row = i / _photosInRow, col = i % _photosInRow;
-					update(int32(col * w), _marginTop + int32(row * vsize), qCeil(w), vsize);
+					double w = (double(width() - st::overviewPhotoSkip) / _photosInRow);
+					int32_t vsize = (_rowWidth + st::overviewPhotoSkip);
+					int32_t row = i / _photosInRow, col = i % _photosInRow;
+					update(int32_t(col * w), _marginTop + int32_t(row * vsize), qCeil(w), vsize);
 					break;
 				}
 			}
 		} else {
 			if (history == _migrated) msgid = -msgid;
-			for (int32 i = 0, l = _items.size(); i != l; ++i) {
+			for (int32_t i = 0, l = _items.size(); i != l; ++i) {
 				if (complexMsgId(_items.at(i)->getItem()) == msgid) {
-					int32 top = _items.at(i)->Get<Overview::Layout::Info>()->top;
+					int32_t top = _items.at(i)->Get<Overview::Layout::Info>()->top;
 					if (_reversed) top = _height - top;
 					update(_rowsLeft, _marginTop + top, _rowWidth, _items.at(i)->height());
 					break;
@@ -1870,13 +1870,13 @@ void OverviewInner::recountMargins() {
 		_marginTop = 0;
 	} else if (_type == OverviewMusicFiles) {
 		_marginTop = st::playlistPadding;
-		_marginBottom = qMax(_minHeight - _height - _marginTop, int32(st::playlistPadding));
+		_marginBottom = qMax(_minHeight - _height - _marginTop, int32_t(st::playlistPadding));
 	} else if (_type == OverviewLinks || _type == OverviewFiles) {
 		_marginTop = st::linksSearchTop + _search->height();
-		_marginBottom = qMax(_minHeight - _height - _marginTop, int32(st::playlistPadding));
+		_marginBottom = qMax(_minHeight - _height - _marginTop, int32_t(st::playlistPadding));
 	} else {
 		_marginBottom = st::playlistPadding;
-		_marginTop = qMax(_minHeight - _height - _marginBottom, int32(st::playlistPadding));
+		_marginTop = qMax(_minHeight - _height - _marginBottom, int32_t(st::playlistPadding));
 	}
 }
 
@@ -1923,7 +1923,7 @@ Overview::Layout::ItemBase *OverviewInner::layoutPrepare(HistoryItem *item) {
 }
 
 Overview::Layout::AbstractItem *OverviewInner::layoutPrepare(const QDate &date, bool month) {
-	int32 key = date.year() * 100 + date.month();
+	int32_t key = date.year() * 100 + date.month();
 	if (!month) key = key * 100 + date.day();
 	LayoutDates::const_iterator i = _layoutDates.constFind(key);
 	if (i == _layoutDates.cend()) {
@@ -1933,13 +1933,13 @@ Overview::Layout::AbstractItem *OverviewInner::layoutPrepare(const QDate &date, 
 	return i.value();
 }
 
-int32 OverviewInner::setLayoutItem(int32 index, Overview::Layout::AbstractItem *item, int32 top) {
+int32_t OverviewInner::setLayoutItem(int32_t index, Overview::Layout::AbstractItem *item, int32_t top) {
 	if (_items.size() > index) {
 		_items[index] = item;
 	} else {
 		_items.push_back(item);
 	}
-	int32 h = item->resizeGetHeight(_rowWidth);
+	int32_t h = item->resizeGetHeight(_rowWidth);
 	if (auto info = item->Get<Overview::Layout::Info>()) {
 		info->top = top + (_reversed ? h : 0);
 	}
@@ -1981,7 +1981,7 @@ void OverviewWidget::clear() {
 
 void OverviewWidget::onScroll() {
 	Auth().downloader().clearPriorities();
-	int32 preloadThreshold = _scroll->height() * 5;
+	int32_t preloadThreshold = _scroll->height() * 5;
 	bool needToPreload = false;
 	do {
 		needToPreload = (type() == OverviewMusicFiles || type() == OverviewVoiceFiles) ? (_scroll->scrollTop() < preloadThreshold) : (_scroll->scrollTop() + preloadThreshold > _scroll->scrollTopMax());
@@ -2049,7 +2049,7 @@ void OverviewWidget::contextMenuEvent(QContextMenuEvent *e) {
 	return _inner->showContextMenu(e);
 }
 
-void OverviewWidget::scrollBy(int32 add) {
+void OverviewWidget::scrollBy(int32_t add) {
 	if (_scroll->isHidden()) {
 		_scrollSetAfterShow += add;
 	} else {
@@ -2112,7 +2112,7 @@ void OverviewWidget::switchType(MediaOverviewType type) {
 }
 
 bool OverviewWidget::showMediaTypeSwitch() const {
-	for (int32 i = 0; i < OverviewCount; ++i) {
+	for (int32_t i = 0; i < OverviewCount; ++i) {
 		if (!(_mediaTypeMask & ~(1 << i))) {
 			return false;
 		}
@@ -2137,11 +2137,11 @@ void OverviewWidget::updateTopBarSelection() {
 	update();
 }
 
-int32 OverviewWidget::lastWidth() const {
+int32_t OverviewWidget::lastWidth() const {
 	return width();
 }
 
-int32 OverviewWidget::lastScrollTop() const {
+int32_t OverviewWidget::lastScrollTop() const {
 	return _scroll->scrollTop();
 }
 
@@ -2153,11 +2153,11 @@ QRect OverviewWidget::rectForFloatPlayer(Window::Column myColumn, Window::Column
 	return mapToGlobal(_scroll->geometry());
 }
 
-int32 OverviewWidget::countBestScroll() const {
+int32_t OverviewWidget::countBestScroll() const {
 	if (type() == OverviewMusicFiles) {
 		auto state = Media::Player::mixer()->currentState(AudioMsgId::Type::Song);
 		if (state.id) {
-			int32 top = _inner->itemTop(state.id.contextId());
+			int32_t top = _inner->itemTop(state.id.contextId());
 			if (top >= 0) {
 				return snap(top - int(_scroll->height() - (st::msgPadding.top() + st::mediaThumbSize + st::msgPadding.bottom())) / 2, 0, _scroll->scrollTopMax());
 			}
@@ -2168,7 +2168,7 @@ int32 OverviewWidget::countBestScroll() const {
 	return _scroll->scrollTopMax();
 }
 
-void OverviewWidget::fastShow(bool back, int32 lastScrollTop) {
+void OverviewWidget::fastShow(bool back, int32_t lastScrollTop) {
 	resizeEvent(0);
 	_scrollSetAfterShow = (lastScrollTop < 0 ? countBestScroll() : lastScrollTop);
 	show();
@@ -2236,11 +2236,11 @@ void OverviewWidget::mediaOverviewUpdated(const Notify::PeerUpdate &update) {
 		onScroll();
 		updateTopBarSelection();
 	}
-	int32 mask = 0;
+	int32_t mask = 0;
 	History *h = update.peer ? App::historyLoaded(update.peer->migrateTo() ? update.peer->migrateTo() : update.peer) : nullptr;
 	History *m = (update.peer && update.peer->migrateFrom()) ? App::historyLoaded(update.peer->migrateFrom()->id) : 0;
 	if (h) {
-		for (int32 i = 0; i < OverviewCount; ++i) {
+		for (int32_t i = 0; i < OverviewCount; ++i) {
 			if (!h->overview(i).isEmpty() || h->overviewCount(i) > 0 || i == type()) {
 				mask |= (1 << i);
 			} else if (m && (!m->overview(i).isEmpty() || m->overviewCount(i) > 0)) {
@@ -2334,7 +2334,7 @@ QPoint OverviewWidget::clampMousePosition(QPoint point) {
 }
 
 void OverviewWidget::onScrollTimer() {
-	int32 d = (_scrollDelta > 0) ? qMin(_scrollDelta * 3 / 20 + 1, int32(MaxScrollSpeed)) : qMax(_scrollDelta * 3 / 20 - 1, -int32(MaxScrollSpeed));
+	int32_t d = (_scrollDelta > 0) ? qMin(_scrollDelta * 3 / 20 + 1, int32_t(MaxScrollSpeed)) : qMax(_scrollDelta * 3 / 20 - 1, -int32_t(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + d);
 }
 
@@ -2358,7 +2358,7 @@ void OverviewWidget::noSelectingScroll() {
 }
 
 bool OverviewWidget::touchScroll(const QPoint &delta) {
-	int32 scTop = _scroll->scrollTop(), scMax = _scroll->scrollTopMax(), scNew = snap(scTop - delta.y(), 0, scMax);
+	int32_t scTop = _scroll->scrollTop(), scMax = _scroll->scrollTopMax(), scNew = snap(scTop - delta.y(), 0, scMax);
 	if (scNew == scTop) return false;
 
 	_scroll->scrollToY(scNew);

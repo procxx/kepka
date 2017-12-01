@@ -38,7 +38,7 @@ bool ValidateThumbDimensions(int width, int height) {
 
 } // namespace
 
-TaskQueue::TaskQueue(QObject *parent, int32 stopTimeoutMs) : QObject(parent), _thread(0), _worker(0), _stopTimer(0) {
+TaskQueue::TaskQueue(QObject *parent, int32_t stopTimeoutMs) : QObject(parent), _thread(0), _worker(0), _stopTimer(0) {
 	if (stopTimeoutMs > 0) {
 		_stopTimer = new QTimer(this);
 		connect(_stopTimer, SIGNAL(timeout()), this, SLOT(stop()));
@@ -86,7 +86,7 @@ void TaskQueue::wakeThread() {
 void TaskQueue::cancelTask(TaskId id) {
 	{
 		QMutexLocker lock(&_tasksToProcessMutex);
-		for (int32 i = 0, l = _tasksToProcess.size(); i != l; ++i) {
+		for (int32_t i = 0, l = _tasksToProcess.size(); i != l; ++i) {
 			if (_tasksToProcess.at(i)->id() == id) {
 				_tasksToProcess.removeAt(i);
 				return;
@@ -94,7 +94,7 @@ void TaskQueue::cancelTask(TaskId id) {
 		}
 	}
 	QMutexLocker lock(&_tasksToFinishMutex);
-	for (int32 i = 0, l = _tasksToFinish.size(); i != l; ++i) {
+	for (int32_t i = 0, l = _tasksToFinish.size(); i != l; ++i) {
 		if (_tasksToFinish.at(i)->id() == id) {
 			_tasksToFinish.removeAt(i);
 			return;
@@ -180,7 +180,7 @@ void TaskQueueWorker::onTaskAdded() {
 	_inTaskAdded = false;
 }
 
-FileLoadTask::FileLoadTask(const QString &filepath, std::unique_ptr<MediaInformation> information, SendMediaType type, const FileLoadTo &to, const QString &caption) : _id(rand_value<uint64>())
+FileLoadTask::FileLoadTask(const QString &filepath, std::unique_ptr<MediaInformation> information, SendMediaType type, const FileLoadTo &to, const QString &caption) : _id(rand_value<uint64_t>())
 , _to(to)
 , _filepath(filepath)
 , _information(std::move(information))
@@ -188,7 +188,7 @@ FileLoadTask::FileLoadTask(const QString &filepath, std::unique_ptr<MediaInforma
 , _caption(caption) {
 }
 
-FileLoadTask::FileLoadTask(const QByteArray &content, const QImage &image, SendMediaType type, const FileLoadTo &to, const QString &caption) : _id(rand_value<uint64>())
+FileLoadTask::FileLoadTask(const QByteArray &content, const QImage &image, SendMediaType type, const FileLoadTo &to, const QString &caption) : _id(rand_value<uint64_t>())
 , _to(to)
 , _content(content)
 , _image(image)
@@ -196,7 +196,7 @@ FileLoadTask::FileLoadTask(const QByteArray &content, const QImage &image, SendM
 , _caption(caption) {
 }
 
-FileLoadTask::FileLoadTask(const QByteArray &voice, int32 duration, const VoiceWaveform &waveform, const FileLoadTo &to, const QString &caption) : _id(rand_value<uint64>())
+FileLoadTask::FileLoadTask(const QByteArray &voice, int32_t duration, const VoiceWaveform &waveform, const FileLoadTo &to, const QString &caption) : _id(rand_value<uint64_t>())
 , _to(to)
 , _content(voice)
 , _duration(duration)
@@ -320,10 +320,10 @@ void FileLoadTask::process() {
 	_result = MakeShared<FileLoadResult>(_id, _to, _caption);
 
 	QString filename, filemime;
-	qint64 filesize = 0;
+	int64_t filesize = 0;
 	QByteArray filedata;
 
-	uint64 thumbId = 0;
+	uint64_t thumbId = 0;
 	auto thumbname = qsl("thumb.jpg");
 	QByteArray thumbdata;
 
@@ -410,7 +410,7 @@ void FileLoadTask::process() {
 			fullimage = Images::prepareOpaque(std::move(fullimage));
 		}
 	}
-	_result->filesize = (int32)qMin(filesize, qint64(INT_MAX));
+	_result->filesize = (int32_t)qMin(filesize, int64_t(INT_MAX));
 
 	if (!filesize || filesize > App::kFileSizeLimit) {
 		return;
@@ -450,7 +450,7 @@ void FileLoadTask::process() {
 				thumb = full;
 				thumbSize = MTP_photoSize(MTP_string(""), MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)), MTP_int(full.width()), MTP_int(full.height()), MTP_int(0));
 
-				thumbId = rand_value<uint64>();
+				thumbId = rand_value<uint64_t>();
 			}
 		} else if (auto video = base::get_if<Video>(&_information->media)) {
 			isVideo = true;
@@ -476,7 +476,7 @@ void FileLoadTask::process() {
 			thumb = App::pixmapFromImageInPlace(std::move(cover));
 			thumbSize = MTP_photoSize(MTP_string(""), MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)), MTP_int(thumb.width()), MTP_int(thumb.height()), MTP_int(0));
 
-			thumbId = rand_value<uint64>();
+			thumbId = rand_value<uint64_t>();
 		}
 	}
 
@@ -536,7 +536,7 @@ void FileLoadTask::process() {
 			thumb = full;
 			thumbSize = MTP_photoSize(MTP_string(""), MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)), MTP_int(full.width()), MTP_int(full.height()), MTP_int(0));
 
-			thumbId = rand_value<uint64>();
+			thumbId = rand_value<uint64_t>();
 		}
 	}
 

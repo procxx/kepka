@@ -416,12 +416,12 @@ void Generator::paintHistoryBackground() {
 	if (tiled) {
 		auto width = background.width();
 		auto height = background.height();
-		auto repeatTimesX = qCeil(_history.width() * cIntRetinaFactor() / float64(width));
-		auto repeatTimesY = qCeil((_history.height() - fromy) * cIntRetinaFactor() / float64(height));
+		auto repeatTimesX = qCeil(_history.width() * cIntRetinaFactor() / double(width));
+		auto repeatTimesY = qCeil((_history.height() - fromy) * cIntRetinaFactor() / double(height));
 		auto imageForTiled = QImage(width * repeatTimesX, height * repeatTimesY, QImage::Format_ARGB32_Premultiplied);
 		imageForTiled.setDevicePixelRatio(background.devicePixelRatio());
 		auto imageForTiledBytes = imageForTiled.bits();
-		auto bytesInLine = width * sizeof(uint32);
+		auto bytesInLine = width * sizeof(uint32_t);
 		for (auto timesY = 0; timesY != repeatTimesY; ++timesY) {
 			auto imageBytes = background.constBits();
 			for (auto y = 0; y != height; ++y) {
@@ -763,16 +763,16 @@ void Generator::paintBubble(const Bubble &bubble) {
 		// rescale waveform by going in waveform.size * bar_count 1D grid
 		auto active = bubble.outbg ? st::msgWaveformOutActive[_palette] : st::msgWaveformInActive[_palette];
 		auto inactive = bubble.outbg ? st::msgWaveformOutInactive[_palette] : st::msgWaveformInInactive[_palette];
-		int32 wf_size = bubble.waveform.size(), availw = namewidth + st::msgWaveformSkip;
-		int32 bar_count = wf_size;
-		int32 max_delta = st::msgWaveformMax - st::msgWaveformMin;
+		int32_t wf_size = bubble.waveform.size(), availw = namewidth + st::msgWaveformSkip;
+		int32_t bar_count = wf_size;
+		int32_t max_delta = st::msgWaveformMax - st::msgWaveformMin;
 		auto wave_bottom = y + st::msgFilePadding.top() + st::msgWaveformMax;
 		_p->setPen(Qt::NoPen);
 		auto norm_value = uchar(31);
 		for (auto i = 0, bar_x = 0; i != wf_size; ++i) {
 			uchar value = bubble.waveform[i];
 			auto max_value = value;
-			int32 bar_value = ((max_value * max_delta) + ((norm_value + 1) / 2)) / (norm_value + 1);
+			int32_t bar_value = ((max_value * max_delta) + ((norm_value + 1) / 2)) / (norm_value + 1);
 
 			if (i >= bubble.waveactive) {
 				_p->fillRect(nameleft + bar_x, wave_bottom - bar_value, st::msgWaveformBar, st::msgWaveformMin + bar_value, inactive);
@@ -925,8 +925,8 @@ void DefaultPreviewWindowFramePaint(QImage &preview, const style::palette &palet
 		st::windowShadow.paint(p, 0, 0, st::windowShadow.width(), QColor(0, 0, 0));
 	}
 	auto maxSize = 0;
-	auto currentInt = static_cast<uint32>(0);
-	auto lastLineInts = reinterpret_cast<const uint32*>(mask.constBits() + (mask.height() - 1) * mask.bytesPerLine());
+	auto currentInt = static_cast<uint32_t>(0);
+	auto lastLineInts = reinterpret_cast<const uint32_t*>(mask.constBits() + (mask.height() - 1) * mask.bytesPerLine());
 	for (auto end = lastLineInts + mask.width(); lastLineInts != end; ++lastLineInts) {
 		if (*lastLineInts < currentInt) {
 			break;

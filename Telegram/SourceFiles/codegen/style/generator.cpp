@@ -46,7 +46,7 @@ constexpr int kErrorBadIconFormat   = 862;
 class Crc32Table {
 public:
 	Crc32Table() {
-		quint32 poly = 0x04c11db7;
+		uint32_t poly = 0x04c11db7;
 		for (auto i = 0; i != 256; ++i) {
 			_data[i] = reflect(i, 8) << 24;
 			for (auto j = 0; j != 8; ++j) {
@@ -56,13 +56,13 @@ public:
 		}
 	}
 
-	inline quint32 operator[](int index) const {
+	inline uint32_t operator[](int index) const {
 		return _data[index];
 	}
 
 private:
-	quint32 reflect(quint32 val, char ch) {
-		quint32 result = 0;
+	uint32_t reflect(uint32_t val, char ch) {
+		uint32_t result = 0;
 		for (int i = 1; i < (ch + 1); ++i) {
 			if (val & 1) {
 				result |= 1 << (ch - i);
@@ -72,21 +72,21 @@ private:
 		return result;
 	}
 
-	quint32 _data[256];
+	uint32_t _data[256];
 
 };
 
-qint32 hashCrc32(const void *data, int len) {
+int32_t hashCrc32(const void *data, int len) {
 	static Crc32Table table;
 
 	const uchar *buffer = static_cast<const uchar *>(data);
 
-	quint32 crc = 0xffffffff;
+	uint32_t crc = 0xffffffff;
 	for (int i = 0; i != len; ++i) {
 		crc = (crc >> 8) ^ table[(crc & 0xFF) ^ buffer[i]];
 	}
 
-	return static_cast<qint32>(crc ^ 0xffffffff);
+	return static_cast<int32_t>(crc ^ 0xffffffff);
 }
 
 char hexChar(uchar ch) {
@@ -504,7 +504,7 @@ public:\n\
 		return *this;\n\
 	}\n\
 \n\
-	static int32 Checksum();\n\
+	static int32_t Checksum();\n\
 \n\
 	~palette() {\n\
 		clear();\n\
@@ -809,7 +809,7 @@ void palette::finalize() {\n\
 	source_->stream() << "\
 }\n\
 \n\
-int32 palette::Checksum() {\n\
+int32_t palette::Checksum() {\n\
 	return " << checksum << ";\n\
 }\n";
 
@@ -1178,7 +1178,7 @@ QByteArray iconMaskValueSize(int width, int height) {
 	{
 		QDataStream stream(&result, QIODevice::Append);
 		stream.setVersion(QDataStream::Qt_5_1);
-		stream << qint32(width) << qint32(height);
+		stream << int32_t(width) << int32_t(height);
 	}
 	return result;
 }

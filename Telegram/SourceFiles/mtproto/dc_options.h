@@ -106,8 +106,8 @@ private:
 
 	std::map<ShiftedDcId, Option> _data;
 	std::set<DcId> _cdnDcIds;
-	std::map<uint64, internal::RSAPublicKey> _publicKeys;
-	std::map<DcId, std::map<uint64, internal::RSAPublicKey>> _cdnPublicKeys;
+	std::map<uint64_t, internal::RSAPublicKey> _publicKeys;
+	std::map<DcId, std::map<uint64_t, internal::RSAPublicKey>> _cdnPublicKeys;
 	mutable QReadWriteLock _useThroughLockers;
 
 	mutable base::Observable<Ids> _changed;
