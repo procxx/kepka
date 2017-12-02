@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/procxx/cmake-modules.git
+	branch = master
+	commit = b6fbaff17a6ee19d4ec54c2b067a6bfee9c705dd
+	parent = 12e8ff6cf87c38276c07190558755e239d92f3b8
+	cmdver = 0.3.1
