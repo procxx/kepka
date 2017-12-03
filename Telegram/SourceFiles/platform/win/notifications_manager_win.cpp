@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
 #include "platform/win/notifications_manager_win.h"
 
 #include "window/notifications_utilities.h"
@@ -26,14 +27,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/win/windows_dlls.h"
 #include "mainwindow.h"
 #include "base/task_queue.h"
-
-#include <Shobjidl.h>
-#include <shellapi.h>
-
-#include <roapi.h>
-#include <wrl\client.h>
-#include <wrl\implements.h>
-#include <windows.ui.notifications.h>
 
 #include <strsafe.h>
 #include <intsafe.h>

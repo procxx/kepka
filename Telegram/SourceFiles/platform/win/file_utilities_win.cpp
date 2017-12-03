@@ -18,6 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
+#include <ShlGuid.h>
 #include "platform/win/file_utilities_win.h"
 
 #include "mainwindow.h"
@@ -26,8 +28,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 #include "messenger.h"
 
-#include <Shlwapi.h>
-#include <Windowsx.h>
 
 HBITMAP qt_pixmapToWinHBITMAP(const QPixmap &, int hbitmapFormat);
 
@@ -420,9 +420,9 @@ bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, 
 		} else {
 			files = dialog.selectedFiles().mid(0, 1);
 		}
-		if (type == Type::ReadFile || type == Type::ReadFiles) {
-			remoteContent = dialog.selectedRemoteContent();
-		}
+//		if (type == Type::ReadFile || type == Type::ReadFiles) {
+//			remoteContent = dialog.selectedRemoteContent();
+//		}
 		return true;
 	}
 
