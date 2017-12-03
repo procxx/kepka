@@ -142,12 +142,12 @@ private:
 	void clearInlineRows(bool resultsDeleted);
 
 	std::map<Result*, std::unique_ptr<ItemBase>> _inlineLayouts;
-	ItemBase *layoutPrepareInlineResult(Result *result, int32 position);
+	ItemBase *layoutPrepareInlineResult(Result *result, qint32 position);
 
-	bool inlineRowsAddItem(Result *result, Row &row, int32 &sumWidth);
-	bool inlineRowFinalize(Row &row, int32 &sumWidth, bool force = false);
+	bool inlineRowsAddItem(Result *result, Row &row, qint32 &sumWidth);
+	bool inlineRowFinalize(Row &row, qint32 &sumWidth, bool force = false);
 
-	Row &layoutInlineRow(Row &row, int32 sumWidth = 0);
+	Row &layoutInlineRow(Row &row, qint32 sumWidth = 0);
 	void deleteUnusedInlineLayouts();
 
 	int validateExistingInlineRows(const Results &results);

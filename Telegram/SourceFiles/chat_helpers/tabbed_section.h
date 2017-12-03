@@ -40,7 +40,7 @@ public:
 	object_ptr<TabbedSelector> takeSelector();
 	QPointer<TabbedSelector> getSelector() const;
 
-	void stickersInstalled(uint64 setId);
+	void stickersInstalled(quint64 setId);
 
 	// Float player interface.
 	bool wheelEventFromFloatPlayer(QEvent *e, Window::Column myColumn, Window::Column playerColumn) override;

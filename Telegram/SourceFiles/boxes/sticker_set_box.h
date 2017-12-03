@@ -36,7 +36,7 @@ public:
 	StickerSetBox(QWidget*, const MTPInputStickerSet &set);
 
 signals:
-	void installed(uint64 id);
+	void installed(quint64 id);
 
 protected:
 	void prepare() override;
@@ -48,7 +48,7 @@ private slots:
 	void onShareStickers();
 	void onUpdateButtons();
 
-	void onInstalled(uint64 id);
+	void onInstalled(quint64 id);
 
 private:
 	void updateButtons();
@@ -68,7 +68,7 @@ public:
 	Inner(QWidget *parent, const MTPInputStickerSet &set);
 
 	bool loaded() const;
-	int32 notInstalled() const;
+	qint32 notInstalled() const;
 	bool official() const;
 	base::lambda<TextWithEntities()> title() const;
 	QString shortName() const;
@@ -90,12 +90,12 @@ private slots:
 
 signals:
 	void updateButtons();
-	void installed(uint64 id);
+	void installed(quint64 id);
 
 private:
 	void updateSelected();
 	void setSelected(int selected);
-	void startOverAnimation(int index, float64 from, float64 to);
+	void startOverAnimation(int index, double from, double to);
 	int stickerFromGlobalPos(const QPoint &p) const;
 
 	void gotSet(const MTPmessages_StickerSet &set);
@@ -112,11 +112,11 @@ private:
 	StickerPack _pack;
 	StickersByEmojiMap _emoji;
 	bool _loaded = false;
-	uint64 _setId = 0;
-	uint64 _setAccess = 0;
+	quint64 _setId = 0;
+	quint64 _setAccess = 0;
 	QString _setTitle, _setShortName;
-	int32 _setCount = 0;
-	int32 _setHash = 0;
+	qint32 _setCount = 0;
+	qint32 _setHash = 0;
 	MTPDstickerSet::Flags _setFlags = 0;
 
 	int _visibleTop = 0;

@@ -55,8 +55,8 @@ protected:
 
 private:
 	void setCloseVisible(bool visible);
-	void handleSeekProgress(float64 progress);
-	void handleSeekFinished(float64 progress);
+	void handleSeekProgress(double progress);
+	void handleSeekFinished(double progress);
 
 	void updatePlayPrevNextPositions();
 	void updateLabelPositions();

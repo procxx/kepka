@@ -81,8 +81,8 @@ public:
 		UpdatingReady,
 	};
 	UpdatingState updatingState();
-	int32 updatingSize();
-	int32 updatingReady();
+	qint32 updatingSize();
+	qint32 updatingReady();
 
 signals:
 	void updateChecking();
@@ -127,8 +127,8 @@ void startUpdateCheck();
 void stopUpdate();
 
 Application::UpdatingState updatingState();
-int32 updatingSize();
-int32 updatingReady();
+qint32 updatingSize();
+qint32 updatingReady();
 
 void updateChecking();
 void updateLatest();

@@ -150,8 +150,8 @@ QString lang(LangKey key);\n\
 		for (auto &tagData : entry.tags) {
 			auto &tag = tagData.tag;
 			auto isPluralTag = isPlural && (tag == kPluralTag);
-			genericParams.push_back("lngtag_" + tag + ", " + (isPluralTag ? "float64 " : "const ResultString &") + tag + "__val");
-			params.push_back("lngtag_" + tag + ", " + (isPluralTag ? "float64 " : "const QString &") + tag + "__val");
+			genericParams.push_back("lngtag_" + tag + ", " + (isPluralTag ? "double " : "const ResultString &") + tag + "__val");
+			params.push_back("lngtag_" + tag + ", " + (isPluralTag ? "double " : "const QString &") + tag + "__val");
 			if (isPluralTag) {
 				plural = "\tauto plural = Lang::Plural(" + key + ", " + kPluralTag + "__val);\n";
 				applyTags.push_back("\tresult = Lang::ReplaceTag<ResultString>::Call(std::move(result), lt_" + tag + ", Lang::StartReplacements<ResultString>::Call(std::move(plural.replacement)));\n");

@@ -82,9 +82,9 @@ QString _logsFilePath(LogDataType type, const QString &postfix = QString()) {
 	return path;
 }
 
-int32 LogsStartIndexChosen = -1;
+qint32 LogsStartIndexChosen = -1;
 QString _logsEntryStart() {
-	static int32 index = 0;
+	static qint32 index = 0;
 	QDateTime tm(QDateTime::currentDateTime());
 
 	auto thread = qobject_cast<MTP::internal::Thread*>(QThread::currentThread());
@@ -97,7 +97,7 @@ class LogsDataFields {
 public:
 
 	LogsDataFields() {
-		for (int32 i = 0; i < LogDataCount; ++i) {
+		for (qint32 i = 0; i < LogDataCount; ++i) {
 			files[i].reset(new QFile());
 		}
 	}
@@ -144,9 +144,9 @@ private:
 	QSharedPointer<QFile> files[LogDataCount];
 	QTextStream streams[LogDataCount];
 
-	int32 part = -1;
+	qint32 part = -1;
 
-	bool reopen(LogDataType type, int32 dayIndex, const QString &postfix) {
+	bool reopen(LogDataType type, qint32 dayIndex, const QString &postfix) {
 		if (streams[type].device()) {
 			if (type == LogDataMain) {
 				if (!postfix.isEmpty()) {
@@ -197,9 +197,9 @@ private:
 				return false;
 			} else {
 				bool found = false;
-				int32 oldest = -1; // find not existing log_startX.txt or pick the oldest one (by lastModified)
+				qint32 oldest = -1; // find not existing log_startX.txt or pick the oldest one (by lastModified)
 				QDateTime oldestLastModified;
-				for (int32 i = 0; i < 10; ++i) {
+				for (qint32 i = 0; i < 10; ++i) {
 					QString trying = _logsFilePath(type, qsl("_start%1").arg(i));
 					files[type]->setFileName(trying);
 					if (!files[type]->exists()) {
@@ -253,12 +253,12 @@ private:
 		mylocaltime(&tm, &t);
 
 		static const int switchEach = 15; // minutes
-		int32 newPart = (tm.tm_min + tm.tm_hour * 60) / switchEach;
+		qint32 newPart = (tm.tm_min + tm.tm_hour * 60) / switchEach;
 		if (newPart == part) return;
 
 		part = newPart;
 
-		int32 dayIndex = (tm.tm_year + 1900) * 10000 + (tm.tm_mon + 1) * 100 + tm.tm_mday;
+		qint32 dayIndex = (tm.tm_year + 1900) * 10000 + (tm.tm_mon + 1) * 100 + tm.tm_mday;
 		QString postfix = QString("_%4_%5").arg((part * switchEach) / 60, 2, 10, QChar('0')).arg((part * switchEach) % 60, 2, 10, QChar('0'));
 
 		reopen(LogDataDebug, dayIndex, postfix);
@@ -480,7 +480,7 @@ namespace Logs {
 		_logsWrite(LogDataDebug, debugmsg);
 	}
 
-	void writeDebug(const char *file, int32 line, const QString &v) {
+	void writeDebug(const char *file, qint32 line, const QString &v) {
 		const char *last = strstr(file, "/"), *found = 0;
 		while (last) {
 			found = last;
@@ -512,7 +512,7 @@ namespace Logs {
 		_logsWrite(LogDataTcp, msg);
 	}
 
-	void writeMtp(int32 dc, const QString &v) {
+	void writeMtp(qint32 dc, const QString &v) {
 		QString msg(QString("%1 (dc:%2) %3\n").arg(_logsEntryStart()).arg(dc).arg(v));
 		_logsWrite(LogDataMtp, msg);
 	}
@@ -525,7 +525,7 @@ namespace Logs {
 			return LogsBeforeSingleInstanceChecked;
 		}
 
-		int32 size = LogsBeforeSingleInstanceChecked.size();
+		qint32 size = LogsBeforeSingleInstanceChecked.size();
 		for (LogsInMemoryList::const_iterator i = LogsInMemory->cbegin(), e = LogsInMemory->cend(); i != e; ++i) {
 			if (i->first == LogDataMain) {
 				size += i->second.size();
@@ -553,10 +553,10 @@ namespace Logs {
 		return idsStr + "]";
 	}
 
-	QString vector(const QVector<uint64> &ids) {
+	QString vector(const QVector<quint64> &ids) {
 		if (!ids.size()) return "[]";
 		QString idsStr = QString("[%1").arg(*ids.cbegin());
-		for (QVector<uint64>::const_iterator i = ids.cbegin() + 1, e = ids.cend(); i != e; ++i) {
+		for (QVector<quint64>::const_iterator i = ids.cbegin() + 1, e = ids.cend(); i != e; ++i) {
 			idsStr += QString(", %2").arg(*i);
 		}
 		return idsStr + "]";
@@ -727,7 +727,7 @@ namespace internal {
 			internal::writeChar('-');
 			num = -num;
 		}
-		internal::writeNumber(stream, uint64(floor(num)));
+		internal::writeNumber(stream, quint64(floor(num)));
 		internal::writeChar('.');
 		num -= floor(num);
 		for (int i = 0; i < 4; ++i) {
@@ -820,16 +820,16 @@ namespace internal {
 			dump() << "\n";
 		}
 		if (name) {
-			dump() << "Caught signal " << signum << " (" << name << ") in thread " << uint64(thread) << "\n";
+			dump() << "Caught signal " << signum << " (" << name << ") in thread " << quint64(thread) << "\n";
 		} else if (signum == -1) {
-            dump() << "Google Breakpad caught a crash, minidump written in thread " << uint64(thread) << "\n";
+            dump() << "Google Breakpad caught a crash, minidump written in thread " << quint64(thread) << "\n";
             if (BreakpadDumpPath) {
                 dump() << "Minidump: " << BreakpadDumpPath << "\n";
             } else if (BreakpadDumpPathW) {
                 dump() << "Minidump: " << BreakpadDumpPathW << "\n";
             }
         } else {
-			dump() << "Caught signal " << signum << " in thread " << uint64(thread) << "\n";
+			dump() << "Caught signal " << signum << " in thread " << quint64(thread) << "\n";
 		}
 
 		// see https://github.com/benbjohnson/bandicoot
@@ -886,7 +886,7 @@ namespace internal {
 			Dl_info info;
 			dump() << i << " ";
 			if (dladdr(addresses[i], &info)) {
-				dump() << uint64(info.dli_fbase) << " (" << info.dli_fname << ")\n";
+				dump() << quint64(info.dli_fbase) << " (" << info.dli_fname << ")\n";
 			} else {
 				dump() << "_unknown_module_\n";
 			}
@@ -1037,7 +1037,7 @@ namespace internal {
 #endif // else for !Q_OS_WIN
 			QByteArray lastdump;
 			char buffer[256 * 1024] = { 0 };
-			int32 read = fread(buffer, 1, 256 * 1024, f);
+			qint32 read = fread(buffer, 1, 256 * 1024, f);
 			if (read > 0) {
 				lastdump.append(buffer, read);
 			}

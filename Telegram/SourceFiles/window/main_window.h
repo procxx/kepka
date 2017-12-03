@@ -149,7 +149,7 @@ protected:
 	virtual void updateControlsGeometry();
 
 	// This one is overriden in Windows for historical reasons.
-	virtual int32 screenNameChecksum(const QString &name) const;
+	virtual qint32 screenNameChecksum(const QString &name) const;
 
 	void setPositionInited();
 

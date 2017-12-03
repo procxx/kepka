@@ -78,7 +78,7 @@ private:
 
 	void removeWidget(internal::Widget *remove);
 
-	float64 demoMasterOpacity() const;
+	double demoMasterOpacity() const;
 	void demoMasterOpacityCallback();
 
 	void moveWidgets();
@@ -157,8 +157,8 @@ private:
 	void opacityAnimationCallback();
 	void destroyDelayed();
 	void moveByShift();
-	void hideAnimated(float64 duration, const anim::transition &func);
-	void step_shift(float64 ms, bool timer);
+	void hideAnimated(double duration, const anim::transition &func);
+	void step_shift(double ms, bool timer);
 
 	Manager *_manager = nullptr;
 

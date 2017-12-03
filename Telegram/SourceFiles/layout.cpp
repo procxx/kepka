@@ -150,12 +150,12 @@ QString formatPlayedText(qint64 played, qint64 duration) {
 	return lng_duration_played(lt_played, formatDurationText(played), lt_duration, formatDurationText(duration));
 }
 
-int32 documentColorIndex(DocumentData *document, QString &ext) {
-	int32 colorIndex = 0;
+qint32 documentColorIndex(DocumentData *document, QString &ext) {
+	qint32 colorIndex = 0;
 
 	QString name = document ? (document->name.isEmpty() ? (document->sticker() ? lang(lng_in_dlg_sticker) : qsl("Unknown File")) : document->name) : lang(lng_message_empty);
 	name = name.toLower();
-	int32 lastDot = name.lastIndexOf('.');
+	qint32 lastDot = name.lastIndexOf('.');
 	QString mime = document ? document->mime.toLower() : QString();
 	if (name.endsWith(qstr(".doc")) ||
 		name.endsWith(qstr(".txt")) ||
@@ -193,7 +193,7 @@ int32 documentColorIndex(DocumentData *document, QString &ext) {
 	return colorIndex;
 }
 
-style::color documentColor(int32 colorIndex) {
+style::color documentColor(qint32 colorIndex) {
 	const style::color colors[] = {
 		st::msgFile1Bg,
 		st::msgFile2Bg,
@@ -203,7 +203,7 @@ style::color documentColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-style::color documentDarkColor(int32 colorIndex) {
+style::color documentDarkColor(qint32 colorIndex) {
 	static style::color colors[] = {
 		st::msgFile1BgDark,
 		st::msgFile2BgDark,
@@ -213,7 +213,7 @@ style::color documentDarkColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-style::color documentOverColor(int32 colorIndex) {
+style::color documentOverColor(qint32 colorIndex) {
 	static style::color colors[] = {
 		st::msgFile1BgOver,
 		st::msgFile2BgOver,
@@ -223,7 +223,7 @@ style::color documentOverColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-style::color documentSelectedColor(int32 colorIndex) {
+style::color documentSelectedColor(qint32 colorIndex) {
 	static style::color colors[] = {
 		st::msgFile1BgSelected,
 		st::msgFile2BgSelected,
@@ -233,7 +233,7 @@ style::color documentSelectedColor(int32 colorIndex) {
 	return colors[colorIndex & 3];
 }
 
-RoundCorners documentCorners(int32 colorIndex) {
+RoundCorners documentCorners(qint32 colorIndex) {
 	return RoundCorners(Doc1Corners + (colorIndex & 3));
 }
 

@@ -68,9 +68,9 @@ enum RoundCorners {
 	RoundCornersCount
 };
 
-static const int32 FileStatusSizeReady = 0x7FFFFFF0;
-static const int32 FileStatusSizeLoaded = 0x7FFFFFF1;
-static const int32 FileStatusSizeFailed = 0x7FFFFFF2;
+static const qint32 FileStatusSizeReady = 0x7FFFFFF0;
+static const qint32 FileStatusSizeLoaded = 0x7FFFFFF1;
+static const qint32 FileStatusSizeFailed = 0x7FFFFFF2;
 
 QString formatSizeText(qint64 size);
 QString formatDownloadText(qint64 ready, qint64 total);
@@ -80,7 +80,7 @@ QString formatDurationAndSizeText(qint64 duration, qint64 size);
 QString formatGifAndSizeText(qint64 size);
 QString formatPlayedText(qint64 played, qint64 duration);
 
-int32 documentColorIndex(DocumentData *document, QString &ext);
+qint32 documentColorIndex(DocumentData *document, QString &ext);
 style::color documentColor(int colorIndex);
 style::color documentDarkColor(int colorIndex);
 style::color documentOverColor(int colorIndex);
@@ -123,7 +123,7 @@ public:
 		link.clear();
 		cursor = HistoryDefaultCursorState;
 	}
-	virtual void getSymbol(uint16 &symbol, bool &after, bool &upon, QPoint point) const { // from text
+	virtual void getSymbol(quint16 &symbol, bool &after, bool &upon, QPoint point) const { // from text
 		upon = hasPoint(point);
 		symbol = upon ? 0xFFFF : 0;
 		after = false;

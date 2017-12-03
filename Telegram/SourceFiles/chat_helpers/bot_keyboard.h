@@ -95,7 +95,7 @@ private:
 		void repaint(not_null<const HistoryItem*> item) const override;
 
 	protected:
-		void paintButtonBg(Painter &p, const QRect &rect, float64 howMuchOver) const override;
+		void paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const override;
 		void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth, HistoryMessageReplyMarkup::Button::Type type) const override;
 		void paintButtonLoading(Painter &p, const QRect &rect) const override;
 		int minButtonWidth(HistoryMessageReplyMarkup::Button::Type type) const override;

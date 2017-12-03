@@ -206,7 +206,7 @@ void ServiceMessagePainter::paint(
 			auto skiptop = top - fill;
 			auto fillheight = fill + height + fill;
 
-			auto dt = (animms > st::activeFadeInDuration) ? (1. - (animms - st::activeFadeInDuration) / float64(st::activeFadeOutDuration)) : (animms / float64(st::activeFadeInDuration));
+			auto dt = (animms > st::activeFadeInDuration) ? (1. - (animms - st::activeFadeInDuration) / double(st::activeFadeOutDuration)) : (animms / double(st::activeFadeInDuration));
 			auto o = p.opacity();
 			p.setOpacity(o * dt);
 			p.fillRect(0, skiptop, message->history()->width, fillheight, st::defaultTextPalette.selectOverlay);

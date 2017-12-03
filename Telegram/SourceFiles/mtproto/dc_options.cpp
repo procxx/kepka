@@ -382,9 +382,9 @@ bool DcOptions::hasCDNKeysForDc(DcId dcId) const {
 }
 
 bool DcOptions::getDcRSAKey(DcId dcId, const QVector<MTPlong> &fingerprints, internal::RSAPublicKey *result) const {
-	auto findKey = [&fingerprints, &result](const std::map<uint64, internal::RSAPublicKey> &keys) {
+	auto findKey = [&fingerprints, &result](const std::map<quint64, internal::RSAPublicKey> &keys) {
 		for_const (auto &fingerprint, fingerprints) {
-			auto it = keys.find(static_cast<uint64>(fingerprint.v));
+			auto it = keys.find(static_cast<quint64>(fingerprint.v));
 			if (it != keys.cend()) {
 				*result = it->second;
 				return true;

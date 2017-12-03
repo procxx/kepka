@@ -40,7 +40,7 @@ public:
 	bool usingHttpWait() override;
 	bool needHttpWait() override;
 
-	int32 debugState() const override;
+	qint32 debugState() const override;
 
 	QString transport() const override;
 

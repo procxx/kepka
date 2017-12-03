@@ -24,24 +24,24 @@ namespace Window {
 namespace Theme {
 namespace internal {
 
-constexpr int32 kUninitializedBackground = -999;
-constexpr int32 kTestingThemeBackground = -666;
-constexpr int32 kTestingDefaultBackground = -665;
-constexpr int32 kTestingEditorBackground = -664;
+constexpr qint32 kUninitializedBackground = -999;
+constexpr qint32 kTestingThemeBackground = -666;
+constexpr qint32 kTestingDefaultBackground = -665;
+constexpr qint32 kTestingEditorBackground = -664;
 
 } // namespace internal
 
-constexpr int32 kThemeBackground = -2;
-constexpr int32 kCustomBackground = -1;
-constexpr int32 kInitialBackground = 0;
-constexpr int32 kDefaultBackground = 105;
+constexpr qint32 kThemeBackground = -2;
+constexpr qint32 kCustomBackground = -1;
+constexpr qint32 kInitialBackground = 0;
+constexpr qint32 kDefaultBackground = 105;
 
 struct Cached {
 	QByteArray colors;
 	QByteArray background;
 	bool tiled = false;
-	int32 paletteChecksum = 0;
-	int32 contentChecksum = 0;
+	qint32 paletteChecksum = 0;
+	qint32 contentChecksum = 0;
 };
 bool Load(const QString &pathRelative, const QString &pathAbsolute, const QByteArray &content, Cached &cache);
 void Unload();
@@ -99,7 +99,7 @@ public:
 
 	// This method is setting the default (themed) image if none was set yet.
 	void start();
-	void setImage(int32 id, QImage &&image = QImage());
+	void setImage(qint32 id, QImage &&image = QImage());
 	void setTile(bool tile);
 	void reset();
 
@@ -112,7 +112,7 @@ public:
 	void keepApplied();
 	void revert();
 
-	int32 id() const;
+	qint32 id() const;
 	const QPixmap &pixmap() const {
 		return _pixmap;
 	}
@@ -128,7 +128,7 @@ private:
 	void setPreparedImage(QImage &&image);
 	void writeNewBackgroundSettings();
 
-	int32 _id = internal::kUninitializedBackground;
+	qint32 _id = internal::kUninitializedBackground;
 	QPixmap _pixmap;
 	QPixmap _pixmapForTiled;
 	bool _tile = false;
@@ -136,7 +136,7 @@ private:
 	QImage _themeImage;
 	bool _themeTile = false;
 
-	int32 _idForRevert = internal::kUninitializedBackground;
+	qint32 _idForRevert = internal::kUninitializedBackground;
 	QImage _imageForRevert;
 	bool _tileForRevert = false;
 

@@ -169,7 +169,7 @@ private:
 
 	QAtomicInt _autoPausedGif = 0;
 	QAtomicInt _videoPauseRequest = 0;
-	int32 _threadIndex;
+	qint32 _threadIndex;
 
 	bool _autoplay = false;
 
@@ -200,7 +200,7 @@ class Manager : public QObject {
 public:
 
 	Manager(QThread *thread);
-	int32 loadLevel() const {
+	qint32 loadLevel() const {
 		return _loadLevel.load();
 	}
 	void append(Reader *reader, const FileLocation &location, const QByteArray &data);

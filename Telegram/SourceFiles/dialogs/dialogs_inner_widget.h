@@ -48,16 +48,16 @@ public:
 	void dialogsReceived(const QVector<MTPDialog> &dialogs);
 	void addSavedPeersAfter(const QDateTime &date);
 	void addAllSavedPeers();
-	bool searchReceived(const QVector<MTPMessage> &result, DialogsSearchRequestType type, int32 fullCount);
+	bool searchReceived(const QVector<MTPMessage> &result, DialogsSearchRequestType type, qint32 fullCount);
 	void peerSearchReceived(const QString &query, const QVector<MTPPeer> &result);
-	void showMore(int32 pixels);
+	void showMore(qint32 pixels);
 
 	void activate();
 
 	void contactsReceived(const QVector<MTPContact> &result);
 
-	void selectSkip(int32 direction);
-	void selectSkipPage(int32 pixels, int32 direction);
+	void selectSkip(qint32 direction);
+	void selectSkipPage(qint32 pixels, qint32 direction);
 
 	void createDialog(History *history);
 	void dlgUpdated(Dialogs::Mode list, Dialogs::Row *row);
@@ -81,7 +81,7 @@ public:
 	Dialogs::IndexedList *contactsList();
 	Dialogs::IndexedList *dialogsList();
 	Dialogs::IndexedList *contactsNoDialogsList();
-	int32 lastSearchDate() const;
+	qint32 lastSearchDate() const;
 	PeerData *lastSearchPeer() const;
 	MsgId lastSearchId() const;
 	MsgId lastSearchMigratedId() const;

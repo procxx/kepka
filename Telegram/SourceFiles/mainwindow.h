@@ -83,11 +83,11 @@ public:
 	void clearPasscode();
 	void setupIntro();
 	void setupMain(const MTPUser *user = nullptr);
-	void serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media = MTP_messageMediaEmpty(), int32 date = 0, bool force = false);
+	void serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media = MTP_messageMediaEmpty(), qint32 date = 0, bool force = false);
 	void sendServiceHistoryRequest();
 	void showDelayedServiceMsgs();
 
-	void mtpStateChanged(int32 dc, int32 state);
+	void mtpStateChanged(qint32 dc, qint32 state);
 
 	MainWidget *mainWidget();
 	PasscodeWidget *passcodeWidget();
@@ -188,11 +188,11 @@ private:
 	QImage icon16, icon32, icon64, iconbig16, iconbig32, iconbig64;
 
 	struct DelayedServiceMsg {
-		DelayedServiceMsg(const TextWithEntities &message, const MTPMessageMedia &media, int32 date) : message(message), media(media), date(date) {
+		DelayedServiceMsg(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date) : message(message), media(media), date(date) {
 		}
 		TextWithEntities message;
 		MTPMessageMedia media;
-		int32 date;
+		qint32 date;
 	};
 	QList<DelayedServiceMsg> _delayedServiceMsgs;
 	mtpRequestId _serviceHistoryRequest = 0;

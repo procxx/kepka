@@ -48,7 +48,7 @@ public:
 	ApiWrap(not_null<AuthSession*> session);
 
 	void start();
-	void applyUpdates(const MTPUpdates &updates, uint64 sentMessageRandomId = 0);
+	void applyUpdates(const MTPUpdates &updates, quint64 sentMessageRandomId = 0);
 
 	using RequestMessageDataCallback = base::lambda<void(ChannelData*, MsgId)>;
 	void requestMessageData(ChannelData *channel, MsgId msgId, RequestMessageDataCallback callback);
@@ -71,7 +71,7 @@ public:
 	void clearWebPageRequest(WebPageData *page);
 	void clearWebPageRequests();
 
-	void scheduleStickerSetRequest(uint64 setId, uint64 access);
+	void scheduleStickerSetRequest(quint64 setId, quint64 access);
 	void requestStickerSets();
 	void saveStickerSets(const Stickers::Order &localOrder, const Stickers::Order &localRemoved);
 	void updateStickers();
@@ -139,7 +139,7 @@ private:
 	void lastParticipantsDone(ChannelData *peer, const MTPchannels_ChannelParticipants &result, mtpRequestId req);
 	void resolveWebPages();
 	void gotWebPages(ChannelData *channel, const MTPmessages_Messages &result, mtpRequestId req);
-	void gotStickerSet(uint64 setId, const MTPmessages_StickerSet &result);
+	void gotStickerSet(quint64 setId, const MTPmessages_StickerSet &result);
 
 	PeerData *notifySettingReceived(MTPInputNotifyPeer peer, const MTPPeerNotifySettings &settings);
 
@@ -180,7 +180,7 @@ private:
 	QMap<WebPageData*, mtpRequestId> _webPagesPending;
 	base::Timer _webPagesTimer;
 
-	QMap<uint64, QPair<uint64, mtpRequestId> > _stickerSetRequests;
+	QMap<quint64, QPair<quint64, mtpRequestId> > _stickerSetRequests;
 
 	QMap<ChannelData*, mtpRequestId> _channelAmInRequests;
 	QMap<UserData*, mtpRequestId> _blockRequests;

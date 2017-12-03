@@ -32,8 +32,8 @@ public:
 	void uploadMedia(const FullMsgId &msgId, const SendMediaReady &image);
 	void upload(const FullMsgId &msgId, const FileLoadResultPtr &file);
 
-	int32 currentOffset(const FullMsgId &msgId) const; // -1 means file not found
-	int32 fullSize(const FullMsgId &msgId) const;
+	qint32 currentOffset(const FullMsgId &msgId) const; // -1 means file not found
+	qint32 fullSize(const FullMsgId &msgId) const;
 
 	void cancel(const FullMsgId &msgId);
 	void pause(const FullMsgId &msgId);
@@ -77,7 +77,7 @@ private:
 				docSize = docPartSize = docPartsCount = 0;
 			}
 		}
-		void setDocSize(int32 size) {
+		void setDocSize(qint32 size) {
 			docSize = size;
 			if (docSize >= 1024 * 1024 || !setPartSize(DocumentUploadPartSize0)) {
 				if (docSize > 32 * 1024 * 1024 || !setPartSize(DocumentUploadPartSize1)) {
@@ -91,7 +91,7 @@ private:
 				}
 			}
 		}
-		bool setPartSize(uint32 partSize) {
+		bool setPartSize(quint32 partSize) {
 			docPartSize = partSize;
 			docPartsCount = (docSize / docPartSize) + ((docSize % docPartSize) ? 1 : 0);
 			return (docPartsCount <= DocumentMaxPartsCount);
@@ -99,16 +99,16 @@ private:
 
 		FileLoadResultPtr file;
 		SendMediaReady media;
-		int32 partsCount;
-		mutable int32 fileSentSize;
+		qint32 partsCount;
+		mutable qint32 fileSentSize;
 
-		uint64 id() const {
+		quint64 id() const {
 			return file ? file->id : media.id;
 		}
 		SendMediaType type() const {
 			return file ? file->type : media.type;
 		}
-		uint64 thumbId() const {
+		quint64 thumbId() const {
 			return file ? file->thumbId : media.thumbId;
 		}
 		const QString &filename() const {
@@ -118,10 +118,10 @@ private:
 		HashMd5 md5Hash;
 
 		QSharedPointer<QFile> docFile;
-		int32 docSentParts;
-		int32 docSize;
-		int32 docPartSize;
-		int32 docPartsCount;
+		qint32 docSentParts;
+		qint32 docSize;
+		qint32 docPartSize;
+		qint32 docPartsCount;
 	};
 	typedef QMap<FullMsgId, File> Queue;
 
@@ -131,10 +131,10 @@ private:
 	void currentFailed();
 
 	QMap<mtpRequestId, QByteArray> requestsSent;
-	QMap<mtpRequestId, int32> docRequestsSent;
-	QMap<mtpRequestId, int32> dcMap;
-	uint32 sentSize = 0;
-	uint32 sentSizes[MTP::kUploadSessionsCount] = { 0 };
+	QMap<mtpRequestId, qint32> docRequestsSent;
+	QMap<mtpRequestId, qint32> dcMap;
+	quint32 sentSize = 0;
+	quint32 sentSizes[MTP::kUploadSessionsCount] = { 0 };
 
 	FullMsgId uploading, _paused;
 	Queue queue;

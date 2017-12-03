@@ -108,11 +108,11 @@ private:
 
 };
 
-bool IsNumber(utf16char ch) {
+bool IsNumber(char16_t ch) {
 	return (ch >= '0' && ch <= '9');
 }
 
-bool IsLetterOrNumber(utf16char ch) {
+bool IsLetterOrNumber(char16_t ch) {
 	return (ch >= 'a' && ch <= 'z') || IsNumber(ch);
 }
 
@@ -130,7 +130,7 @@ private:
 		int wordsUsed;
 	};
 
-	static std::vector<utf16char> NormalizeQuery(utf16string query);
+	static std::vector<char16_t> NormalizeQuery(utf16string query);
 	void addResult(const Replacement *replacement);
 	bool isDuplicateOfLastResult(const Replacement *replacement) const;
 	bool isBetterThanLastResult(const Replacement *replacement) const;
@@ -139,7 +139,7 @@ private:
 	void initWordsTracking();
 	bool matchQueryForCurrentItem();
 	bool matchQueryTailStartingFrom(int position);
-	string_span findWordsStartingWith(utf16char ch);
+	string_span findWordsStartingWith(char16_t ch);
 	int findEqualCharsCount(int position, const utf16string *word);
 	std::vector<Suggestion> prepareResult();
 	bool startsWithQuery(utf16string word);
@@ -148,8 +148,8 @@ private:
 	std::vector<Result> _result;
 
 	utf16string _initialQuery;
-	const std::vector<utf16char> _query;
-	const utf16char *_queryBegin = nullptr;
+	const std::vector<char16_t> _query;
+	const char16_t *_queryBegin = nullptr;
 	int _querySize = 0;
 
 	const std::vector<const Replacement*> *_initialList = nullptr;
@@ -159,7 +159,7 @@ private:
 
 	class UsedWordGuard {
 	public:
-		UsedWordGuard(std::vector<small> &map, int index);
+		UsedWordGuard(std::vector<uint8_t> &map, int index);
 		UsedWordGuard(const UsedWordGuard &other) = delete;
 		UsedWordGuard(UsedWordGuard &&other);
 		UsedWordGuard &operator=(const UsedWordGuard &other) = delete;
@@ -168,16 +168,16 @@ private:
 		~UsedWordGuard();
 
 	private:
-		std::vector<small> &_map;
+		std::vector<uint8_t> &_map;
 		int _index = 0;
-		small _guarded = 0;
+		uint8_t _guarded = 0;
 
 	};
-	std::vector<small> _currentItemWordsUsedMap;
+	std::vector<uint8_t> _currentItemWordsUsedMap;
 
 };
 
-Completer::UsedWordGuard::UsedWordGuard(std::vector<small> &map, int index) : _map(map), _index(index) {
+Completer::UsedWordGuard::UsedWordGuard(std::vector<uint8_t> &map, int index) : _map(map), _index(index) {
 	Expects(_map.size() > _index);
 	if (!_map[_index]) {
 		_guarded = _map[_index] = 1;
@@ -204,8 +204,8 @@ Completer::Completer(utf16string query) : _initialQuery(query), _query(Normalize
 // Remove all non-letters-or-numbers.
 // Leave '-' and '+' only if they're followed by a number or
 // at the end of the query (so it is possibly followed by a number).
-std::vector<utf16char> Completer::NormalizeQuery(utf16string query) {
-	auto result = std::vector<utf16char>();
+std::vector<char16_t> Completer::NormalizeQuery(utf16string query) {
+	auto result = std::vector<char16_t>();
 	result.reserve(query.size());
 	auto copyFrom = query.data();
 	auto e = copyFrom + query.size();
@@ -220,14 +220,14 @@ std::vector<utf16char> Completer::NormalizeQuery(utf16string query) {
 		}
 		if (i > copyFrom) {
 			result.resize(result.size() + (i - copyFrom));
-			memcpy(copyTo, copyFrom, (i - copyFrom) * sizeof(utf16char));
+			memcpy(copyTo, copyFrom, (i - copyFrom) * sizeof(char16_t));
 			copyTo += (i - copyFrom);
 		}
 		copyFrom = i + 1;
 	}
 	if (e > copyFrom) {
 		result.resize(result.size() + (e - copyFrom));
-		memcpy(copyTo, copyFrom, (e - copyFrom) * sizeof(utf16char));
+		memcpy(copyTo, copyFrom, (e - copyFrom) * sizeof(char16_t));
 		copyTo += (e - copyFrom);
 	}
 	return result;
@@ -297,7 +297,7 @@ void Completer::initWordsTracking() {
 			maxWordsCount = wordsCount;
 		}
 	}
-	_currentItemWordsUsedMap = std::vector<small>(maxWordsCount, 0);
+	_currentItemWordsUsedMap = std::vector<uint8_t>(maxWordsCount, 0);
 }
 
 void Completer::filterInitialList() {
@@ -408,11 +408,11 @@ std::vector<Suggestion> Completer::prepareResult() {
 	return result;
 }
 
-string_span Completer::findWordsStartingWith(utf16char ch) {
-	auto begin = std::lower_bound(_currentItemWords.begin(), _currentItemWords.end(), ch, [](utf16string word, utf16char ch) {
+string_span Completer::findWordsStartingWith(char16_t ch) {
+	auto begin = std::lower_bound(_currentItemWords.begin(), _currentItemWords.end(), ch, [](utf16string word, char16_t ch) {
 		return word[0] < ch;
 	});
-	auto end = std::upper_bound(_currentItemWords.begin(), _currentItemWords.end(), ch, [](utf16char ch, utf16string word) {
+	auto end = std::upper_bound(_currentItemWords.begin(), _currentItemWords.end(), ch, [](char16_t ch, utf16string word) {
 		return ch < word[0];
 	});
 	return _currentItemWords.subspan(begin - _currentItemWords.begin(), end - begin);

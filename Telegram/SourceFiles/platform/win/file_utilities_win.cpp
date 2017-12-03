@@ -89,7 +89,7 @@ HBITMAP IconToBitmap(LPWSTR icon, int iconindex) {
 	if (icon[0] == L'@' && SUCCEEDED(SHLoadIndirectString(icon, tmpIcon, 4096, 0))) {
 		icon = tmpIcon;
 	}
-	int32 w = GetSystemMetrics(SM_CXSMICON), h = GetSystemMetrics(SM_CYSMICON);
+	qint32 w = GetSystemMetrics(SM_CXSMICON), h = GetSystemMetrics(SM_CYSMICON);
 
 	HICON ico = ExtractIcon(0, icon, iconindex);
 	if (!ico) {
@@ -184,7 +184,7 @@ bool UnsafeShowOpenWithDropdown(const QString &filepath, QPoint menuPosition) {
 			std::sort(handlers.begin(), handlers.end(), [](const OpenWithApp &a, const OpenWithApp &b) {
 				return a.name() < b.name();
 			});
-			for (int32 i = 0, l = handlers.size(); i < l; ++i) {
+			for (qint32 i = 0, l = handlers.size(); i < l; ++i) {
 				MENUITEMINFO menuInfo = { 0 };
 				menuInfo.cbSize = sizeof(menuInfo);
 				menuInfo.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;

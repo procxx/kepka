@@ -79,7 +79,7 @@ public:
 
 	static const int UpdateAlways = 666;
 
-	int32 state() const;
+	qint32 state() const;
 	QString transport() const;
 
 private:
@@ -98,9 +98,9 @@ public:
 
 	void stop();
 
-	int32 getShiftedDcId() const;
+	qint32 getShiftedDcId() const;
 
-	int32 getState() const;
+	qint32 getState() const;
 	QString transport() const;
 
 signals:
@@ -132,7 +132,7 @@ public slots:
 	void onWaitIPv4Failed();
 
 	void onOldConnection();
-	void onSentSome(uint64 size);
+	void onSentSome(quint64 size);
 	void onReceivedSome();
 
 	void onReadyData();
@@ -184,13 +184,13 @@ private:
 		RestartConnection,
 		ResetSession,
 	};
-	HandleResult handleOneReceived(const mtpPrime *from, const mtpPrime *end, uint64 msgId, int32 serverTime, uint64 serverSalt, bool badTime);
+	HandleResult handleOneReceived(const mtpPrime *from, const mtpPrime *end, quint64 msgId, qint32 serverTime, quint64 serverSalt, bool badTime);
 	mtpBuffer ungzip(const mtpPrime *from, const mtpPrime *end) const;
 	void handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states, QVector<MTPlong> &acked);
 
 	void clearMessages();
 
-	bool setState(int32 state, int32 ifState = Connection::UpdateAlways);
+	bool setState(qint32 state, qint32 ifState = Connection::UpdateAlways);
 
 	base::byte_vector encryptPQInnerRSA(const MTPP_Q_inner_data &data, const MTP::internal::RSAPublicKey &key);
 	std::string encryptClientDHInner(const MTPClient_DH_Inner_Data &data);
@@ -199,7 +199,7 @@ private:
 	DcType _dcType = DcType::Regular;
 
 	mutable QReadWriteLock stateConnMutex;
-	int32 _state = DisconnectedState;
+	qint32 _state = DisconnectedState;
 
 	bool _needSessionReset = false;
 	void resetSession();
@@ -218,13 +218,13 @@ private:
 	bool oldConnection = true;
 
 	SingleTimer _waitForConnectedTimer, _waitForReceivedTimer, _waitForIPv4Timer;
-	uint32 _waitForReceived, _waitForConnected;
+	quint32 _waitForReceived, _waitForConnected;
 	TimeMs firstSentAt = -1;
 
 	QVector<MTPlong> ackRequestData, resendRequestData;
 
 	// if badTime received - search for ids in sessionData->haveSent and sessionData->wereAcked and sync time/salt, return true if found
-	bool requestsFixTimeSalt(const QVector<MTPlong> &ids, int32 serverTime, uint64 serverSalt);
+	bool requestsFixTimeSalt(const QVector<MTPlong> &ids, qint32 serverTime, quint64 serverSalt);
 
 	// remove msgs with such ids from sessionData->haveSent, add to sessionData->wereAcked
 	void requestsAcked(const QVector<MTPlong> &ids, bool byResponse = false);
@@ -247,7 +247,7 @@ private:
 	bool restarted = false;
 	bool _finished = false;
 
-	uint64 keyId = 0;
+	quint64 keyId = 0;
 	QReadWriteLock sessionDataMutex;
 	SessionData *sessionData = nullptr;
 
@@ -266,17 +266,17 @@ private:
 		MTPint256 &new_nonce;
 		MTPlong &auth_key_aux_hash;
 
-		uint32 retries = 0;
+		quint32 retries = 0;
 		MTPlong retry_id;
 
-		int32 g = 0;
+		qint32 g = 0;
 
 		uchar aesKey[32] = { 0 };
 		uchar aesIV[32] = { 0 };
 		MTPlong auth_key_hash;
 
-		uint32 req_num = 0; // sent not encrypted request number
-		uint32 msgs_sent = 0;
+		quint32 req_num = 0; // sent not encrypted request number
+		quint32 msgs_sent = 0;
 	};
 	struct AuthKeyCreateStrings {
 		std::vector<gsl::byte> dh_prime;

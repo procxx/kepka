@@ -29,10 +29,10 @@ class VolumeController : public TWidget {
 public:
 	VolumeController(QWidget *parent);
 
-	void setVolume(float64 volume);
+	void setVolume(double volume);
 
 signals:
-	void volumeChanged(float64 volume);
+	void volumeChanged(double volume);
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
@@ -44,9 +44,9 @@ protected:
 
 private:
 	void setOver(bool over);
-	void changeVolume(float64 newVolume);
+	void changeVolume(double newVolume);
 
-	float64 _volume = 0.;
+	double _volume = 0.;
 	int _downCoord = -1; // < 0 means mouse is not pressed
 
 	bool _over = false;

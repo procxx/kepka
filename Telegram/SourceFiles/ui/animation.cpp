@@ -46,50 +46,50 @@ bool AnimationsDisabled = false;
 
 namespace anim {
 
-transition linear = [](const float64 &delta, const float64 &dt) {
+transition linear = [](const double &delta, const double &dt) {
 	return delta * dt;
 };
 
-transition sineInOut = [](const float64 &delta, const float64 &dt) {
+transition sineInOut = [](const double &delta, const double &dt) {
 	return -(delta / 2) * (cos(M_PI * dt) - 1);
 };
 
-transition halfSine = [](const float64 &delta, const float64 &dt) {
+transition halfSine = [](const double &delta, const double &dt) {
 	return delta * sin(M_PI * dt / 2);
 };
 
-transition easeOutBack = [](const float64 &delta, const float64 &dt) {
+transition easeOutBack = [](const double &delta, const double &dt) {
 	static constexpr auto s = 1.70158;
 
-	const float64 t = dt - 1;
+	const double t = dt - 1;
 	return delta * (t * t * ((s + 1) * t + s) + 1);
 };
 
-transition easeInCirc = [](const float64 &delta, const float64 &dt) {
+transition easeInCirc = [](const double &delta, const double &dt) {
 	return -delta * (sqrt(1 - dt * dt) - 1);
 };
 
-transition easeOutCirc = [](const float64 &delta, const float64 &dt) {
-	const float64 t = dt - 1;
+transition easeOutCirc = [](const double &delta, const double &dt) {
+	const double t = dt - 1;
 	return delta * sqrt(1 - t * t);
 };
 
-transition easeInCubic = [](const float64 &delta, const float64 &dt) {
+transition easeInCubic = [](const double &delta, const double &dt) {
 	return delta * dt * dt * dt;
 };
 
-transition easeOutCubic = [](const float64 &delta, const float64 &dt) {
-	const float64 t = dt - 1;
+transition easeOutCubic = [](const double &delta, const double &dt) {
+	const double t = dt - 1;
 	return delta * (t * t * t + 1);
 };
 
-transition easeInQuint = [](const float64 &delta, const float64 &dt) {
-	const float64 t2 = dt * dt;
+transition easeInQuint = [](const double &delta, const double &dt) {
+	const double t2 = dt * dt;
 	return delta * t2 * t2 * dt;
 };
 
-transition easeOutQuint = [](const float64 &delta, const float64 &dt) {
-	const float64 t = dt - 1, t2 = t * t;
+transition easeOutQuint = [](const double &delta, const double &dt) {
+	const double t = dt - 1, t2 = t * t;
 	return delta * (t2 * t2 * t + 1);
 };
 

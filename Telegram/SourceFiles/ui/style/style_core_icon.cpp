@@ -24,12 +24,12 @@ namespace style {
 namespace internal {
 namespace {
 
-uint32 colorKey(QColor c) {
-	return (((((uint32(c.red()) << 8) | uint32(c.green())) << 8) | uint32(c.blue())) << 8) | uint32(c.alpha());
+quint32 colorKey(QColor c) {
+	return (((((quint32(c.red()) << 8) | quint32(c.green())) << 8) | quint32(c.blue())) << 8) | quint32(c.alpha());
 }
 
 using IconMasks = QMap<const IconMask*, QImage>;
-using IconPixmaps = QMap<QPair<const IconMask*, uint32>, QPixmap>;
+using IconPixmaps = QMap<QPair<const IconMask*, quint32>, QPixmap>;
 using IconDatas = OrderedSet<IconData*>;
 NeverFreedPointer<IconMasks> iconMasks;
 NeverFreedPointer<IconPixmaps> iconPixmaps;

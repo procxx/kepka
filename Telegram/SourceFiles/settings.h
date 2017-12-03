@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <cassert>
+#include <cstdint>
 
 void InitFromCommandLine(int argc, char *argv[]);
 
@@ -60,8 +61,8 @@ inline bool rtl() {
 DeclareReadSetting(QString, Arguments);
 
 DeclareSetting(bool, AlphaVersion);
-DeclareSetting(uint64, BetaVersion);
-DeclareSetting(uint64, RealBetaVersion);
+DeclareSetting(quint64, BetaVersion);
+DeclareSetting(quint64, RealBetaVersion);
 DeclareSetting(QByteArray, BetaPrivateKey);
 
 DeclareSetting(bool, TestMode);
@@ -102,7 +103,7 @@ DeclareSetting(bool, AutoUpdate);
 struct TWindowPos {
 	TWindowPos() = default;
 
-	int32 moncrc = 0;
+	qint32 moncrc = 0;
 	int maximized = 0;
 	int x = 0;
 	int y = 0;
@@ -116,7 +117,7 @@ DeclareSetting(bool, RestartingUpdate);
 DeclareSetting(bool, Restarting);
 DeclareSetting(bool, RestartingToSettings);
 DeclareSetting(bool, WriteProtected);
-DeclareSetting(int32, LastUpdateCheck);
+DeclareSetting(qint32, LastUpdateCheck);
 DeclareSetting(bool, NoStartUpdate);
 DeclareSetting(bool, StartToSettings);
 DeclareSetting(bool, ReplaceEmojis);
@@ -143,8 +144,8 @@ inline DBIScale cScale() {
 template <typename T>
 T convertScale(T v) {
 	switch (cScale()) {
-		case dbisOneAndQuarter: return qRound(float64(v) * 1.25 - 0.01);
-		case dbisOneAndHalf: return qRound(float64(v) * 1.5 - 0.01);
+		case dbisOneAndQuarter: return qRound(double(v) * 1.25 - 0.01);
+		case dbisOneAndHalf: return qRound(double(v) * 1.5 - 0.01);
 		case dbisTwo: return v * 2;
 		case dbisAuto: case dbisOne: return v;
 		case dbisScaleCount: assert(false); // temp
@@ -161,11 +162,11 @@ class One;
 using EmojiPtr = const Ui::Emoji::One*;
 
 using EmojiPack = QVector<EmojiPtr>;
-using RecentEmojiPreloadOldOld = QVector<QPair<uint32, ushort>>;
-using RecentEmojiPreloadOld = QVector<QPair<uint64, ushort>>;
-using RecentEmojiPreload = QVector<QPair<QString, ushort>>;
-using RecentEmojiPack = QVector<QPair<EmojiPtr, ushort>>;
-using EmojiColorVariantsOld = QMap<uint32, uint64>;
+using RecentEmojiPreloadOldOld = QVector<QPair<quint32, quint16>>;
+using RecentEmojiPreloadOld = QVector<QPair<quint64, quint16>>;
+using RecentEmojiPreload = QVector<QPair<QString, quint16>>;
+using RecentEmojiPack = QVector<QPair<EmojiPtr, quint16>>;
+using EmojiColorVariantsOld = QMap<quint32, quint64>;
 using EmojiColorVariants = QMap<QString, int>;
 DeclareRefSetting(RecentEmojiPack, RecentEmoji);
 DeclareSetting(RecentEmojiPreload, RecentEmojiPreload);
@@ -174,9 +175,9 @@ DeclareRefSetting(EmojiColorVariants, EmojiVariants);
 class DocumentData;
 typedef QVector<DocumentData*> StickerPack;
 
-typedef QList<QPair<DocumentData*, int16> > RecentStickerPackOld;
-typedef QVector<QPair<uint64, ushort> > RecentStickerPreload;
-typedef QVector<QPair<DocumentData*, ushort> > RecentStickerPack;
+typedef QList<QPair<DocumentData*, qint16> > RecentStickerPackOld;
+typedef QVector<QPair<quint64, quint16> > RecentStickerPreload;
+typedef QVector<QPair<DocumentData*, quint16> > RecentStickerPack;
 DeclareSetting(RecentStickerPreload, RecentStickersPreload);
 DeclareRefSetting(RecentStickerPack, RecentStickers);
 
@@ -188,7 +189,7 @@ typedef QVector<DocumentData*> SavedGifs;
 DeclareRefSetting(SavedGifs, SavedGifs);
 DeclareSetting(TimeMs, LastSavedGifsUpdate);
 
-typedef QList<QPair<QString, ushort> > RecentHashtagPack;
+typedef QList<QPair<QString, quint16> > RecentHashtagPack;
 DeclareRefSetting(RecentHashtagPack, RecentWriteHashtags);
 DeclareSetting(RecentHashtagPack, RecentSearchHashtags);
 
@@ -198,7 +199,7 @@ DeclareRefSetting(RecentInlineBots, RecentInlineBots);
 
 DeclareSetting(bool, PasswordRecovered);
 
-DeclareSetting(int32, PasscodeBadTries);
+DeclareSetting(qint32, PasscodeBadTries);
 DeclareSetting(TimeMs, PasscodeLastTry);
 
 inline bool passcodeCanTry() {
@@ -253,8 +254,8 @@ DeclareSetting(QStringList, SendPaths);
 DeclareSetting(QString, StartUrl);
 
 DeclareSetting(bool, Retina);
-DeclareSetting(float64, RetinaFactor);
-DeclareSetting(int32, IntRetinaFactor);
+DeclareSetting(double, RetinaFactor);
+DeclareSetting(qint32, IntRetinaFactor);
 
 DeclareReadSetting(DBIPlatform, Platform);
 DeclareReadSetting(QString, PlatformString);
@@ -269,7 +270,7 @@ typedef QMultiMap<QDateTime, PeerData*> SavedPeersByTime;
 DeclareRefSetting(SavedPeers, SavedPeers);
 DeclareRefSetting(SavedPeersByTime, SavedPeersByTime);
 
-typedef QMap<uint64, DBIPeerReportSpamStatus> ReportSpamStatuses;
+typedef QMap<quint64, DBIPeerReportSpamStatus> ReportSpamStatuses;
 DeclareRefSetting(ReportSpamStatuses, ReportSpamStatuses);
 
 enum DBIAutoDownloadFlags {
@@ -277,9 +278,9 @@ enum DBIAutoDownloadFlags {
 	dbiadNoGroups  = 0x02,
 };
 
-DeclareSetting(int32, AutoDownloadPhoto);
-DeclareSetting(int32, AutoDownloadAudio);
-DeclareSetting(int32, AutoDownloadGif);
+DeclareSetting(qint32, AutoDownloadPhoto);
+DeclareSetting(qint32, AutoDownloadAudio);
+DeclareSetting(qint32, AutoDownloadGif);
 DeclareSetting(bool, AutoPlayGif);
 
 void settingsParseArgs(int argc, char *argv[]);

@@ -34,15 +34,15 @@ extern "C" {
 
 struct VideoSoundData {
 	AVCodecContext *context = nullptr;
-	int32 frequency = Media::Player::kDefaultFrequency;
-	int64 length = 0;
+	qint32 frequency = Media::Player::kDefaultFrequency;
+	qint64 length = 0;
 	~VideoSoundData();
 };
 
 struct VideoSoundPart {
 	AVPacket *packet = nullptr;
 	AudioMsgId audio;
-	uint32 playId = 0;
+	quint32 playId = 0;
 };
 
 namespace FFMpeg {
@@ -91,19 +91,19 @@ public:
 		return true;
 	}
 
-	int32 format() override {
+	qint32 format() override {
 		return _format;
 	}
 
-	int64 samplesCount() override {
+	qint64 samplesCount() override {
 		return _parentData->length;
 	}
 
-	int32 samplesFrequency() override {
+	qint32 samplesFrequency() override {
 		return _parentData->frequency;
 	}
 
-	ReadResult readMore(QByteArray &result, int64 &samplesAdded) override;
+	ReadResult readMore(QByteArray &result, qint64 &samplesAdded) override;
 	void enqueuePackets(QQueue<FFMpeg::AVPacketDataWrap> &packets) override;
 
 	bool eofReached() const {
@@ -113,15 +113,15 @@ public:
 	~ChildFFMpegLoader();
 
 private:
-	ReadResult readFromReadyFrame(QByteArray &result, int64 &samplesAdded);
+	ReadResult readFromReadyFrame(QByteArray &result, qint64 &samplesAdded);
 
 	bool _eofReached = false;
 
-	int32 _sampleSize = 2 * sizeof(uint16);
-	int32 _format = AL_FORMAT_STEREO16;
-	int32 _srcRate = Media::Player::kDefaultFrequency;
-	int32 _dstRate = Media::Player::kDefaultFrequency;
-	int32 _maxResampleSamples = 1024;
+	qint32 _sampleSize = 2 * sizeof(quint16);
+	qint32 _format = AL_FORMAT_STEREO16;
+	qint32 _srcRate = Media::Player::kDefaultFrequency;
+	qint32 _dstRate = Media::Player::kDefaultFrequency;
+	qint32 _maxResampleSamples = 1024;
 	uint8_t **_dstSamplesData = nullptr;
 
 	std::unique_ptr<VideoSoundData> _parentData;

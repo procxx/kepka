@@ -39,25 +39,25 @@ public:
 
 	bool open(qint64 &position) override;
 
-	int64 samplesCount() override {
+	qint64 samplesCount() override {
 		return _samplesCount;
 	}
 
-	int32 samplesFrequency() override {
+	qint32 samplesFrequency() override {
 		return _samplesFrequency;
 	}
 
 	~AbstractFFMpegLoader();
 
 protected:
-	int32 _samplesFrequency = Media::Player::kDefaultFrequency;
-	int64 _samplesCount = 0;
+	qint32 _samplesFrequency = Media::Player::kDefaultFrequency;
+	qint64 _samplesCount = 0;
 
 	uchar *ioBuffer = nullptr;
 	AVIOContext *ioContext = nullptr;
 	AVFormatContext *fmtContext = nullptr;
 	AVCodec *codec = nullptr;
-	int32 streamId = 0;
+	qint32 streamId = 0;
 
 	bool _opened = false;
 
@@ -77,24 +77,24 @@ public:
 
 	bool open(qint64 &position) override;
 
-	int32 format() override {
+	qint32 format() override {
 		return fmt;
 	}
 
-	ReadResult readMore(QByteArray &result, int64 &samplesAdded) override;
+	ReadResult readMore(QByteArray &result, qint64 &samplesAdded) override;
 
 	~FFMpegLoader();
 
 protected:
-	int32 sampleSize = 2 * sizeof(uint16);
+	qint32 sampleSize = 2 * sizeof(quint16);
 
 private:
-	ReadResult readFromReadyFrame(QByteArray &result, int64 &samplesAdded);
+	ReadResult readFromReadyFrame(QByteArray &result, qint64 &samplesAdded);
 
-	int32 fmt = AL_FORMAT_STEREO16;
-	int32 srcRate = Media::Player::kDefaultFrequency;
-	int32 dstRate = Media::Player::kDefaultFrequency;
-	int32 maxResampleSamples = 1024;
+	qint32 fmt = AL_FORMAT_STEREO16;
+	qint32 srcRate = Media::Player::kDefaultFrequency;
+	qint32 dstRate = Media::Player::kDefaultFrequency;
+	qint32 maxResampleSamples = 1024;
 	uint8_t **dstSamplesData = nullptr;
 
 	AVCodecContext *codecContext = nullptr;

@@ -55,7 +55,7 @@ public:
 		return false;
 	}
 
-	virtual int32 debugState() const = 0;
+	virtual qint32 debugState() const = 0;
 
 	virtual QString transport() const = 0;
 

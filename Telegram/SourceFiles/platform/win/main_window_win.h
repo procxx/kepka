@@ -85,7 +85,7 @@ public slots:
 
 protected:
 	void initHook() override;
-	int32 screenNameChecksum(const QString &name) const override;
+	qint32 screenNameChecksum(const QString &name) const override;
 	void unreadCounterChangedHook() override;
 
 	void stateChangedHook(Qt::WindowState state) override;

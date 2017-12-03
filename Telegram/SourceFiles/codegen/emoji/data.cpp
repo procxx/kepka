@@ -24,10 +24,6 @@ namespace codegen {
 namespace emoji {
 namespace {
 
-using uint16 = quint16;
-using uint32 = quint32;
-using uint64 = quint64;
-
 using std::vector;
 using std::map;
 using std::find;
@@ -36,7 +32,7 @@ using std::move;
 using std::begin;
 using std::end;
 
-using InputId = vector<uint32>;
+using InputId = vector<quint32>;
 using InputCategory = vector<InputId>;
 
 // copied from emoji_box.cpp
@@ -83,7 +79,7 @@ Replace Replaces[] = {
 	{ { 0xD83DDE08U }, "}:)" },
 };
 
-using ColorId = uint32;
+using ColorId = quint32;
 ColorId Colors[] = {
 	0xD83CDFFBU,
 	0xD83CDFFCU,
@@ -1703,11 +1699,11 @@ InputCategory Category7 = {
 
 constexpr auto kErrorBadData = 401;
 
-void append(Id &id, uint32 code) {
-	if (auto first = static_cast<uint16>((code >> 16) & 0xFFFFU)) {
+void append(Id &id, quint32 code) {
+	if (auto first = static_cast<quint16>((code >> 16) & 0xFFFFU)) {
 		id.append(QChar(first));
 	}
-	id.append(QChar(static_cast<uint16>(code & 0xFFFFU)));
+	id.append(QChar(static_cast<quint16>(code & 0xFFFFU)));
 }
 
 using VariatedIds = map<Id, bool>;

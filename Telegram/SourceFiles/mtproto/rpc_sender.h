@@ -39,7 +39,7 @@ public:
 		}
 	}
 
-	int32 code() const {
+	qint32 code() const {
 		return _code;
 	}
 
@@ -58,7 +58,7 @@ public:
 
 private:
 
-	int32 _code;
+	qint32 _code;
 	QString _type, _description;
 };
 
@@ -271,11 +271,11 @@ private:
 };
 
 struct RPCCallbackClear {
-	RPCCallbackClear(mtpRequestId id = 0, int32 code = RPCError::NoError) : requestId(id), errorCode(code) {
+	RPCCallbackClear(mtpRequestId id = 0, qint32 code = RPCError::NoError) : requestId(id), errorCode(code) {
 	}
 
 	mtpRequestId requestId;
-	int32 errorCode;
+	qint32 errorCode;
 
 };
 
@@ -847,8 +847,8 @@ protected:
 
 };
 
-using MTPStateChangedHandler = void (*)(int32 dcId, int32 state);
-using MTPSessionResetHandler = void (*)(int32 dcId);
+using MTPStateChangedHandler = void (*)(qint32 dcId, qint32 state);
+using MTPSessionResetHandler = void (*)(qint32 dcId);
 
 template <typename Base, typename FunctionType>
 class RPCHandlerImplementation : public Base {

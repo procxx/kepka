@@ -28,13 +28,13 @@ class Document {
 public:
 
 	struct StickerSetInfo {
-		StickerSetInfo(uint64 setId, uint64 accessHash, QString shortName)
+		StickerSetInfo(quint64 setId, quint64 accessHash, QString shortName)
 			: setId(setId)
 			, accessHash(accessHash)
 			, shortName(shortName) {
 		}
-		uint64 setId;
-		uint64 accessHash;
+		quint64 setId;
+		quint64 accessHash;
 		QString shortName;
 	};
 

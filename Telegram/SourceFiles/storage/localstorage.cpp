@@ -53,7 +53,7 @@ constexpr int tdfMagicLen = sizeof(tdfMagic);
 QString toFilePart(FileKey val) {
 	QString result;
 	result.reserve(0x10);
-	for (int32 i = 0; i < 0x10; ++i) {
+	for (qint32 i = 0; i < 0x10; ++i) {
 		uchar v = (val & 0x0F);
 		result.push_back((v < 0x0A) ? ('0' + v) : ('A' + (v - 0x0A)));
 		val >>= 4;
@@ -166,7 +166,7 @@ void createLocalKey(const QByteArray &pass, QByteArray *salt, MTP::AuthKeyPtr *r
 struct FileReadDescriptor {
 	FileReadDescriptor() : version(0) {
 	}
-	int32 version;
+	qint32 version;
 	QByteArray data;
 	QBuffer buffer;
 	QDataStream stream;
@@ -182,15 +182,15 @@ struct FileReadDescriptor {
 struct EncryptedDescriptor {
 	EncryptedDescriptor() {
 	}
-	EncryptedDescriptor(uint32 size) {
-		uint32 fullSize = sizeof(uint32) + size;
+	EncryptedDescriptor(quint32 size) {
+		quint32 fullSize = sizeof(quint32) + size;
 		if (fullSize & 0x0F) fullSize += 0x10 - (fullSize & 0x0F);
 		data.reserve(fullSize);
 
-		data.resize(sizeof(uint32));
+		data.resize(sizeof(quint32));
 		buffer.setBuffer(&data);
 		buffer.open(QIODevice::WriteOnly);
-		buffer.seek(sizeof(uint32));
+		buffer.seek(sizeof(quint32));
 		stream.setDevice(&buffer);
 		stream.setVersion(QDataStream::Qt_5_1);
 	}
@@ -272,13 +272,13 @@ struct FileWriteDescriptor {
 		QByteArray &toEncrypt(data.data);
 
 		// prepare for encryption
-		uint32 size = toEncrypt.size(), fullSize = size;
+		quint32 size = toEncrypt.size(), fullSize = size;
 		if (fullSize & 0x0F) {
 			fullSize += 0x10 - (fullSize & 0x0F);
 			toEncrypt.resize(fullSize);
 			memset_rand(toEncrypt.data() + size, fullSize - size);
 		}
-		*(uint32*)toEncrypt.data() = size;
+		*(quint32*)toEncrypt.data() = size;
 		QByteArray encrypted(0x10 + fullSize, Qt::Uninitialized); // 128bit of sha1 - key128, sizeof(data), data
 		hashSha1(toEncrypt.constData(), toEncrypt.size(), encrypted.data());
 		MTP::aesEncryptLocal(toEncrypt.constData(), encrypted.data() + 0x10, fullSize, key, encrypted.constData());
@@ -310,7 +310,7 @@ struct FileWriteDescriptor {
 	QString toDelete;
 
 	HashMd5 md5;
-	int32 dataSize = 0;
+	qint32 dataSize = 0;
 
 	~FileWriteDescriptor() {
 		finish();
@@ -344,7 +344,7 @@ bool readFile(FileReadDescriptor &result, const QString &name, FileOptions optio
 			toTry[0][toTry[0].size() - 1] = '1';
 		}
 	}
-	for (int32 i = 0; i < 2; ++i) {
+	for (qint32 i = 0; i < 2; ++i) {
 		QString fname(toTry[i]);
 		if (fname.isEmpty()) break;
 
@@ -378,7 +378,7 @@ bool readFile(FileReadDescriptor &result, const QString &name, FileOptions optio
 
 		// read data
 		QByteArray bytes = f.read(f.size());
-		int32 dataSize = bytes.size() - 16;
+		qint32 dataSize = bytes.size() - 16;
 		if (dataSize < 0) {
 			DEBUG_LOG(("App Info: bad file '%1', could not read sign part").arg(name));
 			continue;
@@ -419,7 +419,7 @@ bool decryptLocal(EncryptedDescriptor &result, const QByteArray &encrypted, cons
 		LOG(("App Error: bad encrypted part size: %1").arg(encrypted.size()));
 		return false;
 	}
-	uint32 fullLen = encrypted.size() - 16;
+	quint32 fullLen = encrypted.size() - 16;
 
 	QByteArray decrypted;
 	decrypted.resize(fullLen);
@@ -431,8 +431,8 @@ bool decryptLocal(EncryptedDescriptor &result, const QByteArray &encrypted, cons
 		return false;
 	}
 
-	uint32 dataLen = *(const uint32*)decrypted.constData();
-	if (dataLen > uint32(decrypted.size()) || dataLen <= fullLen - 16 || dataLen < sizeof(uint32)) {
+	quint32 dataLen = *(const quint32*)decrypted.constData();
+	if (dataLen > quint32(decrypted.size()) || dataLen <= fullLen - 16 || dataLen < sizeof(quint32)) {
 		LOG(("App Error: bad decrypted part size: %1, fullLen: %2, decrypted size: %3").arg(dataLen).arg(fullLen).arg(decrypted.size()));
 		return false;
 	}
@@ -443,7 +443,7 @@ bool decryptLocal(EncryptedDescriptor &result, const QByteArray &encrypted, cons
 
 	result.buffer.setBuffer(&result.data);
 	result.buffer.open(QIODevice::ReadOnly);
-	result.buffer.seek(sizeof(uint32)); // skip len
+	result.buffer.seek(sizeof(quint32)); // skip len
 	result.stream.setDevice(&result.buffer);
 	result.stream.setVersion(QDataStream::Qt_5_1);
 
@@ -606,10 +606,10 @@ typedef QMap<MediaKey, MediaKey> FileLocationAliases;
 FileLocationAliases _fileLocationAliases;
 typedef QMap<QString, FileDesc> WebFilesMap;
 WebFilesMap _webFilesMap;
-uint64 _storageWebFilesSize = 0;
+quint64 _storageWebFilesSize = 0;
 FileKey _locationsKey = 0, _reportSpamStatusesKey = 0, _trustedBotsKey = 0;
 
-using TrustedBots = OrderedSet<uint64>;
+using TrustedBots = OrderedSet<quint64>;
 TrustedBots _trustedBots;
 bool _trustedBotsRead = false;
 
@@ -635,10 +635,10 @@ FileKey _langPackKey = 0;
 
 typedef QMap<StorageKey, FileDesc> StorageMap;
 StorageMap _imagesMap, _stickerImagesMap, _audiosMap;
-int32 _storageImagesSize = 0, _storageStickersSize = 0, _storageAudiosSize = 0;
+qint32 _storageImagesSize = 0, _storageStickersSize = 0, _storageAudiosSize = 0;
 
 bool _mapChanged = false;
-int32 _oldMapVersion = 0, _oldSettingsVersion = 0;
+qint32 _oldMapVersion = 0, _oldSettingsVersion = 0;
 
 enum class WriteMapWhen {
 	Now,
@@ -848,7 +848,7 @@ void _readReportSpamStatuses() {
 
 	qint32 size = 0;
 	statuses.stream >> size;
-	for (int32 i = 0; i < size; ++i) {
+	for (qint32 i = 0; i < size; ++i) {
 		quint64 peer = 0;
 		qint32 status = 0;
 		statuses.stream >> peer >> status;
@@ -1154,7 +1154,7 @@ bool _readSetting(quint32 blockId, QDataStream &stream, int version, ReadSetting
 			stream >> p.host >> port >> p.user >> p.password;
 			if (!_checkStreamStatus(stream)) return false;
 
-			p.port = uint32(port);
+			p.port = quint32(port);
 			Global::SetConnectionProxy(p);
 			Global::SetConnectionType(DBIConnectionType(v));
 		} break;
@@ -1309,7 +1309,7 @@ bool _readSetting(quint32 blockId, QDataStream &stream, int version, ReadSetting
 		stream >> count;
 		if (!_checkStreamStatus(stream)) return false;
 
-		for (uint32 i = 0; i < count; ++i) {
+		for (quint32 i = 0; i < count; ++i) {
 			quint64 peerId;
 			stream >> peerId;
 		}
@@ -1442,7 +1442,7 @@ bool _readSetting(quint32 blockId, QDataStream &stream, int version, ReadSetting
 			RecentEmojiPreload p;
 			p.reserve(v.size());
 			for (auto &item : v) {
-				auto oldKey = uint64(item.first);
+				auto oldKey = quint64(item.first);
 				switch (oldKey) {
 				case 0xD83CDDEFLLU: oldKey = 0xD83CDDEFD83CDDF5LLU; break;
 				case 0xD83CDDF0LLU: oldKey = 0xD83CDDF0D83CDDF7LLU; break;
@@ -1505,7 +1505,7 @@ bool _readSetting(quint32 blockId, QDataStream &stream, int version, ReadSetting
 
 		EmojiColorVariants variants;
 		for (auto i = v.cbegin(), e = v.cend(); i != e; ++i) {
-			auto id = Ui::Emoji::IdFromOldKey(static_cast<uint64>(i.key()));
+			auto id = Ui::Emoji::IdFromOldKey(static_cast<quint64>(i.key()));
 			if (!id.isEmpty()) {
 				auto index = Ui::Emoji::ColorIndexFromOldKey(i.value());
 				if (index >= 0) {
@@ -1630,7 +1630,7 @@ void _readOldUserSettingsFields(QIODevice *device, qint32 &version, ReadSettings
 				LOG(("App Error: bad encrypted part size in old user config: %1").arg(data.size()));
 				continue;
 			}
-			uint32 fullDataLen = data.size() - 16;
+			quint32 fullDataLen = data.size() - 16;
 			decrypted.resize(fullDataLen);
 			const char *dataKey = data.constData(), *encrypted = data.constData() + 16;
 			aesDecryptLocal(encrypted, decrypted.data(), fullDataLen, OldKey, dataKey);
@@ -1639,8 +1639,8 @@ void _readOldUserSettingsFields(QIODevice *device, qint32 &version, ReadSettings
 				LOG(("App Error: bad decrypt key, data from old user config not decrypted"));
 				continue;
 			}
-			uint32 dataLen = *(const uint32*)decrypted.constData();
-			if (dataLen > uint32(decrypted.size()) || dataLen <= fullDataLen - 16 || dataLen < 4) {
+			quint32 dataLen = *(const quint32*)decrypted.constData();
+			if (dataLen > quint32(decrypted.size()) || dataLen <= fullDataLen - 16 || dataLen < 4) {
 				LOG(("App Error: bad decrypted part size in old user config: %1, fullDataLen: %2, decrypted size: %3").arg(dataLen).arg(fullDataLen).arg(decrypted.size()));
 				continue;
 			}
@@ -1705,7 +1705,7 @@ void _readOldMtpDataFields(QIODevice *device, qint32 &version, ReadSettingsConte
 				LOG(("MTP Error: bad encrypted part size in old keys: %1").arg(data.size()));
 				continue;
 			}
-			uint32 fullDataLen = data.size() - 16;
+			quint32 fullDataLen = data.size() - 16;
 			decrypted.resize(fullDataLen);
 			const char *dataKey = data.constData(), *encrypted = data.constData() + 16;
 			aesDecryptLocal(encrypted, decrypted.data(), fullDataLen, OldKey, dataKey);
@@ -1714,8 +1714,8 @@ void _readOldMtpDataFields(QIODevice *device, qint32 &version, ReadSettingsConte
 				LOG(("MTP Error: bad decrypt key, data from old keys not decrypted"));
 				continue;
 			}
-			uint32 dataLen = *(const uint32*)decrypted.constData();
-			if (dataLen > uint32(decrypted.size()) || dataLen <= fullDataLen - 16 || dataLen < 4) {
+			quint32 dataLen = *(const quint32*)decrypted.constData();
+			if (dataLen > quint32(decrypted.size()) || dataLen <= fullDataLen - 16 || dataLen < 4) {
 				LOG(("MTP Error: bad decrypted part size in old keys: %1, fullDataLen: %2, decrypted size: %3").arg(dataLen).arg(fullDataLen).arg(decrypted.size()));
 				continue;
 			}
@@ -1779,7 +1779,7 @@ void _writeUserSettings() {
 		return Window::Controller::kDefaultDialogsWidthRatio;
 	};
 
-	uint32 size = 21 * (sizeof(quint32) + sizeof(qint32));
+	quint32 size = 21 * (sizeof(quint32) + sizeof(qint32));
 	size += sizeof(quint32) + Serialize::stringSize(Global::AskDownloadPath() ? QString() : Global::DownloadPath()) + Serialize::bytearraySize(Global::AskDownloadPath() ? QByteArray() : Global::DownloadPathBookmark());
 
 	size += sizeof(quint32) + sizeof(qint32);
@@ -1787,8 +1787,8 @@ void _writeUserSettings() {
 		size += Serialize::stringSize(item.first) + sizeof(item.second);
 	}
 
-	size += sizeof(quint32) + sizeof(qint32) + cEmojiVariants().size() * (sizeof(uint32) + sizeof(uint64));
-	size += sizeof(quint32) + sizeof(qint32) + (cRecentStickersPreload().isEmpty() ? cGetRecentStickers().size() : cRecentStickersPreload().size()) * (sizeof(uint64) + sizeof(ushort));
+	size += sizeof(quint32) + sizeof(qint32) + cEmojiVariants().size() * (sizeof(quint32) + sizeof(quint64));
+	size += sizeof(quint32) + sizeof(qint32) + (cRecentStickersPreload().isEmpty() ? cGetRecentStickers().size() : cRecentStickersPreload().size()) * (sizeof(quint64) + sizeof(ushort));
 	size += sizeof(quint32) + Serialize::stringSize(cDialogLastPath());
 	size += sizeof(quint32) + 3 * sizeof(qint32);
 	size += sizeof(quint32) + 2 * sizeof(qint32);
@@ -2177,7 +2177,7 @@ void _writeMap(WriteMapWhen when) {
 	map.writeData(_passKeySalt);
 	map.writeData(_passKeyEncrypted);
 
-	uint32 mapSize = 0;
+	quint32 mapSize = 0;
 	if (!_draftsMap.isEmpty()) mapSize += sizeof(quint32) * 2 + _draftsMap.size() * sizeof(quint64) * 2;
 	if (!_draftCursorsMap.isEmpty()) mapSize += sizeof(quint32) * 2 + _draftCursorsMap.size() * sizeof(quint64) * 2;
 	if (!_imagesMap.isEmpty()) mapSize += sizeof(quint32) * 2 + _imagesMap.size() * (sizeof(quint64) * 3 + sizeof(qint32));
@@ -2479,11 +2479,11 @@ ReadMapState readMap(const QByteArray &pass) {
 	return result;
 }
 
-int32 oldMapVersion() {
+qint32 oldMapVersion() {
 	return _oldMapVersion;
 }
 
-int32 oldSettingsVersion() {
+qint32 oldSettingsVersion() {
 	return _oldSettingsVersion;
 }
 
@@ -2720,7 +2720,7 @@ FileLocation readFileLocation(MediaKey location, bool check) {
 
 qint32 _storageImageSize(qint32 rawlen) {
 	// fulllen + storagekey + type + len + data
-	qint32 result = sizeof(uint32) + sizeof(quint64) * 2 + sizeof(quint32) + sizeof(quint32) + rawlen;
+	qint32 result = sizeof(quint32) + sizeof(quint64) * 2 + sizeof(quint32) + sizeof(quint32) + rawlen;
 	if (result & 0x0F) result += 0x10 - (result & 0x0F);
 	result += tdfMagicLen + sizeof(qint32) + sizeof(quint32) + 0x10 + 0x10; // magic + version + len of encrypted + part of sha1 + md5
 	return result;
@@ -2728,7 +2728,7 @@ qint32 _storageImageSize(qint32 rawlen) {
 
 qint32 _storageStickerSize(qint32 rawlen) {
 	// fulllen + storagekey + len + data
-	qint32 result = sizeof(uint32) + sizeof(quint64) * 2 + sizeof(quint32) + rawlen;
+	qint32 result = sizeof(quint32) + sizeof(quint64) * 2 + sizeof(quint32) + rawlen;
 	if (result & 0x0F) result += 0x10 - (result & 0x0F);
 	result += tdfMagicLen + sizeof(qint32) + sizeof(quint32) + 0x10 + 0x10; // magic + version + len of encrypted + part of sha1 + md5
 	return result;
@@ -2736,7 +2736,7 @@ qint32 _storageStickerSize(qint32 rawlen) {
 
 qint32 _storageAudioSize(qint32 rawlen) {
 	// fulllen + storagekey + len + data
-	qint32 result = sizeof(uint32) + sizeof(quint64) * 2 + sizeof(quint32) + rawlen;
+	qint32 result = sizeof(quint32) + sizeof(quint64) * 2 + sizeof(quint32) + rawlen;
 	if (result & 0x0F) result += 0x10 - (result & 0x0F);
 	result += tdfMagicLen + sizeof(qint32) + sizeof(quint32) + 0x10 + 0x10; // magic + version + len of encrypted + part of sha1 + md5
 	return result;
@@ -2867,7 +2867,7 @@ TaskId startImageLoad(const StorageKey &location, mtpFileLoader *loader) {
 	return _localLoader->addTask(MakeShared<ImageLoadTask>(j->first, location, loader));
 }
 
-int32 hasImages() {
+qint32 hasImages() {
 	return _imagesMap.size();
 }
 
@@ -2940,7 +2940,7 @@ bool copyStickerImage(const StorageKey &oldLocation, const StorageKey &newLocati
 	return true;
 }
 
-int32 hasStickers() {
+qint32 hasStickers() {
 	return _stickerImagesMap.size();
 }
 
@@ -3009,7 +3009,7 @@ bool copyAudio(const StorageKey &oldLocation, const StorageKey &newLocation) {
 	return true;
 }
 
-int32 hasAudios() {
+qint32 hasAudios() {
 	return _audiosMap.size();
 }
 
@@ -3019,7 +3019,7 @@ qint64 storageAudiosSize() {
 
 qint32 _storageWebFileSize(const QString &url, qint32 rawlen) {
 	// fulllen + url + len + data
-	qint32 result = sizeof(uint32) + Serialize::stringSize(url) + sizeof(quint32) + rawlen;
+	qint32 result = sizeof(quint32) + Serialize::stringSize(url) + sizeof(quint32) + rawlen;
 	if (result & 0x0F) result += 0x10 - (result & 0x0F);
 	result += tdfMagicLen + sizeof(qint32) + sizeof(quint32) + 0x10 + 0x10; // magic + version + len of encrypted + part of sha1 + md5
 	return result;
@@ -3114,7 +3114,7 @@ TaskId startWebFileLoad(const QString &url, webFileLoader *loader) {
 	return _localLoader->addTask(MakeShared<WebFileLoadTask>(j->first, url, loader));
 }
 
-int32 hasWebFiles() {
+qint32 hasWebFiles() {
 	return _webFilesMap.size();
 }
 
@@ -3138,7 +3138,7 @@ public:
 
 		_waveform = audioCountWaveform(_loc, _data);
 		uchar wavemax = 0;
-		for (int32 i = 0, l = _waveform.size(); i < l; ++i) {
+		for (qint32 i = 0, l = _waveform.size(); i < l; ++i) {
 			uchar waveat = _waveform.at(i);
 			if (wavemax < waveat) wavemax = waveat;
 		}
@@ -3217,7 +3217,7 @@ void _writeStickerSet(QDataStream &stream, const Stickers::Set &set) {
 		stream << qint32(set.emoji.size());
 		for (auto j = set.emoji.cbegin(), e = set.emoji.cend(); j != e; ++j) {
 			stream << j.key()->id() << qint32(j->size());
-			for (int32 k = 0, l = j->size(); k < l; ++k) {
+			for (qint32 k = 0, l = j->size(); k < l; ++k) {
 				stream << quint64(j->at(k)->id);
 			}
 		}
@@ -3247,7 +3247,7 @@ void _writeStickerSets(FileKey &stickersKey, CheckSet checkSet, const Stickers::
 		_writeMap();
 		return;
 	}
-	int32 setsCount = 0;
+	qint32 setsCount = 0;
 	QByteArray hashToWrite;
 	quint32 size = sizeof(quint32) + Serialize::bytearraySize(hashToWrite);
 	for_const (auto &set, sets) {
@@ -3324,7 +3324,7 @@ void _readStickerSets(FileKey &stickersKey, Stickers::Order *outOrder = nullptr,
 	if (readingInstalled && stickers.version < 8019) { // bad data in old caches
 		cnt += 2; // try to read at least something
 	}
-	for (uint32 i = 0; i < cnt; ++i) {
+	for (quint32 i = 0; i < cnt; ++i) {
 		quint64 setId = 0, setAccess = 0;
 		QString setTitle, setShortName;
 		qint32 scnt = 0;
@@ -3392,7 +3392,7 @@ void _readStickerSets(FileKey &stickersKey, Stickers::Order *outOrder = nullptr,
 
 		Serialize::Document::StickerSetInfo info(setId, setAccess, setShortName);
 		OrderedSet<DocumentId> read;
-		for (int32 j = 0; j < scnt; ++j) {
+		for (qint32 j = 0; j < scnt; ++j) {
 			auto document = Serialize::Document::readStickerFromStream(stickers.version, stickers.stream, info);
 			if (!document || !document->sticker()) continue;
 
@@ -3413,13 +3413,13 @@ void _readStickerSets(FileKey &stickersKey, Stickers::Order *outOrder = nullptr,
 		if (stickers.version > 9018) {
 			qint32 emojiCount;
 			stickers.stream >> emojiCount;
-			for (int32 j = 0; j < emojiCount; ++j) {
+			for (qint32 j = 0; j < emojiCount; ++j) {
 				QString emojiString;
 				qint32 stickersCount;
 				stickers.stream >> emojiString >> stickersCount;
 				StickerPack pack;
 				pack.reserve(stickersCount);
-				for (int32 k = 0; k < stickersCount; ++k) {
+				for (qint32 k = 0; k < stickersCount; ++k) {
 					quint64 id;
 					stickers.stream >> id;
 					DocumentData *doc = App::document(id);
@@ -3549,7 +3549,7 @@ void importOldRecentStickers() {
 	auto &def = sets.insert(Stickers::DefaultSetId, Stickers::Set(Stickers::DefaultSetId, 0, lang(lng_stickers_default_set), QString(), 0, 0, MTPDstickerSet::Flag::f_official | MTPDstickerSet::Flag::f_installed | MTPDstickerSet_ClientFlag::f_special)).value();
 	auto &custom = sets.insert(Stickers::CustomSetId, Stickers::Set(Stickers::CustomSetId, 0, qsl("Custom stickers"), QString(), 0, 0, MTPDstickerSet::Flag::f_installed | MTPDstickerSet_ClientFlag::f_special)).value();
 
-	QMap<uint64, bool> read;
+	QMap<quint64, bool> read;
 	while (!stickers.stream.atEnd()) {
 		quint64 id, access;
 		QString name, mime, alt;
@@ -3644,17 +3644,17 @@ void readArchivedStickers() {
 	}
 }
 
-int32 countDocumentVectorHash(const QVector<DocumentData*> vector) {
-	uint32 acc = 0;
+qint32 countDocumentVectorHash(const QVector<DocumentData*> vector) {
+	quint32 acc = 0;
 	for_const (auto doc, vector) {
 		auto docId = doc->id;
-		acc = (acc * 20261) + uint32(docId >> 32);
-		acc = (acc * 20261) + uint32(docId & 0xFFFFFFFF);
+		acc = (acc * 20261) + quint32(docId >> 32);
+		acc = (acc * 20261) + quint32(docId & 0xFFFFFFFF);
 	}
-	return int32(acc & 0x7FFFFFFF);
+	return qint32(acc & 0x7FFFFFFF);
 }
 
-int32 countSpecialStickerSetHash(uint64 setId) {
+qint32 countSpecialStickerSetHash(quint64 setId) {
 	auto &sets = Global::StickerSets();
 	auto it = sets.constFind(setId);
 	if (it != sets.cend()) {
@@ -3663,8 +3663,8 @@ int32 countSpecialStickerSetHash(uint64 setId) {
 	return 0;
 }
 
-int32 countStickersHash(bool checkOutdatedInfo) {
-	uint32 acc = 0;
+qint32 countStickersHash(bool checkOutdatedInfo) {
+	quint32 acc = 0;
 	bool foundOutdated = false;
 	auto &sets = Global::StickerSets();
 	auto &order = Global::StickerSetsOrder();
@@ -3679,34 +3679,34 @@ int32 countStickersHash(bool checkOutdatedInfo) {
 			}
 		}
 	}
-	return (!checkOutdatedInfo || !foundOutdated) ? int32(acc & 0x7FFFFFFF) : 0;
+	return (!checkOutdatedInfo || !foundOutdated) ? qint32(acc & 0x7FFFFFFF) : 0;
 }
 
-int32 countRecentStickersHash() {
+qint32 countRecentStickersHash() {
 	return countSpecialStickerSetHash(Stickers::CloudRecentSetId);
 }
 
-int32 countFavedStickersHash() {
+qint32 countFavedStickersHash() {
 	return countSpecialStickerSetHash(Stickers::FavedSetId);
 }
 
-int32 countFeaturedStickersHash() {
-	uint32 acc = 0;
+qint32 countFeaturedStickersHash() {
+	quint32 acc = 0;
 	auto &sets = Global::StickerSets();
 	auto &featured = Global::FeaturedStickerSetsOrder();
 	for_const (auto setId, featured) {
-		acc = (acc * 20261) + uint32(setId >> 32);
-		acc = (acc * 20261) + uint32(setId & 0xFFFFFFFF);
+		acc = (acc * 20261) + quint32(setId >> 32);
+		acc = (acc * 20261) + quint32(setId & 0xFFFFFFFF);
 
 		auto it = sets.constFind(setId);
 		if (it != sets.cend() && (it->flags & MTPDstickerSet_ClientFlag::f_unread)) {
 			acc = (acc * 20261) + 1U;
 		}
 	}
-	return int32(acc & 0x7FFFFFFF);
+	return qint32(acc & 0x7FFFFFFF);
 }
 
-int32 countSavedGifsHash() {
+qint32 countSavedGifsHash() {
 	return countDocumentVectorHash(cSavedGifs());
 }
 
@@ -3760,7 +3760,7 @@ void readSavedGifs() {
 	gifs.stream >> cnt;
 	saved.reserve(cnt);
 	OrderedSet<DocumentId> read;
-	for (uint32 i = 0; i < cnt; ++i) {
+	for (quint32 i = 0; i < cnt; ++i) {
 		auto document = Serialize::Document::readFromStream(gifs.version, gifs.stream);
 		if (!document || !document->isGifv()) continue;
 
@@ -3771,7 +3771,7 @@ void readSavedGifs() {
 	}
 }
 
-void writeBackground(int32 id, const QImage &img) {
+void writeBackground(qint32 id, const QImage &img) {
 	if (!_working() || !_backgroundCanWrite) return;
 
 	if (!LocalKey) {
@@ -3917,7 +3917,7 @@ void writeTheme(const QString &pathRelative, const QString &pathAbsolute, const 
 	auto backgroundTiled = static_cast<quint32>(cache.tiled ? 1 : 0);
 	quint32 size = Serialize::bytearraySize(content);
 	size += Serialize::stringSize(pathRelative) + Serialize::stringSize(pathAbsolute);
-	size += sizeof(int32) * 2 + Serialize::bytearraySize(cache.colors) + Serialize::bytearraySize(cache.background) + sizeof(quint32);
+	size += sizeof(qint32) * 2 + Serialize::bytearraySize(cache.colors) + Serialize::bytearraySize(cache.background) + sizeof(quint32);
 	EncryptedDescriptor data(size);
 	data.stream << content;
 	data.stream << pathRelative << pathAbsolute;
@@ -3994,8 +3994,8 @@ bool copyThemeColorsToPalette(const QString &path) {
 	return Window::Theme::CopyColorsToPalette(path, themeContent);
 }
 
-uint32 _peerSize(PeerData *peer) {
-	uint32 result = sizeof(quint64) + sizeof(quint64) + Serialize::storageImageLocationSize();
+quint32 _peerSize(PeerData *peer) {
+	quint32 result = sizeof(quint64) + sizeof(quint64) + Serialize::storageImageLocationSize();
 	if (peer->isUser()) {
 		UserData *user = peer->asUser();
 
@@ -4052,7 +4052,7 @@ void _writePeer(QDataStream &stream, PeerData *peer) {
 	}
 }
 
-PeerData *_readPeer(FileReadDescriptor &from, int32 fileVersion = 0) {
+PeerData *_readPeer(FileReadDescriptor &from, qint32 fileVersion = 0) {
 	quint64 peerId = 0, photoId = 0;
 	from.stream >> peerId >> photoId;
 
@@ -4236,14 +4236,14 @@ void readRecentHashtagsAndBots() {
 	RecentInlineBots bots;
 	if (writeCount) {
 		write.reserve(writeCount);
-		for (uint32 i = 0; i < writeCount; ++i) {
+		for (quint32 i = 0; i < writeCount; ++i) {
 			hashtags.stream >> tag >> count;
 			write.push_back(qMakePair(tag.trimmed(), count));
 		}
 	}
 	if (searchCount) {
 		search.reserve(searchCount);
-		for (uint32 i = 0; i < searchCount; ++i) {
+		for (quint32 i = 0; i < searchCount; ++i) {
 			hashtags.stream >> tag >> count;
 			search.push_back(qMakePair(tag.trimmed(), count));
 		}
@@ -4255,7 +4255,7 @@ void readRecentHashtagsAndBots() {
 		hashtags.stream >> botsCount;
 		if (botsCount) {
 			bots.reserve(botsCount);
-			for (uint32 i = 0; i < botsCount; ++i) {
+			for (quint32 i = 0; i < botsCount; ++i) {
 				PeerData *peer = _readPeer(hashtags, 9016);
 				if (peer && peer->isUser() && peer->asUser()->botInfo && !peer->asUser()->botInfo->inlinePlaceholder.isEmpty() && !peer->asUser()->username.isEmpty()) {
 					bots.push_back(peer->asUser());
@@ -4323,7 +4323,7 @@ void readSavedPeers() {
 	cRefSavedPeersByTime().clear();
 	QList<PeerData*> peers;
 	peers.reserve(count);
-	for (uint32 i = 0; i < count; ++i) {
+	for (quint32 i = 0; i < count; ++i) {
 		PeerData *peer = _readPeer(saved);
 		if (!peer) break;
 
@@ -4431,7 +4431,7 @@ bool isBotTrusted(UserData *bot) {
 	return _trustedBots.contains(bot->id);
 }
 
-bool encrypt(const void *src, void *dst, uint32 len, const void *key128) {
+bool encrypt(const void *src, void *dst, quint32 len, const void *key128) {
 	if (!LocalKey) {
 		return false;
 	}
@@ -4439,7 +4439,7 @@ bool encrypt(const void *src, void *dst, uint32 len, const void *key128) {
 	return true;
 }
 
-bool decrypt(const void *src, void *dst, uint32 len, const void *key128) {
+bool decrypt(const void *src, void *dst, quint32 len, const void *key128) {
 	if (!LocalKey) {
 		return false;
 	}
@@ -4588,7 +4588,7 @@ bool ClearManager::addTask(int task) {
 			}
 			_writeMap();
 		}
-		for (int32 i = 0, l = data->tasks.size(); i < l; ++i) {
+		for (qint32 i = 0, l = data->tasks.size(); i < l; ++i) {
 			if (data->tasks.at(i) == task) return true;
 		}
 	}
@@ -4600,7 +4600,7 @@ bool ClearManager::hasTask(ClearManagerTask task) {
 	QMutexLocker lock(&data->mutex);
 	if (data->tasks.isEmpty()) return false;
 	if (data->tasks.at(0) == ClearManagerAll) return true;
-	for (int32 i = 0, l = data->tasks.size(); i < l; ++i) {
+	for (qint32 i = 0, l = data->tasks.size(); i < l; ++i) {
 		if (data->tasks.at(i) == task) return true;
 	}
 	return false;

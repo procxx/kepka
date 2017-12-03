@@ -28,7 +28,7 @@ class RoundCheckbox {
 public:
 	RoundCheckbox(const style::RoundCheckbox &st, base::lambda<void()> updateCallback);
 
-	void paint(Painter &p, TimeMs ms, int x, int y, int outerWidth, float64 masterScale = 1.);
+	void paint(Painter &p, TimeMs ms, int x, int y, int outerWidth, double masterScale = 1.);
 
 	void setDisplayInactive(bool displayInactive);
 	bool checked() const {
@@ -51,7 +51,7 @@ private:
 	void removeFadeOutedIcons();
 	void prepareWideCheckIconCache(Icon *icon);
 	void prepareInactiveCache();
-	QRect cacheDestRect(int x, int y, float64 scale) const;
+	QRect cacheDestRect(int x, int y, double scale) const;
 
 	const style::RoundCheckbox &_st;
 	base::lambda<void()> _updateCallback;
@@ -73,7 +73,7 @@ public:
 	RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback, PaintRoundImage &&paintRoundImage);
 
 	void paint(Painter &p, TimeMs ms, int x, int y, int outerWidth);
-	float64 checkedAnimationRatio() const;
+	double checkedAnimationRatio() const;
 
 	bool checked() const {
 		return _check.checked();

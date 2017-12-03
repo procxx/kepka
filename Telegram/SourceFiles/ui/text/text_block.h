@@ -41,16 +41,16 @@ enum TextBlockFlags {
 
 class ITextBlock {
 public:
-	ITextBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, uint16 lnkIndex) : _from(from), _flags((flags & 0xFF) | ((lnkIndex & 0xFFFF) << 12)) {
+	ITextBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex) : _from(from), _flags((flags & 0xFF) | ((lnkIndex & 0xFFFF) << 12)) {
 	}
 
-	uint16 from() const {
+	quint16 from() const {
 		return _from;
 	}
-	int32 width() const {
+	qint32 width() const {
 		return _width.toInt();
 	}
-	int32 rpadding() const {
+	qint32 rpadding() const {
 		return _rpadding.toInt();
 	}
 	QFixed f_width() const {
@@ -63,17 +63,17 @@ public:
 	// Should be virtual, but optimized throught type() call.
 	QFixed f_rbearing() const;
 
-	uint16 lnkIndex() const {
+	quint16 lnkIndex() const {
 		return (_flags >> 12) & 0xFFFF;
 	}
-	void setLnkIndex(uint16 lnkIndex) {
+	void setLnkIndex(quint16 lnkIndex) {
 		_flags = (_flags & ~(0xFFFF << 12)) | (lnkIndex << 12);
 	}
 
 	TextBlockType type() const {
 		return TextBlockType((_flags >> 8) & 0x0F);
 	}
-	int32 flags() const {
+	qint32 flags() const {
 		return (_flags & 0xFF);
 	}
 
@@ -82,9 +82,9 @@ public:
 	}
 
 protected:
-	uint16 _from = 0;
+	quint16 _from = 0;
 
-	uint32 _flags = 0; // 4 bits empty, 16 bits lnkIndex, 4 bits type, 8 bits flags
+	quint32 _flags = 0; // 4 bits empty, 16 bits lnkIndex, 4 bits type, 8 bits flags
 
 	QFixed _width = 0;
 
@@ -99,7 +99,7 @@ protected:
 
 class NewlineBlock : public ITextBlock {
 public:
-	NewlineBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, uint16 lnkIndex) : ITextBlock(font, str, from, length, flags, lnkIndex), _nextDir(Qt::LayoutDirectionAuto) {
+	NewlineBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex) : ITextBlock(font, str, from, length, flags, lnkIndex), _nextDir(Qt::LayoutDirectionAuto) {
 		_flags |= ((TextBlockTNewline & 0x0F) << 8);
 	}
 
@@ -124,13 +124,13 @@ private:
 class TextWord {
 public:
 	TextWord() = default;
-	TextWord(uint16 from, QFixed width, QFixed rbearing, QFixed rpadding = 0)
+	TextWord(quint16 from, QFixed width, QFixed rbearing, QFixed rpadding = 0)
 		: _from(from)
 		, _width(width)
 		, _rpadding(rpadding)
 		, _rbearing(rbearing.value() > 0x7FFF ? 0x7FFF : (rbearing.value() < -0x7FFF ? -0x7FFF : rbearing.value())) {
 	}
-	uint16 from() const {
+	quint16 from() const {
 		return _from;
 	}
 	QFixed f_rbearing() const {
@@ -147,15 +147,15 @@ public:
 	}
 
 private:
-	uint16 _from = 0;
+	quint16 _from = 0;
 	QFixed _width, _rpadding;
-	int16 _rbearing = 0;
+	qint16 _rbearing = 0;
 
 };
 
 class TextBlock : public ITextBlock {
 public:
-	TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, uint16 from, uint16 length, uchar flags, uint16 lnkIndex);
+	TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, quint16 from, quint16 length, uchar flags, quint16 lnkIndex);
 
 	std::unique_ptr<ITextBlock> clone() const override {
 		return std::make_unique<TextBlock>(*this);
@@ -180,7 +180,7 @@ private:
 
 class EmojiBlock : public ITextBlock {
 public:
-	EmojiBlock(const style::font &font, const QString &str, uint16 from, uint16 length, uchar flags, uint16 lnkIndex, EmojiPtr emoji);
+	EmojiBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex, EmojiPtr emoji);
 
 	std::unique_ptr<ITextBlock> clone() const {
 		return std::make_unique<EmojiBlock>(*this);
@@ -198,9 +198,9 @@ private:
 
 class SkipBlock : public ITextBlock {
 public:
-	SkipBlock(const style::font &font, const QString &str, uint16 from, int32 w, int32 h, uint16 lnkIndex);
+	SkipBlock(const style::font &font, const QString &str, quint16 from, qint32 w, qint32 h, quint16 lnkIndex);
 
-	int32 height() const {
+	qint32 height() const {
 		return _height;
 	}
 
@@ -209,7 +209,7 @@ public:
 	}
 
 private:
-	int32 _height;
+	qint32 _height;
 
 	friend class Text;
 	friend class TextParser;

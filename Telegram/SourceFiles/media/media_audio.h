@@ -59,7 +59,7 @@ class Loaders;
 
 base::Observable<AudioMsgId> &Updated();
 
-float64 ComputeVolume(AudioMsgId::Type type);
+double ComputeVolume(AudioMsgId::Type type);
 
 enum class State {
 	Stopped = 0x01,
@@ -110,8 +110,8 @@ inline bool IsActive(State state) {
 struct TrackState {
 	AudioMsgId id;
 	State state = State::Stopped;
-	int64 position = 0;
-	int64 length = 0;
+	qint64 position = 0;
+	qint64 length = 0;
 	int frequency = kDefaultFrequency;
 };
 
@@ -121,17 +121,17 @@ class Mixer : public QObject, private base::Subscriber {
 public:
 	Mixer();
 
-	void play(const AudioMsgId &audio, int64 position = 0);
-	void play(const AudioMsgId &audio, std::unique_ptr<VideoSoundData> videoData, int64 position = 0);
+	void play(const AudioMsgId &audio, qint64 position = 0);
+	void play(const AudioMsgId &audio, std::unique_ptr<VideoSoundData> videoData, qint64 position = 0);
 	void pause(const AudioMsgId &audio, bool fast = false);
 	void resume(const AudioMsgId &audio, bool fast = false);
-	void seek(AudioMsgId::Type type, int64 position); // type == AudioMsgId::Type::Song
+	void seek(AudioMsgId::Type type, qint64 position); // type == AudioMsgId::Type::Song
 	void stop(const AudioMsgId &audio);
 	void stop(const AudioMsgId &audio, State state);
 
 	// Video player audio stream interface.
 	void feedFromVideo(VideoSoundPart &&part);
-	int64 getVideoCorrectedTime(const AudioMsgId &id, TimeMs frameMs, TimeMs systemMs);
+	qint64 getVideoCorrectedTime(const AudioMsgId &id, TimeMs frameMs, TimeMs systemMs);
 
 	void stopAndClear();
 
@@ -149,10 +149,10 @@ public:
 	void reattachTracks();
 
 	// Thread: Any.
-	void setSongVolume(float64 volume);
-	float64 getSongVolume() const;
-	void setVideoVolume(float64 volume);
-	float64 getVideoVolume() const;
+	void setSongVolume(double volume);
+	double getSongVolume() const;
+	void setVideoVolume(double volume);
+	double getVideoVolume() const;
 
 	~Mixer();
 
@@ -203,20 +203,20 @@ private:
 
 		FileLocation file;
 		QByteArray data;
-		int64 bufferedPosition = 0;
-		int64 bufferedLength = 0;
+		qint64 bufferedPosition = 0;
+		qint64 bufferedLength = 0;
 		bool loading = false;
 		bool loaded = false;
-		int64 fadeStartPosition = 0;
+		qint64 fadeStartPosition = 0;
 
-		int32 format = 0;
-		int32 frequency = kDefaultFrequency;
+		qint32 format = 0;
+		qint32 frequency = kDefaultFrequency;
 		int samplesCount[kBuffersCount] = { 0 };
 		QByteArray bufferSamples[kBuffersCount];
 
 		struct Stream {
-			uint32 source = 0;
-			uint32 buffers[kBuffersCount] = { 0 };
+			quint32 source = 0;
+			quint32 buffers[kBuffersCount] = { 0 };
 		};
 		Stream stream;
 		std::unique_ptr<VideoSoundData> videoData;
@@ -290,7 +290,7 @@ private:
 		EmitPositionUpdated = 0x04,
 		EmitNeedToPreload = 0x08,
 	};
-	int32 updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasFading, float64 volumeMultiplier, bool volumeChanged);
+	qint32 updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasFading, double volumeMultiplier, bool volumeChanged);
 	void setStoppedState(Mixer::Track *track, State state = State::Stopped);
 
 	QTimer _timer;
@@ -336,11 +336,11 @@ VoiceWaveform audioCountWaveform(const FileLocation &file, const QByteArray &dat
 namespace Media {
 namespace Audio {
 
-FORCE_INLINE uint16 ReadOneSample(uchar data) {
-	return qAbs((static_cast<int16>(data) - 0x80) * 0x100);
+FORCE_INLINE quint16 ReadOneSample(uchar data) {
+	return qAbs((static_cast<qint16>(data) - 0x80) * 0x100);
 }
 
-FORCE_INLINE uint16 ReadOneSample(int16 data) {
+FORCE_INLINE quint16 ReadOneSample(qint16 data) {
 	return qAbs(data);
 }
 

@@ -117,8 +117,8 @@ private:
 	int refreshInlineRows(const InlineCacheEntry *results, bool resultsDeleted);
 	void checkLoadMore();
 
-	int32 showInlineRows(bool newResults);
-	bool refreshInlineRows(int32 *added = 0);
+	qint32 showInlineRows(bool newResults);
+	bool refreshInlineRows(qint32 *added = 0);
 	void inlineResultsDone(const MTPmessages_BotResults &result);
 
 	void updateSelected();
@@ -137,15 +137,15 @@ private:
 	void clearInlineRows(bool resultsDeleted);
 
 	std::map<DocumentData*, std::unique_ptr<LayoutItem>> _gifLayouts;
-	LayoutItem *layoutPrepareSavedGif(DocumentData *doc, int32 position);
+	LayoutItem *layoutPrepareSavedGif(DocumentData *doc, qint32 position);
 
 	std::map<InlineResult*, std::unique_ptr<LayoutItem>> _inlineLayouts;
-	LayoutItem *layoutPrepareInlineResult(InlineResult *result, int32 position);
+	LayoutItem *layoutPrepareInlineResult(InlineResult *result, qint32 position);
 
-	bool inlineRowsAddItem(DocumentData *savedGif, InlineResult *result, Row &row, int32 &sumWidth);
-	bool inlineRowFinalize(Row &row, int32 &sumWidth, bool force = false);
+	bool inlineRowsAddItem(DocumentData *savedGif, InlineResult *result, Row &row, qint32 &sumWidth);
+	bool inlineRowFinalize(Row &row, qint32 &sumWidth, bool force = false);
 
-	Row &layoutInlineRow(Row &row, int32 sumWidth = 0);
+	Row &layoutInlineRow(Row &row, qint32 sumWidth = 0);
 	void deleteUnusedGifLayouts();
 
 	void deleteUnusedInlineLayouts();

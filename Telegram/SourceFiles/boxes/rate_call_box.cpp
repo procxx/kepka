@@ -36,7 +36,7 @@ constexpr auto kMaxRating = 5;
 
 } // namespace
 
-RateCallBox::RateCallBox(QWidget*, uint64 callId, uint64 callAccessHash)
+RateCallBox::RateCallBox(QWidget*, quint64 callId, quint64 callAccessHash)
 : _callId(callId)
 , _callAccessHash(callAccessHash) {
 }

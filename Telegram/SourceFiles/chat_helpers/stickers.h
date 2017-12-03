@@ -28,16 +28,16 @@ constexpr auto kPanelPerRow = 5;
 
 void ApplyArchivedResult(const MTPDmessages_stickerSetInstallResultArchive &d);
 bool ApplyArchivedResultFake(); // For testing.
-void InstallLocally(uint64 setId);
-void UndoInstallLocally(uint64 setId);
-void MarkFeaturedAsRead(uint64 setId);
+void InstallLocally(quint64 setId);
+void UndoInstallLocally(quint64 setId);
+void MarkFeaturedAsRead(quint64 setId);
 bool IsFaved(not_null<DocumentData*> document);
 void SetFaved(not_null<DocumentData*> document, bool faved);
 
-void SetsReceived(const QVector<MTPStickerSet> &data, int32 hash);
-void SpecialSetReceived(uint64 setId, const QString &setTitle, const QVector<MTPDocument> &items, int32 hash, const QVector<MTPStickerPack> &packs = QVector<MTPStickerPack>());
-void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVector<MTPlong> &unread, int32 hash);
-void GifsReceived(const QVector<MTPDocument> &items, int32 hash);
+void SetsReceived(const QVector<MTPStickerSet> &data, qint32 hash);
+void SpecialSetReceived(quint64 setId, const QString &setTitle, const QVector<MTPDocument> &items, qint32 hash, const QVector<MTPStickerPack> &packs = QVector<MTPStickerPack>());
+void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVector<MTPlong> &unread, qint32 hash);
+void GifsReceived(const QVector<MTPDocument> &items, qint32 hash);
 
 StickerPack GetListByEmoji(not_null<EmojiPtr> emoji);
 base::optional<std::vector<not_null<EmojiPtr>>> GetEmojiListFromSet(
@@ -53,13 +53,13 @@ namespace internal {
 class FeaturedReader : public QObject, private MTP::Sender {
 public:
 	FeaturedReader(QObject *parent);
-	void scheduleRead(uint64 setId);
+	void scheduleRead(quint64 setId);
 
 private:
 	void readSets();
 
 	object_ptr<SingleTimer> _timer;
-	OrderedSet<uint64> _setIds;
+	OrderedSet<quint64> _setIds;
 
 };
 

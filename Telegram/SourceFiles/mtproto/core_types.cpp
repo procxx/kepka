@@ -22,14 +22,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "zlib.h"
 
-uint32 MTPstring::innerLength() const {
-	uint32 l = v.length();
+quint32 MTPstring::innerLength() const {
+	quint32 l = v.length();
 	if (l < 254) {
 		l += 1;
 	} else {
 		l += 4;
 	}
-	uint32 d = l & 0x03;
+	quint32 d = l & 0x03;
 	if (d) l += (4 - d);
 	return l;
 }
@@ -38,14 +38,14 @@ void MTPstring::read(const mtpPrime *&from, const mtpPrime *end, mtpTypeId cons)
 	if (from + 1 > end) throw mtpErrorInsufficient();
 	if (cons != mtpc_string) throw mtpErrorUnexpected(cons, "MTPstring");
 
-	uint32 l;
+	quint32 l;
 	const uchar *buf = (const uchar*)from;
 	if (buf[0] == 254) {
-		l = (uint32)buf[1] + ((uint32)buf[2] << 8) + ((uint32)buf[3] << 16);
+		l = (quint32)buf[1] + ((quint32)buf[2] << 8) + ((quint32)buf[3] << 16);
 		buf += 4;
 		from += ((l + 4) >> 2) + (((l + 4) & 0x03) ? 1 : 0);
 	} else {
-		l = (uint32)buf[0];
+		l = (quint32)buf[0];
 		++buf;
 		from += ((l + 1) >> 2) + (((l + 1) & 0x03) ? 1 : 0);
 	}
@@ -55,7 +55,7 @@ void MTPstring::read(const mtpPrime *&from, const mtpPrime *end, mtpTypeId cons)
 }
 
 void MTPstring::write(mtpBuffer &to) const {
-	uint32 l = v.length(), s = l + ((l < 254) ? 1 : 4), was = to.size();
+	quint32 l = v.length(), s = l + ((l < 254) ? 1 : 4), was = to.size();
 	if (s & 0x03) {
 		s += 4;
 	}
@@ -74,7 +74,7 @@ void MTPstring::write(mtpBuffer &to) const {
 	memcpy(buf, v.constData(), l);
 }
 
-uint32 mtpRequest::innerLength() const { // for template MTP requests and MTPBoxed instanciation
+quint32 mtpRequest::innerLength() const { // for template MTP requests and MTPBoxed instanciation
 	mtpRequestData *value = data();
 	if (!value || value->size() < 9) return 0;
 	return value->at(7);
@@ -83,7 +83,7 @@ uint32 mtpRequest::innerLength() const { // for template MTP requests and MTPBox
 void mtpRequest::write(mtpBuffer &to) const {
 	mtpRequestData *value = data();
 	if (!value || value->size() < 9) return;
-	uint32 was = to.size(), s = innerLength() / sizeof(mtpPrime);
+	quint32 was = to.size(), s = innerLength() / sizeof(mtpPrime);
 	to.resize(was + s);
 	memcpy(to.data() + was, value->constData() + 8, s * sizeof(mtpPrime));
 }
@@ -113,7 +113,7 @@ bool mtpRequestData::needAckByType(mtpTypeId type) {
 	return true;
 }
 
-mtpRequest mtpRequestData::prepare(uint32 requestSize, uint32 maxSize) {
+mtpRequest mtpRequestData::prepare(quint32 requestSize, quint32 maxSize) {
 	if (!maxSize) maxSize = requestSize;
 	mtpRequest result(new mtpRequestData(true));
 	result->reserve(8 + maxSize + _padding(maxSize)); // 2: salt, 2: session_id, 2: msg_id, 1: seq_no, 1: message_length
@@ -125,8 +125,8 @@ mtpRequest mtpRequestData::prepare(uint32 requestSize, uint32 maxSize) {
 void mtpRequestData::padding(mtpRequest &request) {
 	if (request->size() < 9) return;
 
-	uint32 requestSize = (request.innerLength() >> 2), padding = _padding(requestSize), fullSize = 8 + requestSize + padding; // 2: salt, 2: session_id, 2: msg_id, 1: seq_no, 1: message_length
-	if (uint32(request->size()) != fullSize) {
+	quint32 requestSize = (request.innerLength() >> 2), padding = _padding(requestSize), fullSize = 8 + requestSize + padding; // 2: salt, 2: session_id, 2: msg_id, 1: seq_no, 1: message_length
+	if (quint32(request->size()) != fullSize) {
 		request->resize(fullSize);
 		if (padding) {
 			memset_rand(request->data() + (fullSize - padding), padding * sizeof(mtpPrime));
@@ -134,7 +134,7 @@ void mtpRequestData::padding(mtpRequest &request) {
 	}
 }
 
-uint32 mtpRequestData::_padding(uint32 requestSize) {
+quint32 mtpRequestData::_padding(quint32 requestSize) {
 #ifdef TDESKTOP_MTPROTO_OLD
 	return ((8 + requestSize) & 0x03) ? (4 - ((8 + requestSize) & 0x03)) : 0;
 #else // TDESKTOP_MTPROTO_OLD
@@ -149,7 +149,7 @@ uint32 mtpRequestData::_padding(uint32 requestSize) {
 #endif // TDESKTOP_MTPROTO_OLD
 }
 
-void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpPrime *end, mtpTypeId cons, uint32 level, mtpPrime vcons) {
+void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpPrime *end, mtpTypeId cons, quint32 level, mtpPrime vcons) {
 	switch (mtpTypeId(cons)) {
 	case mtpc_int: {
 		MTPint value;
@@ -199,11 +199,11 @@ void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpP
 		if (from >= end) {
 			throw Exception("from >= end in vector");
 		}
-		int32 cnt = *(from++);
+		qint32 cnt = *(from++);
 		to.add("[ vector<0x").add(QString::number(vcons, 16)).add(">");
 		if (cnt) {
 			to.add("\n").addSpaces(level);
-			for (int32 i = 0; i < cnt; ++i) {
+			for (qint32 i = 0; i < cnt; ++i) {
 				to.add("  ");
 				mtpTextSerializeType(to, from, end, vcons, level + 1);
 				to.add(",\n").addSpaces(level);
@@ -217,7 +217,7 @@ void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpP
 	case mtpc_gzip_packed: {
 		MTPstring packed;
 		packed.read(from, end); // read packed string as serialized mtp string type
-		uint32 packedLen = packed.v.size(), unpackedChunk = packedLen;
+		quint32 packedLen = packed.v.size(), unpackedChunk = packedLen;
 		mtpBuffer result; // * 4 because of mtpPrime type
 		result.resize(0);
 
@@ -245,7 +245,7 @@ void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpP
 			}
 		}
 		if (stream.avail_out & 0x03) {
-			uint32 badSize = result.size() * sizeof(mtpPrime) - stream.avail_out;
+			quint32 badSize = result.size() * sizeof(mtpPrime) - stream.avail_out;
 			throw Exception(QString("ungzip bad length, size: %1").arg(badSize));
 		}
 		result.resize(result.size() - (stream.avail_out >> 2));
@@ -259,7 +259,7 @@ void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpP
 	} break;
 
 	default: {
-		for (uint32 i = 1; i < mtpLayerMaxSingle; ++i) {
+		for (quint32 i = 1; i < mtpLayerMaxSingle; ++i) {
 			if (cons == mtpLayers[i]) {
 				to.add("[LAYER").add(QString::number(i + 1)).add("] "); mtpTextSerializeType(to, from, end, 0, level);
 				return;
@@ -269,7 +269,7 @@ void mtpTextSerializeCore(MTPStringLogger &to, const mtpPrime *&from, const mtpP
 			if (from >= end) {
 				throw Exception("from >= end in invokeWithLayer");
 			}
-			int32 layer = *(from++);
+			qint32 layer = *(from++);
 			to.add("[LAYER").add(QString::number(layer)).add("] "); mtpTextSerializeType(to, from, end, 0, level);
 			return;
 		}

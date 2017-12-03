@@ -31,7 +31,7 @@ public:
 	}
 
 	template <typename Lambda>
-	void start(bool slideLeft, Lambda &&updateCallback, float64 duration);
+	void start(bool slideLeft, Lambda &&updateCallback, double duration);
 
 	void paintFrame(Painter &p, int x, int y, int outerWidth, TimeMs ms);
 
@@ -52,7 +52,7 @@ private:
 };
 
 template <typename Lambda>
-void SlideAnimation::start(bool slideLeft, Lambda &&updateCallback, float64 duration) {
+void SlideAnimation::start(bool slideLeft, Lambda &&updateCallback, double duration) {
 	_slideLeft = slideLeft;
 	if (_slideLeft) {
 		std::swap(_leftSnapshot, _rightSnapshot);

@@ -33,7 +33,7 @@ public:
 	Widget(QWidget *parent, const Config &config);
 
 	// shownLevel=1 completely visible, shownLevel=0 completely invisible
-	void setShownLevel(float64 shownLevel);
+	void setShownLevel(double shownLevel);
 
 	void onParentResized();
 
@@ -41,7 +41,7 @@ protected:
 	void paintEvent(QPaintEvent *e) override;
 
 private:
-	float64 _shownLevel = 0;
+	double _shownLevel = 0;
 	bool _multiline = false;
 	int _maxWidth = 0;
 	QMargins _padding;

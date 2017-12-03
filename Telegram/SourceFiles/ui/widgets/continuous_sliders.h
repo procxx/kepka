@@ -37,15 +37,15 @@ public:
 		update();
 	}
 
-	float64 value() const;
-	void setValue(float64 value);
-	void setFadeOpacity(float64 opacity);
+	double value() const;
+	void setValue(double value);
+	void setFadeOpacity(double opacity);
 	void setDisabled(bool disabled);
 	bool isDisabled() const {
 		return _disabled;
 	}
 
-	using Callback = base::lambda<void(float64)>;
+	using Callback = base::lambda<void(double)>;
 	void setChangeProgressCallback(Callback &&callback) {
 		_changeProgressCallback = std::move(callback);
 	}
@@ -66,13 +66,13 @@ protected:
 	void enterEventHook(QEvent *e) override;
 	void leaveEventHook(QEvent *e) override;
 
-	float64 fadeOpacity() const {
+	double fadeOpacity() const {
 		return _fadeOpacity;
 	}
-	float64 getCurrentValue() {
+	double getCurrentValue() {
 		return _mouseDown ? _downValue : _value;
 	}
-	float64 getCurrentOverFactor(TimeMs ms) {
+	double getCurrentOverFactor(TimeMs ms) {
 		return _disabled ? 0. : _a_over.current(ms, _over ? 1. : 0.);
 	}
 	Direction getDirection() const {
@@ -84,14 +84,14 @@ protected:
 
 private:
 	virtual QRect getSeekRect() const = 0;
-	virtual float64 getOverDuration() const = 0;
+	virtual double getOverDuration() const = 0;
 
 	bool moveByWheel() const {
 		return _byWheelFinished != nullptr;
 	}
 
 	void setOver(bool over);
-	float64 computeValue(const QPoint &pos) const;
+	double computeValue(const QPoint &pos) const;
 	void updateDownValueFromPos(const QPoint &pos);
 
 	Direction _direction = Direction::Horizontal;
@@ -105,12 +105,12 @@ private:
 	bool _over = false;
 	Animation _a_over;
 
-	float64 _value = 0.;
+	double _value = 0.;
 
 	bool _mouseDown = false;
-	float64 _downValue = 0.;
+	double _downValue = 0.;
 
-	float64 _fadeOpacity = 1.;
+	double _fadeOpacity = 1.;
 
 };
 
@@ -123,7 +123,7 @@ protected:
 
 private:
 	QRect getSeekRect() const override;
-	float64 getOverDuration() const override;
+	double getOverDuration() const override;
 
 	const style::FilledSlider &_st;
 
@@ -143,7 +143,7 @@ protected:
 
 private:
 	QRect getSeekRect() const override;
-	float64 getOverDuration() const override;
+	double getOverDuration() const override;
 
 	const style::MediaSlider &_st;
 	bool _alwaysDisplayMarker = false;
