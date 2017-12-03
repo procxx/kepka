@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/procxx/cotire.git
+	branch = stable
+	commit = 516d78476f6dda336181fc5514f72774e1e0a8e2
+	parent = 5905d21fa7d8c2bbe0438b0d266945dcbbacb6f2
+	cmdver = 0.3.1
