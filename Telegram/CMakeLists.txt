@@ -627,7 +627,7 @@ target_link_libraries(Telegram
     ${SWRESAMPLE_LIBRARIES}
     ${SWSCALE_LIBRARIES}
     ${OPENSSL_LIBRARIES}
-    ${OPUS_LIB}
+    ${OPUS_LIBRARIES}
     ${CONAN_LIBS}
 ) # crashpad::crashpad_client)
 
