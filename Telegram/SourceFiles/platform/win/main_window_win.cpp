@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
 #include "platform/win/main_window_win.h"
 
 #include "styles/style_window.h"
@@ -33,17 +34,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/themes/window_theme.h"
 
 #include <qpa/qplatformnativeinterface.h>
-
-#include <Shobjidl.h>
-#include <shellapi.h>
-#include <WtsApi32.h>
-
-#include <roapi.h>
-#include <wrl\client.h>
-#include <wrl\implements.h>
-#include <windows.ui.notifications.h>
-
-#include <Windowsx.h>
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) < (b) ? (b) : (a))
@@ -229,7 +219,7 @@ public:
 				destroy();
 				return false;
 			}
-			SetWindowLong(hwnds[i], GWL_HWNDPARENT, (LONG)hwnd);
+			SetWindowLong(hwnds[i], GWLP_HWNDPARENT, (LONG)hwnd);
 
 			dcs[i] = CreateCompatibleDC(screenDC);
 			if (!dcs[i]) {
@@ -705,18 +695,18 @@ void MainWindow::workmodeUpdated(DBIWorkMode mode) {
 	switch (mode) {
 	case dbiwmWindowAndTray: {
 		psSetupTrayIcon();
-		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWL_HWNDPARENT);
+		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWLP_HWNDPARENT);
 		if (psOwner) {
-			SetWindowLong(ps_hWnd, GWL_HWNDPARENT, 0);
+			SetWindowLong(ps_hWnd, GWLP_HWNDPARENT, 0);
 			psRefreshTaskbarIcon();
 		}
 	} break;
 
 	case dbiwmTrayOnly: {
 		psSetupTrayIcon();
-		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWL_HWNDPARENT);
+		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWLP_HWNDPARENT);
 		if (!psOwner) {
-			SetWindowLong(ps_hWnd, GWL_HWNDPARENT, (LONG)ps_tbHider_hWnd);
+			SetWindowLong(ps_hWnd, GWLP_HWNDPARENT, (LONG)ps_tbHider_hWnd);
 		}
 	} break;
 
@@ -727,9 +717,9 @@ void MainWindow::workmodeUpdated(DBIWorkMode mode) {
 		}
 		trayIcon = 0;
 
-		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWL_HWNDPARENT);
+		HWND psOwner = (HWND)GetWindowLong(ps_hWnd, GWLP_HWNDPARENT);
 		if (psOwner) {
-			SetWindowLong(ps_hWnd, GWL_HWNDPARENT, 0);
+			SetWindowLong(ps_hWnd, GWLP_HWNDPARENT, 0);
 			psRefreshTaskbarIcon();
 		}
 	} break;

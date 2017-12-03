@@ -53,6 +53,36 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #define MAC_USE_BREAKPAD
 #endif // OS_MAC_STORE
 
+#ifdef Q_OS_WIN
+#include <SDKDDKVer.h>
+
+// Windows Header Files:
+#include <Windows.h>
+#include <Windowsx.h>
+#include <sal.h>
+#include <Psapi.h>
+#include <strsafe.h>
+#include <objbase.h>
+#include <ShObjIdl.h>
+#include <propvarutil.h>
+#include <functiondiscoverykeys.h>
+#include <intsafe.h>
+#include <guiddef.h>
+#include <Shlwapi.h>
+
+#include <roapi.h>
+#include <wrl\client.h>
+#include <wrl\implements.h>
+#include <windows.ui.notifications.h>
+#include <ShlObj.h>
+
+#include <Shobjidl.h>
+#include <shellapi.h>
+#include <WtsApi32.h>
+#include <Mmdeviceapi.h>
+#include <audioclient.h>
+#endif
+
 #include <QtWidgets/QtWidgets>
 #include <QtNetwork/QtNetwork>
 

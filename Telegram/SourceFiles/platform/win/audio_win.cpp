@@ -18,20 +18,21 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "stdafx.h"
+
 #include "platform/win/audio_win.h"
 
 #include "platform/win/windows_dlls.h"
 #include "media/media_audio.h"
 
-#include <mmdeviceapi.h>
-#include <audioclient.h>
-
-#include <wrl\client.h>
 using namespace Microsoft::WRL;
 
 namespace Platform {
 namespace Audio {
 namespace {
+
+const CLSID CLSID_MMDeviceEnumerator = __uuidof(MMDeviceEnumerator);
+const IID IID_IMMDeviceEnumerator = __uuidof(IMMDeviceEnumerator);
 
 // Inspired by Chromium.
 class DeviceListener : public IMMNotificationClient {

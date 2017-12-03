@@ -44,8 +44,8 @@ int main(int argc, char *argv[]) {
 #else
 	QCoreApplication::addLibraryPath("/usr/lib/qt5/plugins");
 #endif
-	setenv("QT_STYLE_OVERRIDE", "qwerty", false);
-	unsetenv("QT_QPA_PLATFORMTHEME");
+	qputenv("QT_STYLE_OVERRIDE", "qwerty");
+	qunsetenv("QT_QPA_PLATFORMTHEME");
 
 	int result = 0;
 	{

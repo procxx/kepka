@@ -337,9 +337,9 @@ void NewAvatarButton::paintEvent(QPaintEvent *e) {
 }
 
 void NewAvatarButton::setImage(const QImage &image) {
-	auto small = image.scaled(size() * cIntRetinaFactor(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-	Images::prepareCircle(small);
-	_image = App::pixmapFromImageInPlace(std::move(small));
+	auto smallImg = image.scaled(size() * cIntRetinaFactor(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+	Images::prepareCircle(smallImg);
+	_image = App::pixmapFromImageInPlace(std::move(smallImg));
 	_image.setDevicePixelRatio(cRetinaFactor());
 	update();
 }
