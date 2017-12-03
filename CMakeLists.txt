@@ -23,8 +23,8 @@ if (CMAKE_VERSION VERSION_GREATER 3.9)
 endif()
 
 # Needs OpenAL-SOFT
-# Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
-find_package(OpenAL REQUIRED)
+# Install via `brew install openal-soft` and configure with cmake call from README.md
+find_package(OpenAL REQUIRED NO_MODULE)
 find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(FFmpeg REQUIRED)

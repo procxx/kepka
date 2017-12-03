@@ -547,17 +547,13 @@ include_directories(ThirdParty/GSL/include ThirdParty/variant/include
 
 include_directories(SourceFiles SourceFiles/core)
 
-include_directories(${OPENAL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS}
+include_directories(${ZLIB_INCLUDE_DIRS}
     ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
     ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS}
     ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR}
     ${FFMPEG_INCLUDE_DIRS})
 
 add_subdirectory(ThirdParty/libtgvoip)
-
-# Shut up for testbuilding, remove me
-include_directories(/usr/local/opt/openal-soft/include)
-# End remove me
 
 if(NOT WIN32)
     add_definitions(-Wno-switch)
@@ -620,7 +616,7 @@ target_link_libraries(Telegram
     Qt5::Network
     Qt5::GuiPrivate
     tgvoip
-    ${OPENAL_LIBRARY}
+    OpenAL::OpenAL
     ${FFMPEG_LIBRARIES}
     ${ZLIB_LIBRARIES}
     ${SWRESAMPLE_LIBRARIES}
