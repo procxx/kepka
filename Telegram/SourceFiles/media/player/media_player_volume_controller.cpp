@@ -34,10 +34,10 @@ namespace Player {
 VolumeController::VolumeController(QWidget *parent) : TWidget(parent)
 , _slider(this, st::mediaPlayerPanelPlayback) {
 	_slider->setMoveByWheel(true);
-	_slider->setChangeProgressCallback([this](float64 volume) {
+	_slider->setChangeProgressCallback([this](double volume) {
 		applyVolumeChange(volume);
 	});
-	_slider->setChangeFinishedCallback([this](float64 volume) {
+	_slider->setChangeFinishedCallback([this](double volume) {
 		if (volume > 0) {
 			Global::SetRememberedSongVolume(volume);
 		}
@@ -63,7 +63,7 @@ void VolumeController::resizeEvent(QResizeEvent *e) {
 	_slider->setGeometry(rect());
 }
 
-void VolumeController::setVolume(float64 volume) {
+void VolumeController::setVolume(double volume) {
 	_slider->setValue(volume);
 	if (volume > 0) {
 		Global::SetRememberedSongVolume(volume);
@@ -71,7 +71,7 @@ void VolumeController::setVolume(float64 volume) {
 	applyVolumeChange(volume);
 }
 
-void VolumeController::applyVolumeChange(float64 volume) {
+void VolumeController::applyVolumeChange(double volume) {
 	if (volume != Global::SongVolume()) {
 		Global::SetSongVolume(volume);
 		mixer()->setSongVolume(Global::SongVolume());

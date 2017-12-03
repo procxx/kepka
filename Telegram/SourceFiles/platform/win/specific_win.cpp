@@ -125,15 +125,15 @@ void psDeleteDir(const QString &dir) {
 
 namespace {
 	BOOL CALLBACK _ActivateProcess(HWND hWnd, LPARAM lParam) {
-		uint64 &processId(*(uint64*)lParam);
+		quint64 &processId(*(quint64*)lParam);
 
 		DWORD dwProcessId;
 		::GetWindowThreadProcessId(hWnd, &dwProcessId);
 
-		if ((uint64)dwProcessId == processId) { // found top-level window
-			static const int32 nameBufSize = 1024;
+		if ((quint64)dwProcessId == processId) { // found top-level window
+			static const qint32 nameBufSize = 1024;
 			WCHAR nameBuf[nameBufSize];
-			int32 len = GetWindowText(hWnd, nameBuf, nameBufSize);
+			qint32 len = GetWindowText(hWnd, nameBuf, nameBufSize);
 			if (len && len < nameBufSize) {
 				if (QRegularExpression(qsl("^Telegram(\\s*\\(\\d+\\))?$")).match(QString::fromStdWString(nameBuf)).hasMatch()) {
 					BOOL res = ::SetForegroundWindow(hWnd);
@@ -177,7 +177,7 @@ void psClearInitLogs() {
     _initLogs = QStringList();
 }
 
-void psActivateProcess(uint64 pid) {
+void psActivateProcess(quint64 pid) {
 	if (pid) {
 		::EnumWindows((WNDENUMPROC)_ActivateProcess, (LPARAM)&pid);
 	}
@@ -1125,9 +1125,9 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	QString initial = QString::fromUtf8(crashdump), result;
 	QStringList lines = initial.split('\n');
 	result.reserve(initial.size());
-	int32 i = 0, l = lines.size();
+	qint32 i = 0, l = lines.size();
 	QString versionstr;
-	uint64 version = 0, betaversion = 0;
+	quint64 version = 0, betaversion = 0;
 	for (;  i < l; ++i) {
 		result.append(lines.at(i)).append('\n');
 		QString line = lines.at(i).trimmed();
@@ -1153,7 +1153,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 		QRegularExpressionMatch m = QRegularExpression("deploy/\\d+\\.\\d+/\\d+\\.\\d+\\.\\d+(/|\\.dev/|\\.alpha/|_\\d+/)(Telegram/)?$").match(path);
 		if (m.hasMatch()) {
 			QString base = path.mid(0, m.capturedStart()) + qstr("deploy/");
-			int32 major = version / 1000000, minor = (version % 1000000) / 1000, micro = (version % 1000);
+			qint32 major = version / 1000000, minor = (version % 1000000) / 1000, micro = (version % 1000);
 			base += qsl("%1.%2/%3.%4.%5").arg(major).arg(minor).arg(major).arg(minor).arg(micro);
 			if (betaversion) {
 				base += qsl("_%1").arg(betaversion);
@@ -1198,7 +1198,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 		Module.SizeOfStruct = sizeof(Module);
 
 		StackEntry csEntry;
-		for (int32 start = i; i < l; ++i) {
+		for (qint32 start = i; i < l; ++i) {
 			QString line = lines.at(i).trimmed();
 			if (line.isEmpty()) break;
 
@@ -1264,7 +1264,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 				result.append(csEntry.name).append(qsl(" (%1) 0x%3").arg(QString::fromWCharArray(csEntry.moduleName)).arg(address, 0, 16)).append('\n');
 			} else {
 				QString file = QString::fromWCharArray(csEntry.lineFileName).toLower();
-				int32 index = file.indexOf(qstr("tbuild\\tdesktop\\telegram\\"));
+				qint32 index = file.indexOf(qstr("tbuild\\tdesktop\\telegram\\"));
 				if (index >= 0) {
 					file = file.mid(index + qstr("tbuild\\tdesktop\\telegram\\").size());
 					if (file.startsWith(qstr("sourcefiles\\"))) {

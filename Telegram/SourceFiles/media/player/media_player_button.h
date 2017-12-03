@@ -41,12 +41,12 @@ public:
 
 private:
 	void animationCallback();
-	void startTransform(float64 from, float64 to);
+	void startTransform(double from, double to);
 
 	void paintPlay(Painter &p, const QBrush &brush);
-	void paintPlayToPause(Painter &p, const QBrush &brush, float64 progress);
-	void paintPlayToCancel(Painter &p, const QBrush &brush, float64 progress);
-	void paintPauseToCancel(Painter &p, const QBrush &brush, float64 progress);
+	void paintPlayToPause(Painter &p, const QBrush &brush, double progress);
+	void paintPlayToCancel(Painter &p, const QBrush &brush, double progress);
+	void paintPauseToCancel(Painter &p, const QBrush &brush, double progress);
 
 	const style::MediaPlayerButton &_st;
 

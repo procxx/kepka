@@ -123,11 +123,11 @@ QRect computeSourceRect(const QImage &image) {
 	return result;
 }
 
-uint32 Crc32Table[256];
+quint32 Crc32Table[256];
 class Crc32Initializer {
 public:
 	Crc32Initializer() {
-		uint32 poly = 0x04C11DB7U;
+		quint32 poly = 0x04C11DB7U;
 		for (auto i = 0; i != 256; ++i) {
 			Crc32Table[i] = reflect(i, 8) << 24;
 			for (auto j = 0; j != 8; ++j) {
@@ -138,8 +138,8 @@ public:
 	}
 
 private:
-	uint32 reflect(uint32 val, char ch) {
-		uint32 result = 0;
+	quint32 reflect(quint32 val, char ch) {
+		quint32 result = 0;
 		for (int i = 1; i < (ch + 1); ++i) {
 			if (val & 1) {
 				result |= 1 << (ch - i);
@@ -151,11 +151,11 @@ private:
 
 };
 
-uint32 countCrc32(const void *data, std::size_t size) {
+quint32 countCrc32(const void *data, std::size_t size) {
 	static Crc32Initializer InitTable;
 
 	auto buffer = static_cast<const unsigned char*>(data);
-	auto result = uint32(0xFFFFFFFFU);
+	auto result = quint32(0xFFFFFFFFU);
 	for (auto i = std::size_t(0); i != size; ++i) {
 		result = (result >> 8) ^ Crc32Table[(result & 0xFFU) ^ buffer[i]];
 	}
@@ -298,7 +298,7 @@ bool Generator::writeImages() {
 				}
 			}
 		}
-        if (needResave) {
+		if (needResave) {
 			QFile file(filename);
 			if (!file.open(QIODevice::WriteOnly)) {
 				logDataError() << "Could not open 'emoji" << postfix << ".png'.";
@@ -363,7 +363,7 @@ void Init() {\n\
 \n\
 	Items.reserve(base::array_size(Data));\n\
 	for (auto &data : Data) {\n\
-		Items.emplace_back(takeString(data.idSize), uint16(data.column), uint16(data.row), bool(data.postfixed), bool(data.variated), data.original ? &Items[data.original - 1] : nullptr, One::CreationTag());\n\
+		Items.emplace_back(takeString(data.idSize), quint16(data.column), quint16(data.row), bool(data.postfixed), bool(data.variated), data.original ? &Items[data.original - 1] : nullptr, One::CreationTag());\n\
 	}\n\
 	InitReplacements();\n\
 }\n\
@@ -796,7 +796,7 @@ struct Replacement {\n\
 constexpr auto kReplacementMaxLength = " << maxLength << ";\n\
 \n\
 void InitReplacements();\n\
-const std::vector<const Replacement*> *GetReplacements(utf16char first);\n\
+const std::vector<const Replacement*> *GetReplacements(char16_t first);\n\
 utf16string GetReplacementEmoji(utf16string replacement);\n\
 \n";
 	return header->finalize();
@@ -806,12 +806,12 @@ bool Generator::writeReplacements() {
 	QMap<QChar, QVector<int>> byCharIndices;
 	suggestionsSource_->stream() << "\
 struct ReplacementStruct {\n\
-	small emojiSize;\n\
-	small replacementSize;\n\
-	small wordsCount;\n\
+	uint8_t emojiSize;\n\
+	uint8_t replacementSize;\n\
+	uint8_t wordsCount;\n\
 };\n\
 \n\
-const utf16char ReplacementData[] = {";
+const char16_t ReplacementData[] = {";
 	startBinary();
 	for (auto i = 0, size = replaces_.list.size(); i != size; ++i) {
 		auto &replace = replaces_.list[i];
@@ -833,7 +833,7 @@ const utf16char ReplacementData[] = {";
 	}
 	suggestionsSource_->stream() << " };\n\
 \n\
-const small ReplacementWordLengths[] = {";
+const uint8_t ReplacementWordLengths[] = {";
 	startBinary();
 	for (auto &replace : replaces_.list) {
 		auto wordLengths = QStringList();
@@ -846,11 +846,11 @@ const small ReplacementWordLengths[] = {";
 const ReplacementStruct ReplacementInitData[] = {\n";
 	for (auto &replace : replaces_.list) {
 		suggestionsSource_->stream() << "\
-	{ small(" << replace.id.size() << "), small(" << replace.replacement.size() << "), small(" << replace.words.size() << ") },\n";
+	{ uint8_t(" << replace.id.size() << "), uint8_t(" << replace.replacement.size() << "), uint8_t(" << replace.words.size() << ") },\n";
 	}
 	suggestionsSource_->stream() << "};\n\
 \n\
-const medium ReplacementIndices[] = {";
+const uint16_t ReplacementIndices[] = {";
 	startBinary();
 	for (auto &byCharIndex : byCharIndices) {
 		for (auto index : byCharIndex) {
@@ -860,8 +860,8 @@ const medium ReplacementIndices[] = {";
 	suggestionsSource_->stream() << " };\n\
 \n\
 struct ReplacementIndexStruct {\n\
-	utf16char ch;\n\
-	medium count;\n\
+	char16_t ch;\n\
+	uint16_t count;\n\
 };\n\
 \n\
 const internal::checksum ReplacementChecksums[] = {\n";
@@ -875,12 +875,12 @@ const ReplacementIndexStruct ReplacementIndexData[] = {\n";
 	startBinary();
 	for (auto i = byCharIndices.cbegin(), e = byCharIndices.cend(); i != e; ++i) {
 		suggestionsSource_->stream() << "\
-	{ utf16char(" << i.key().unicode() << "), medium(" << i.value().size() << ") },\n";
+	{ char16_t(" << i.key().unicode() << "), uint16_t(" << i.value().size() << ") },\n";
 	}
 	suggestionsSource_->stream() << "};\n\
 \n\
 std::vector<Replacement> Replacements;\n\
-std::map<utf16char, std::vector<const Replacement*>> ReplacementsMap;\n\
+std::map<char16_t, std::vector<const Replacement*>> ReplacementsMap;\n\
 std::map<internal::checksum, const Replacement*> ReplacementsHash;\n\
 \n";
 	return true;
@@ -928,7 +928,7 @@ void InitReplacements() {\n\
 	}\n\
 }\n\
 \n\
-const std::vector<const Replacement*> *GetReplacements(utf16char first) {\n\
+const std::vector<const Replacement*> *GetReplacements(char16_t first) {\n\
 	if (ReplacementsMap.empty()) {\n\
 		InitReplacements();\n\
 	}\n\
@@ -937,7 +937,7 @@ const std::vector<const Replacement*> *GetReplacements(utf16char first) {\n\
 }\n\
 \n\
 utf16string GetReplacementEmoji(utf16string replacement) {\n\
-	auto code = internal::countChecksum(replacement.data(), replacement.size() * sizeof(utf16char));\n\
+	auto code = internal::countChecksum(replacement.data(), replacement.size() * sizeof(char16_t));\n\
 	auto it = ReplacementsHash.find(code);\n\
 	return (it == ReplacementsHash.cend()) ? utf16string() : it->second->emoji;\n\
 }\n\
@@ -984,7 +984,7 @@ void Generator::writeIntBinary(common::CppFile *source, int data) {
 	++_binaryFullLength;
 }
 
-void Generator::writeUintBinary(common::CppFile *source, uint32 data) {
+void Generator::writeUintBinary(common::CppFile *source, quint32 data) {
 	if (_binaryFullLength > 0) source->stream() << ",";
 	if (!_binaryCount++) {
 		source->stream() << "\n";

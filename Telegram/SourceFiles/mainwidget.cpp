@@ -155,7 +155,7 @@ MainWidget::MainWidget(QWidget *parent, not_null<Window::Controller*> controller
 	subscribe(_controller->dialogsListDisplayForced(), [this](bool) {
 		updateDialogsWidthAnimated();
 	});
-	subscribe(_controller->dialogsWidthRatio(), [this](float64) {
+	subscribe(_controller->dialogsWidthRatio(), [this](double) {
 		updateControlsGeometry();
 	});
 	subscribe(_controller->floatPlayerAreaUpdated(), [this] {
@@ -626,7 +626,7 @@ void MainWidget::finishForwarding(History *history, bool silent) {
 		ids.reserve(toForward.size());
 		randomIds.reserve(toForward.size());
 		for (auto i = toForward.cbegin(), e = toForward.cend(); i != e; ++i) {
-			auto randomId = rand_value<uint64>();
+			auto randomId = rand_value<quint64>();
 			if (genClientSideMessage) {
 				if (auto message = i.value()->toHistoryMessage()) {
 					auto newId = FullMsgId(peerToChannel(history->peer->id), clientMsgId());
@@ -699,9 +699,9 @@ void MainWidget::webPagesOrGamesUpdate() {
 	}
 }
 
-void MainWidget::updateMutedIn(int32 seconds) {
+void MainWidget::updateMutedIn(qint32 seconds) {
 	if (seconds > 86400) seconds = 86400;
-	int32 ms = seconds * 1000;
+	qint32 ms = seconds * 1000;
 	if (_updateMutedTimer.isActive() && _updateMutedTimer.remainingTime() <= ms) return;
 	_updateMutedTimer.start(ms);
 }
@@ -1417,7 +1417,7 @@ void MainWidget::sendMessage(const MessageToSend &message) {
 	auto replyTo = (message.replyTo < 0) ? _history->replyToId() : message.replyTo;
 	while (TextUtilities::CutPart(sending, left, MaxMessageSize)) {
 		auto newId = FullMsgId(peerToChannel(history->peer->id), clientMsgId());
-		auto randomId = rand_value<uint64>();
+		auto randomId = rand_value<quint64>();
 
 		TextUtilities::Trim(sending);
 
@@ -1477,7 +1477,7 @@ void MainWidget::saveRecentHashtags(const QString &text) {
 	bool found = false;
 	QRegularExpressionMatch m;
 	RecentHashtagPack recent(cRecentWriteHashtags());
-	for (int32 i = 0, next = 0; (m = TextUtilities::RegExpHashtag().match(text, i)).hasMatch(); i = next) {
+	for (qint32 i = 0, next = 0; (m = TextUtilities::RegExpHashtag().match(text, i)).hasMatch(); i = next) {
 		i = m.capturedStart();
 		next = m.capturedEnd();
 		if (m.hasMatch()) {
@@ -1576,7 +1576,7 @@ bool MainWidget::preloadOverview(PeerData *peer, MediaOverviewType type) {
 
 void MainWidget::overviewPreloaded(PeerData *peer, const MTPmessages_Messages &result, mtpRequestId req) {
 	MediaOverviewType type = OverviewCount;
-	for (int32 i = 0; i < OverviewCount; ++i) {
+	for (qint32 i = 0; i < OverviewCount; ++i) {
 		OverviewsPreload::iterator j = _overviewPreload[i].find(peer);
 		if (j != _overviewPreload[i].end() && j.value() == req) {
 			type = MediaOverviewType(i);
@@ -1609,7 +1609,7 @@ bool MainWidget::overviewFailed(PeerData *peer, const RPCError &error, mtpReques
 	if (MTP::isDefaultHandledError(error)) return false;
 
 	MediaOverviewType type = OverviewCount;
-	for (int32 i = 0; i < OverviewCount; ++i) {
+	for (qint32 i = 0; i < OverviewCount; ++i) {
 		OverviewsPreload::iterator j = _overviewPreload[i].find(peer);
 		if (j != _overviewPreload[i].end() && j.value() == req) {
 			_overviewPreload[i].erase(j);
@@ -1648,7 +1648,7 @@ void MainWidget::checkLastUpdate(bool afterSleep) {
 void MainWidget::overviewLoaded(not_null<History*> history, const MTPmessages_Messages &result, mtpRequestId req) {
 	OverviewsPreload::iterator it;
 	MediaOverviewType type = OverviewCount;
-	for (int32 i = 0; i < OverviewCount; ++i) {
+	for (qint32 i = 0; i < OverviewCount; ++i) {
 		it = _overviewLoad[i].find(history->peer);
 		if (it != _overviewLoad[i].cend()) {
 			type = MediaOverviewType(i);
@@ -2032,7 +2032,7 @@ void MainWidget::dialogsCancelled() {
 	_history->activate();
 }
 
-void MainWidget::insertCheckedServiceNotification(const TextWithEntities &message, const MTPMessageMedia &media, int32 date) {
+void MainWidget::insertCheckedServiceNotification(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date) {
 	auto flags = MTPDmessage::Flag::f_entities | MTPDmessage::Flag::f_from_id | MTPDmessage_ClientFlag::f_clientside_unread;
 	auto sending = TextWithEntities(), left = message;
 	HistoryItem *item = nullptr;
@@ -2117,7 +2117,7 @@ bool MainWidget::chatBackgroundLoading() {
 	return (_background != nullptr);
 }
 
-float64 MainWidget::chatBackgroundProgress() const {
+double MainWidget::chatBackgroundProgress() const {
 	if (_background) {
 		return _background->full->progress();
 	}
@@ -2366,7 +2366,7 @@ void MainWidget::viewsIncrementDone(QVector<MTPint> ids, const MTPVector<MTPint>
 			if (i.value() == req) {
 				PeerData *peer = i.key();
 				ChannelId channel = peerToChannel(peer->id);
-				for (int32 j = 0, l = ids.size(); j < l; ++j) {
+				for (qint32 j = 0, l = ids.size(); j < l; ++j) {
 					if (HistoryItem *item = App::histItemById(channel, ids.at(j).v)) {
 						item->setViewsCount(v.at(j).v);
 					}
@@ -2629,7 +2629,7 @@ void MainWidget::saveSectionInStack() {
 	}
 }
 
-void MainWidget::showMediaOverview(PeerData *peer, MediaOverviewType type, bool back, int32 lastScrollTop) {
+void MainWidget::showMediaOverview(PeerData *peer, MediaOverviewType type, bool back, qint32 lastScrollTop) {
 	if (peer->migrateTo()) {
 		peer = peer->migrateTo();
 	}
@@ -3008,7 +3008,7 @@ void MainWidget::windowShown() {
 	_history->windowShown();
 }
 
-void MainWidget::sentUpdatesReceived(uint64 randomId, const MTPUpdates &result) {
+void MainWidget::sentUpdatesReceived(quint64 randomId, const MTPUpdates &result) {
 	feedUpdates(result, randomId);
 }
 
@@ -3315,13 +3315,13 @@ bool MainWidget::eventFilter(QObject *o, QEvent *e) {
 		} else if (e->type() == QEvent::MouseButtonRelease) {
 			_resizingSide = false;
 			if (!Adaptive::OneColumn()) {
-				_controller->dialogsWidthRatio().set(float64(_dialogsWidth) / width(), true);
+				_controller->dialogsWidthRatio().set(double(_dialogsWidth) / width(), true);
 			}
 			Local::writeUserSettings();
 		} else if (e->type() == QEvent::MouseMove && _resizingSide) {
 			auto newWidth = mouseLeft() - _resizingSideShift;
 			accumulate_max(newWidth, _controller->dialogsSmallColumnWidth());
-			_controller->dialogsWidthRatio().set(float64(newWidth) / width(), true);
+			_controller->dialogsWidthRatio().set(double(newWidth) / width(), true);
 		}
 	} else if (e->type() == QEvent::FocusIn) {
 		if (auto widget = qobject_cast<QWidget*>(o)) {
@@ -3375,7 +3375,7 @@ void MainWidget::updateWindowAdaptiveLayout() {
 			layout.windowLayout = Adaptive::WindowLayout::Normal;
 			layout.dialogsWidth = st::dialogsWidthMin;
 			layout.chatWidth = layout.bodyWidth - layout.dialogsWidth;
-			dialogsWidthRatio = float64(layout.dialogsWidth) / layout.bodyWidth;
+			dialogsWidthRatio = double(layout.dialogsWidth) / layout.bodyWidth;
 		}
 	}
 
@@ -3396,7 +3396,7 @@ void MainWidget::updateWindowAdaptiveLayout() {
 			if (extendChatBy > 0) {
 				layout.dialogsWidth -= extendChatBy;
 				layout.chatWidth += extendChatBy;
-				dialogsWidthRatio = float64(layout.dialogsWidth) / layout.bodyWidth;
+				dialogsWidthRatio = double(layout.dialogsWidth) / layout.bodyWidth;
 			}
 		}
 	}
@@ -3484,7 +3484,7 @@ bool MainWidget::updateFail(const RPCError &e) {
 	return true;
 }
 
-void MainWidget::updSetState(int32 pts, int32 date, int32 qts, int32 seq) {
+void MainWidget::updSetState(qint32 pts, qint32 date, qint32 qts, qint32 seq) {
 	if (pts) {
 		_ptsWaiter.init(pts);
 	}
@@ -3497,8 +3497,8 @@ void MainWidget::updSetState(int32 pts, int32 date, int32 qts, int32 seq) {
 	if (seq && seq != updSeq) {
 		updSeq = seq;
 		if (_bySeqTimer.isActive()) _bySeqTimer.stop();
-		for (QMap<int32, MTPUpdates>::iterator i = _bySeqUpdates.begin(); i != _bySeqUpdates.end();) {
-			int32 s = i.key();
+		for (QMap<qint32, MTPUpdates>::iterator i = _bySeqUpdates.begin(); i != _bySeqUpdates.end();) {
+			qint32 s = i.key();
 			if (s <= seq + 1) {
 				MTPUpdates v = i.value();
 				i = _bySeqUpdates.erase(i);
@@ -3516,7 +3516,7 @@ void MainWidget::updSetState(int32 pts, int32 date, int32 qts, int32 seq) {
 void MainWidget::gotChannelDifference(ChannelData *channel, const MTPupdates_ChannelDifference &diff) {
 	_channelFailDifferenceTimeout.remove(channel);
 
-	int32 timeout = 0;
+	qint32 timeout = 0;
 	bool isFinal = true;
 	switch (diff.type()) {
 	case mtpc_updates_channelDifferenceEmpty: {
@@ -3569,7 +3569,7 @@ void MainWidget::gotChannelDifference(ChannelData *channel, const MTPupdates_Cha
 		// feed messages and groups, copy from App::feedMsgs
 		auto h = App::history(channel->id);
 		auto &vmsgs = d.vnew_messages.v;
-		QMap<uint64, int> msgsIds;
+		QMap<quint64, int> msgsIds;
 		for (int i = 0, l = vmsgs.size(); i < l; ++i) {
 			auto &msg = vmsgs[i];
 			switch (msg.type()) {
@@ -3578,11 +3578,11 @@ void MainWidget::gotChannelDifference(ChannelData *channel, const MTPupdates_Cha
 				if (App::checkEntitiesAndViewsUpdate(d)) { // new message, index my forwarded messages to links _overview, already in blocks
 					LOG(("Skipping message, because it is already in blocks!"));
 				} else {
-					msgsIds.insert((uint64(uint32(d.vid.v)) << 32) | uint64(i), i + 1);
+					msgsIds.insert((quint64(quint32(d.vid.v)) << 32) | quint64(i), i + 1);
 				}
 			} break;
-			case mtpc_messageEmpty: msgsIds.insert((uint64(uint32(msg.c_messageEmpty().vid.v)) << 32) | uint64(i), i + 1); break;
-			case mtpc_messageService: msgsIds.insert((uint64(uint32(msg.c_messageService().vid.v)) << 32) | uint64(i), i + 1); break;
+			case mtpc_messageEmpty: msgsIds.insert((quint64(quint32(msg.c_messageEmpty().vid.v)) << 32) | quint64(i), i + 1); break;
+			case mtpc_messageService: msgsIds.insert((quint64(quint32(msg.c_messageService().vid.v)) << 32) | quint64(i), i + 1); break;
 			}
 		}
 		for_const (auto msgIndex, msgsIds) {
@@ -3616,7 +3616,7 @@ void MainWidget::gotChannelDifference(ChannelData *channel, const MTPupdates_Cha
 }
 
 void MainWidget::gotRangeDifference(ChannelData *channel, const MTPupdates_ChannelDifference &diff) {
-	int32 nextRequestPts = 0;
+	qint32 nextRequestPts = 0;
 	bool isFinal = true;
 	switch (diff.type()) {
 	case mtpc_updates_channelDifferenceEmpty: {
@@ -3718,7 +3718,7 @@ void MainWidget::gotDifference(const MTPupdates_Difference &difference) {
 	};
 }
 
-bool MainWidget::getDifferenceTimeChanged(ChannelData *channel, int32 ms, ChannelGetDifferenceTime &channelCurTime, TimeMs &curTime) {
+bool MainWidget::getDifferenceTimeChanged(ChannelData *channel, qint32 ms, ChannelGetDifferenceTime &channelCurTime, TimeMs &curTime) {
 	if (channel) {
 		if (ms <= 0) {
 			ChannelGetDifferenceTime::iterator i = channelCurTime.find(channel);
@@ -3759,14 +3759,14 @@ bool MainWidget::getDifferenceTimeChanged(ChannelData *channel, int32 ms, Channe
 	return true;
 }
 
-void MainWidget::ptsWaiterStartTimerFor(ChannelData *channel, int32 ms) {
+void MainWidget::ptsWaiterStartTimerFor(ChannelData *channel, qint32 ms) {
 	if (getDifferenceTimeChanged(channel, ms, _channelGetDifferenceTimeByPts, _getDifferenceTimeByPts)) {
 		onGetDifferenceTimeByPts();
 	}
 }
 
 void MainWidget::failDifferenceStartTimerFor(ChannelData *channel) {
-	int32 ms = 0;
+	qint32 ms = 0;
 	ChannelFailDifferenceTimeout::iterator i;
 	if (channel) {
 		i = _channelFailDifferenceTimeout.find(channel);
@@ -3787,15 +3787,15 @@ void MainWidget::failDifferenceStartTimerFor(ChannelData *channel) {
 	}
 }
 
-bool MainWidget::ptsUpdateAndApply(int32 pts, int32 ptsCount, const MTPUpdates &updates) {
+bool MainWidget::ptsUpdateAndApply(qint32 pts, qint32 ptsCount, const MTPUpdates &updates) {
 	return _ptsWaiter.updateAndApply(nullptr, pts, ptsCount, updates);
 }
 
-bool MainWidget::ptsUpdateAndApply(int32 pts, int32 ptsCount, const MTPUpdate &update) {
+bool MainWidget::ptsUpdateAndApply(qint32 pts, qint32 ptsCount, const MTPUpdate &update) {
 	return _ptsWaiter.updateAndApply(nullptr, pts, ptsCount, update);
 }
 
-bool MainWidget::ptsUpdateAndApply(int32 pts, int32 ptsCount) {
+bool MainWidget::ptsUpdateAndApply(qint32 pts, qint32 ptsCount) {
 	return _ptsWaiter.updateAndApply(nullptr, pts, ptsCount);
 }
 
@@ -3998,10 +3998,10 @@ void MainWidget::joinGroupByHash(const QString &hash) {
 void MainWidget::stickersBox(const MTPInputStickerSet &set) {
 	Messenger::Instance().hideMediaView();
 	auto box = Ui::show(Box<StickerSetBox>(set));
-	connect(box, SIGNAL(installed(uint64)), this, SLOT(onStickersInstalled(uint64)));
+	connect(box, SIGNAL(installed(quint64)), this, SLOT(onStickersInstalled(quint64)));
 }
 
-void MainWidget::onStickersInstalled(uint64 setId) {
+void MainWidget::onStickersInstalled(quint64 setId) {
 	_history->stickersInstalled(setId);
 }
 
@@ -4215,7 +4215,7 @@ void MainWidget::applyNotifySetting(const MTPNotifyPeer &peer, const MTPPeerNoti
 			setTo->sound = sound;
 			if (updatePeer) {
 				if (!h) h = App::history(updatePeer->id);
-				int32 changeIn = 0;
+				qint32 changeIn = 0;
 				if (isNotifyMuted(setTo, &changeIn)) {
 					Auth().notifications().clearFromHistory(h);
 					h->setMute(true);
@@ -4366,7 +4366,7 @@ void MainWidget::destroyData() {
 	_dialogs->destroyData();
 }
 
-void MainWidget::updateOnlineDisplayIn(int32 msecs) {
+void MainWidget::updateOnlineDisplayIn(qint32 msecs) {
 	_onlineUpdater.start(msecs);
 }
 
@@ -4390,7 +4390,7 @@ TimeMs MainWidget::lastSetOnline() const {
 	return _lastSetOnline;
 }
 
-int32 MainWidget::dlgsWidth() const {
+qint32 MainWidget::dlgsWidth() const {
 	return _dialogs->width();
 }
 
@@ -4629,7 +4629,7 @@ DataIsLoadedResult allDataLoadedForMessage(const MTPMessage &msg) {
 
 } // namespace
 
-void MainWidget::feedUpdates(const MTPUpdates &updates, uint64 randomId) {
+void MainWidget::feedUpdates(const MTPUpdates &updates, quint64 randomId) {
 	switch (updates.type()) {
 	case mtpc_updates: {
 		auto &d = updates.c_updates();
@@ -5305,7 +5305,7 @@ void MainWidget::feedUpdate(const MTPUpdate &update) {
 					}
 
 					auto &order(Global::RefStickerSetsOrder());
-					int32 insertAtIndex = 0, currentIndex = order.indexOf(s.vid.v);
+					qint32 insertAtIndex = 0, currentIndex = order.indexOf(s.vid.v);
 					if (currentIndex != insertAtIndex) {
 						if (currentIndex > 0) {
 							order.removeAt(currentIndex);
@@ -5315,8 +5315,8 @@ void MainWidget::feedUpdate(const MTPUpdate &update) {
 
 					auto custom = sets.find(Stickers::CustomSetId);
 					if (custom != sets.cend()) {
-						for (int32 i = 0, l = it->stickers.size(); i < l; ++i) {
-							int32 removeIndex = custom->stickers.indexOf(it->stickers.at(i));
+						for (qint32 i = 0, l = it->stickers.size(); i < l; ++i) {
+							qint32 removeIndex = custom->stickers.indexOf(it->stickers.at(i));
 							if (removeIndex >= 0) custom->stickers.removeAt(removeIndex);
 						}
 						if (custom->stickers.isEmpty()) {

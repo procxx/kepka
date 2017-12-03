@@ -36,7 +36,7 @@ public:
 	using FinishedCallback = base::lambda<void()>;
 	void setFinishedCallback(FinishedCallback &&callback);
 
-	using UpdatedCallback = base::lambda<void(float64)>;
+	using UpdatedCallback = base::lambda<void(double)>;
 	void setUpdatedCallback(UpdatedCallback &&callback);
 
 	void show();

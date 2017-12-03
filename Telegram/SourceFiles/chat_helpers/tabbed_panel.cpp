@@ -376,7 +376,7 @@ bool TabbedPanel::eventFilter(QObject *obj, QEvent *e) {
 	return false;
 }
 
-void TabbedPanel::stickersInstalled(uint64 setId) {
+void TabbedPanel::stickersInstalled(quint64 setId) {
 	if (isDestroying()) {
 		return;
 	}

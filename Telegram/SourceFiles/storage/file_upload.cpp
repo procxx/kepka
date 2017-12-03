@@ -136,7 +136,7 @@ void Uploader::sendNext() {
 	}
 
 	UploadFileParts &parts(i->file ? (i->type() == SendMediaType::Photo ? i->file->fileparts : i->file->thumbparts) : i->media.parts);
-	uint64 partsOfId(i->file ? (i->type() == SendMediaType::Photo ? i->file->id : i->file->thumbId) : i->media.thumbId);
+	quint64 partsOfId(i->file ? (i->type() == SendMediaType::Photo ? i->file->id : i->file->thumbId) : i->media.thumbId);
 	if (parts.isEmpty()) {
 		if (i->docSentParts >= i->docPartsCount) {
 			if (requestsSent.isEmpty() && docRequestsSent.isEmpty()) {
@@ -246,7 +246,7 @@ void Uploader::clear() {
 		MTP::cancel(i.key());
 	}
 	requestsSent.clear();
-	for (QMap<mtpRequestId, int32>::const_iterator i = docRequestsSent.cbegin(), e = docRequestsSent.cend(); i != e; ++i) {
+	for (QMap<mtpRequestId, qint32>::const_iterator i = docRequestsSent.cbegin(), e = docRequestsSent.cend(); i != e; ++i) {
 		MTP::cancel(i.key());
 	}
 	docRequestsSent.clear();
@@ -260,7 +260,7 @@ void Uploader::clear() {
 }
 
 void Uploader::partLoaded(const MTPBool &result, mtpRequestId requestId) {
-	QMap<mtpRequestId, int32>::iterator j = docRequestsSent.end();
+	QMap<mtpRequestId, qint32>::iterator j = docRequestsSent.end();
 	QMap<mtpRequestId, QByteArray>::iterator i = requestsSent.find(requestId);
 	if (i == requestsSent.cend()) {
 		j = docRequestsSent.find(requestId);
@@ -270,15 +270,15 @@ void Uploader::partLoaded(const MTPBool &result, mtpRequestId requestId) {
 			currentFailed();
 			return;
 		} else {
-			QMap<mtpRequestId, int32>::iterator dcIt = dcMap.find(requestId);
+			QMap<mtpRequestId, qint32>::iterator dcIt = dcMap.find(requestId);
 			if (dcIt == dcMap.cend()) { // must not happen
 				currentFailed();
 				return;
 			}
-			int32 dc = dcIt.value();
+			qint32 dc = dcIt.value();
 			dcMap.erase(dcIt);
 
-			int32 sentPartSize = 0;
+			qint32 sentPartSize = 0;
 			Queue::const_iterator k = queue.constFind(uploading);
 			if (i != requestsSent.cend()) {
 				sentPartSize = i.value().size();

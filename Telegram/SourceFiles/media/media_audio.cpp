@@ -270,7 +270,7 @@ base::Observable<AudioMsgId> &Updated() {
 }
 
 // Thread: Any. Must be locked: AudioMutex.
-float64 ComputeVolume(AudioMsgId::Type type) {
+double ComputeVolume(AudioMsgId::Type type) {
 	switch (type) {
 	case AudioMsgId::Type::Voice: return VolumeMultiplierAll;
 	case AudioMsgId::Type::Song: return VolumeMultiplierSong * mixer()->getSongVolume();
@@ -614,12 +614,12 @@ bool Mixer::fadedStop(AudioMsgId::Type type, bool *fadedStart) {
 	return false;
 }
 
-void Mixer::play(const AudioMsgId &audio, int64 position) {
+void Mixer::play(const AudioMsgId &audio, qint64 position) {
 	setSongVolume(Global::SongVolume());
 	play(audio, nullptr, position);
 }
 
-void Mixer::play(const AudioMsgId &audio, std::unique_ptr<VideoSoundData> videoData, int64 position) {
+void Mixer::play(const AudioMsgId &audio, std::unique_ptr<VideoSoundData> videoData, qint64 position) {
 	Expects(!videoData || audio.playId() != 0);
 
 	auto type = audio.type();
@@ -866,7 +866,7 @@ void Mixer::resume(const AudioMsgId &audio, bool fast) {
 	if (current) emit updated(current);
 }
 
-void Mixer::seek(AudioMsgId::Type type, int64 position) {
+void Mixer::seek(AudioMsgId::Type type, qint64 position) {
 	QMutexLocker lock(&AudioMutex);
 
 	auto current = trackForType(type);
@@ -1066,20 +1066,20 @@ void Mixer::reattachTracks() {
 	_videoTrack.reattach(AudioMsgId::Type::Video);
 }
 
-void Mixer::setSongVolume(float64 volume) {
+void Mixer::setSongVolume(double volume) {
 	_volumeSong.storeRelease(qRound(volume * kVolumeRound));
 }
 
-float64 Mixer::getSongVolume() const {
-	return float64(_volumeSong.loadAcquire()) / kVolumeRound;
+double Mixer::getSongVolume() const {
+	return double(_volumeSong.loadAcquire()) / kVolumeRound;
 }
 
-void Mixer::setVideoVolume(float64 volume) {
+void Mixer::setVideoVolume(double volume) {
 	_volumeVideo.storeRelease(qRound(volume * kVolumeRound));
 }
 
-float64 Mixer::getVideoVolume() const {
-	return float64(_volumeVideo.loadAcquire()) / kVolumeRound;
+double Mixer::getVideoVolume() const {
+	return double(_volumeVideo.loadAcquire()) / kVolumeRound;
 }
 
 Fader::Fader(QThread *thread) : QObject()
@@ -1112,14 +1112,14 @@ void Fader::onTimer() {
 				_suppressVolumeAll = anim::value(1., 1.);
 			} else if (ms > _suppressAllEnd - kFadeDuration) {
 				if (_suppressVolumeAll.to() != 1.) _suppressVolumeAll.start(1.);
-				_suppressVolumeAll.update(1. - ((_suppressAllEnd - ms) / float64(kFadeDuration)), anim::linear);
+				_suppressVolumeAll.update(1. - ((_suppressAllEnd - ms) / double(kFadeDuration)), anim::linear);
 			} else if (ms >= _suppressAllStart + st::mediaPlayerSuppressDuration) {
 				if (_suppressAllAnim) {
 					_suppressVolumeAll.finish();
 					_suppressAllAnim = false;
 				}
 			} else if (ms > _suppressAllStart) {
-				_suppressVolumeAll.update((ms - _suppressAllStart) / float64(st::mediaPlayerSuppressDuration), anim::linear);
+				_suppressVolumeAll.update((ms - _suppressAllStart) / double(st::mediaPlayerSuppressDuration), anim::linear);
 			}
 			auto wasVolumeMultiplierAll = VolumeMultiplierAll;
 			VolumeMultiplierAll = _suppressVolumeAll.current();
@@ -1130,7 +1130,7 @@ void Fader::onTimer() {
 				_suppressVolumeSong.finish();
 				_suppressSongAnim = false;
 			} else {
-				_suppressVolumeSong.update((ms - _suppressSongStart) / float64(kFadeDuration), anim::linear);
+				_suppressVolumeSong.update((ms - _suppressSongStart) / double(kFadeDuration), anim::linear);
 			}
 		}
 		auto wasVolumeMultiplierSong = VolumeMultiplierSong;
@@ -1141,7 +1141,7 @@ void Fader::onTimer() {
 	auto hasFading = (_suppressAll || _suppressSongAnim);
 	auto hasPlaying = false;
 
-	auto updatePlayback = [this, &hasPlaying, &hasFading](AudioMsgId::Type type, int index, float64 volumeMultiplier, bool suppressGainChanged) {
+	auto updatePlayback = [this, &hasPlaying, &hasFading](AudioMsgId::Type type, int index, double volumeMultiplier, bool suppressGainChanged) {
 		auto track = mixer()->trackForType(type, index);
 		if (IsStopped(track->state.state) || track->state.state == State::Paused || !track->isStreamCreated()) return;
 
@@ -1174,7 +1174,7 @@ void Fader::onTimer() {
 	}
 }
 
-int32 Fader::updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasFading, float64 volumeMultiplier, bool volumeChanged) {
+qint32 Fader::updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasFading, double volumeMultiplier, bool volumeChanged) {
 	auto playing = false;
 	auto fading = false;
 
@@ -1192,7 +1192,7 @@ int32 Fader::updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasF
 	alGetSourcei(track->stream.source, AL_SOURCE_STATE, &state);
 	if (errorHappened()) return EmitError;
 
-	int32 emitSignals = 0;
+	qint32 emitSignals = 0;
 
 	if (state == AL_STOPPED && positionInBuffered == 0 && !internal::CheckAudioDeviceConnected()) {
 		return emitSignals;
@@ -1250,7 +1250,7 @@ int32 Fader::updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasF
 			} break;
 			}
 		} else {
-			auto newGain = TimeMs(1000) * fadingForSamplesCount / float64(kFadeDuration * track->state.frequency);
+			auto newGain = TimeMs(1000) * fadingForSamplesCount / double(kFadeDuration * track->state.frequency);
 			if (track->state.state == State::Pausing || track->state.state == State::Stopping) {
 				newGain = 1. - newGain;
 			}
@@ -1395,7 +1395,7 @@ public:
 			return false;
 		}
 
-		for (int32 i = 0, l = fmtContext->nb_streams; i < l; ++i) {
+		for (qint32 i = 0, l = fmtContext->nb_streams; i < l; ++i) {
 			AVStream *stream = fmtContext->streams[i];
 			if (stream->disposition & AV_DISPOSITION_ATTACHED_PIC) {
 				const AVPacket &packet(stream->attached_pic);
@@ -1436,7 +1436,7 @@ public:
 		//}
 	}
 
-	int32 format() override {
+	qint32 format() override {
 		return 0;
 	}
 
@@ -1460,7 +1460,7 @@ public:
 		return _coverFormat;
 	}
 
-	ReadResult readMore(QByteArray &result, int64 &samplesAdded) override {
+	ReadResult readMore(QByteArray &result, qint64 &samplesAdded) override {
 		DEBUG_LOG(("Audio Read Error: should not call this"));
 		return ReadResult::Error;
 	}
@@ -1507,17 +1507,17 @@ public:
 
 		QByteArray buffer;
 		buffer.reserve(AudioVoiceMsgBufferSize);
-		int64 countbytes = sampleSize * samplesCount(), processed = 0, sumbytes = 0;
+		qint64 countbytes = sampleSize * samplesCount(), processed = 0, sumbytes = 0;
 		if (samplesCount() < Media::Player::kWaveformSamplesCount) {
 			return false;
 		}
 
-		QVector<uint16> peaks;
+		QVector<quint16> peaks;
 		peaks.reserve(Media::Player::kWaveformSamplesCount);
 
 		auto fmt = format();
-		auto peak = uint16(0);
-		auto callback = [&peak, &sumbytes, &peaks, countbytes](uint16 sample) {
+		auto peak = quint16(0);
+		auto callback = [&peak, &sumbytes, &peaks, countbytes](quint16 sample) {
 			accumulate_max(peak, sample);
 			sumbytes += Media::Player::kWaveformSamplesCount;
 			if (sumbytes >= countbytes) {
@@ -1529,7 +1529,7 @@ public:
 		while (processed < countbytes) {
 			buffer.resize(0);
 
-			int64 samples = 0;
+			qint64 samples = 0;
 			auto res = readMore(buffer, samples);
 			if (res == ReadResult::Error || res == ReadResult::EndOfFile) {
 				break;
@@ -1542,7 +1542,7 @@ public:
 			if (fmt == AL_FORMAT_MONO8 || fmt == AL_FORMAT_STEREO8) {
 				Media::Audio::IterateSamples<uchar>(sampleBytes, callback);
 			} else if (fmt == AL_FORMAT_MONO16 || fmt == AL_FORMAT_STEREO16) {
-				Media::Audio::IterateSamples<int16>(sampleBytes, callback);
+				Media::Audio::IterateSamples<qint16>(sampleBytes, callback);
 			}
 			processed += sampleSize * samples;
 		}
@@ -1555,11 +1555,11 @@ public:
 		}
 
 		auto sum = std::accumulate(peaks.cbegin(), peaks.cend(), 0LL);
-		peak = qMax(int32(sum * 1.8 / peaks.size()), 2500);
+		peak = qMax(qint32(sum * 1.8 / peaks.size()), 2500);
 
 		result.resize(peaks.size());
-		for (int32 i = 0, l = peaks.size(); i != l; ++i) {
-			result[i] = char(qMin(31U, uint32(qMin(peaks.at(i), peak)) * 31 / peak));
+		for (qint32 i = 0, l = peaks.size(); i != l; ++i) {
+			result[i] = char(qMin(31U, quint32(qMin(peaks.at(i), peak)) * 31 / peak));
 		}
 
 		return true;

@@ -32,9 +32,9 @@ public:
 	virtual bool check(const FileLocation &file, const QByteArray &data);
 
 	virtual bool open(qint64 &position) = 0;
-	virtual int64 samplesCount() = 0;
-	virtual int32 samplesFrequency() = 0;
-	virtual int32 format() = 0;
+	virtual qint64 samplesCount() = 0;
+	virtual qint32 samplesFrequency() = 0;
+	virtual qint32 format() = 0;
 
 	enum class ReadResult {
 		Error,
@@ -43,13 +43,13 @@ public:
 		Wait,
 		EndOfFile,
 	};
-	virtual ReadResult readMore(QByteArray &samples, int64 &samplesCount) = 0;
+	virtual ReadResult readMore(QByteArray &samples, qint64 &samplesCount) = 0;
 	virtual void enqueuePackets(QQueue<FFMpeg::AVPacketDataWrap> &packets) {
 		Unexpected("enqueuePackets() call on not ChildFFMpegLoader.");
 	}
 
-	void saveDecodedSamples(QByteArray *samples, int64 *samplesCount);
-	void takeSavedDecodedSamples(QByteArray *samples, int64 *samplesCount);
+	void saveDecodedSamples(QByteArray *samples, qint64 *samplesCount);
+	void takeSavedDecodedSamples(QByteArray *samples, qint64 *samplesCount);
 	bool holdsSavedDecodedSamples() const;
 
 protected:
@@ -65,7 +65,7 @@ protected:
 
 private:
 	QByteArray _savedSamples;
-	int64 _savedSamplesCount = 0;
+	qint64 _savedSamplesCount = 0;
 	bool _holdsSavedSamples = false;
 
 };

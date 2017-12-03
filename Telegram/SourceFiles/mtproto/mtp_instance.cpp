@@ -57,11 +57,11 @@ public:
 
 	void restart();
 	void restart(ShiftedDcId shiftedDcId);
-	int32 dcstate(ShiftedDcId shiftedDcId = 0);
+	qint32 dcstate(ShiftedDcId shiftedDcId = 0);
 	QString dctransport(ShiftedDcId shiftedDcId = 0);
 	void ping();
 	void cancel(mtpRequestId requestId);
-	int32 state(mtpRequestId requestId); // < 0 means waiting for such count of ms
+	qint32 state(mtpRequestId requestId); // < 0 means waiting for such count of ms
 	void killSession(ShiftedDcId shiftedDcId);
 	void killSession(std::unique_ptr<internal::Session> session);
 	void stopSession(ShiftedDcId shiftedDcId);
@@ -74,18 +74,18 @@ public:
 	void queueQuittingConnection(std::unique_ptr<internal::Connection> connection);
 	void connectionFinished(internal::Connection *connection);
 
-	void registerRequest(mtpRequestId requestId, int32 dcWithShift);
+	void registerRequest(mtpRequestId requestId, qint32 dcWithShift);
 	void unregisterRequest(mtpRequestId requestId);
 	mtpRequestId storeRequest(mtpRequest &request, const RPCResponseHandler &parser);
 	mtpRequest getRequest(mtpRequestId requestId);
-	void clearCallbacks(mtpRequestId requestId, int32 errorCode = RPCError::NoError); // 0 - do not toggle onError callback
+	void clearCallbacks(mtpRequestId requestId, qint32 errorCode = RPCError::NoError); // 0 - do not toggle onError callback
 	void clearCallbacksDelayed(const RPCCallbackClears &requestIds);
 	void performDelayedClear();
 	void execCallback(mtpRequestId requestId, const mtpPrime *from, const mtpPrime *end);
 	bool hasCallbacks(mtpRequestId requestId);
 	void globalCallback(const mtpPrime *from, const mtpPrime *end);
 
-	void onStateChange(ShiftedDcId dcWithShift, int32 state);
+	void onStateChange(ShiftedDcId dcWithShift, qint32 state);
 	void onSessionReset(ShiftedDcId dcWithShift);
 
 	// return true if need to clean request data
@@ -96,7 +96,7 @@ public:
 
 	void setUpdatesHandler(RPCDoneHandlerPtr onDone);
 	void setGlobalFailHandler(RPCFailHandlerPtr onFail);
-	void setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, int32 state)> handler);
+	void setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, qint32 state)> handler);
 	void setSessionResetHandler(base::lambda<void(ShiftedDcId shiftedDcId)> handler);
 	void clearGlobalHandlers();
 
@@ -184,7 +184,7 @@ private:
 	RPCCallbackClears _toClear;
 
 	RPCResponseHandler _globalHandler;
-	base::lambda<void(ShiftedDcId shiftedDcId, int32 state)> _stateChangedHandler;
+	base::lambda<void(ShiftedDcId shiftedDcId, qint32 state)> _stateChangedHandler;
 	base::lambda<void(ShiftedDcId shiftedDcId)> _sessionResetHandler;
 
 	base::Timer _checkDelayedTimer;
@@ -322,7 +322,7 @@ void Instance::Private::restart(ShiftedDcId shiftedDcId) {
 	}
 }
 
-int32 Instance::Private::dcstate(ShiftedDcId shiftedDcId) {
+qint32 Instance::Private::dcstate(ShiftedDcId shiftedDcId) {
 	if (!shiftedDcId) {
 		Assert(_mainSession != nullptr);
 		return _mainSession->getState();
@@ -391,7 +391,7 @@ void Instance::Private::cancel(mtpRequestId requestId) {
 	clearCallbacks(requestId);
 }
 
-int32 Instance::Private::state(mtpRequestId requestId) { // < 0 means waiting for such count of ms
+qint32 Instance::Private::state(mtpRequestId requestId) { // < 0 means waiting for such count of ms
 	if (requestId > 0) {
 		QMutexLocker locker(&_requestByDcLock);
 		auto i = _requestsByDc.find(requestId);
@@ -669,7 +669,7 @@ void Instance::Private::checkDelayedRequests() {
 	}
 }
 
-void Instance::Private::registerRequest(mtpRequestId requestId, int32 dcWithShift) {
+void Instance::Private::registerRequest(mtpRequestId requestId, qint32 dcWithShift) {
 	{
 		QMutexLocker locker(&_requestByDcLock);
 		_requestsByDc.emplace(requestId, dcWithShift);
@@ -716,7 +716,7 @@ mtpRequest Instance::Private::getRequest(mtpRequestId requestId) {
 }
 
 
-void Instance::Private::clearCallbacks(mtpRequestId requestId, int32 errorCode) {
+void Instance::Private::clearCallbacks(mtpRequestId requestId, qint32 errorCode) {
 	RPCResponseHandler h;
 	bool found = false;
 	{
@@ -735,19 +735,19 @@ void Instance::Private::clearCallbacks(mtpRequestId requestId, int32 errorCode) 
 }
 
 void Instance::Private::clearCallbacksDelayed(const RPCCallbackClears &requestIds) {
-	uint32 idsCount = requestIds.size();
+	quint32 idsCount = requestIds.size();
 	if (!idsCount) return;
 
 	if (cDebug()) {
 		QString idsStr = QString("%1").arg(requestIds[0].requestId);
-		for (uint32 i = 1; i < idsCount; ++i) {
+		for (quint32 i = 1; i < idsCount; ++i) {
 			idsStr += QString(", %1").arg(requestIds[i].requestId);
 		}
 		DEBUG_LOG(("RPC Info: clear callbacks delayed, msgIds: %1").arg(idsStr));
 	}
 
 	QMutexLocker lock(&_toClearLock);
-	uint32 toClearNow = _toClear.size();
+	quint32 toClearNow = _toClear.size();
 	if (toClearNow) {
 		_toClear.resize(toClearNow + idsCount);
 		memcpy(_toClear.data() + toClearNow, requestIds.constData(), idsCount * sizeof(RPCCallbackClear));
@@ -829,13 +829,13 @@ void Instance::Private::globalCallback(const mtpPrime *from, const mtpPrime *end
 	}
 }
 
-void Instance::Private::onStateChange(int32 dcWithShift, int32 state) {
+void Instance::Private::onStateChange(qint32 dcWithShift, qint32 state) {
 	if (_stateChangedHandler) {
 		_stateChangedHandler(dcWithShift, state);
 	}
 }
 
-void Instance::Private::onSessionReset(int32 dcWithShift) {
+void Instance::Private::onSessionReset(qint32 dcWithShift) {
 	if (_sessionResetHandler) {
 		_sessionResetHandler(dcWithShift);
 	}
@@ -1016,7 +1016,7 @@ bool Instance::Private::onErrorDefault(mtpRequestId requestId, const RPCError &e
 	} else if (code < 0 || code >= 500 || (m = QRegularExpression("^FLOOD_WAIT_(\\d+)$").match(err)).hasMatch()) {
 		if (!requestId) return false;
 
-		int32 secs = 1;
+		qint32 secs = 1;
 		if (code < 0 || code >= 500) {
 			auto it = _requestsDelays.find(requestId);
 			if (it != _requestsDelays.cend()) {
@@ -1243,7 +1243,7 @@ void Instance::Private::setGlobalFailHandler(RPCFailHandlerPtr onFail) {
 	_globalHandler.onFail = onFail;
 }
 
-void Instance::Private::setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, int32 state)> handler) {
+void Instance::Private::setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, qint32 state)> handler) {
 	_stateChangedHandler = std::move(handler);
 }
 
@@ -1254,7 +1254,7 @@ void Instance::Private::setSessionResetHandler(base::lambda<void(ShiftedDcId shi
 void Instance::Private::clearGlobalHandlers() {
 	setUpdatesHandler(RPCDoneHandlerPtr());
 	setGlobalFailHandler(RPCFailHandlerPtr());
-	setStateChangedHandler(base::lambda<void(ShiftedDcId,int32)>());
+	setStateChangedHandler(base::lambda<void(ShiftedDcId,qint32)>());
 	setSessionResetHandler(base::lambda<void(ShiftedDcId)>());
 }
 
@@ -1317,7 +1317,7 @@ void Instance::restart(ShiftedDcId shiftedDcId) {
 	_private->restart(shiftedDcId);
 }
 
-int32 Instance::dcstate(ShiftedDcId shiftedDcId) {
+qint32 Instance::dcstate(ShiftedDcId shiftedDcId) {
 	return _private->dcstate(shiftedDcId);
 }
 
@@ -1333,7 +1333,7 @@ void Instance::cancel(mtpRequestId requestId) {
 	_private->cancel(requestId);
 }
 
-int32 Instance::state(mtpRequestId requestId) { // < 0 means waiting for such count of ms
+qint32 Instance::state(mtpRequestId requestId) { // < 0 means waiting for such count of ms
 	return _private->state(requestId);
 }
 
@@ -1389,7 +1389,7 @@ void Instance::setGlobalFailHandler(RPCFailHandlerPtr onFail) {
 	_private->setGlobalFailHandler(onFail);
 }
 
-void Instance::setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, int32 state)> handler) {
+void Instance::setStateChangedHandler(base::lambda<void(ShiftedDcId shiftedDcId, qint32 state)> handler) {
 	_private->setStateChangedHandler(std::move(handler));
 }
 
@@ -1401,7 +1401,7 @@ void Instance::clearGlobalHandlers() {
 	_private->clearGlobalHandlers();
 }
 
-void Instance::onStateChange(ShiftedDcId dcWithShift, int32 state) {
+void Instance::onStateChange(ShiftedDcId dcWithShift, qint32 state) {
 	_private->onStateChange(dcWithShift, state);
 }
 

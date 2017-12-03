@@ -99,7 +99,7 @@ struct FileLoaderQueue {
 
 namespace {
 
-using LoaderQueues = QMap<int32, FileLoaderQueue>;
+using LoaderQueues = QMap<qint32, FileLoaderQueue>;
 LoaderQueues queues;
 
 FileLoaderQueue _webQueue(kMaxWebFileQueries);
@@ -113,7 +113,7 @@ WebLoadMainManager *_webLoadMainManager = nullptr;
 
 } // namespace
 
-FileLoader::FileLoader(const QString &toFile, int32 size, LocationType locationType, LoadToCacheSetting toCache, LoadFromCloudSetting fromCloud, bool autoLoading)
+FileLoader::FileLoader(const QString &toFile, qint32 size, LocationType locationType, LoadToCacheSetting toCache, LoadFromCloudSetting fromCloud, bool autoLoading)
 : _downloader(&Auth().downloader())
 , _autoLoading(autoLoading)
 , _filename(toFile)
@@ -152,13 +152,13 @@ void FileLoader::readImage(const QSize &shrinkBox) const {
 	}
 }
 
-float64 FileLoader::currentProgress() const {
+double FileLoader::currentProgress() const {
 	if (_finished) return 1.;
 	if (!fullSize()) return 0.;
-	return snap(float64(currentOffset()) / fullSize(), 0., 1.);
+	return snap(double(currentOffset()) / fullSize(), 0., 1.);
 }
 
-int32 FileLoader::fullSize() const {
+qint32 FileLoader::fullSize() const {
 	return _size;
 }
 
@@ -400,7 +400,7 @@ void FileLoader::startLoading(bool loadFirst, bool prior) {
 	loadPart();
 }
 
-mtpFileLoader::mtpFileLoader(const StorageImageLocation *location, int32 size, LoadFromCloudSetting fromCloud, bool autoLoading)
+mtpFileLoader::mtpFileLoader(const StorageImageLocation *location, qint32 size, LoadFromCloudSetting fromCloud, bool autoLoading)
 : FileLoader(QString(), size, UnknownFileLocation, LoadToCacheAsWell, fromCloud, autoLoading)
 , _dcId(location->dc())
 , _location(location) {
@@ -412,7 +412,7 @@ mtpFileLoader::mtpFileLoader(const StorageImageLocation *location, int32 size, L
 	_queue = &i.value();
 }
 
-mtpFileLoader::mtpFileLoader(int32 dc, uint64 id, uint64 accessHash, int32 version, LocationType type, const QString &to, int32 size, LoadToCacheSetting toCache, LoadFromCloudSetting fromCloud, bool autoLoading)
+mtpFileLoader::mtpFileLoader(qint32 dc, quint64 id, quint64 accessHash, qint32 version, LocationType type, const QString &to, qint32 size, LoadToCacheSetting toCache, LoadFromCloudSetting fromCloud, bool autoLoading)
 : FileLoader(to, size, type, toCache, fromCloud, autoLoading)
 , _dcId(dc)
 , _id(id)
@@ -426,7 +426,7 @@ mtpFileLoader::mtpFileLoader(int32 dc, uint64 id, uint64 accessHash, int32 versi
 	_queue = &i.value();
 }
 
-mtpFileLoader::mtpFileLoader(const WebFileImageLocation *location, int32 size, LoadFromCloudSetting fromCloud, bool autoLoading)
+mtpFileLoader::mtpFileLoader(const WebFileImageLocation *location, qint32 size, LoadFromCloudSetting fromCloud, bool autoLoading)
 : FileLoader(QString(), size, UnknownFileLocation, LoadToCacheAsWell, fromCloud, autoLoading)
 , _dcId(location->dc())
 , _urlLocation(location) {
@@ -438,7 +438,7 @@ mtpFileLoader::mtpFileLoader(const WebFileImageLocation *location, int32 size, L
 	_queue = &i.value();
 }
 
-int32 mtpFileLoader::currentOffset(bool includeSkipped) const {
+qint32 mtpFileLoader::currentOffset(bool includeSkipped) const {
 	return (_fileIsOpen ? _file.size() : _data.size()) - (includeSkipped ? 0 : _skippedBytes);
 }
 
@@ -568,7 +568,7 @@ void mtpFileLoader::cdnPartLoaded(const MTPupload_CdnFile &result, mtpRequestId 
 	auto ivec = gsl::as_writeable_bytes(gsl::make_span(state.ivec));
 	std::copy(iv.begin(), iv.end(), ivec.begin());
 
-	auto counterOffset = static_cast<uint32>(offset) >> 4;
+	auto counterOffset = static_cast<quint32>(offset) >> 4;
 	state.ivec[15] = static_cast<uchar>(counterOffset & 0xFF);
 	state.ivec[14] = static_cast<uchar>((counterOffset >> 8) & 0xFF);
 	state.ivec[13] = static_cast<uchar>((counterOffset >> 16) & 0xFF);
@@ -712,7 +712,7 @@ void mtpFileLoader::partLoaded(int offset, base::const_byte_span bytes) {
 				_data.append(reinterpret_cast<const char*>(bytes.data()), bytes.size());
 			} else {
 				_skippedBytes -= bytes.size();
-				if (int64(offset + bytes.size()) > _data.size()) {
+				if (qint64(offset + bytes.size()) > _data.size()) {
 					_data.resize(offset + bytes.size());
 				}
 				auto src = bytes;
@@ -908,7 +908,7 @@ bool webFileLoader::loadPart() {
 	return false;
 }
 
-int32 webFileLoader::currentOffset(bool includeSkipped) const {
+qint32 webFileLoader::currentOffset(bool includeSkipped) const {
 	return _already;
 }
 
@@ -1044,7 +1044,7 @@ private:
 	qint64 _already = 0;
 	qint64 _size = 0;
 	QNetworkReply *_reply = nullptr;
-	int32 _redirectsLeft = kMaxHttpRedirects;
+	qint32 _redirectsLeft = kMaxHttpRedirects;
 	QByteArray _data;
 
 	friend class WebLoadManager;
@@ -1182,7 +1182,7 @@ void WebLoadManager::onProgress(qint64 already, qint64 size) {
 
 	WebReplyProcessResult result = WebReplyProcessProgress;
 	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
-	int32 status = statusCode.isValid() ? statusCode.toInt() : 200;
+	qint32 status = statusCode.isValid() ? statusCode.toInt() : 200;
 	if (status != 200 && status != 206 && status != 416) {
 		if (status == 301 || status == 302) {
 			QString loc = reply->header(QNetworkRequest::LocationHeader).toString();

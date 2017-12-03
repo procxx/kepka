@@ -57,7 +57,7 @@ private:
 	SingleQueuedInvokation _delayedLoadersDestroyer;
 	std::vector<std::unique_ptr<FileLoader>> _delayedDestroyedLoaders;
 
-	using RequestedInDc = std::array<int64, MTP::kDownloadSessionsCount>;
+	using RequestedInDc = std::array<qint64, MTP::kDownloadSessionsCount>;
 	std::map<MTP::DcId, RequestedInDc> _requestedBytesAmount;
 
 };
@@ -89,7 +89,7 @@ class FileLoader : public QObject {
 	Q_OBJECT
 
 public:
-	FileLoader(const QString &toFile, int32 size, LocationType locationType, LoadToCacheSetting, LoadFromCloudSetting fromCloud, bool autoLoading);
+	FileLoader(const QString &toFile, qint32 size, LocationType locationType, LoadToCacheSetting, LoadFromCloudSetting fromCloud, bool autoLoading);
 	bool finished() const {
 		return _finished;
 	}
@@ -99,7 +99,7 @@ public:
 	const QByteArray &bytes() const {
 		return _data;
 	}
-	virtual uint64 objId() const {
+	virtual quint64 objId() const {
 		return 0;
 	}
 	QByteArray imageFormat(const QSize &shrinkBox = QSize()) const;
@@ -107,9 +107,9 @@ public:
 	QString fileName() const {
 		return _filename;
 	}
-	float64 currentProgress() const;
-	virtual int32 currentOffset(bool includeSkipped = false) const = 0;
-	int32 fullSize() const;
+	double currentProgress() const;
+	virtual qint32 currentOffset(bool includeSkipped = false) const = 0;
+	qint32 fullSize() const;
 
 	bool setFileName(const QString &filename); // set filename for loaders to cache
 	void permitLoadFromCloud();
@@ -179,7 +179,7 @@ protected:
 
 	QByteArray _data;
 
-	int32 _size;
+	qint32 _size;
 	LocationType _locationType;
 
 	TaskId _localTaskId = 0;
@@ -194,13 +194,13 @@ class mtpFileLoader : public FileLoader, public RPCSender {
 	Q_OBJECT
 
 public:
-	mtpFileLoader(const StorageImageLocation *location, int32 size, LoadFromCloudSetting fromCloud, bool autoLoading);
-	mtpFileLoader(int32 dc, uint64 id, uint64 accessHash, int32 version, LocationType type, const QString &toFile, int32 size, LoadToCacheSetting toCache, LoadFromCloudSetting fromCloud, bool autoLoading);
-	mtpFileLoader(const WebFileImageLocation *location, int32 size, LoadFromCloudSetting fromCloud, bool autoLoading);
+	mtpFileLoader(const StorageImageLocation *location, qint32 size, LoadFromCloudSetting fromCloud, bool autoLoading);
+	mtpFileLoader(qint32 dc, quint64 id, quint64 accessHash, qint32 version, LocationType type, const QString &toFile, qint32 size, LoadToCacheSetting toCache, LoadFromCloudSetting fromCloud, bool autoLoading);
+	mtpFileLoader(const WebFileImageLocation *location, qint32 size, LoadFromCloudSetting fromCloud, bool autoLoading);
 
-	int32 currentOffset(bool includeSkipped = false) const override;
+	qint32 currentOffset(bool includeSkipped = false) const override;
 
-	uint64 objId() const override {
+	quint64 objId() const override {
 		return _id;
 	}
 
@@ -258,15 +258,15 @@ private:
 	std::map<mtpRequestId, RequestData> _sentRequests;
 
 	bool _lastComplete = false;
-	int32 _skippedBytes = 0;
-	int32 _nextRequestOffset = 0;
+	qint32 _skippedBytes = 0;
+	qint32 _nextRequestOffset = 0;
 
 	MTP::DcId _dcId = 0; // for photo locations
 	const StorageImageLocation *_location = nullptr;
 
-	uint64 _id = 0; // for document locations
-	uint64 _accessHash = 0;
-	int32 _version = 0;
+	quint64 _id = 0; // for document locations
+	quint64 _accessHash = 0;
+	qint32 _version = 0;
 
 	const WebFileImageLocation *_urlLocation = nullptr; // for webdocument locations
 
@@ -289,7 +289,7 @@ public:
 
 	webFileLoader(const QString &url, const QString &to, LoadFromCloudSetting fromCloud, bool autoLoading);
 
-	virtual int32 currentOffset(bool includeSkipped = false) const;
+	virtual qint32 currentOffset(bool includeSkipped = false) const;
 	virtual webFileLoader *webLoader() {
 		return this;
 	}
@@ -316,7 +316,7 @@ protected:
 	QString _url;
 
 	bool _requestSent;
-	int32 _already;
+	qint32 _already;
 
 	friend class WebLoadManager;
 	webFileLoaderPrivate *_private;

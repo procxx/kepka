@@ -28,4 +28,4 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 constexpr int AppVersion = 1001023;
 constexpr str_const AppVersionStr = "1.1.23-procxx";
 constexpr bool AppAlphaVersion = false;
-constexpr uint64_t AppBetaVersion = BETA_VERSION_MACRO;
+constexpr quint64 AppBetaVersion = BETA_VERSION_MACRO;

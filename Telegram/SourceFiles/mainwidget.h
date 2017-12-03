@@ -120,7 +120,7 @@ private:
 
 class StackItemOverview : public StackItem {
 public:
-	StackItemOverview(PeerData *peer, MediaOverviewType mediaType, int32 lastWidth, int32 lastScrollTop) : StackItem(peer)
+	StackItemOverview(PeerData *peer, MediaOverviewType mediaType, qint32 lastWidth, qint32 lastScrollTop) : StackItem(peer)
 		, mediaType(mediaType)
 		, lastWidth(lastWidth)
 		, lastScrollTop(lastScrollTop) {
@@ -129,7 +129,7 @@ public:
 		return OverviewStackItem;
 	}
 	MediaOverviewType mediaType;
-	int32 lastWidth, lastScrollTop;
+	qint32 lastWidth, lastScrollTop;
 };
 
 enum SilentNotifiesStatus {
@@ -189,7 +189,7 @@ public:
 
 	void windowShown();
 
-	void sentUpdatesReceived(uint64 randomId, const MTPUpdates &updates);
+	void sentUpdatesReceived(quint64 randomId, const MTPUpdates &updates);
 	void sentUpdatesReceived(const MTPUpdates &updates) {
 		return sentUpdatesReceived(0, updates);
 	}
@@ -212,7 +212,7 @@ public:
 	PeerData *overviewPeer();
 	bool showMediaTypeSwitch() const;
 	void showWideSection(Window::SectionMemento &&memento);
-	void showMediaOverview(PeerData *peer, MediaOverviewType type, bool back = false, int32 lastScrollTop = -1);
+	void showMediaOverview(PeerData *peer, MediaOverviewType type, bool back = false, qint32 lastScrollTop = -1);
 	bool stackIsEmpty() const;
 	void showBackFromStack();
 	void orderWidgets();
@@ -223,7 +223,7 @@ public:
 	bool onSendSticker(DocumentData *sticker);
 
 	void destroyData();
-	void updateOnlineDisplayIn(int32 msecs);
+	void updateOnlineDisplayIn(qint32 msecs);
 
 	bool isActive() const;
 	bool doWeReadServerHistory() const;
@@ -235,7 +235,7 @@ public:
 	void applyCloudDraft(History *history);
 	void writeDrafts(History *history);
 
-	int32 dlgsWidth() const;
+	qint32 dlgsWidth() const;
 
 	void showForwardLayer(const SelectedItemSet &items);
 	void showSendPathsLayer();
@@ -324,7 +324,7 @@ public:
 
 	void checkLastUpdate(bool afterSleep);
 
-	void insertCheckedServiceNotification(const TextWithEntities &message, const MTPMessageMedia &media, int32 date);
+	void insertCheckedServiceNotification(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date);
 	void serviceHistoryDone(const MTPmessages_Messages &msgs);
 	bool serviceHistoryFail(const RPCError &error);
 
@@ -335,7 +335,7 @@ public:
 
 	void setChatBackground(const App::WallPaper &wp);
 	bool chatBackgroundLoading();
-	float64 chatBackgroundProgress() const;
+	double chatBackgroundProgress() const;
 	void checkChatBackground();
 	ImagePtr newBackgroundThumb();
 
@@ -353,13 +353,13 @@ public:
 
 	void webPageUpdated(WebPageData *page);
 	void gameUpdated(GameData *game);
-	void updateMutedIn(int32 seconds);
+	void updateMutedIn(qint32 seconds);
 
 	void choosePeer(PeerId peerId, MsgId showAtMsgId); // does offerPeer or showPeerHistory
 	void clearBotStartToken(PeerData *peer);
 
-	void ptsWaiterStartTimerFor(ChannelData *channel, int32 ms); // ms <= 0 - stop timer
-	void feedUpdates(const MTPUpdates &updates, uint64 randomId = 0);
+	void ptsWaiterStartTimerFor(ChannelData *channel, qint32 ms); // ms <= 0 - stop timer
+	void feedUpdates(const MTPUpdates &updates, quint64 randomId = 0);
 	void feedUpdate(const MTPUpdate &update);
 
 	void ctrlEnterSubmitUpdated();
@@ -440,7 +440,7 @@ public slots:
 
 	void onUpdateMuted();
 
-	void onStickersInstalled(uint64 setId);
+	void onStickersInstalled(quint64 setId);
 
 	void onViewsIncrement();
 
@@ -536,7 +536,7 @@ private:
 	bool failDifference(const RPCError &e);
 	void feedDifference(const MTPVector<MTPUser> &users, const MTPVector<MTPChat> &chats, const MTPVector<MTPMessage> &msgs, const MTPVector<MTPUpdate> &other);
 	void gotState(const MTPupdates_State &state);
-	void updSetState(int32 pts, int32 date, int32 qts, int32 seq);
+	void updSetState(qint32 pts, qint32 date, qint32 qts, qint32 seq);
 	void gotChannelDifference(ChannelData *channel, const MTPupdates_ChannelDifference &diff);
 	bool failChannelDifference(ChannelData *channel, const RPCError &err);
 	void failDifferenceStartTimerFor(ChannelData *channel);
@@ -582,10 +582,10 @@ private:
 	QPoint getFloatPlayerHiddenPosition(QPoint position, QSize size, RectPart side) const;
 	RectPart getFloatPlayerSide(QPoint center) const;
 
-	bool ptsUpdateAndApply(int32 pts, int32 ptsCount, const MTPUpdates &updates);
-	bool ptsUpdateAndApply(int32 pts, int32 ptsCount, const MTPUpdate &update);
-	bool ptsUpdateAndApply(int32 pts, int32 ptsCount);
-	bool getDifferenceTimeChanged(ChannelData *channel, int32 ms, ChannelGetDifferenceTime &channelCurTime, TimeMs &curTime);
+	bool ptsUpdateAndApply(qint32 pts, qint32 ptsCount, const MTPUpdates &updates);
+	bool ptsUpdateAndApply(qint32 pts, qint32 ptsCount, const MTPUpdate &update);
+	bool ptsUpdateAndApply(qint32 pts, qint32 ptsCount);
+	bool getDifferenceTimeChanged(ChannelData *channel, qint32 ms, ChannelGetDifferenceTime &channelCurTime, TimeMs &curTime);
 
 	void viewsIncrementDone(QVector<MTPint> ids, const MTPVector<MTPint> &result, mtpRequestId req);
 	bool viewsIncrementFail(const RPCError &error, mtpRequestId req);
@@ -636,9 +636,9 @@ private:
 	int _callTopBarHeight = 0;
 	int _contentScrollAddToY = 0;
 
-	int32 updDate = 0;
-	int32 updQts = -1;
-	int32 updSeq = 0;
+	qint32 updDate = 0;
+	qint32 updQts = -1;
+	qint32 updSeq = 0;
 	SingleTimer noUpdatesTimer;
 
 	PtsWaiter _ptsWaiter;
@@ -649,7 +649,7 @@ private:
 
 	SingleTimer _byPtsTimer;
 
-	QMap<int32, MTPUpdates> _bySeqUpdates;
+	QMap<qint32, MTPUpdates> _bySeqUpdates;
 	SingleTimer _bySeqTimer;
 
 	SingleTimer _byMinChannelTimer;
@@ -671,8 +671,8 @@ private:
 	typedef QMap<PeerData*, mtpRequestId> OverviewsPreload;
 	OverviewsPreload _overviewPreload[OverviewCount], _overviewLoad[OverviewCount];
 
-	int32 _failDifferenceTimeout = 1; // growing timeout for getDifference calls, if it fails
-	typedef QMap<ChannelData*, int32> ChannelFailDifferenceTimeout;
+	qint32 _failDifferenceTimeout = 1; // growing timeout for getDifference calls, if it fails
+	typedef QMap<ChannelData*, qint32> ChannelFailDifferenceTimeout;
 	ChannelFailDifferenceTimeout _channelFailDifferenceTimeout; // growing timeout for getChannelDifference calls, if it fails
 	SingleTimer _failDifferenceTimer;
 

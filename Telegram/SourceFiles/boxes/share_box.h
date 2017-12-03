@@ -182,8 +182,8 @@ private:
 
 	void refresh();
 
-	float64 _columnSkip = 0.;
-	float64 _rowWidthReal = 0.;
+	double _columnSkip = 0.;
+	double _rowWidthReal = 0.;
 	int _rowsLeft = 0;
 	int _rowsTop = 0;
 	int _rowWidth = 0;

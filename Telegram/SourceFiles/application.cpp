@@ -153,7 +153,7 @@ void Application::socketReading() {
 	}
 	_localSocketReadData.append(_localSocket.readAll());
 	if (QRegularExpression("RES:(\\d+);").match(_localSocketReadData).hasMatch()) {
-		uint64 pid = _localSocketReadData.mid(4, _localSocketReadData.length() - 5).toULongLong();
+		quint64 pid = _localSocketReadData.mid(4, _localSocketReadData.length() - 5).toULongLong();
 		psActivateProcess(pid);
 		LOG(("Show command response received, pid = %1, activating and quitting...").arg(pid));
 		return App::quit();
@@ -249,8 +249,8 @@ void Application::readClients() {
 		i->second.append(i->first->readAll());
 		if (i->second.size()) {
 			QString cmds(QString::fromLatin1(i->second));
-			int32 from = 0, l = cmds.length();
-			for (int32 to = cmds.indexOf(QChar(';'), from); to >= from; to = (from < l) ? cmds.indexOf(QChar(';'), from) : -1) {
+			qint32 from = 0, l = cmds.length();
+			for (qint32 to = cmds.indexOf(QChar(';'), from); to >= from; to = (from < l) ? cmds.indexOf(QChar(';'), from) : -1) {
 				QStringRef cmd(&cmds, from, to - from);
 				if (cmd.startsWith(qsl("CMD:"))) {
 					Sandbox::execExternal(cmds.mid(from + 4, to - from - 4));
@@ -356,14 +356,14 @@ void Application::updateGotCurrent() {
 	cSetLastUpdateCheck(unixtime());
 	QRegularExpressionMatch m = QRegularExpression(qsl("^\\s*(\\d+)\\s*:\\s*([\\x21-\\x7f]+)\\s*$")).match(QString::fromLatin1(_updateReply->readAll()));
 	if (m.hasMatch()) {
-		uint64 currentVersion = m.captured(1).toULongLong();
+		quint64 currentVersion = m.captured(1).toULongLong();
 		QString url = m.captured(2);
 		bool betaVersion = false;
 		if (url.startsWith(qstr("beta_"))) {
 			betaVersion = true;
 			url = url.mid(5) + '_' + countBetaVersionSignature(currentVersion);
 		}
-		if ((!betaVersion || cBetaVersion()) && currentVersion > (betaVersion ? cBetaVersion() : uint64(AppVersion))) {
+		if ((!betaVersion || cBetaVersion()) && currentVersion > (betaVersion ? cBetaVersion() : quint64(AppVersion))) {
 			_updateThread = new QThread();
 			connect(_updateThread, SIGNAL(finished()), _updateThread, SLOT(deleteLater()));
 			_updateChecker = new UpdateChecker(_updateThread, url);
@@ -426,12 +426,12 @@ Application::UpdatingState Application::updatingState() {
 	return Application::UpdatingDownload;
 }
 
-int32 Application::updatingSize() {
+qint32 Application::updatingSize() {
 	if (!_updateChecker) return 0;
 	return _updateChecker->size();
 }
 
-int32 Application::updatingReady() {
+qint32 Application::updatingReady() {
 	if (!_updateChecker) return 0;
 	return _updateChecker->ready();
 }
@@ -456,8 +456,8 @@ void Application::startUpdateCheck(bool forceWait) {
 	_updateCheckTimer->stop();
 	if (_updateThread || _updateReply || !cAutoUpdate() || cExeName().isEmpty()) return;
 
-	int32 constDelay = cBetaVersion() ? 600 : UpdateDelayConstPart, randDelay = cBetaVersion() ? 300 : UpdateDelayRandPart;
-	int32 updateInSecs = cLastUpdateCheck() + constDelay + int32(rand() % randDelay) - unixtime();
+	qint32 constDelay = cBetaVersion() ? 600 : UpdateDelayConstPart, randDelay = cBetaVersion() ? 300 : UpdateDelayRandPart;
+	qint32 updateInSecs = cLastUpdateCheck() + constDelay + qint32(rand() % randDelay) - unixtime();
 	bool sendRequest = (updateInSecs <= 0 || updateInSecs > (constDelay + randDelay));
 	if (!sendRequest && !forceWait) {
 		QDir updates(cWorkingDir() + "tupdates");
@@ -569,14 +569,14 @@ Application::UpdatingState updatingState() {
 	return Application::UpdatingNone;
 }
 
-int32 updatingSize() {
+qint32 updatingSize() {
 	if (auto a = application()) {
 		return a->updatingSize();
 	}
 	return 0;
 }
 
-int32 updatingReady() {
+qint32 updatingReady() {
 	if (auto a = application()) {
 		return a->updatingReady();
 	}
@@ -624,7 +624,7 @@ void connect(const char *signal, QObject *object, const char *method) {
 void launch() {
 	Assert(application() != 0);
 
-	float64 dpi = Application::primaryScreen()->logicalDotsPerInch();
+	double dpi = Application::primaryScreen()->logicalDotsPerInch();
 	if (dpi <= 108) { // 0-96-108
 		cSetScreenScale(dbisOne);
 	} else if (dpi <= 132) { // 108-120-132
@@ -646,7 +646,7 @@ void launch() {
 		}
 		cSetRetina(true);
 		cSetRetinaFactor(devicePixelRatio);
-		cSetIntRetinaFactor(int32(cRetinaFactor()));
+		cSetIntRetinaFactor(qint32(cRetinaFactor()));
 		cSetConfigScale(dbisOne);
 		cSetRealScale(dbisOne);
 	}

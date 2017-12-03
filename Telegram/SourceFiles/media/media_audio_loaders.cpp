@@ -153,7 +153,7 @@ void Loaders::loadData(AudioMsgId audio, qint64 position) {
 	auto errAtStart = started;
 
 	QByteArray samples;
-	int64 samplesCount = 0;
+	qint64 samplesCount = 0;
 	if (l->holdsSavedDecodedSamples()) {
 		l->takeSavedDecodedSamples(&samples, &samplesCount);
 	}

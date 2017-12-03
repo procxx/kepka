@@ -60,7 +60,7 @@ public:
 
 	void setRoundRadius(int radius);
 	void refreshStickers();
-	void stickersInstalled(uint64 setId);
+	void stickersInstalled(quint64 setId);
 	void showMegagroupSet(ChannelData *megagroup);
 	void setCurrentPeer(PeerData *peer);
 

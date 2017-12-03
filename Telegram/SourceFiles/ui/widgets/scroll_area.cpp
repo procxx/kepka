@@ -73,12 +73,12 @@ void ScrollBar::onRangeChanged() {
 void ScrollBar::updateBar(bool force) {
 	QRect newBar;
 	if (_connected->maximum() != _scrollMax) {
-		int32 oldMax = _scrollMax, newMax = _connected->maximum();
+		qint32 oldMax = _scrollMax, newMax = _connected->maximum();
 		_scrollMax = newMax;
 		area()->rangeChanged(oldMax, newMax, _vertical);
 	}
 	if (_vertical) {
-		int sh = area()->scrollHeight(), rh = height(), h = sh ? int32((rh * int64(area()->height())) / sh) : 0;
+		int sh = area()->scrollHeight(), rh = height(), h = sh ? qint32((rh * qint64(area()->height())) / sh) : 0;
 		if (h >= rh || !area()->scrollTopMax() || rh < _st->minHeight) {
 			if (!isHidden()) hide();
 			bool newTopSh = (_st->topsh < 0), newBottomSh = (_st->bottomsh < 0);
@@ -88,19 +88,19 @@ void ScrollBar::updateBar(bool force) {
 		}
 
 		if (h <= _st->minHeight) h = _st->minHeight;
-		int stm = area()->scrollTopMax(), y = stm ? int32(((rh - h) * int64(area()->scrollTop())) / stm) : 0;
+		int stm = area()->scrollTopMax(), y = stm ? qint32(((rh - h) * qint64(area()->scrollTop())) / stm) : 0;
 		if (y > rh - h) y = rh - h;
 
 		newBar = QRect(_st->deltax, y, width() - 2 * _st->deltax, h);
 	} else {
-		int sw = area()->scrollWidth(), rw = width(), w = sw ? int32((rw * int64(area()->width())) / sw) : 0;
+		int sw = area()->scrollWidth(), rw = width(), w = sw ? qint32((rw * qint64(area()->width())) / sw) : 0;
 		if (w >= rw || !area()->scrollLeftMax() || rw < _st->minHeight) {
 			if (!isHidden()) hide();
 			return;
 		}
 
 		if (w <= _st->minHeight) w = _st->minHeight;
-		int slm = area()->scrollLeftMax(), x = slm ? int32(((rw - w) * int64(area()->scrollLeft())) / slm) : 0;
+		int slm = area()->scrollLeftMax(), x = slm ? qint32(((rw - w) * qint64(area()->scrollLeft())) / slm) : 0;
 		if (x > rw - w) x = rw - w;
 
 		newBar = QRect(x, _st->deltax, w, height() - 2 * _st->deltax);
@@ -236,7 +236,7 @@ void ScrollBar::mouseMoveEvent(QMouseEvent *e) {
 		int delta = 0, barDelta = _vertical ? (area()->height() - _bar.height()) : (area()->width() - _bar.width());
 		if (barDelta > 0) {
 			QPoint d = (e->globalPos() - _dragStart);
-			delta = int32((_vertical ? (d.y() * int64(area()->scrollTopMax())) : (d.x() * int64(area()->scrollLeftMax()))) / barDelta);
+			delta = qint32((_vertical ? (d.y() * qint64(area()->scrollTopMax())) : (d.x() * qint64(area()->scrollLeftMax()))) / barDelta);
 		}
 		_connected->setValue(_startFrom + delta);
 	}
@@ -250,10 +250,10 @@ void ScrollBar::mousePressEvent(QMouseEvent *e) {
 	if (_overbar) {
 		_startFrom = _connected->value();
 	} else {
-		int32 val = _vertical ? e->pos().y() : e->pos().x(), div = _vertical ? height() : width();
+		qint32 val = _vertical ? e->pos().y() : e->pos().x(), div = _vertical ? height() : width();
 		val = (val <= _st->deltat) ? 0 : (val - _st->deltat);
 		div = (div <= _st->deltat + _st->deltab) ? 1 : (div - _st->deltat - _st->deltab);
-		_startFrom = _vertical ? int32((val * int64(area()->scrollTopMax())) / div) : ((val * int64(area()->scrollLeftMax())) / div);
+		_startFrom = _vertical ? qint32((val * qint64(area()->scrollTopMax())) / div) : ((val * qint64(area()->scrollLeftMax())) / div);
 		_connected->setValue(_startFrom);
 		setOverBar(true);
 	}
@@ -350,9 +350,9 @@ ScrollArea::ScrollArea(QWidget *parent, const style::ScrollArea &st, bool handle
 	}
 }
 
-void ScrollArea::touchDeaccelerate(int32 elapsed) {
-	int32 x = _touchSpeed.x();
-	int32 y = _touchSpeed.y();
+void ScrollArea::touchDeaccelerate(qint32 elapsed) {
+	qint32 x = _touchSpeed.x();
+	qint32 y = _touchSpeed.y();
 	_touchSpeed.setX((x == 0) ? x : (x > 0) ? qMax(0, x - elapsed) : qMin(0, x + elapsed));
 	_touchSpeed.setY((y == 0) ? y : (y > 0) ? qMax(0, y - elapsed) : qMin(0, y + elapsed));
 }
@@ -433,7 +433,7 @@ void ScrollArea::onTouchScrollTimer() {
 		_touchScrollState = TouchScrollState::Manual;
 		touchResetSpeed();
 	} else if (_touchScrollState == TouchScrollState::Auto || _touchScrollState == TouchScrollState::Acceleration) {
-		int32 elapsed = int32(nowTime - _touchTime);
+		qint32 elapsed = qint32(nowTime - _touchTime);
 		QPoint delta = _touchSpeed * elapsed / 1000;
 		bool hasScrolled = touchScroll(delta);
 
@@ -629,7 +629,7 @@ void ScrollArea::scrollContentsBy(int dx, int dy) {
 }
 
 bool ScrollArea::touchScroll(const QPoint &delta) {
-	int32 scTop = scrollTop(), scMax = scrollTopMax(), scNew = snap(scTop - delta.y(), 0, scMax);
+	qint32 scTop = scrollTop(), scMax = scrollTopMax(), scNew = snap(scTop - delta.y(), 0, scMax);
 	if (scNew == scTop) return false;
 
 	scrollToY(scNew);

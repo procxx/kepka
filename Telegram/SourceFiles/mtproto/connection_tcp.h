@@ -41,20 +41,20 @@ public slots:
 protected:
 
 	QTcpSocket sock;
-	uint32 packetNum; // sent packet number
+	quint32 packetNum; // sent packet number
 
-	uint32 packetRead, packetLeft; // reading from socket
+	quint32 packetRead, packetLeft; // reading from socket
 	bool readingToShort;
 	char *currentPos;
 	mtpBuffer longBuffer;
 	mtpPrime shortBuffer[MTPShortBufferSize];
-	virtual void socketPacket(const char *packet, uint32 length) = 0;
+	virtual void socketPacket(const char *packet, quint32 length) = 0;
 
-	static mtpBuffer handleResponse(const char *packet, uint32 length);
+	static mtpBuffer handleResponse(const char *packet, quint32 length);
 	static void handleError(QAbstractSocket::SocketError e, QTcpSocket &sock);
-	static uint32 fourCharsToUInt(char ch1, char ch2, char ch3, char ch4) {
+	static quint32 fourCharsToUInt(char ch1, char ch2, char ch3, char ch4) {
 		char ch[4] = { ch1, ch2, ch3, ch4 };
-		return *reinterpret_cast<uint32*>(ch);
+		return *reinterpret_cast<quint32*>(ch);
 	}
 
 	void tcpSend(mtpBuffer &buffer);
@@ -79,7 +79,7 @@ public:
 	}
 	bool isConnected() const override;
 
-	int32 debugState() const override;
+	qint32 debugState() const override;
 
 	QString transport() const override;
 
@@ -94,7 +94,7 @@ public slots:
 
 protected:
 
-	void socketPacket(const char *packet, uint32 length) override;
+	void socketPacket(const char *packet, quint32 length) override;
 
 private:
 
@@ -107,7 +107,7 @@ private:
 	MTPint128 tcpNonce;
 
 	QString _addr;
-	int32 _port, _tcpTimeout;
+	qint32 _port, _tcpTimeout;
 	MTPDdcOption::Flags _flags;
 	QTimer tcpTimeoutTimer;
 

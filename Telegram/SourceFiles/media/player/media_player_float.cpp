@@ -73,20 +73,20 @@ void Float::mouseMoveEvent(QMouseEvent *e) {
 	}
 }
 
-float64 Float::outRatio() const {
+double Float::outRatio() const {
 	auto parent = parentWidget()->rect();
 	auto min = 1.;
 	if (x() < parent.x()) {
-		accumulate_min(min, 1. - (parent.x() - x()) / float64(width()));
+		accumulate_min(min, 1. - (parent.x() - x()) / double(width()));
 	}
 	if (y() < parent.y()) {
-		accumulate_min(min, 1. - (parent.y() - y()) / float64(height()));
+		accumulate_min(min, 1. - (parent.y() - y()) / double(height()));
 	}
 	if (x() + width() > parent.x() + parent.width()) {
-		accumulate_min(min, 1. - (x() + width() - parent.x() - parent.width()) / float64(width()));
+		accumulate_min(min, 1. - (x() + width() - parent.x() - parent.width()) / double(width()));
 	}
 	if (y() + height() > parent.y() + parent.height()) {
-		accumulate_min(min, 1. - (y() + height() - parent.y() - parent.height()) / float64(height()));
+		accumulate_min(min, 1. - (y() + height() - parent.y() - parent.height()) / double(height()));
 	}
 	return snap(min, 0., 1.);
 }
@@ -239,7 +239,7 @@ void Float::updatePlayback() {
 	if (_item) {
 		if (!_roundPlayback) {
 			_roundPlayback = std::make_unique<Media::Clip::Playback>();
-			_roundPlayback->setValueChangedCallback([this](float64 value) {
+			_roundPlayback->setValueChangedCallback([this](double value) {
 				update();
 			});
 		}

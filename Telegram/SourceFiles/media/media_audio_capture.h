@@ -81,7 +81,7 @@ public slots:
 	void onTimeout();
 
 private:
-	void processFrame(int32 offset, int32 framesize);
+	void processFrame(qint32 offset, qint32 framesize);
 
 	void writeFrame(AVFrame *frame);
 

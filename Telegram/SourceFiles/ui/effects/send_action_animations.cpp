@@ -66,9 +66,9 @@ void TypingAnimation::paintFrame(Painter &p, style::color color, int x, int y, i
 		if (frameMs < 2 * st::historySendActionTypingHalfPeriod) {
 			auto delta = (st::historySendActionTypingLargeNumerator - st::historySendActionTypingSmallNumerator) / st::historySendActionTypingDenominator;
 			if (frameMs < st::historySendActionTypingHalfPeriod) {
-				r += delta * anim::easeOutCirc(1., float64(frameMs) / st::historySendActionTypingHalfPeriod);
+				r += delta * anim::easeOutCirc(1., double(frameMs) / st::historySendActionTypingHalfPeriod);
 			} else {
-				r += delta * (1. - anim::easeOutCirc(1., float64(frameMs - st::historySendActionTypingHalfPeriod) / st::historySendActionTypingHalfPeriod));
+				r += delta * (1. - anim::easeOutCirc(1., double(frameMs - st::historySendActionTypingHalfPeriod) / st::historySendActionTypingHalfPeriod));
 			}
 		}
 		p.drawEllipse(position, r, r);
@@ -109,7 +109,7 @@ void RecordAnimation::paintFrame(Painter &p, style::color color, int x, int y, i
 	pen.setCapStyle(Qt::RoundCap);
 	p.setPen(pen);
 	p.setBrush(Qt::NoBrush);
-	auto progress = frameMs / float64(st::historySendActionRecordDuration);
+	auto progress = frameMs / double(st::historySendActionRecordDuration);
 	auto size = st::historySendActionRecordPosition.x() + st::historySendActionRecordDelta * progress;
 	y += st::historySendActionRecordPosition.y();
 	for (auto i = 0; i != kRecordArcsCount; ++i) {
@@ -153,7 +153,7 @@ void UploadAnimation::paintFrame(Painter &p, style::color color, int x, int y, i
 	pen.setCapStyle(Qt::RoundCap);
 	p.setPen(pen);
 	p.setBrush(Qt::NoBrush);
-	auto progress = frameMs / float64(st::historySendActionUploadDuration);
+	auto progress = frameMs / double(st::historySendActionUploadDuration);
 	auto position = QPointF(x + st::historySendActionUploadDelta * progress, y) + st::historySendActionUploadPosition;
 	auto path = QPainterPath();
 	path.moveTo(0., -st::historySendActionUploadSizeNumerator / st::historySendActionUploadDenominator);

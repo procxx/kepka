@@ -49,8 +49,8 @@ class Panel::Button : public Ui::RippleButton {
 public:
 	Button(QWidget *parent, const style::CallButton &stFrom, const style::CallButton *stTo = nullptr);
 
-	void setProgress(float64 progress);
-	void setOuterValue(float64 value);
+	void setProgress(double progress);
+	void setOuterValue(double value);
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
@@ -66,13 +66,13 @@ private:
 
 	not_null<const style::CallButton*> _stFrom;
 	const style::CallButton *_stTo = nullptr;
-	float64 _progress = 0.;
+	double _progress = 0.;
 
 	QImage _bgMask, _bg;
 	QPixmap _bgFrom, _bgTo;
 	QImage _iconMixedMask, _iconFrom, _iconTo, _iconMixed;
 
-	float64 _outerValue = 0.;
+	double _outerValue = 0.;
 	Animation _outerAnimation;
 
 };
@@ -114,7 +114,7 @@ Panel::Button::Button(QWidget *parent, const style::CallButton &stFrom, const st
 	}
 }
 
-void Panel::Button::setOuterValue(float64 value) {
+void Panel::Button::setOuterValue(double value) {
 	if (_outerValue != value) {
 		_outerAnimation.start([this] {
 			if (_progress == 0. || _progress == 1.) {
@@ -125,7 +125,7 @@ void Panel::Button::setOuterValue(float64 value) {
 	}
 }
 
-void Panel::Button::setProgress(float64 progress) {
+void Panel::Button::setProgress(double progress) {
 	_progress = progress;
 	update();
 }
@@ -208,7 +208,7 @@ void Panel::Button::mixIconMasks() {
 
 	Painter p(&_iconMixedMask);
 	PainterHighQualityEnabler hq(p);
-	auto paintIconMask = [this, &p](const QImage &mask, float64 angle) {
+	auto paintIconMask = [this, &p](const QImage &mask, double angle) {
 		auto skipFrom = _stFrom->button.rippleAreaSize / 2;
 		p.translate(skipFrom, skipFrom);
 		p.rotate(angle);

@@ -25,39 +25,35 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Ui {
 namespace Emoji {
 
-using small = unsigned char;
-using medium = unsigned short;
-using utf16char = unsigned short;
-
-static_assert(sizeof(utf16char) == 2, "Bad UTF-16 character size.");
+static_assert(sizeof(char16_t) == 2, "Bad UTF-16 character size.");
 
 class utf16string {
 public:
 	utf16string() = default;
-	utf16string(const utf16char *data, std::size_t size) : data_(data), size_(size) {
+	utf16string(const char16_t *data, std::size_t size) : data_(data), size_(size) {
 	}
 	utf16string(const utf16string &other) = default;
 	utf16string &operator=(const utf16string &other) = default;
 
-	const utf16char *data() const {
+	const char16_t *data() const {
 		return data_;
 	}
 	std::size_t size() const {
 		return size_;
 	}
 
-	utf16char operator[](int index) const {
+	char16_t operator[](int index) const {
 		return data_[index];
 	}
 
 private:
-	const utf16char *data_ = nullptr;
+	const char16_t *data_ = nullptr;
 	std::size_t size_ = 0;
 
 };
 
 inline bool operator==(utf16string a, utf16string b) {
-	return (a.size() == b.size()) && (!a.size() || !memcmp(a.data(), b.data(), a.size() * sizeof(utf16char)));
+	return (a.size() == b.size()) && (!a.size() || !memcmp(a.data(), b.data(), a.size() * sizeof(char16_t)));
 }
 
 namespace internal {

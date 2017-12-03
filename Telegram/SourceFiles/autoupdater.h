@@ -34,8 +34,8 @@ public:
 
 	void unpackUpdate();
 
-	int32 ready();
-	int32 size();
+	qint32 ready();
+	qint32 size();
 
 	static void clearAll();
 
@@ -57,7 +57,7 @@ private:
 	QString updateUrl;
 	QNetworkAccessManager manager;
 	QNetworkReply *reply;
-	int32 already, full;
+	qint32 already, full;
 	QFile outputFile;
 
 	QMutex mutex;
@@ -73,4 +73,4 @@ class UpdateChecker : public QObject {
 
 #endif // TDESKTOP_DISABLE_AUTOUPDATE
 
-QString countBetaVersionSignature(uint64 version);
+QString countBetaVersionSignature(quint64 version);

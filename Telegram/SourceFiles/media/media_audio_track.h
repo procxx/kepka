@@ -54,10 +54,10 @@ public:
 		return _failed;
 	}
 
-	int64 getLengthMs() const {
+	qint64 getLengthMs() const {
 		return _lengthMs;
 	}
-	float64 getPeakValue(TimeMs when) const;
+	double getPeakValue(TimeMs when) const;
 
 	void detachFromDevice();
 	void reattachToDevice();
@@ -75,25 +75,25 @@ private:
 	bool _failed = false;
 	bool _active = false;
 	bool _looping = false;
-	float64 _volume = 1.;
+	double _volume = 1.;
 
-	int64 _samplesCount = 0;
-	int32 _sampleRate = 0;
+	qint64 _samplesCount = 0;
+	qint32 _sampleRate = 0;
 	base::byte_vector _samples;
 
 	TimeMs _peakDurationMs = 0;
 	int _peakEachPosition = 0;
-	std::vector<uint16> _peaks;
-	uint16 _peakValueMin = 0;
-	uint16 _peakValueMax = 0;
+	std::vector<quint16> _peaks;
+	quint16 _peakValueMin = 0;
+	quint16 _peakValueMax = 0;
 
 	TimeMs _lengthMs = 0;
 	TimeMs _stateUpdatedAt = 0;
 
-	int32 _alFormat = 0;
-	int64 _alPosition = 0;
-	uint32 _alSource = 0;
-	uint32 _alBuffer = 0;
+	qint32 _alFormat = 0;
+	qint64 _alPosition = 0;
+	quint32 _alSource = 0;
+	quint32 _alBuffer = 0;
 
 };
 

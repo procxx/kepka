@@ -28,14 +28,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Images {
 namespace {
 
-FORCE_INLINE uint64 blurGetColors(const uchar *p) {
-	return (uint64)p[0] + ((uint64)p[1] << 16) + ((uint64)p[2] << 32) + ((uint64)p[3] << 48);
+FORCE_INLINE quint64 blurGetColors(const uchar *p) {
+	return (quint64)p[0] + ((quint64)p[1] << 16) + ((quint64)p[2] << 32) + ((quint64)p[3] << 48);
 }
 
 const QPixmap &circleMask(int width, int height) {
 	Assert(Global::started());
 
-	uint64 key = uint64(uint32(width)) << 32 | uint64(uint32(height));
+	quint64 key = quint64(quint32(width)) << 32 | quint64(quint32(height));
 
 	Global::CircleMasksMap &masks(Global::RefCircleMasks());
 	auto i = masks.constFind(key);
@@ -96,19 +96,19 @@ QImage prepareBlur(QImage img) {
 				pix = img.bits();
 				if (!pix) return was;
 			}
-			uint64 *rgb = new uint64[w * h];
+			quint64 *rgb = new quint64[w * h];
 
 			int x, y, i;
 
 			int yw = 0;
 			const int we = w - r1;
 			for (y = 0; y < h; y++) {
-				uint64 cur = blurGetColors(&pix[yw]);
-				uint64 rgballsum = -radius * cur;
-				uint64 rgbsum = cur * ((r1 * (r1 + 1)) >> 1);
+				quint64 cur = blurGetColors(&pix[yw]);
+				quint64 rgballsum = -radius * cur;
+				quint64 rgbsum = cur * ((r1 * (r1 + 1)) >> 1);
 
 				for (i = 1; i <= radius; i++) {
-					uint64 cur = blurGetColors(&pix[yw + i * 4]);
+					quint64 cur = blurGetColors(&pix[yw + i * 4]);
 					rgbsum += cur * (r1 - i);
 					rgballsum += cur;
 				}
@@ -138,8 +138,8 @@ x++;
 
 			const int he = h - r1;
 			for (x = 0; x < w; x++) {
-				uint64 rgballsum = -radius * rgb[x];
-				uint64 rgbsum = rgb[x] * ((r1 * (r1 + 1)) >> 1);
+				quint64 rgballsum = -radius * rgb[x];
+				quint64 rgbsum = rgb[x] * ((r1 * (r1 + 1)) >> 1);
 				for (i = 1; i <= radius; i++) {
 					rgbsum += rgb[i * w + x] * (r1 - i);
 					rgballsum += rgb[i * w + x];
@@ -149,7 +149,7 @@ x++;
 				int yi = x * 4;
 
 #define update(start, middle, end) \
-uint64 res = rgbsum >> 4; \
+quint64 res = rgbsum >> 4; \
 pix[yi] = res & 0xFF; \
 pix[yi + 1] = (res >> 16) & 0xFF; \
 pix[yi + 2] = (res >> 32) & 0xFF; \
@@ -218,15 +218,15 @@ void prepareRound(QImage &image, QImage *cornerMasks, ImageRoundCorners corners)
 	}
 	constexpr auto imageIntsPerPixel = 1;
 	auto imageIntsPerLine = (image.bytesPerLine() >> 2);
-	Assert(image.depth() == static_cast<int>((imageIntsPerPixel * sizeof(uint32)) << 3));
+	Assert(image.depth() == static_cast<int>((imageIntsPerPixel * sizeof(quint32)) << 3));
 	Assert(image.bytesPerLine() == (imageIntsPerLine << 2));
 
-	auto ints = reinterpret_cast<uint32*>(image.bits());
+	auto ints = reinterpret_cast<quint32*>(image.bits());
 	auto intsTopLeft = ints;
 	auto intsTopRight = ints + imageWidth - cornerWidth;
 	auto intsBottomLeft = ints + (imageHeight - cornerHeight) * imageWidth;
 	auto intsBottomRight = ints + (imageHeight - cornerHeight + 1) * imageWidth - cornerWidth;
-	auto maskCorner = [imageWidth, imageHeight, imageIntsPerPixel, imageIntsPerLine](uint32 *imageInts, const QImage &mask) {
+	auto maskCorner = [imageWidth, imageHeight, imageIntsPerPixel, imageIntsPerLine](quint32 *imageInts, const QImage &mask) {
 		auto maskWidth = mask.width();
 		auto maskHeight = mask.height();
 		auto maskBytesPerPixel = (mask.depth() >> 3);
@@ -263,7 +263,7 @@ QImage prepareColored(style::color add, QImage image) {
 	if (auto pix = image.bits()) {
 		int ca = int(add->c.alphaF() * 0xFF), cr = int(add->c.redF() * 0xFF), cg = int(add->c.greenF() * 0xFF), cb = int(add->c.blueF() * 0xFF);
 		const int w = image.width(), h = image.height(), size = w * h * 4;
-		for (int32 i = 0; i < size; i += 4) {
+		for (qint32 i = 0; i < size; i += 4) {
 			int b = pix[i], g = pix[i + 1], r = pix[i + 2], a = pix[i + 3], aca = a * ca;
 			pix[i + 0] = uchar(b + ((aca * (cb - b)) >> 16));
 			pix[i + 1] = uchar(g + ((aca * (cg - g)) >> 16));
@@ -277,11 +277,11 @@ QImage prepareColored(style::color add, QImage image) {
 QImage prepareOpaque(QImage image) {
 	if (image.hasAlphaChannel()) {
 		image = std::move(image).convertToFormat(QImage::Format_ARGB32_Premultiplied);
-		auto ints = reinterpret_cast<uint32*>(image.bits());
+		auto ints = reinterpret_cast<quint32*>(image.bits());
 		auto bg = anim::shifted(st::imageBgTransparent->c);
 		auto width = image.width();
 		auto height = image.height();
-		auto addPerLine = (image.bytesPerLine() / sizeof(uint32)) - width;
+		auto addPerLine = (image.bytesPerLine() / sizeof(quint32)) - width;
 		for (auto y = 0; y != height; ++y) {
 			for (auto x = 0; x != width; ++x) {
 				auto components = anim::shifted(*ints);
@@ -380,13 +380,13 @@ StorageImages storageImages;
 using WebFileImages = QMap<StorageKey, WebFileImage*>;
 WebFileImages webFileImages;
 
-int64 globalAcquiredSize = 0;
+qint64 globalAcquiredSize = 0;
 
-uint64 PixKey(int width, int height, Images::Options options) {
-	return static_cast<uint64>(width) | (static_cast<uint64>(height) << 24) | (static_cast<uint64>(options) << 48);
+quint64 PixKey(int width, int height, Images::Options options) {
+	return static_cast<quint64>(width) | (static_cast<quint64>(height) << 24) | (static_cast<quint64>(options) << 48);
 }
 
-uint64 SinglePixKey(Images::Options options) {
+quint64 SinglePixKey(Images::Options options) {
 	return PixKey(0, 0, options);
 }
 
@@ -402,7 +402,7 @@ bool Image::isNull() const {
 ImagePtr::ImagePtr() : Parent(blank()) {
 }
 
-ImagePtr::ImagePtr(int32 width, int32 height, const MTPFileLocation &location, ImagePtr def) :
+ImagePtr::ImagePtr(qint32 width, qint32 height, const MTPFileLocation &location, ImagePtr def) :
 	Parent((location.type() == mtpc_fileLocation) ? (Image*)(internal::getImage(StorageImageLocation(width, height, location.c_fileLocation()))) : def.v()) {
 }
 
@@ -410,7 +410,7 @@ Image::Image(const QString &file, QByteArray fmt) : _forgot(false) {
 	_data = App::pixmapFromImageInPlace(App::readImage(file, &fmt, false, 0, &_saved));
 	_format = fmt;
 	if (!_data.isNull()) {
-		globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 	}
 }
 
@@ -419,13 +419,13 @@ Image::Image(const QByteArray &filecontent, QByteArray fmt) : _forgot(false) {
 	_format = fmt;
 	_saved = filecontent;
 	if (!_data.isNull()) {
-		globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 	}
 }
 
 Image::Image(const QPixmap &pixmap, QByteArray format) : _format(format), _forgot(false), _data(pixmap) {
 	if (!_data.isNull()) {
-		globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 	}
 }
 
@@ -434,11 +434,11 @@ Image::Image(const QByteArray &filecontent, QByteArray fmt, const QPixmap &pixma
 	_format = fmt;
 	_saved = filecontent;
 	if (!_data.isNull()) {
-		globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 	}
 }
 
-const QPixmap &Image::pix(int32 w, int32 h) const {
+const QPixmap &Image::pix(qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -455,13 +455,13 @@ const QPixmap &Image::pix(int32 w, int32 h) const {
         if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixRounded(int32 w, int32 h, ImageRoundRadius radius, ImageRoundCorners corners) const {
+const QPixmap &Image::pixRounded(qint32 w, qint32 h, ImageRoundRadius radius, ImageRoundCorners corners) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -491,13 +491,13 @@ const QPixmap &Image::pixRounded(int32 w, int32 h, ImageRoundRadius radius, Imag
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixCircled(int32 w, int32 h) const {
+const QPixmap &Image::pixCircled(qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -514,13 +514,13 @@ const QPixmap &Image::pixCircled(int32 w, int32 h) const {
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixBlurredCircled(int32 w, int32 h) const {
+const QPixmap &Image::pixBlurredCircled(qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -537,13 +537,13 @@ const QPixmap &Image::pixBlurredCircled(int32 w, int32 h) const {
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixBlurred(int32 w, int32 h) const {
+const QPixmap &Image::pixBlurred(qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -560,13 +560,13 @@ const QPixmap &Image::pixBlurred(int32 w, int32 h) const {
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixColored(style::color add, int32 w, int32 h) const {
+const QPixmap &Image::pixColored(style::color add, qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -583,13 +583,13 @@ const QPixmap &Image::pixColored(style::color add, int32 w, int32 h) const {
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixBlurredColored(style::color add, int32 w, int32 h) const {
+const QPixmap &Image::pixBlurredColored(style::color add, qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -606,13 +606,13 @@ const QPixmap &Image::pixBlurredColored(style::color add, int32 w, int32 h) cons
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixSingle(int32 w, int32 h, int32 outerw, int32 outerh, ImageRoundRadius radius, ImageRoundCorners corners, const style::color *colored) const {
+const QPixmap &Image::pixSingle(qint32 w, qint32 h, qint32 outerw, qint32 outerh, ImageRoundRadius radius, ImageRoundCorners corners, const style::color *colored) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -644,19 +644,19 @@ const QPixmap &Image::pixSingle(int32 w, int32 h, int32 outerw, int32 outerh, Im
 	auto i = _sizesCache.constFind(k);
 	if (i == _sizesCache.cend() || i->width() != (outerw * cIntRetinaFactor()) || i->height() != (outerh * cIntRetinaFactor())) {
 		if (i != _sizesCache.cend()) {
-			globalAcquiredSize -= int64(i->width()) * i->height() * 4;
+			globalAcquiredSize -= qint64(i->width()) * i->height() * 4;
 		}
 		auto p = pixNoCache(w, h, options, outerw, outerh, colored);
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
 }
 
-const QPixmap &Image::pixBlurredSingle(int w, int h, int32 outerw, int32 outerh, ImageRoundRadius radius, ImageRoundCorners corners) const {
+const QPixmap &Image::pixBlurredSingle(int w, int h, qint32 outerw, qint32 outerh, ImageRoundRadius radius, ImageRoundCorners corners) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -685,13 +685,13 @@ const QPixmap &Image::pixBlurredSingle(int w, int h, int32 outerw, int32 outerh,
 	auto i = _sizesCache.constFind(k);
 	if (i == _sizesCache.cend() || i->width() != (outerw * cIntRetinaFactor()) || i->height() != (outerh * cIntRetinaFactor())) {
 		if (i != _sizesCache.cend()) {
-			globalAcquiredSize -= int64(i->width()) * i->height() * 4;
+			globalAcquiredSize -= qint64(i->width()) * i->height() * 4;
 		}
 		auto p = pixNoCache(w, h, options, outerw, outerh);
 		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
-			globalAcquiredSize += int64(p.width()) * p.height() * 4;
+			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
 		}
 	}
 	return i.value();
@@ -703,7 +703,7 @@ QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int
 
 	if (_data.isNull()) {
 		if (h <= 0 && height() > 0) {
-			h = qRound(width() * w / float64(height()));
+			h = qRound(width() * w / double(height()));
 		}
 		return blank()->pixNoCache(w, h, options, outerw, outerh);
 	}
@@ -751,7 +751,7 @@ QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int
 	return Images::pixmap(_data.toImage(), w, h, options, outerw, outerh, colored);
 }
 
-QPixmap Image::pixColoredNoCache(style::color add, int32 w, int32 h, bool smooth) const {
+QPixmap Image::pixColoredNoCache(style::color add, qint32 w, qint32 h, bool smooth) const {
 	const_cast<Image*>(this)->load();
 	restore();
 	if (_data.isNull()) return blank()->pix();
@@ -766,7 +766,7 @@ QPixmap Image::pixColoredNoCache(style::color add, int32 w, int32 h, bool smooth
 	return App::pixmapFromImageInPlace(Images::prepareColored(add, img.scaled(w, h, Qt::IgnoreAspectRatio, smooth ? Qt::SmoothTransformation : Qt::FastTransformation)));
 }
 
-QPixmap Image::pixBlurredColoredNoCache(style::color add, int32 w, int32 h) const {
+QPixmap Image::pixBlurredColoredNoCache(style::color add, qint32 w, qint32 h) const {
 	const_cast<Image*>(this)->load();
 	restore();
 	if (_data.isNull()) return blank()->pix();
@@ -797,7 +797,7 @@ void Image::forget() const {
 			}
 		}
 	}
-	globalAcquiredSize -= int64(_data.width()) * _data.height() * 4;
+	globalAcquiredSize -= qint64(_data.width()) * _data.height() * 4;
 	_data = QPixmap();
 	_forgot = true;
 }
@@ -813,7 +813,7 @@ void Image::restore() const {
 	_data = QPixmap::fromImageReader(&reader, Qt::ColorOnly);
 
 	if (!_data.isNull()) {
-		globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 	}
 	_forgot = false;
 }
@@ -821,7 +821,7 @@ void Image::restore() const {
 void Image::invalidateSizeCache() const {
 	for (auto &pix : _sizesCache) {
 		if (!pix.isNull()) {
-			globalAcquiredSize -= int64(pix.width()) * pix.height() * 4;
+			globalAcquiredSize -= qint64(pix.width()) * pix.height() * 4;
 		}
 	}
 	_sizesCache.clear();
@@ -830,7 +830,7 @@ void Image::invalidateSizeCache() const {
 Image::~Image() {
 	invalidateSizeCache();
 	if (!_data.isNull()) {
-		globalAcquiredSize -= int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize -= qint64(_data.width()) * _data.height() * 4;
 	}
 }
 
@@ -853,7 +853,7 @@ void clearAllImages() {
 	clearStorageImages();
 }
 
-int64 imageCacheSize() {
+qint64 imageCacheSize() {
 	return globalAcquiredSize;
 }
 
@@ -867,14 +867,14 @@ void RemoteImage::doCheckload() const {
 	}
 
 	if (!_data.isNull()) {
-		globalAcquiredSize -= int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize -= qint64(_data.width()) * _data.height() * 4;
 	}
 
 	_format = _loader->imageFormat(shrinkBox());
 	_data = data;
 	_saved = _loader->bytes();
 	const_cast<RemoteImage*>(this)->setInformation(_saved.size(), _data.width(), _data.height());
-	globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+	globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 
 	invalidateSizeCache();
 
@@ -900,12 +900,12 @@ void RemoteImage::setData(QByteArray &bytes, const QByteArray &bytesFormat) {
 	QBuffer buffer(&bytes);
 
 	if (!_data.isNull()) {
-		globalAcquiredSize -= int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize -= qint64(_data.width()) * _data.height() * 4;
 	}
 	QByteArray fmt(bytesFormat);
 	_data = App::pixmapFromImageInPlace(App::readImage(bytes, &fmt, false));
 	if (!_data.isNull()) {
-		globalAcquiredSize += int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 		setInformation(bytes.size(), _data.width(), _data.height());
 	}
 
@@ -965,7 +965,7 @@ void RemoteImage::loadEvenCancelled(bool loadFirst, bool prior) {
 
 RemoteImage::~RemoteImage() {
 	if (!_data.isNull()) {
-		globalAcquiredSize -= int64(_data.width()) * _data.height() * 4;
+		globalAcquiredSize -= qint64(_data.width()) * _data.height() * 4;
 	}
 	if (amLoading()) {
 		destroyLoaderDelayed();
@@ -990,15 +990,15 @@ void RemoteImage::cancel() {
 	Auth().downloader().delayedDestroyLoader(std::unique_ptr<FileLoader>(loader));
 }
 
-float64 RemoteImage::progress() const {
+double RemoteImage::progress() const {
 	return amLoading() ? _loader->currentProgress() : (loaded() ? 1 : 0);
 }
 
-int32 RemoteImage::loadOffset() const {
+qint32 RemoteImage::loadOffset() const {
 	return amLoading() ? _loader->currentOffset() : 0;
 }
 
-StorageImage::StorageImage(const StorageImageLocation &location, int32 size)
+StorageImage::StorageImage(const StorageImageLocation &location, qint32 size)
 : _location(location)
 , _size(size) {
 }
@@ -1012,15 +1012,15 @@ StorageImage::StorageImage(const StorageImageLocation &location, QByteArray &byt
 	}
 }
 
-int32 StorageImage::countWidth() const {
+qint32 StorageImage::countWidth() const {
 	return _location.width();
 }
 
-int32 StorageImage::countHeight() const {
+qint32 StorageImage::countHeight() const {
 	return _location.height();
 }
 
-void StorageImage::setInformation(int32 size, int32 width, int32 height) {
+void StorageImage::setInformation(qint32 size, qint32 width, qint32 height) {
 	_size = size;
 	_location.setSize(width, height);
 }
@@ -1030,20 +1030,20 @@ FileLoader *StorageImage::createLoader(LoadFromCloudSetting fromCloud, bool auto
 	return new mtpFileLoader(&_location, _size, fromCloud, autoLoading);
 }
 
-WebFileImage::WebFileImage(const WebFileImageLocation &location, int32 size)
+WebFileImage::WebFileImage(const WebFileImageLocation &location, qint32 size)
 : _location(location)
 , _size(size) {
 }
 
-int32 WebFileImage::countWidth() const {
+qint32 WebFileImage::countWidth() const {
 	return _location.width();
 }
 
-int32 WebFileImage::countHeight() const {
+qint32 WebFileImage::countHeight() const {
 	return _location.height();
 }
 
-void WebFileImage::setInformation(int32 size, int32 width, int32 height) {
+void WebFileImage::setInformation(qint32 size, qint32 width, qint32 height) {
 	_size = size;
 	_location.setSize(width, height);
 }
@@ -1059,7 +1059,7 @@ DelayedStorageImage::DelayedStorageImage() : StorageImage(StorageImageLocation()
 , _loadFromCloud(false) {
 }
 
-DelayedStorageImage::DelayedStorageImage(int32 w, int32 h) : StorageImage(StorageImageLocation(w, h, 0, 0, 0, 0))
+DelayedStorageImage::DelayedStorageImage(qint32 w, qint32 h) : StorageImage(StorageImageLocation(w, h, 0, 0, 0, 0))
 , _loadRequested(false)
 , _loadCancelled(false)
 , _loadFromCloud(false) {
@@ -1147,15 +1147,15 @@ void WebImage::setSize(int width, int height) {
 	_height = height;
 }
 
-int32 WebImage::countWidth() const {
+qint32 WebImage::countWidth() const {
 	return _width;
 }
 
-int32 WebImage::countHeight() const {
+qint32 WebImage::countHeight() const {
 	return _height;
 }
 
-void WebImage::setInformation(int32 size, int32 width, int32 height) {
+void WebImage::setInformation(qint32 size, qint32 width, qint32 height) {
 	_size = size;
 	setSize(width, height);
 }
@@ -1217,11 +1217,11 @@ Image *getImage(const QByteArray &filecontent, QByteArray format, const QPixmap 
 	return new Image(filecontent, format, pixmap);
 }
 
-Image *getImage(int32 width, int32 height) {
+Image *getImage(qint32 width, qint32 height) {
 	return new DelayedStorageImage(width, height);
 }
 
-StorageImage *getImage(const StorageImageLocation &location, int32 size) {
+StorageImage *getImage(const StorageImageLocation &location, qint32 size) {
 	StorageKey key(storageKey(location));
 	StorageImages::const_iterator i = storageImages.constFind(key);
 	if (i == storageImages.cend()) {
@@ -1246,7 +1246,7 @@ StorageImage *getImage(const StorageImageLocation &location, const QByteArray &b
 	return i.value();
 }
 
-WebFileImage *getImage(const WebFileImageLocation &location, int32 size) {
+WebFileImage *getImage(const WebFileImageLocation &location, qint32 size) {
 	auto key = storageKey(location);
 	auto i = webFileImages.constFind(key);
 	if (i == webFileImages.cend()) {

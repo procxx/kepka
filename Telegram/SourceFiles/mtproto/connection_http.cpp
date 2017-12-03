@@ -105,7 +105,7 @@ void HTTPConnection::sendData(mtpBuffer &buffer) {
 		return;
 	}
 
-	int32 requestSize = (buffer.size() - 3) * sizeof(mtpPrime);
+	qint32 requestSize = (buffer.size() - 3) * sizeof(mtpPrime);
 
 	QNetworkRequest request(address);
 	request.setHeader(QNetworkRequest::ContentLengthHeader, QVariant(requestSize));
@@ -197,7 +197,7 @@ bool HTTPConnection::needHttpWait() {
 	return requests.isEmpty();
 }
 
-int32 HTTPConnection::debugState() const {
+qint32 HTTPConnection::debugState() const {
 	return -1;
 }
 

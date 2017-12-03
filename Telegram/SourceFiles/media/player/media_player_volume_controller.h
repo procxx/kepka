@@ -38,8 +38,8 @@ protected:
 	void resizeEvent(QResizeEvent *e) override;
 
 private:
-	void setVolume(float64 volume);
-	void applyVolumeChange(float64 volume);
+	void setVolume(double volume);
+	void applyVolumeChange(double volume);
 
 	object_ptr<Ui::MediaSlider> _slider;
 

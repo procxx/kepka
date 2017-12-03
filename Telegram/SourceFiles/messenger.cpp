@@ -391,7 +391,7 @@ void Messenger::startMtp() {
 	_mtproto = std::make_unique<MTP::Instance>(_dcOptions.get(), MTP::Instance::Mode::Normal, base::take(_private->mtpConfig));
 	_private->mtpConfig.mainDcId = _mtproto->mainDcId();
 
-	_mtproto->setStateChangedHandler([](MTP::ShiftedDcId shiftedDcId, int32 state) {
+	_mtproto->setStateChangedHandler([](MTP::ShiftedDcId shiftedDcId, qint32 state) {
 		if (App::wnd()) {
 			App::wnd()->mtpStateChanged(shiftedDcId, state);
 		}
@@ -874,7 +874,7 @@ void Messenger::uploadProfilePhoto(const QImage &tosend, const PeerId &peerId) {
 	auto photo = MTP_photo(MTP_flags(0), MTP_long(id), MTP_long(0), MTP_int(unixtime()), MTP_vector<MTPPhotoSize>(photoSizes));
 
 	QString file, filename;
-	int32 filesize = 0;
+	qint32 filesize = 0;
 	QByteArray data;
 
 	SendMediaReady ready(SendMediaType::Photo, file, filename, filesize, data, id, id, qsl("jpg"), peerId, photo, photoThumbs, MTP_documentEmpty(MTP_long(0)), jpeg, 0);

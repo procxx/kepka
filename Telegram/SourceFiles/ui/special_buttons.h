@@ -113,7 +113,7 @@ public:
 		_recordAnimationCallback = std::move(callback);
 	}
 
-	float64 recordActiveRatio() {
+	double recordActiveRatio() {
 		return _a_recordActive.current(getms(), _recordActive ? 1. : 0.);
 	}
 

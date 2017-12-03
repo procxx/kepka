@@ -504,7 +504,7 @@ public:\n\
 		return *this;\n\
 	}\n\
 \n\
-	static int32 Checksum();\n\
+	static qint32 Checksum();\n\
 \n\
 	~palette() {\n\
 		clear();\n\
@@ -809,7 +809,7 @@ void palette::finalize() {\n\
 	source_->stream() << "\
 }\n\
 \n\
-int32 palette::Checksum() {\n\
+qint32 palette::Checksum() {\n\
 	return " << checksum << ";\n\
 }\n";
 

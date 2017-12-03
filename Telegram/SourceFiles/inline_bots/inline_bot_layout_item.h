@@ -66,8 +66,8 @@ public:
 
 	virtual void paint(Painter &p, const QRect &clip, const PaintContext *context) const = 0;
 
-	virtual void setPosition(int32 position);
-	int32 position() const;
+	virtual void setPosition(qint32 position);
+	qint32 position() const;
 
 	virtual bool isFullLine() const {
 		return true;

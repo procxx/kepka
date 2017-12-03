@@ -26,7 +26,7 @@ namespace Window {
 namespace Theme {
 
 struct CurrentData {
-	int32 backgroundId = 0;
+	qint32 backgroundId = 0;
 	QPixmap backgroundImage;
 	bool backgroundTiled = false;
 };

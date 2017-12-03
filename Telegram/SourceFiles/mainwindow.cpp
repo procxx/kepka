@@ -86,7 +86,7 @@ ConnectingWidget::ConnectingWidget(QWidget *parent, const QString &text, const Q
 void ConnectingWidget::set(const QString &text, const QString &reconnect) {
 	_text = text;
 	_textWidth = st::linkFont->width(_text) + st::linkFont->spacew;
-	int32 _reconnectWidth = 0;
+	qint32 _reconnectWidth = 0;
 	if (reconnect.isEmpty()) {
 		_reconnect->hide();
 	} else {
@@ -265,7 +265,7 @@ void MainWindow::setupIntro() {
 	}
 }
 
-void MainWindow::serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media, int32 date, bool force) {
+void MainWindow::serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date, bool force) {
 	if (date <= 0) date = unixtime();
 	auto h = (_main && App::userLoaded(ServiceUserId)) ? App::history(ServiceUserId).get() : nullptr;
 	if (!h || (!force && h->isEmpty())) {
@@ -366,7 +366,7 @@ void MainWindow::ui_hideSettingsAndLayer(ShowLayerOptions options) {
 	}
 }
 
-void MainWindow::mtpStateChanged(int32 dc, int32 state) {
+void MainWindow::mtpStateChanged(qint32 dc, qint32 state) {
 	if (dc == MTP::maindc()) {
 		updateConnectingStatus();
 		Global::RefConnectionTypeChanged().notify();
@@ -854,12 +854,12 @@ void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::colo
 	QPainter p(&img);
 
 	QString cnt = (count < 100) ? QString("%1").arg(count) : QString("..%1").arg(count % 10, 1, 10, QChar('0'));
-	int32 cntSize = cnt.size();
+	qint32 cntSize = cnt.size();
 
 	p.setBrush(bg->b);
 	p.setPen(Qt::NoPen);
 	p.setRenderHint(QPainter::Antialiasing);
-	int32 fontSize;
+	qint32 fontSize;
 	if (size == 16) {
 		fontSize = 8;
 	} else if (size == 32) {
@@ -868,7 +868,7 @@ void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::colo
 		fontSize = (cntSize < 2) ? 22 : 22;
 	}
 	style::font f = { fontSize, 0, 0 };
-	int32 w = f->width(cnt), d, r;
+	qint32 w = f->width(cnt), d, r;
 	if (size == 16) {
 		d = (cntSize < 2) ? 2 : 1;
 		r = (cntSize < 2) ? 4 : 3;
@@ -899,14 +899,14 @@ QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::
 
 		QString cnt = (count < 1000) ? QString("%1").arg(count) : QString("..%1").arg(count % 100, 2, 10, QChar('0'));
 		QImage result(size, size, QImage::Format_ARGB32);
-		int32 cntSize = cnt.size();
+		qint32 cntSize = cnt.size();
 		result.fill(Qt::transparent);
 		{
 			QPainter p(&result);
 			p.setBrush(bg);
 			p.setPen(Qt::NoPen);
 			p.setRenderHint(QPainter::Antialiasing);
-			int32 fontSize;
+			qint32 fontSize;
 			if (size == 16) {
 				fontSize = (cntSize < 2) ? 11 : ((cntSize < 3) ? 11 : 8);
 			} else if (size == 20) {
@@ -917,7 +917,7 @@ QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::
 				fontSize = (cntSize < 2) ? 22 : ((cntSize < 3) ? 20 : 16);
 			}
 			style::font f = { fontSize, 0, 0 };
-			int32 w = f->width(cnt), d, r;
+			qint32 w = f->width(cnt), d, r;
 			if (size == 16) {
 				d = (cntSize < 2) ? 5 : ((cntSize < 3) ? 2 : 1);
 				r = (cntSize < 2) ? 8 : ((cntSize < 3) ? 7 : 3);
@@ -1216,7 +1216,7 @@ LastCrashedWindow::LastCrashedWindow()
 			QString maxDump, maxDumpFull;
             QDateTime maxDumpModified, workingModified = QFileInfo(cWorkingDir() + qsl("tdata/working")).lastModified();
 			QFileInfoList list = QDir(dumpspath).entryInfoList();
-            for (int32 i = 0, l = list.size(); i < l; ++i) {
+            for (qint32 i = 0, l = list.size(); i < l; ++i) {
                 QString name = list.at(i).fileName();
                 if (name.endsWith(qstr(".dmp"))) {
                     QDateTime modified = list.at(i).lastModified();
@@ -1348,7 +1348,7 @@ void LastCrashedWindow::onGetApp() {
 void LastCrashedWindow::excludeReportUsername() {
 	QString prefix = qstr("Username:");
 	QStringList lines = _reportText.split('\n');
-	for (int32 i = 0, l = lines.size(); i < l; ++i) {
+	for (qint32 i = 0, l = lines.size(); i < l; ++i) {
 		if (lines.at(i).trimmed().startsWith(prefix)) {
 			_reportUsername = lines.at(i).trimmed().mid(prefix.size()).trimmed();
 			lines.removeAt(i);
@@ -1360,7 +1360,7 @@ void LastCrashedWindow::excludeReportUsername() {
 
 QString LastCrashedWindow::getReportField(const QLatin1String &name, const QLatin1String &prefix) {
 	QStringList lines = _reportText.split('\n');
-	for (int32 i = 0, l = lines.size(); i < l; ++i) {
+	for (qint32 i = 0, l = lines.size(); i < l; ++i) {
 		if (lines.at(i).trimmed().startsWith(prefix)) {
 			QString data = lines.at(i).trimmed().mid(prefix.size()).trimmed();
 

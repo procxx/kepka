@@ -52,10 +52,10 @@ private slots:
 private:
 	void setLoading(bool loading);
 	struct Data {
-		uint64 hash;
+		quint64 hash;
 
-		int32 activeTime;
-		int32 nameWidth, activeWidth, infoWidth, ipWidth;
+		qint32 activeTime;
+		qint32 nameWidth, activeWidth, infoWidth, ipWidth;
 		QString name, active, info, ip;
 	};
 	using List = QList<Data>;
@@ -98,8 +98,8 @@ public slots:
 	void onTerminateAll();
 
 private:
-	void terminateDone(uint64 hash, const MTPBool &result);
-	bool terminateFail(uint64 hash, const RPCError &error);
+	void terminateDone(quint64 hash, const MTPBool &result);
+	bool terminateFail(quint64 hash, const RPCError &error);
 
 	void terminateAllDone(const MTPBool &res);
 	bool terminateAllFail(const RPCError &error);
@@ -107,7 +107,7 @@ private:
 	SessionsBox::List *_list;
 	SessionsBox::Data *_current;
 
-	typedef QMap<uint64, Ui::IconButton*> TerminateButtons;
+	typedef QMap<quint64, Ui::IconButton*> TerminateButtons;
 	TerminateButtons _terminateButtons;
 
 	object_ptr<Ui::LinkButton> _terminateAll;

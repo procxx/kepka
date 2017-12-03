@@ -157,7 +157,7 @@ private:
 
 class MentionNameClickHandler : public ClickHandler {
 public:
-	MentionNameClickHandler(QString text, UserId userId, uint64 accessHash)
+	MentionNameClickHandler(QString text, UserId userId, quint64 accessHash)
 		: _text(text)
 		, _userId(userId)
 		, _accessHash(accessHash) {
@@ -172,7 +172,7 @@ public:
 private:
 	QString _text;
 	UserId _userId;
-	uint64 _accessHash;
+	quint64 _accessHash;
 
 };
 
