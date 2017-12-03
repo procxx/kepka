@@ -23,8 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "zip.h"
-#include "unzip.h"
+#include "minizip/zip.h"
+#include "minizip/unzip.h"
 
 namespace zlib {
 namespace internal {
