@@ -18,6 +18,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+if (CMAKE_VERSION VERSION_GREATER 3.9)
+    cmake_policy(SET CMP0071 NEW)
+endif()
+
 # Needs OpenAL-SOFT
 # Install via `brew install openal-soft` and configure with `env OPENALDIR=/usr/local/opt/openal-soft`
 find_package(OpenAL REQUIRED)
