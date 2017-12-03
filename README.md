@@ -4,11 +4,13 @@ This is the complete source code and the build instructions for the alpha versio
 
 ## Build instructions
 
+Must have OpenAL-soft and Qt5 installed. Provide paths to them in CMAKE_PREFIX_PATH variable when configuring.
+
     ccache -o sloppiness=pch_defines,time_macros
-    mkdir _build_
-    cd _build_
+    mkdir _conan_build_
+    cd _conan_build_
     conan install .. --build missing
-    cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=/usr/local/opt/qt5/ ..
+    cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="/usr/local/opt/qt5/;/usr/local/opt/openal-soft" ..
     ninja
 
 [![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
