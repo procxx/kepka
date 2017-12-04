@@ -28,7 +28,8 @@ add_custom_command(
     DEPENDS
         codegen_style
         ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
+    MAIN_DEPENDENCY
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/colors.palette
 )
 add_custom_target(palette_output
     DEPENDS styles/palette.h styles/palette.cpp)
@@ -39,12 +40,14 @@ add_custom_command(
         numbers.h
         numbers.cpp
     COMMAND
-        codegen_numbers -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
+        codegen_numbers -o${CMAKE_CURRENT_BINARY_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
     WORKING_DIRECTORY .
     DEPENDS
         codegen_numbers
         ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
+    MAIN_DEPENDENCY
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/numbers.txt
 )
 add_custom_target(numbers_output
     DEPENDS numbers.h numbers.cpp)
@@ -55,12 +58,14 @@ add_custom_command(
         lang_auto.h
         lang_auto.cpp
     COMMAND
-        codegen_lang -o${CMAKE_CURRENT_BINARY_DIR} -w${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
+        codegen_lang -o${CMAKE_CURRENT_BINARY_DIR} -w${CMAKE_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
     WORKING_DIRECTORY .
     DEPENDS
         codegen_lang
         ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
+    MAIN_DEPENDENCY
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
 )
 add_custom_target(lang_output
     DEPENDS lang_auto.h lang_auto.cpp)
@@ -73,7 +78,8 @@ add_custom_command(
         emoji_suggestions_data.cpp
         emoji_suggestions_data.h
     COMMAND
-        codegen_emoji ${CMAKE_CURRENT_SOURCE_DIR}/Resources/emoji_autocomplete.json -o ${CMAKE_CURRENT_BINARY_DIR}
+        codegen_emoji ${CMAKE_CURRENT_SOURCE_DIR}/Resources/emoji_autocomplete.json
+        -o ${CMAKE_CURRENT_BINARY_DIR}
     WORKING_DIRECTORY .
     DEPENDS
         codegen_emoji
@@ -94,12 +100,14 @@ add_custom_command(
         scheme.cpp
         scheme.h
     COMMAND
-        python ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
+        python ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py
+        -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     WORKING_DIRECTORY .
     DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py
         ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
-    MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
+    MAIN_DEPENDENCY
+        ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     VERBATIM
 )
 add_custom_target(scheme_output
@@ -140,7 +148,8 @@ foreach (src ${style_files})
         DEPENDS
             codegen_style
             ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
-        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
+        MAIN_DEPENDENCY
+            ${CMAKE_CURRENT_SOURCE_DIR}/${src}.style
     )
     add_custom_target(${src_file}_styles_output
         DEPENDS
@@ -158,8 +167,8 @@ endforeach()
 ##======================
 
 #add_subdirectory(SourceFiles/boxes)
-# ^ Unused: cotire PCH needs more rigid structure with targets defined from the same cmakelists file.
-# To do: get rid of the PCH requirement for more flexible build structure.
+# ^ Unused: cotire PCH needs more rigid structure with targets defined from the same
+# cmakelists file. To do: get rid of the PCH requirement for more flexible build structure.
 
 set(APP_SRC
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
@@ -457,7 +466,7 @@ set(APP_SRC
 set(PLAT_SRC)
 
 if (APPLE)
-    set(PLAT_SRC ${PLAT_SRC}
+    list(APPEND PLAT_SRC
         SourceFiles/platform/mac/file_utilities_mac.mm
         SourceFiles/platform/mac/mac_utilities.mm
         SourceFiles/platform/mac/main_window_mac.mm
@@ -469,7 +478,7 @@ if (APPLE)
     set(tg_RESOURCES Resources/qrc/telegram_mac.qrc)
 endif()
 if (WIN32)
-    set(PLAT_SRC ${PLAT_SRC}
+    list(APPEND PLAT_SRC
         SourceFiles/platform/win/audio_win.cpp
         SourceFiles/platform/win/file_utilities_win.cpp
         SourceFiles/platform/win/main_window_win.cpp
@@ -483,7 +492,7 @@ if (WIN32)
     set(tg_RESOURCES Resources/qrc/telegram_wnd.qrc)
 endif()
 if (WINRT)
-    set(PLAT_SRC ${PLAT_SRC}
+    list(APPEND PLAT_SRC
         SourceFiles/platform/winrt/main_window_winrt.cpp
     )
 endif()
@@ -528,7 +537,9 @@ list(APPEND THIRD_PARTY_SRC
     ThirdParty/emoji_suggestions/emoji_suggestions.cpp
 )
 
-include_directories(ThirdParty) # For minizip/ but we use fully-qualified include path to avoid ambiguity
+include_directories(ThirdParty) # For minizip/ but we use fully-qualified
+# include path to avoid ambiguity.
+
 include_directories(ThirdParty/GSL/include ThirdParty/variant/include
     ThirdParty/emoji_suggestions ThirdParty/libtgvoip)
 
@@ -538,11 +549,8 @@ include_directories(ThirdParty/GSL/include ThirdParty/variant/include
 
 include_directories(SourceFiles SourceFiles/core)
 
-include_directories(${ZLIB_INCLUDE_DIRS}
-    ${LIBZIP_INCLUDE_DIR_ZIP} ${LIBZIP_INCLUDE_DIR_ZIPCONF}
-    ${OPENSSL_INCLUDE_DIR} ${LIBLZMA_INCLUDE_DIRS}
-    ${ICONV_INCLUDE_DIR} ${OPUS_INCLUDE_DIR}
-    ${FFMPEG_INCLUDE_DIRS})
+include_directories(${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
+    ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS})
 
 add_subdirectory(ThirdParty/libtgvoip)
 
@@ -551,8 +559,9 @@ if(NOT WIN32)
 endif()
 
 if (WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64 -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
-    list(APPEND APP_SRC Resources/winrc/Telegram.rc)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64
+        -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
+    list(APPEND tg_RESOURCES Resources/winrc/Telegram.rc)
 endif()
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
@@ -565,7 +574,8 @@ if (APPLE)
         OUTPUT
             ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
         COMMAND
-            iconutil -c icns -o ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset/
+            iconutil -c icns -o ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset/
         WORKING_DIRECTORY .
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset
         MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/Telegram/Images.xcassets/Icon.iconset
@@ -645,7 +655,10 @@ if (APPLE)
 endif()
 
 if(WIN32)
-    target_link_libraries(Telegram winmm imm32 ws2_32 kernel32 user32 gdi32 winspool comdlg32 advapi32 shell32 ole32 oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi Gdiplus Strmiids)
+    target_link_libraries(Telegram winmm imm32 ws2_32 kernel32 user32 gdi32 winspool
+        comdlg32 advapi32 shell32 ole32 oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi
+        Gdiplus Strmiids
+    )
 endif()
 
 set_target_properties(Telegram
