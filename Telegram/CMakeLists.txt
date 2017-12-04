@@ -1,5 +1,3 @@
-find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)
-
 # defines
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -7,13 +5,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     else()
         add_definitions(-DQ_OS_LINUX32)
     endif()
-endif()
-
-find_program(CCACHE ccache)
-if (CCACHE)
-    message(STATUS "Enabling ccache")
-    set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE})
-    set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
 endif()
 
 ##======================
