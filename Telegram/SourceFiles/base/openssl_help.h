@@ -180,6 +180,9 @@ public:
 	const BIGNUM *raw() const {
 		return _data;
 	}
+	BIGNUM *takeRaw() {
+		return base::take(_data);
+	}
 
 	bool failed() const {
 		return _failed;
