@@ -72,12 +72,14 @@ namespace internal {
 
 class RSAPublicKey::Private {
 public:
-	Private(base::const_byte_span key) : _rsa(PEM_read_bio_RSAPublicKey(BIO_new_mem_buf(const_cast<gsl::byte*>(key.data()), key.size()), 0, 0, 0)) {
+	Private(base::const_byte_span key)
+	: _rsa(PEM_read_bio_RSAPublicKey(BIO_new_mem_buf(const_cast<gsl::byte*>(key.data()), key.size()), 0, 0, 0)) {
 		if (_rsa) {
 			computeFingerprint();
 		}
 	}
-	Private(base::const_byte_span nBytes, base::const_byte_span eBytes) : _rsa(RSA_new()) {
+	Private(base::const_byte_span nBytes, base::const_byte_span eBytes)
+	: _rsa(RSA_new()) {
 		if (_rsa) {
 			auto n = openssl::BigNum(nBytes).takeRaw();
 			auto e = openssl::BigNum(eBytes).takeRaw();
