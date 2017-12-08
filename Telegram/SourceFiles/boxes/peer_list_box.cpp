@@ -250,7 +250,7 @@ void PeerListBox::peerListSetSearchMode(PeerListSearchMode mode) {
 
 void PeerListBox::peerListSortRows(base::lambda<bool(PeerListRow &a, PeerListRow &b)> compare) {
 	_inner->reorderRows([compare = std::move(compare)](auto &&begin, auto &&end) {
-		std::sort(begin, end, [&compare](auto &&a, auto &&b) {
+		std::sort(begin, end, [compare](auto &&a, auto &&b) {
 			return compare(*a, *b);
 		});
 	});
@@ -258,7 +258,7 @@ void PeerListBox::peerListSortRows(base::lambda<bool(PeerListRow &a, PeerListRow
 
 void PeerListBox::peerListPartitionRows(base::lambda<bool(PeerListRow &a)> border) {
 	_inner->reorderRows([border = std::move(border)](auto &&begin, auto &&end) {
-		std::stable_partition(begin, end, [&border](auto &&current) {
+		std::stable_partition(begin, end, [border](auto &&current) {
 			return border(*current);
 		});
 	});
