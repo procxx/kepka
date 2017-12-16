@@ -7,9 +7,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     endif()
 endif()
 
-##======================
+##================================================
 ## Codegen Tools
-##======================
+##================================================
 
 include_directories(SourceFiles)
 add_subdirectory(SourceFiles/codegen)
@@ -113,7 +113,7 @@ add_custom_command(
 add_custom_target(scheme_output
     DEPENDS scheme.h scheme.cpp)
 
-##========
+##================================================
 
 list(APPEND style_files
     Resources/basic
@@ -162,15 +162,17 @@ foreach (src ${style_files})
 
 endforeach()
 
-##======================
-## Main app
-##======================
+##================================================
+## Telegram app
+##================================================
 
 #add_subdirectory(SourceFiles/boxes)
 # ^ Unused: cotire PCH needs more rigid structure with targets defined from the same
 # cmakelists file. To do: get rid of the PCH requirement for more flexible build structure.
 
-set(APP_SRC
+add_executable(Telegram WIN32 MACOSX_BUNDLE
+    SourceFiles/stdafx.cpp
+
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/numbers.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lang_auto.cpp
@@ -463,10 +465,8 @@ set(APP_SRC
     SourceFiles/structs.cpp
 )
 
-set(PLAT_SRC)
-
 if (APPLE)
-    list(APPEND PLAT_SRC
+    target_sources(Telegram PRIVATE
         SourceFiles/platform/mac/file_utilities_mac.mm
         SourceFiles/platform/mac/mac_utilities.mm
         SourceFiles/platform/mac/main_window_mac.mm
@@ -477,8 +477,9 @@ if (APPLE)
     )
     set(tg_RESOURCES Resources/qrc/telegram_mac.qrc)
 endif()
+
 if (WIN32)
-    list(APPEND PLAT_SRC
+    target_sources(Telegram PRIVATE
         SourceFiles/platform/win/audio_win.cpp
         SourceFiles/platform/win/file_utilities_win.cpp
         SourceFiles/platform/win/main_window_win.cpp
@@ -488,16 +489,20 @@ if (WIN32)
         SourceFiles/platform/win/windows_app_user_model_id.cpp
         SourceFiles/platform/win/windows_dlls.cpp
         SourceFiles/platform/win/windows_event_filter.cpp
+
+        Resources/winrc/Telegram.rc
     )
     set(tg_RESOURCES Resources/qrc/telegram_wnd.qrc)
 endif()
+
 if (WINRT)
-    list(APPEND PLAT_SRC
+    target_sources(Telegram PRIVATE
         SourceFiles/platform/winrt/main_window_winrt.cpp
     )
 endif()
+
 if (LINUX)
-    set(PLAT_SRC ${PLAT_SRC}
+    target_sources(Telegram PRIVATE
         SourceFiles/platform/linux/file_utilities_linux.cpp
         SourceFiles/platform/linux/linux_desktop_environment.cpp
         SourceFiles/platform/linux/linux_gdk_helper.cpp
@@ -519,17 +524,20 @@ list(APPEND tg_RESOURCES
 
 qt5_add_resources(tg_RESOURCES_RCC ${tg_RESOURCES})
 
-set(THIRD_PARTY_SRC)
+target_sources(Telegram PRIVATE
+    ${tg_RESOURCES}
+    ${tg_RESOURCES_RCC}
+)
 
 if (APPLE)
-    list(APPEND THIRD_PARTY_SRC
+    target_sources(Telegram PRIVATE
         ThirdParty/SPMediaKeyTap/SPMediaKeyTap.m
         ThirdParty/SPMediaKeyTap/SPInvocationGrabbing/NSObject+SPInvocationGrabbing.m
     )
     include_directories(ThirdParty/SPMediaKeyTap)
 endif()
 
-list(APPEND THIRD_PARTY_SRC
+target_sources(Telegram PRIVATE
     ThirdParty/minizip/ioapi.c
     ThirdParty/minizip/zip.c
     ThirdParty/minizip/unzip.c
@@ -543,13 +551,9 @@ include_directories(ThirdParty) # For minizip/ but we use fully-qualified
 include_directories(ThirdParty/GSL/include ThirdParty/variant/include
     ThirdParty/emoji_suggestions ThirdParty/libtgvoip)
 
-##======================
-## Telegram
-##======================
-
 include_directories(SourceFiles SourceFiles/core)
 
-include_directories(${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
+include_directories(${OPENAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
     ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS})
 
 add_subdirectory(ThirdParty/libtgvoip)
@@ -561,7 +565,6 @@ endif()
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64
         -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
-    list(APPEND tg_RESOURCES Resources/winrc/Telegram.rc)
 endif()
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
@@ -586,25 +589,18 @@ if (APPLE)
     set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
         PROPERTIES
             MACOSX_PACKAGE_LOCATION Resources)
-    set(APPLE_BUNDLE_SRC ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE})
-endif()
 
-add_executable(Telegram WIN32 MACOSX_BUNDLE
-    SourceFiles/stdafx.cpp
-    ${APP_SRC}
-    ${PLAT_SRC}
-    ${THIRD_PARTY_SRC}
-    ${tg_RESOURCES}
-    ${tg_RESOURCES_RCC}
-    ${APPLE_BUNDLE_SRC}
-)
+    target_sources(Telegram PRIVATE
+        ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
+    )
+endif()
 
 # Disable a single annoying warning about c++17
 if(NOT WIN32)
     target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
 endif()
 
-# Enable C++14 support for msvc (@todo this should be done in cmake)
+# Enable C++14 support for msvc (@todo this should be done in cmake - see ver 3.10 or above)
 if(WIN32)
     target_compile_options(Telegram PRIVATE /std:c++14)
 endif()
@@ -626,8 +622,6 @@ target_link_libraries(Telegram
     ${OPUS_LIBRARIES}
     ${CONAN_LIBS}
 ) # crashpad::crashpad_client)
-
-add_dependencies(Telegram boxes_styles_output)
 
 if (APPLE)
     add_dependencies(Telegram iconset_output)
@@ -655,9 +649,9 @@ if (APPLE)
 endif()
 
 if(WIN32)
-    target_link_libraries(Telegram winmm imm32 ws2_32 kernel32 user32 gdi32 winspool
-        comdlg32 advapi32 shell32 ole32 oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi
-        Gdiplus Strmiids
+    target_link_libraries(Telegram
+        winmm imm32 ws2_32 kernel32 user32 gdi32 winspool comdlg32 advapi32 shell32 ole32
+        oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi Gdiplus Strmiids
     )
 endif()
 
