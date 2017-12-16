@@ -87,6 +87,7 @@ add_library(tgvoip STATIC
     webrtc_dsp/webrtc/modules/audio_processing/utility/ooura_fft_sse2.cc
     webrtc_dsp/webrtc/system_wrappers/source/cpu_features.cc
 )
+
 if (WIN32)
     target_compile_definitions(tgvoip PRIVATE -DNOMINMAX -D_USING_V110_SDK71_ -DTGVOIP_WINXP_COMPAT)
     target_sources(tgvoip PRIVATE
