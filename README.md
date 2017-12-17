@@ -6,12 +6,12 @@ This is the complete source code and the build instructions for the alpha versio
 
 What you need to have installed:
 
-* Qt 5.9+
+* Qt 5.9+ (with private modules, like qtbase5-private-dev)
 * OpenSSL (conan installs this if you use conan)
 * OpenAL-soft
 * FFmpeg with swscale and swresample libs
 * zlib
-* opus
+* opus (libopus-dev)
 
 Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configuring.
 
