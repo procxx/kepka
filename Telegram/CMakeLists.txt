@@ -1,5 +1,5 @@
 # defines
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+if (LINUX)
     if (CMAKE_SIZEOF_VOID_P EQUAL 8)
         add_definitions(-DQ_OS_LINUX64)
     else()
