@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cotire/CMake;${PROJECT_SOURCE_DIR}/mo
 include(cotire)
 include(CTest)
 
-if (CMAKE_VERSION VERSION_GREATER 3.9)
+if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.10)
     cmake_policy(SET CMP0071 NEW)
 endif()
 
