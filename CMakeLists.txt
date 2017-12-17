@@ -27,9 +27,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-# Needs OpenAL-SOFT
-# Install via `brew install openal-soft` and configure with cmake call from README.md
-find_package(OpenAL REQUIRED NO_MODULE)
+if (LINUX)
+    find_package(OpenAL REQUIRED)
+else(LINUX)
+    # Needs OpenAL-SOFT
+    # Install via `brew install openal-soft` and configure with cmake call from README.md
+    find_package(OpenAL REQUIRED NO_MODULE)
+    set(OPENAL_LIBRARY OpenAL::OpenAL)
+endif(LINUX)
+
 find_package(ZLIB REQUIRED)
 find_package(FFmpeg REQUIRED)
 find_package(Opus REQUIRED)

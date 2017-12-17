@@ -639,7 +639,7 @@ target_link_libraries(Telegram
     Qt5::Network
     Qt5::GuiPrivate
     tgvoip
-    OpenAL::OpenAL
+    ${OPENAL_LIBRARY}
     ${FFMPEG_LIBRARIES}
     ${ZLIB_LIBRARIES}
     ${SWRESAMPLE_LIBRARIES}
