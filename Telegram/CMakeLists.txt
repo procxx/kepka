@@ -700,3 +700,13 @@ cotire(Telegram)
 # See https://github.com/sakra/cotire/blob/master/MANUAL.md#objective-c
 # ObjC and ObjC++ files cannot be cotired, so they have to include appropriate Qt and Tg
 # headers themselves, this applies to macOS platform sources.
+
+##================================================
+## Tests
+##================================================
+
+if (BUILD_TESTING)
+    include_directories(ThirdParty/Catch/single_include)
+
+    add_subdirectory(SourceFiles/base/tests)
+endif()
