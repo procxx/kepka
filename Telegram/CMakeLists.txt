@@ -563,11 +563,24 @@ if(NOT WIN32)
 endif()
 
 if (WIN32)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS -DUNICODE -DWIN64
-        -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_USING_V110_SDK71_
+        -DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE -DWIN64
+        -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
+        -DHAVE_STDINT_H -DZLIB_WINAPI)
 endif()
 
+add_definitions(-DAL_LIBTYPE_STATIC)
+add_definitions(-DAL_ALEXT_PROTOTYPES)
+add_definitions(-DTGVOIP_USE_CXX11_LIB)
+
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
+add_definitions(-DTDESKTOP_DISABLE_GTK_INTEGRATION) # Linux only
+
+if (LINUX)
+    add_definitions(-D_REENTRANT)
+endif()
+
+# TODO check if needs libexif in deps
 
 if (APPLE)
     set(MACOSX_BUNDLE_ICON_FILE Icon.icns)
@@ -593,6 +606,16 @@ if (APPLE)
     target_sources(Telegram PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
     )
+
+    foreach(langpack en de es it nl ko pt-BR)
+        set(LOCALIZABLE_STRINGS Resources/langs/${langpack}.lproj/Localizable.strings)
+        set_source_files_properties(${LOCALIZABLE_STRINGS}
+            PROPERTIES
+                MACOSX_PACKAGE_LOCATION ${LOCALIZABLE_STRINGS})
+        target_sources(Telegram PRIVATE
+            ${LOCALIZABLE_STRINGS}
+        )
+    endforeach(langpack)
 endif()
 
 # Disable a single annoying warning about c++17
@@ -602,7 +625,10 @@ endif()
 
 # Enable C++14 support for msvc (@todo this should be done in cmake - see ver 3.10 or above)
 if(WIN32)
-    target_compile_options(Telegram PRIVATE /std:c++14)
+    target_compile_options(Telegram PRIVATE
+        /std:c++14
+        /EHsc   # Catch C++ exceptions only, extern C functions never throw a C++ exception.
+    )
 endif()
 
 target_compile_definitions(Telegram PRIVATE ${FFMPEG_DEFINITIONS})
@@ -630,22 +656,31 @@ if (APPLE)
         PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Telegram.plist
     )
-    find_library(COREFOUNDATION_LIB CoreFoundation)
-    find_library(COREAUDIO_LIB CoreAudio)
-    find_library(AUDIOUNIT_LIB AudioUnit)
-    find_library(AUDIOTOOLBOX_LIB AudioToolbox)
-    find_library(COCOA_LIB Cocoa)
-    find_library(CARBON_LIB Carbon)
-    find_library(IOKIT_LIB IOKit)
-    target_link_libraries(Telegram
-        ${COREFOUNDATION_LIB}
-        ${COCOA_LIB}
-        ${CARBON_LIB}
-        ${COREAUDIO_LIB}
-        ${AUDIOUNIT_LIB}
-        ${AUDIOTOOLBOX_LIB}
-        ${IOKIT_LIB}
+    foreach(framework
+        Cocoa
+        CoreFoundation
+        CoreServices
+        CoreText
+        CoreGraphics
+        OpenGL
+        AudioUnit
+        ApplicationServices
+        Foundation
+        AGL
+        Security
+        SystemConfiguration
+        Carbon
+        AudioToolbox
+        CoreAudio
+        QuartzCore
+        AppKit
+        CoreWLAN
+        IOKit
     )
+        find_library(FW_LIB ${framework})
+        target_link_libraries(Telegram ${FW_LIB})
+        set(FW_LIB FW_LIB-NOTFOUND)
+    endforeach(framework)
 endif()
 
 if(WIN32)
