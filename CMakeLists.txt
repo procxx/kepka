@@ -13,6 +13,14 @@ if (UNIX AND NOT APPLE)
     set(LINUX 1)
 endif()
 
+function(set_flag_if_supported target shortname flag)
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag(${flag} ${shortname}_FLAG_SUPPORTED)
+    if (${shortname}_FLAG_SUPPORTED)
+        target_compile_options(${target} PRIVATE ${flag})
+    endif()
+endfunction()
+
 ##================================================
 ## Configure packages
 ##================================================
