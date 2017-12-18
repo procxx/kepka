@@ -693,7 +693,7 @@ if(WIN32)
 endif()
 
 if (LINUX)
-    target_link_libraries(Telegram ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
+    target_link_libraries(Telegram Qt5::DBus dl ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
 endif()
 
 set_target_properties(Telegram
