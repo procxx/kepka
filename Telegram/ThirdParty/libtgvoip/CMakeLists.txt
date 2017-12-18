@@ -116,13 +116,23 @@ if (APPLE)
 endif()
 
 if (LINUX)
-    target_sources(tgvoip PRIVATE
-        os/linux/AudioInputALSA.cpp
-        os/linux/AudioOutputALSA.cpp
-        os/linux/AudioOutputPulse.cpp
-        os/linux/AudioInputPulse.cpp
-        os/linux/PulseAudioLoader.cpp
-    )
+    find_package(ALSA)
+    find_package(PulseAudio)
+
+    if (ALSA_FOUND)
+        target_sources(tgvoip PRIVATE
+            os/linux/AudioInputALSA.cpp
+            os/linux/AudioOutputALSA.cpp
+        )
+    endif()
+
+    if (PULSEAUDIO_FOUND)
+        target_sources(tgvoip PRIVATE
+            os/linux/AudioInputPulse.cpp
+            os/linux/AudioOutputPulse.cpp
+            os/linux/PulseAudioLoader.cpp
+        )
+    endif()
 endif()
 
 if (NOT WIN32) # POSIX
