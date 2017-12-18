@@ -9,7 +9,7 @@
 
 #include <pulse/pulseaudio.h>
 
-#define DECLARE_DL_FUNCTION(name) static typeof(name)* _import_##name
+#define DECLARE_DL_FUNCTION(name) static decltype(name)* _import_##name
 
 namespace tgvoip{
 class PulseAudioLoader{

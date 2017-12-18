@@ -17,7 +17,7 @@ using namespace tgvoip::audio;
 #define BUFFER_SIZE 960
 #define CHECK_ERROR(res, msg) if(res<0){LOGE(msg ": %s", _snd_strerror(res));}
 #define CHECK_DL_ERROR(res, msg) if(!res){LOGE(msg ": %s", dlerror()); failed=true; return;}
-#define LOAD_FUNCTION(lib, name, ref) {ref=(typeof(ref))dlsym(lib, name); CHECK_DL_ERROR(ref, "Error getting entry point for " name);}
+#define LOAD_FUNCTION(lib, name, ref) {ref=(decltype(ref))dlsym(lib, name); CHECK_DL_ERROR(ref, "Error getting entry point for " name);}
 
 AudioInputALSA::AudioInputALSA(std::string devID){
 	isRecording=false;
@@ -122,9 +122,9 @@ void AudioInputALSA::EnumerateDevices(std::vector<AudioInputDevice>& devs){
 	if(!lib)
 		return;
 
-	_snd_device_name_hint=(typeof(_snd_device_name_hint))dlsym(lib, "snd_device_name_hint");
-	_snd_device_name_get_hint=(typeof(_snd_device_name_get_hint))dlsym(lib, "snd_device_name_get_hint");
-	_snd_device_name_free_hint=(typeof(_snd_device_name_free_hint))dlsym(lib, "snd_device_name_free_hint");
+	_snd_device_name_hint=(decltype(_snd_device_name_hint))dlsym(lib, "snd_device_name_hint");
+	_snd_device_name_get_hint=(decltype(_snd_device_name_get_hint))dlsym(lib, "snd_device_name_get_hint");
+	_snd_device_name_free_hint=(decltype(_snd_device_name_free_hint))dlsym(lib, "snd_device_name_free_hint");
 
 	if(!_snd_device_name_hint || !_snd_device_name_get_hint || !_snd_device_name_free_hint){
 		dlclose(lib);
