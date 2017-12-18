@@ -1,5 +1,9 @@
 project(libtgvoip)
 
+if (UNIX AND NOT APPLE)
+    set(LINUX 1)
+endif()
+
 add_library(tgvoip STATIC
     BlockingQueue.cpp
     BufferInputStream.cpp
