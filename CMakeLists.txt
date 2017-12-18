@@ -9,6 +9,10 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.10)
     cmake_policy(SET CMP0071 NEW)
 endif()
 
+if (UNIX AND NOT APPLE)
+    set(LINUX 1)
+endif()
+
 ##================================================
 ## Configure packages
 ##================================================
