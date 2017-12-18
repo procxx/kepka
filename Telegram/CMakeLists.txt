@@ -14,6 +14,8 @@ endif()
 include_directories(SourceFiles)
 add_subdirectory(SourceFiles/codegen)
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/styles)
+
 #-w<(PRODUCT_DIR)/../.. -- wtf is that
 add_custom_command(
     COMMENT "Generating palette"
