@@ -696,6 +696,8 @@ if (LINUX)
     target_link_libraries(Telegram Qt5::DBus dl ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
 endif()
 
+target_link_libraries(Telegram Threads::Threads)
+
 set_target_properties(Telegram
     PROPERTIES
         COTIRE_CXX_PREFIX_HEADER_INIT SourceFiles/stdafx.h
