@@ -554,7 +554,7 @@ include_directories(ThirdParty/GSL/include ThirdParty/variant/include
 include_directories(SourceFiles SourceFiles/core)
 
 include_directories(${OPENAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
-    ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS})
+    ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS} ${PULSEAUDIO_INCLUDE_DIR})
 
 add_subdirectory(ThirdParty/libtgvoip)
 
@@ -688,6 +688,10 @@ if(WIN32)
         winmm imm32 ws2_32 kernel32 user32 gdi32 winspool comdlg32 advapi32 shell32 ole32
         oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi Gdiplus Strmiids
     )
+endif()
+
+if (LINUX)
+    target_link_libraries(Telegram ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
 endif()
 
 set_target_properties(Telegram

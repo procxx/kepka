@@ -33,6 +33,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if (LINUX)
     find_package(OpenAL REQUIRED)
+    find_package(ALSA)
+    find_package(PulseAudio)
 else(LINUX)
     # Needs OpenAL-SOFT
     # Install via `brew install openal-soft` and configure with cmake call from README.md
