@@ -620,7 +620,7 @@ endif()
 
 # Disable a single annoying warning about c++17
 if(NOT WIN32)
-    target_compile_options(Telegram PRIVATE -Wno-c++1z-extensions)
+    set_flag_if_supported(Telegram WNCE -Wno-c++1z-extensions)
 endif()
 
 # Enable C++14 support for msvc (@todo this should be done in cmake - see ver 3.10 or above)
