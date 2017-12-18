@@ -8,9 +8,9 @@
 #include <dlfcn.h>
 #include "../../logging.h"
 
-#define DECLARE_DL_FUNCTION(name) typeof(name)* PulseAudioLoader::_import_##name=NULL
+#define DECLARE_DL_FUNCTION(name) decltype(name)* PulseAudioLoader::_import_##name=NULL
 #define CHECK_DL_ERROR(res, msg) if(!res){LOGE(msg ": %s", dlerror()); dlclose(lib); return false;}
-#define LOAD_DL_FUNCTION(name) {_import_##name=(typeof(_import_##name))dlsym(lib, #name); CHECK_DL_ERROR(_import_##name, "Error getting entry point for " #name);}
+#define LOAD_DL_FUNCTION(name) {_import_##name=(decltype(_import_##name))dlsym(lib, #name); CHECK_DL_ERROR(_import_##name, "Error getting entry point for " #name);}
 
 using namespace tgvoip;
 
