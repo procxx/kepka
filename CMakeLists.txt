@@ -51,6 +51,9 @@ else(LINUX)
     set(OPENAL_LIBRARY OpenAL::OpenAL)
 endif(LINUX)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads)
+
 find_package(ZLIB REQUIRED)
 find_package(FFmpeg REQUIRED)
 find_package(Opus REQUIRED)
