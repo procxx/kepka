@@ -336,7 +336,7 @@ public:
 		_inGrab = true;
 		resizeEvent(0);
 	}
-	void grapWithoutTopBarShadow();
+	void grapWithoutTopBarShadow();//@fixme grab?
 	void grabFinish() override;
 	void rpcClear() override {
 		_inner->rpcClear();

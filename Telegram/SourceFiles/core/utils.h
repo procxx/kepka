@@ -294,7 +294,7 @@ void finish();
 
 }
 
-using TimeMs = qint64;
+using TimeMs = qint64; // @todo use std::chrono::milliseconds
 bool checkms(); // returns true if time has changed
 TimeMs getms(bool checked = false);
 
@@ -418,7 +418,7 @@ inline QString fromUtf8Safe(const QByteArray &str) {
 static const QRegularExpression::PatternOptions reMultiline(QRegularExpression::DotMatchesEverythingOption | QRegularExpression::MultilineOption);
 
 template <typename T>
-inline T snap(const T &v, const T &_min, const T &_max) {
+inline T snap(const T &v, const T &_min, const T &_max) { // @todo std::clamp()
 	return (v < _min) ? _min : ((v > _max) ? _max : v);
 }
 
