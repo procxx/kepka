@@ -233,10 +233,6 @@ MainWidget::MainWidget(QWidget *parent, not_null<Window::Controller*> controller
 	orderWidgets();
 
 	_sideResizeArea->installEventFilter(this);
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	Sandbox::startUpdateCheck();
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 }
 
 void MainWidget::checkCurrentFloatPlayer() {

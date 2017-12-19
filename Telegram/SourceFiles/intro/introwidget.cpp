@@ -39,7 +39,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/labels.h"
 #include "ui/effects/widget_fade_wrap.h"
 #include "ui/effects/slide_animation.h"
-#include "autoupdater.h"
 #include "window/window_slide_animation.h"
 #include "styles/style_boxes.h"
 #include "styles/style_intro.h"
@@ -88,14 +87,6 @@ Widget::Widget(QWidget *parent) : TWidget(parent)
 	getStep()->showFast();
 
 	cSetPasswordRecovered(false);
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	Sandbox::connect(SIGNAL(updateLatest()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::connect(SIGNAL(updateFailed()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::connect(SIGNAL(updateReady()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::startUpdateCheck();
-	onCheckUpdateStatus();
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
 }
 
 void Widget::refreshLang() {
@@ -133,24 +124,6 @@ void Widget::createLanguageLink() {
 		}).send();
 	}
 }
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-void Widget::onCheckUpdateStatus() {
-	if (Sandbox::updatingState() == Application::UpdatingReady) {
-		if (_update) return;
-		_update.create(this, object_ptr<Ui::RoundButton>(this, langFactory(lng_menu_update), st::defaultBoxButton), st::introCoverDuration);
-		if (!_a_show.animating()) _update->show();
-		_update->entity()->setClickedCallback([] {
-			checkReadyUpdate();
-			App::restart();
-		});
-	} else {
-		if (!_update) return;
-		_update.destroy();
-	}
-	updateControlsGeometry();
-}
-#endif // TDESKTOP_DISABLE_AUTOUPDATE
 
 void Widget::setInnerFocus() {
 	if (getStep()->animating()) {

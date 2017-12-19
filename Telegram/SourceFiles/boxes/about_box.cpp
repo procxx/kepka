@@ -23,7 +23,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
-#include "autoupdater.h"
 #include "boxes/confirm_box.h"
 #include "application.h"
 #include "ui/widgets/buttons.h"
@@ -61,23 +60,7 @@ void AboutBox::resizeEvent(QResizeEvent *e) {
 }
 
 void AboutBox::showVersionHistory() {
-	if (cRealBetaVersion()) {
-		auto url = qsl("https://tdesktop.com/");
-		switch (cPlatform()) {
-		case dbipWindows: url += qsl("win/%1.zip"); break;
-		case dbipMac: url += qsl("mac/%1.zip"); break;
-		case dbipMacOld: url += qsl("mac32/%1.zip"); break;
-		case dbipLinux32: url += qsl("linux32/%1.tar.xz"); break;
-		case dbipLinux64: url += qsl("linux/%1.tar.xz"); break;
-		}
-		url = url.arg(qsl("tbeta%1_%2").arg(cRealBetaVersion()).arg(countBetaVersionSignature(cRealBetaVersion())));
-
-		Application::clipboard()->setText(url);
-
-		Ui::show(Box<InformBox>("The link to the current private beta version of Telegram Desktop was copied to the clipboard."));
-	} else {
-		QDesktopServices::openUrl(qsl("https://desktop.telegram.org/changelog"));
-	}
+	QDesktopServices::openUrl(qsl("https://desktop.telegram.org/changelog"));
 }
 
 void AboutBox::keyPressEvent(QKeyEvent *e) {
