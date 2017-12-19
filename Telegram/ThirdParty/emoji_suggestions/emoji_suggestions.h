@@ -27,6 +27,7 @@ namespace Emoji {
 
 static_assert(sizeof(char16_t) == 2, "Bad UTF-16 character size.");
 
+// @todo kill this off, use std::u16string instead
 class utf16string {
 public:
 	utf16string() = default;

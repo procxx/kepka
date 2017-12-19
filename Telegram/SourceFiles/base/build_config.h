@@ -22,7 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <stdint.h>
 
-// thanks Chromium
+// thanks Chromium - @todo replace this with cmake-generated config file
 
 #if defined(__APPLE__)
 #define OS_MAC 1

@@ -30,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace {
 
+// @todo are there no other ways to get/set hex?
 QChar _toHex(ushort v) {
 	v = v & 0x000F;
 	return QChar::fromLatin1((v >= 10) ? ('a' + (v - 10)) : ('0' + v));
@@ -38,6 +39,7 @@ ushort _fromHex(QChar c) {
 	return ((c.unicode() >= uchar('a')) ? (c.unicode() - uchar('a') + 10) : (c.unicode() - uchar('0'))) & 0x000F;
 }
 
+// @todo urlencode/decode functions might help here??
 QString _escapeTo7bit(const QString &str) {
 	QString result;
 	result.reserve(str.size() * 2);

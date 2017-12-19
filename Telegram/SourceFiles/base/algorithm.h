@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace base {
 
+// @todo use ranges-v3 here
 template <typename Range, typename Method>
 decltype(auto) for_each(Range &&range, Method &&method) {
 	return std::for_each(
