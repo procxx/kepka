@@ -29,7 +29,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwindow.h"
 #include "mainwidget.h"
 #include "ui/widgets/input_fields.h"
-#include "autoupdater.h"
 #include "auth_session.h"
 #include "messenger.h"
 #include "ui/effects/widget_fade_wrap.h"
@@ -118,13 +117,6 @@ DialogsWidget::DialogsWidget(QWidget *parent, not_null<Window::Controller*> cont
 	connect(_filter, SIGNAL(changed()), this, SLOT(onFilterUpdate()));
 	connect(_filter, SIGNAL(cursorPositionChanged(int,int)), this, SLOT(onFilterCursorMoved(int,int)));
 
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-	Sandbox::connect(SIGNAL(updateLatest()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::connect(SIGNAL(updateFailed()), this, SLOT(onCheckUpdateStatus()));
-	Sandbox::connect(SIGNAL(updateReady()), this, SLOT(onCheckUpdateStatus()));
-	onCheckUpdateStatus();
-#endif // !TDESKTOP_DISABLE_AUTOUPDATE
-
 	subscribe(Adaptive::Changed(), [this] { updateForwardBar(); });
 
 	_cancelSearch->setClickedCallback([this] { onCancelSearch(); });
@@ -161,24 +153,6 @@ DialogsWidget::DialogsWidget(QWidget *parent, not_null<Window::Controller*> cont
 	updateJumpToDateVisibility(true);
 	updateSearchFromVisibility(true);
 }
-
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-void DialogsWidget::onCheckUpdateStatus() {
-	if (Sandbox::updatingState() == Application::UpdatingReady) {
-		if (_updateTelegram) return;
-		_updateTelegram.create(this);
-		_updateTelegram->show();
-		_updateTelegram->setClickedCallback([] {
-			checkReadyUpdate();
-			App::restart();
-		});
-	} else {
-		if (!_updateTelegram) return;
-		_updateTelegram.destroy();
-	}
-	updateControlsGeometry();
-}
-#endif // TDESKTOP_DISABLE_AUTOUPDATE
 
 void DialogsWidget::activate() {
 	_filter->setFocus();

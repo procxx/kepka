@@ -2393,17 +2393,8 @@ namespace {
 	}
 
 	void restart() {
-#ifndef TDESKTOP_DISABLE_AUTOUPDATE
-		bool updateReady = (Sandbox::updatingState() == Application::UpdatingReady);
-#else // !TDESKTOP_DISABLE_AUTOUPDATE
-		bool updateReady = false;
-#endif // else for !TDESKTOP_DISABLE_AUTOUPDATE
-		if (updateReady) {
-			cSetRestartingUpdate(true);
-		} else {
-			cSetRestarting(true);
-			cSetRestartingToSettings(true);
-		}
+		cSetRestarting(true);
+		cSetRestartingToSettings(true);
 		App::quit();
 	}
 
