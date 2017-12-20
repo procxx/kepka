@@ -242,13 +242,13 @@ enum Flags {
 namespace Stickers {
 
 constexpr auto DefaultSetId = 0; // for backward compatibility
-constexpr auto CustomSetId = 0xFFFFFFFFFFFFFFFFULL;
-constexpr auto RecentSetId = 0xFFFFFFFFFFFFFFFEULL; // for emoji/stickers panel, should not appear in Sets
-constexpr auto NoneSetId = 0xFFFFFFFFFFFFFFFDULL; // for emoji/stickers panel, should not appear in Sets
-constexpr auto CloudRecentSetId = 0xFFFFFFFFFFFFFFFCULL; // for cloud-stored recent stickers
-constexpr auto FeaturedSetId = 0xFFFFFFFFFFFFFFFBULL; // for emoji/stickers panel, should not appear in Sets
-constexpr auto FavedSetId = 0xFFFFFFFFFFFFFFFAULL; // for cloud-stored faved stickers
-constexpr auto MegagroupSetId = 0xFFFFFFFFFFFFFFEFULL; // for setting up megagroup sticker set
+constexpr auto CustomSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFFF);
+constexpr auto RecentSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFFE); // for emoji/stickers panel, should not appear in Sets
+constexpr auto NoneSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFFD); // for emoji/stickers panel, should not appear in Sets
+constexpr auto CloudRecentSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFFC); // for cloud-stored recent stickers
+constexpr auto FeaturedSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFFB); // for emoji/stickers panel, should not appear in Sets
+constexpr auto FavedSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFFA); // for cloud-stored faved stickers
+constexpr auto MegagroupSetId = Q_UINT64_C(0xFFFFFFFFFFFFFFEF); // for setting up megagroup sticker set
 struct Set {
 	Set(quint64 id, quint64 access, const QString &title, const QString &shortName, qint32 count, qint32 hash, MTPDstickerSet::Flags flags)
 		: id(id)

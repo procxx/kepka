@@ -317,7 +317,7 @@ void Mixer::Track::reattach(AudioMsgId::Type type) {
 		alSourceQueueBuffers(stream.source, 1, stream.buffers + i);
 	}
 
-	alSourcei(stream.source, AL_SAMPLE_OFFSET, qMax(state.position - bufferedPosition, 0LL));
+	alSourcei(stream.source, AL_SAMPLE_OFFSET, qMax(state.position - bufferedPosition, Q_INT64_C(0)));
 	if (!IsStopped(state.state) && state.state != State::PausedAtEnd) {
 		alSourcef(stream.source, AL_GAIN, ComputeVolume(type));
 		alSourcePlay(stream.source);
@@ -830,7 +830,7 @@ void Mixer::resume(const AudioMsgId &audio, bool fast) {
 				Audio::AttachToDevice();
 				if (track->state.state == State::PausedAtEnd) {
 					if (track->isStreamCreated()) {
-						alSourcei(track->stream.source, AL_SAMPLE_OFFSET, qMax(track->state.position - track->bufferedPosition, 0LL));
+						alSourcei(track->stream.source, AL_SAMPLE_OFFSET, qMax(track->state.position - track->bufferedPosition, Q_INT64_C(0)));
 						if (!checkCurrentALError(type)) return;
 					}
 				}

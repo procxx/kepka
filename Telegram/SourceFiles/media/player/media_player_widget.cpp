@@ -236,7 +236,7 @@ Widget::~Widget() = default;
 void Widget::handleSeekProgress(double progress) {
 	if (!_lastDurationMs) return;
 
-	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
+	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), Q_INT64_C(0), _lastDurationMs);
 	if (_seekPositionMs != positionMs) {
 		_seekPositionMs = positionMs;
 		updateTimeLabel();
@@ -248,7 +248,7 @@ void Widget::handleSeekProgress(double progress) {
 void Widget::handleSeekFinished(double progress) {
 	if (!_lastDurationMs) return;
 
-	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), 0LL, _lastDurationMs);
+	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), Q_INT64_C(0), _lastDurationMs);
 	_seekPositionMs = -1;
 
 	auto state = mixer()->currentState(_type);

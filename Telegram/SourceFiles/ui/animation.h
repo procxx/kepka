@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/basic_types.h"
 #include <QtCore/QTimer>
 #include <QtGui/QColor>
+#include <cstdint>
 
 namespace Media {
 namespace Clip {
@@ -280,21 +281,21 @@ FORCE_INLINE Shifted operator*(ShiftedMultiplier multiplier, Shifted shifted) {
 
 FORCE_INLINE Shifted shifted(quint32 components) {
 	auto wide = static_cast<quint64>(components);
-	return (wide & 0x00000000000000FFULL)
-		| ((wide & 0x000000000000FF00ULL) << 8)
-		| ((wide & 0x0000000000FF0000ULL) << 16)
-		| ((wide & 0x00000000FF000000ULL) << 24);
+	return (wide & Q_UINT64_C(0x00000000000000FF))
+		| ((wide & Q_UINT64_C(0x000000000000FF00)) << 8)
+		| ((wide & Q_UINT64_C(0x0000000000FF0000)) << 16)
+		| ((wide & Q_UINT64_C(0x00000000FF000000)) << 24);
 }
 
 FORCE_INLINE quint32 unshifted(Shifted components) {
-	return static_cast<quint32>((components.value & 0x000000000000FF00ULL) >> 8)
-		| static_cast<quint32>((components.value & 0x00000000FF000000ULL) >> 16)
-		| static_cast<quint32>((components.value & 0x0000FF0000000000ULL) >> 24)
-		| static_cast<quint32>((components.value & 0xFF00000000000000ULL) >> 32);
+	return static_cast<quint32>((components.value & Q_UINT64_C(0x000000000000FF00)) >> 8)
+		 | static_cast<quint32>((components.value & Q_UINT64_C(0x00000000FF000000)) >> 16)
+		 | static_cast<quint32>((components.value & Q_UINT64_C(0x0000FF0000000000)) >> 24)
+		 | static_cast<quint32>((components.value & Q_UINT64_C(0xFF00000000000000)) >> 32);
 }
 
 FORCE_INLINE Shifted reshifted(Shifted components) {
-	return (components.value >> 8) & 0x00FF00FF00FF00FFULL;
+	return (components.value >> 8) & Q_UINT64_C(0x00FF00FF00FF00FF);
 }
 
 FORCE_INLINE Shifted shifted(QColor color) {

@@ -775,7 +775,7 @@ void Manager::process() {
 	_processingInThread = thread();
 
 	bool checkAllReaders = false;
-	auto ms = getms(), minms = ms + 86400 * 1000LL;
+	auto ms = getms(), minms = ms + 86400 * Q_INT64_C(1000);
 	{
 		QMutexLocker lock(&_readerPointersMutex);
 		for (auto it = _readerPointers.begin(), e = _readerPointers.end(); it != e; ++it) {
