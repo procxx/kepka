@@ -24,7 +24,7 @@ Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configur
 
 [![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
 [![Build Status](https://travis-ci.org/telegramdesktop/tdesktop.svg?branch=dev)](https://travis-ci.org/telegramdesktop/tdesktop)
-[![Build status](https://ci.appveyor.com/api/projects/status/uiw2y768iy4i5bu8/branch/dev?svg=true)](https://ci.appveyor.com/project/telegramdesktop/tdesktop)
+[![Build status](https://ci.appveyor.com/api/projects/status/2kodvgwvlua3o6hp/branch/dev?svg=true)](https://ci.appveyor.com/project/procxx/tdesktop)
 
 [![Preview of Telegram Desktop][preview_image]][preview_image_url]
 
