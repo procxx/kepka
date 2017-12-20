@@ -39,11 +39,7 @@ int main(int argc, char *argv[]) {
 	// both are finished in Application::closeApplication
 	Logs::start(); // must be started before Platform is started
 	Platform::start(); // must be started before QApplication is created
-#if defined(Q_OS_LINUX64)
-	QCoreApplication::addLibraryPath("/usr/lib64/qt5/plugins");
-#else
-	QCoreApplication::addLibraryPath("/usr/lib/qt5/plugins");
-#endif
+
 	qputenv("QT_STYLE_OVERRIDE", "qwerty");
 	qunsetenv("QT_QPA_PLATFORMTHEME");
 
