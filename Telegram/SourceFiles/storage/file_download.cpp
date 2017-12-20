@@ -1001,7 +1001,7 @@ public:
 		if (!redirect.isEmpty()) _url = redirect;
 
 		QNetworkRequest req(_url);
-		QByteArray rangeHeaderValue = "bytes=" + QByteArray::number(_already) + "-";
+		QByteArray rangeHeaderValue = "bytes=" + QByteArray::number(static_cast<qlonglong>(_already)) + "-";
 		req.setRawHeader("Range", rangeHeaderValue);
 		_reply = manager.get(req);
 		return _reply;

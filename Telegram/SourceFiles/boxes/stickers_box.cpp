@@ -485,7 +485,11 @@ bool StickersBox::installFail(quint64 setId, const RPCError &error) {
 void StickersBox::preloadArchivedSets() {
 	if (!_tabs) return;
 	if (!_archivedRequestId) {
-		_archivedRequestId = MTP::send(MTPmessages_GetArchivedStickers(MTP_flags(0), MTP_long(0), MTP_int(kArchivedLimitFirstRequest)), rpcDone(&StickersBox::getArchivedDone, 0ULL));
+		_archivedRequestId =
+				MTP::send(MTPmessages_GetArchivedStickers(MTP_flags(0),
+														  MTP_long(0),
+														  MTP_int(kArchivedLimitFirstRequest)),
+						  rpcDone(&StickersBox::getArchivedDone, Q_UINT64_C(0)));
 	}
 }
 

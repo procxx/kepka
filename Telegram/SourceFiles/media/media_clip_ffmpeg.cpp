@@ -211,7 +211,7 @@ TimeMs FFMpegReaderImplementation::frameRealTime() const {
 }
 
 TimeMs FFMpegReaderImplementation::framePresentationTime() const {
-	return qMax(_frameTime + _frameTimeCorrection, 0LL);
+	return qMax(_frameTime + _frameTimeCorrection, Q_INT64_C(0));
 }
 
 TimeMs FFMpegReaderImplementation::durationMs() const {

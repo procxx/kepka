@@ -47,7 +47,7 @@ TimeMs QtGifReaderImplementation::frameRealTime() const {
 }
 
 TimeMs QtGifReaderImplementation::framePresentationTime() const {
-	return qMax(_frameTime, 0LL);
+	return qMax(_frameTime, Q_INT64_C(0));
 }
 
 ReaderImplementation::ReadResult QtGifReaderImplementation::readNextFrame() {

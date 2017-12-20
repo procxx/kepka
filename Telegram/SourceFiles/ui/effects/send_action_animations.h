@@ -58,7 +58,7 @@ public:
 
 		virtual int width() const = 0;
 		void paint(Painter &p, style::color color, int x, int y, int outerWidth, TimeMs ms) {
-			paintFrame(p, color, x, y, outerWidth, qMax(ms - _started, 0LL) % _period);
+			paintFrame(p, color, x, y, outerWidth, qMax(ms - _started, Q_INT64_C(0)) % _period);
 		}
 
 		virtual ~Impl() = default;
