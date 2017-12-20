@@ -514,7 +514,6 @@ if (LINUX)
         SourceFiles/platform/linux/notifications_manager_linux.cpp
         SourceFiles/platform/linux/specific_linux.cpp
     )
-    set(tg_RESOURCES Resources/qrc/telegram_linux.qrc)
 endif()
 
 list(APPEND tg_RESOURCES
