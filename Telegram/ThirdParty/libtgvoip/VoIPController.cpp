@@ -1151,7 +1151,7 @@ simpleAudioBlock random_id:long random_bytes:string raw_data:string = DecryptedA
 					if(!micMuted){
 						audioInput->Start();
 						if(!audioInput->IsInitialized()){
-							LOGE("Erorr initializing audio capture");
+							LOGE("Error initializing audio capture");
 							lastError=TGVOIP_ERROR_AUDIO_IO;
 
 							SetState(STATE_FAILED);
@@ -1159,7 +1159,7 @@ simpleAudioBlock random_id:long random_bytes:string raw_data:string = DecryptedA
 						}
 					}
 					if(!audioOutput->IsInitialized()){
-						LOGE("Erorr initializing audio playback");
+						LOGE("Error initializing audio playback");
 						lastError=TGVOIP_ERROR_AUDIO_IO;
 
 						SetState(STATE_FAILED);
