@@ -43,6 +43,8 @@ addons:
       - libxkbcommon-dev
       - xutils-dev
       - yasm
+      - ffmpeg
+      - libswscale-dev
       - libavfilter-dev
       - libavutil-dev
       - libavformat-dev
