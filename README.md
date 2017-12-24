@@ -26,7 +26,7 @@ Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configur
 [![Build Status](https://travis-ci.org/telegramdesktop/tdesktop.svg?branch=dev)](https://travis-ci.org/telegramdesktop/tdesktop)
 [![Build status](https://ci.appveyor.com/api/projects/status/2kodvgwvlua3o6hp/branch/dev?svg=true)](https://ci.appveyor.com/project/procxx/tdesktop)
 
-[![Preview of Telegram Desktop][preview_image]][preview_image_url]
+![Preview of Telegram Desktop][preview_image]
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
 
@@ -40,7 +40,7 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 
 ## Third-party
 
-* Qt 5.3.2 and 5.6.2, slightly patched ([LGPL](http://doc.qt.io/qt-5/lgpl.html))
+* Qt 5.9+ ([LGPL](http://doc.qt.io/qt-5/lgpl.html))
 * OpenSSL 1.0.1g ([OpenSSL License](https://www.openssl.org/source/license.html))
 * zlib 1.2.8 ([zlib License](http://www.zlib.net/zlib_license.html))
 * libexif 0.6.20 ([LGPL](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html))
@@ -58,7 +58,7 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * Emoji alpha codes ([MIT License](https://github.com/emojione/emojione/blob/master/extras/alpha-codes/LICENSE.md))
 * Catch test framework ([Boost License](https://github.com/philsquared/Catch/blob/master/LICENSE.txt))
 
-* [GYP/CMake on GNU/Linux][cmake]
+* [CMake][cmake]
 
 [//]: # (LINKS)
 [telegram]: https://telegram.org
@@ -66,9 +66,5 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 [telegram_api]: https://core.telegram.org
 [telegram_proto]: https://core.telegram.org/mtproto
 [license]: LICENSE
-[msvc]: docs/building-msvc.md
-[xcode]: docs/building-xcode.md
-[xcode_old]: docs/building-xcode-old.md
 [cmake]: docs/building-cmake.md
-[preview_image]: https://github.com/telegramdesktop/tdesktop/blob/dev/docs/assets/preview.png "Preview of Telegram Desktop"
-[preview_image_url]: https://raw.githubusercontent.com/telegramdesktop/tdesktop/dev/docs/assets/preview.png
+[preview_image]: docs/assets/preview.png
