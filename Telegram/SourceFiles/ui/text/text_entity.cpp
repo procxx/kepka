@@ -44,7 +44,9 @@ QString ExpressionMailNameAtEnd() {
 }
 
 QString ExpressionSeparators(const QString &additional) {
-	return qsl("\\s\\.,:;<>|'\"\\[\\]\\{\\}\\~\\!\\?\\%\\^\\(\\)\\-\\+=\\x10") + additional;
+	// UTF8 quotes: «»“”‘’
+	const auto quotes = QString::fromUtf8("\xC2\xAB\xC2\xBB\xE2\x80\x9C\xE2\x80\x9D\xE2\x80\x98\xE2\x80\x99");
+	return qsl("\\s\\.,:;<>|'\"\\[\\]\\{\\}\\~\\!\\?\\%\\^\\(\\)\\-\\+=\\x10") + quotes + additional;
 }
 
 QString ExpressionHashtag() {
