@@ -45,7 +45,9 @@ addons:
       - xutils-dev
       - yasm
       - ffmpeg
+      - libswresample-ffmpeg-dev
       - libswscale-dev
+      - libpostproc-dev
       - libavfilter-dev
       - libavutil-dev
       - libavformat-dev
