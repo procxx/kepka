@@ -50,5 +50,8 @@ before_install:
   - sudo update-alternatives --config gcc
   - g++ --version
 
+before_script:
+  - cmake .
+
 script:
-  - .travis/build.sh
+  - make -j2
