@@ -70,7 +70,7 @@ before_install:
   - g++ --version
 
 before_script:
-  - cmake .
+  - cmake -DCMAKE_PREFIX_PATH="/usr/lib/x86_64-linux-gnu/;/usr/include/" .
 
 script:
   - make -j2
