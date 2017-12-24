@@ -50,7 +50,6 @@ addons:
       - libopenal-data
       - libopenal-dev
       - libopenal1
-      - libopenal1-dbg
       - qtsystems5-private-dev
       - qttools5-private-dev
       - qtbase5-private-dev
