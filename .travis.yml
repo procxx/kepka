@@ -18,6 +18,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - sourceline: 'ppa:kirillshkrogalev/ffmpeg-next'
     packages:
       - bison
       - build-essential
@@ -43,6 +44,7 @@ addons:
       - libxkbcommon-dev
       - xutils-dev
       - yasm
+      - ffmpeg
       - libswscale-dev
       - libavfilter-dev
       - libavutil-dev
