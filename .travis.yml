@@ -43,6 +43,18 @@ addons:
       - libxkbcommon-dev
       - xutils-dev
       - yasm
+      - libavfilter-dev
+      - libavutil-dev
+      - libavformat-dev
+      - libavcodec-dev
+      - libopenal-data
+      - libopenal-dev
+      - libopenal1
+      - libopenal1-dbg
+      - qtsystems5-private-dev
+      - qttools5-private-dev
+      - qtbase5-private-dev
+      - libalut-dev
 
 before_install:
   - export CXX="g++-7" CC="gcc-7"
