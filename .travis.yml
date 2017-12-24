@@ -55,6 +55,8 @@ addons:
       - libopenal-data
       - libopenal-dev
       - libopenal1
+      - libqt5core5a
+      - qtbase5-dev
       - qtsystems5-private-dev
       - qttools5-private-dev
       - qtbase5-private-dev
