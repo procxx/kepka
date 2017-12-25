@@ -1,0 +1,3 @@
+[submodule "Telegram/ThirdParty/variant/.mason"]
+	path = Telegram/ThirdParty/variant/.mason
+	url = https://github.com/mapbox/mason.git

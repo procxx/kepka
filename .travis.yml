@@ -10,13 +10,6 @@ cache:
 env:
   matrix:
    - BUILD_VERSION=""
-   - BUILD_VERSION="disable_autoupdate"
-   - BUILD_VERSION="disable_register_custom_scheme"
-   - BUILD_VERSION="disable_crash_reports"
-   - BUILD_VERSION="disable_network_proxy"
-   - BUILD_VERSION="disable_desktop_file_generation"
-   - BUILD_VERSION="disable_unity_integration"
-   - BUILD_VERSION="disable_gtk_integration"
 
 matrix:
   fast_finish: true
@@ -25,6 +18,7 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - sourceline: 'ppa:kirillshkrogalev/ffmpeg-next'
     packages:
       - bison
       - build-essential
@@ -33,12 +27,9 @@ addons:
       - dpatch
       - equivs
       - fakeroot
-      - g++-6
-      - gcc-6
+      - g++-7
+      - gcc-7
       - git
-      - gnome-common
-      - gobject-introspection
-      - gtk-doc-tools
       - libappindicator-dev
       - libasound2-dev
       - libdbusmenu-glib-dev
@@ -51,17 +42,35 @@ addons:
       - libvdpau-dev
       - libxcb-xkb-dev
       - libxkbcommon-dev
-      - lintian
-      - quilt
-      - valac
       - xutils-dev
       - yasm
+      - ffmpeg
+      - libswresample-ffmpeg-dev
+      - libswscale-ffmpeg-dev
+      - libpostproc-ffmpeg-dev
+      - libavfilter-ffmpeg-dev
+      - libavutil-ffmpeg-dev
+      - libavformat-ffmpeg-dev
+      - libavcodec-ffmpeg-dev
+      - libopenal-data
+      - libopenal-dev
+      - libopenal1
+      - libqt5core5a
+      - qtbase5-dev
+      - libqt5gui5
+      - qtsystems5-private-dev
+      - qttools5-private-dev
+      - qtbase5-private-dev
+      - libalut-dev
 
 before_install:
-  - export CXX="g++-6" CC="gcc-6"
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6
+  - export CXX="g++-7" CC="gcc-7"
+  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 70 --slave /usr/bin/g++ g++ /usr/bin/g++-7
   - sudo update-alternatives --config gcc
   - g++ --version
 
+before_script:
+  - cmake -DCMAKE_PREFIX_PATH="/usr/lib/x86_64-linux-gnu/;/usr/include/" .
+
 script:
-  - .travis/build.sh
+  - make -j2
