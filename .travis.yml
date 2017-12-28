@@ -18,10 +18,14 @@ matrix:
       env: BUILD_TYPE=Debug
     - os: linux
       env: BUILD_TYPE=Release
+    - os: osx
+      env: BUILD_TYPE=Debug
+    - os: osx
+      env: BUILD_TYPE=Release
 
 before_install:
-  - docker pull berkus/docker-cpp-ci:latest
+  - .travis/os_setup.sh
 
 script:
   - mkdir _build_
-  - docker run --rm -v $PWD:/repo -v ~/.travis:/travis berkus/docker-cpp-ci /bin/sh -c "/repo/.travis/build.sh"
+  - .travis/os_build.sh
