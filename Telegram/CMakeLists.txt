@@ -679,6 +679,7 @@ if (APPLE)
         IOKit
     )
         find_library(FW_LIB ${framework})
+        message(STATUS "Found framework ${FW_LIB}")
         target_link_libraries(Telegram ${FW_LIB})
         set(FW_LIB FW_LIB-NOTFOUND)
     endforeach(framework)
