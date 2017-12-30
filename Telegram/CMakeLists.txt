@@ -661,19 +661,19 @@ if (APPLE)
         Cocoa
         CoreFoundation
         CoreServices
+        ApplicationServices
         CoreText
         CoreGraphics
-        OpenGL
-        AudioUnit
-        ApplicationServices
         Foundation
+        OpenGL
+        QuartzCore
         AGL
         Security
         SystemConfiguration
         Carbon
-        AudioToolbox
         CoreAudio
-        QuartzCore
+        AudioToolbox
+        AudioUnit
         AppKit
         CoreWLAN
         IOKit
