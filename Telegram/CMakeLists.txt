@@ -678,11 +678,12 @@ if (APPLE)
         CoreWLAN
         IOKit
     )
+        set(FW_LIB FW_LIB-NOTFOUND)
         find_library(FW_LIB ${framework})
         message(STATUS "Found framework ${FW_LIB}")
         target_link_libraries(Telegram ${FW_LIB})
-        set(FW_LIB FW_LIB-NOTFOUND)
     endforeach(framework)
+    set(FW_LIB FW_LIB-NOTFOUND)
 endif()
 
 if(WIN32)
