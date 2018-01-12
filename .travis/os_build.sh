@@ -8,5 +8,6 @@ fi
 
 if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     cd _build_
+    export EXTRA_CMAKE_FLAGS=-DCMAKE_PREFIX_PATH='/usr/local/opt/qt5/;/usr/local/opt/openal-soft'
     ../.travis/build.sh
 fi
