@@ -15,9 +15,7 @@ matrix:
 matrix:
   include:
     - os: linux
-      env: BUILD_TYPE=Debug
-    - os: linux
-      env: BUILD_TYPE=Release
+      env: BUILD_TYPE=RelWithDebInfo
     #- os: osx
     #  env: BUILD_TYPE=Debug
     #- os: osx
