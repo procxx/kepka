@@ -9,6 +9,11 @@ cache:
   directories:
     - $HOME/travisCacheDir
 
+branches:
+  only:
+    - master
+    - dev
+
 matrix:
   fast_finish: true
 
