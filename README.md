@@ -4,6 +4,8 @@ This is the complete source code and the build instructions for the alpha versio
 
 ## Build instructions
 
+### Linux, macOS
+
 What you need to have installed:
 
 * Qt 5.9+ (with private modules, like qtbase5-private-dev)
@@ -21,6 +23,24 @@ Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configur
     conan install .. --build missing
     cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="/usr/local/opt/qt5/;/usr/local/opt/openal-soft" ..
     ninja
+
+### Windows
+
+Install [vcpkg][] (no need to integrate, just install), [cmake][], [Qt][qt] 5.9 or later and [Visual Studio][visual-studio] 2017 or later, and set the following environment variables:
+
+- `QT_DIR`: directory where Qt binary distribution is installed, e.g. `C:\Qt\5.9.1\msvc2017_64`
+- `VCPKG`: directory where VCPKG is installed, e.g. `C:\vcpkg`
+
+After that, execute the following `cmd` commands from Visual Studio developer command prompt:
+
+```console
+$ "%VCPKG%\vcpkg" install --triplet x64-windows openal-soft openssl opus zlib ffmpeg
+$ mkdir build
+$ cd build
+$ set PATH=%QT_DIR%\bin;%PATH%
+$ cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE="%VCPKG%\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+$ cmake --build .
+```
 
 [![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
 [![Build Status](https://travis-ci.org/telegramdesktop/tdesktop.svg?branch=dev)](https://travis-ci.org/telegramdesktop/tdesktop)
@@ -58,13 +78,17 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * Emoji alpha codes ([MIT License](https://github.com/emojione/emojione/blob/master/extras/alpha-codes/LICENSE.md))
 * Catch test framework ([Boost License](https://github.com/philsquared/Catch/blob/master/LICENSE.txt))
 
-* [CMake][cmake]
+* [CMake][cmake-build]
 
 [//]: # (LINKS)
+[cmake]: https://cmake.org/
+[cmake-build]: docs/building-cmake.md
+[qt]: https://www.qt.io/
 [telegram]: https://telegram.org
 [telegram_desktop]: https://desktop.telegram.org
 [telegram_api]: https://core.telegram.org
 [telegram_proto]: https://core.telegram.org/mtproto
 [license]: LICENSE
-[cmake]: docs/building-cmake.md
 [preview_image]: docs/assets/preview.png
+[vcpkg]: https://github.com/Microsoft/vcpkg
+[visual-studio]: https://www.visualstudio.com/
