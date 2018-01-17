@@ -169,20 +169,10 @@ QString psAppDataPath() {
 	if (GetEnvironmentVariable(L"APPDATA", wstrPath, maxFileLen)) {
 		QDir appData(QString::fromStdWString(std::wstring(wstrPath)));
 #ifdef OS_WIN_STORE
-		return appData.absolutePath() + qsl("/Telegram Desktop UWP/");
+		return appData.absolutePath() + '/' + str_const_toString(AppName) + qsl(" UWP/"));
 #else // OS_WIN_STORE
 		return appData.absolutePath() + '/' + str_const_toString(AppName) + '/';
 #endif // OS_WIN_STORE
-	}
-	return QString();
-}
-
-QString psAppDataPathOld() {
-	static const int maxFileLen = MAX_PATH * 10;
-	WCHAR wstrPath[maxFileLen];
-	if (GetEnvironmentVariable(L"APPDATA", wstrPath, maxFileLen)) {
-		QDir appData(QString::fromStdWString(std::wstring(wstrPath)));
-		return appData.absolutePath() + '/' + str_const_toString(AppNameOld) + '/';
 	}
 	return QString();
 }
@@ -596,8 +586,8 @@ void RegisterCustomScheme() {
 
 	if (!_psOpenRegKey(L"Software\\TelegramDesktop", &rkey)) return;
 	if (!_psOpenRegKey(L"Software\\TelegramDesktop\\Capabilities", &rkey)) return;
-	if (!_psSetKeyValue(rkey, L"ApplicationName", qsl("Telegram Desktop"))) return;
-	if (!_psSetKeyValue(rkey, L"ApplicationDescription", qsl("Telegram Desktop"))) return;
+	if (!_psSetKeyValue(rkey, L"ApplicationName", str_const_toString(AppName))) return;
+	if (!_psSetKeyValue(rkey, L"ApplicationDescription", str_const_toString(AppName))) return;
 	if (!_psOpenRegKey(L"Software\\TelegramDesktop\\Capabilities\\UrlAssociations", &rkey)) return;
 	if (!_psSetKeyValue(rkey, L"tg", qsl("tdesktop.tg"))) return;
 

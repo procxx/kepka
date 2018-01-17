@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/notifications_manager_linux.h"
 
+#include "config.h"
 #include "window/notifications_utilities.h"
 #include "platform/linux/linux_libnotify.h"
 #include "platform/linux/linux_libs.h"
@@ -242,7 +243,7 @@ QString GetServerName() {
 	if (!LibNotifyLoaded()) {
 		return QString();
 	}
-	if (!Libs::notify_is_initted() && !Libs::notify_init("Telegram Desktop")) {
+	if (!Libs::notify_is_initted() && !Libs::notify_init(AppName.c_str())) {
 		LOG(("LibNotify Error: failed to init!"));
 		return QString();
 	}

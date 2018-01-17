@@ -18,6 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+
+#include "stdafx.h"
 #include "application.h"
 #include "platform/platform_specific.h"
 #include "storage/localstorage.h"
@@ -27,7 +29,7 @@ int main(int argc, char *argv[]) {
 	// Retina display support is working fine, others are not.
 	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 #endif // not defined Q_OS_MAC and QT_VERSION >= 5.6.0
-	QCoreApplication::setApplicationName(qsl("Kepka"));
+	QCoreApplication::setApplicationName(str_const_toString(AppName));
 
 	InitFromCommandLine(argc, argv);
 	if (cLaunchMode() == LaunchModeFixPrevious) {

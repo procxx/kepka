@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/notifications_box.h"
 
+#include "config.h"
 #include "lang/lang_keys.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/discrete_sliders.h"
@@ -292,7 +293,7 @@ void NotificationsBox::prepareNotificationSampleLarge() {
 		p.setPen(st::dialogsNameFg);
 		p.setFont(st::msgNameFont);
 
-		auto notifyTitle = st::msgNameFont->elided(qsl("Telegram Desktop"), rectForName.width());
+		auto notifyTitle = st::msgNameFont->elided(str_const_toString(AppName), rectForName.width());
 		p.drawText(rectForName.left(), rectForName.top() + st::msgNameFont->ascent, notifyTitle);
 
 		st::notifyClose.icon.paint(p, w - st::notifyClosePos.x() - st::notifyClose.width + st::notifyClose.iconPosition.x(), st::notifyClosePos.y() + st::notifyClose.iconPosition.y(), w);
