@@ -76,7 +76,6 @@ mkdir -p "%{buildroot}%{_bindir}"
 install -m 0755 -p %{_target_platform}/Telegram/Telegram "%{buildroot}%{_bindir}/%{name}"
 
 # Installing desktop shortcut...
-mv lib/xdg/telegramdesktop.desktop lib/xdg/%{name}.desktop
 desktop-file-install --dir="%{buildroot}%{_datadir}/applications" lib/xdg/%{name}.desktop
 
 # Installing icons...
@@ -88,7 +87,7 @@ done
 
 # Installing appdata for Gnome Software...
 install -d "%{buildroot}%{_datadir}/metainfo"
-install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
+install -m 0644 -p lib/xdg/%{name}.appdata.xml "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
 
 %check
 appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
