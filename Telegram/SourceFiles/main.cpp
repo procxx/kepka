@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 	// Retina display support is working fine, others are not.
 	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling, true);
 #endif // not defined Q_OS_MAC and QT_VERSION >= 5.6.0
-	QCoreApplication::setApplicationName(qsl("TelegramDesktop"));
+	QCoreApplication::setApplicationName(qsl("Kepka"));
 
 	InitFromCommandLine(argc, argv);
 	if (cLaunchMode() == LaunchModeFixPrevious) {
@@ -49,10 +49,10 @@ int main(int argc, char *argv[]) {
 		result = app.exec();
 	}
 
-	DEBUG_LOG(("Telegram finished, result: %1").arg(result));
+	DEBUG_LOG(("Kepka finished, result: %1").arg(result));
 
 	if (cRestarting()) {
-		DEBUG_LOG(("Application Info: executing Telegram, because of restart..."));
+		DEBUG_LOG(("Application Info: executing Kepka, because of restart..."));
 		psExecTelegram();
 	}
 
