@@ -60,7 +60,7 @@ personal or business messaging needs.
 
 %prep
 # Unpacking main source archive...
-%autosetup -n %{name} -p1
+%autosetup -p1
 mkdir %{_target_platform}
 
 %build
