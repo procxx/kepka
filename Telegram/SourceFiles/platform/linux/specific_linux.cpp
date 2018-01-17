@@ -456,13 +456,14 @@ void psRegisterCustomScheme() {
 			s.setCodec("UTF-8");
 			s << "[Desktop Entry]\n";
 			s << "Version=1.0\n";
-			s << "Name=Telegram Desktop\n";
-			s << "Comment=Official desktop version of Telegram messaging app\n";
+			s << "Name=" << str_const_toString(AppName) << '\n';
+			s << "Comment=Unofficial desktop version of Telegram messaging app\n";
 			s << "TryExec=" << EscapeShell(QFile::encodeName(cExeDir() + cExeName())) << "\n";
 			s << "Exec=" << EscapeShell(QFile::encodeName(cExeDir() + cExeName())) << " -- %u\n";
 			s << "Icon=telegram\n";
 			s << "Terminal=false\n";
 			s << "StartupWMClass=Kepka\n";
+			s << "StartupWMClass=" << str_const_toString(AppName) << '\n';
 			s << "Type=Application\n";
 			s << "Categories=Network;InstantMessaging;Qt;\n";
 			s << "MimeType=x-scheme-handler/tg;\n";

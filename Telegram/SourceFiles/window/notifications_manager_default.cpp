@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/notifications_manager_default.h"
 
+#include "config.h"
 #include "platform/platform_notifications_manager.h"
 #include "application.h"
 #include "messenger.h"
@@ -695,7 +696,7 @@ void Notification::updateNotifyDisplay() {
 			_history->peer->dialogName().drawElided(p, rectForName.left(), rectForName.top(), rectForName.width());
 		} else {
 			p.setFont(st::msgNameFont);
-			static QString notifyTitle = st::msgNameFont->elided(qsl("Telegram Desktop"), rectForName.width());
+			static QString notifyTitle = st::msgNameFont->elided(str_const_toString(AppName), rectForName.width());
 			p.drawText(rectForName.left(), rectForName.top() + st::msgNameFont->ascent, notifyTitle);
 		}
 	}

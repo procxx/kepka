@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/about_box.h"
 
+#include "config.h"
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
@@ -39,7 +40,7 @@ AboutBox::AboutBox(QWidget *parent)
 
 void AboutBox::prepare() {
 	constexpr auto test = std::is_convertible<const char*, QString>::value;
-	setTitle([] { return qsl("Telegram Desktop"); });
+	setTitle([] { return str_const_toString(AppName); });
 
 	addButton(langFactory(lng_close), [this] { closeBox(); });
 

@@ -422,7 +422,7 @@ void Manager::notificationReplied(PeerId peerId, MsgId msgId, const QString &rep
 void NativeManager::doShowNotification(HistoryItem *item, int forwardedCount) {
 	auto options = getNotificationOptions(item);
 
-	QString title = options.hideNameAndPhoto ? qsl("Telegram Desktop") : item->history()->peer->name;
+	QString title = options.hideNameAndPhoto ? str_const_toString(AppName) : item->history()->peer->name;
 	QString subtitle = options.hideNameAndPhoto ? QString() : item->notificationHeader();
 	QString text = options.hideMessageText ? lang(lng_notification_preview) : (forwardedCount < 2 ? item->notificationText() : lng_forward_messages(lt_count, forwardedCount));
 

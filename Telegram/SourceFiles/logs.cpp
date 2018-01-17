@@ -376,11 +376,6 @@ namespace Logs {
 			return;
 		}
 
-#ifdef Q_OS_WIN
-		if (cWorkingDir() == psAppDataPath()) { // fix old "Telegram Win (Unofficial)" version
-			moveOldDataFrom = psAppDataPathOld();
-		}
-#endif
 		if (!moveOldDataFrom.isEmpty()) {
 			_moveOldDataFiles(moveOldDataFrom);
 		}
