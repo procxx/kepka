@@ -1,3 +1,9 @@
+[![Version](https://badge.fury.io/gh/procxx%2Fkepka.svg)](https://github.com/procxx/kepka/releases)
+[![Build Status](https://travis-ci.org/procxx/kepka.svg?branch=dev)](https://travis-ci.org/procxx/kepka)
+[![Build status](https://ci.appveyor.com/api/projects/status/2kodvgwvlua3o6hp?svg=true
+)](https://ci.appveyor.com/project/procxx/tdesktop)
+
+
 # [Telegram Desktop][telegram_desktop] - pro.cxx fork
 
 This is the complete source code and the build instructions for the alpha version of the pro.cxx fork of desktop client for the [Telegram][telegram] messenger, based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
@@ -41,11 +47,6 @@ $ set PATH=%QT_DIR%\bin;%PATH%
 $ cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE="%VCPKG%\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 $ cmake --build .
 ```
-
-[![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
-[![Build Status](https://travis-ci.org/telegramdesktop/tdesktop.svg?branch=dev)](https://travis-ci.org/telegramdesktop/tdesktop)
-[![Build status](https://ci.appveyor.com/api/projects/status/2kodvgwvlua3o6hp/branch/dev?svg=true)](https://ci.appveyor.com/project/procxx/tdesktop)
-
 ![Preview of Telegram Desktop][preview_image]
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
