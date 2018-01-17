@@ -313,7 +313,7 @@ QString psAppDataPath() {
 	// If we find data there, we should still use it.
 	auto home = getHomeDir();
 	if (!home.isEmpty()) {
-		auto oldPath = home + qsl(".TelegramDesktop/");
+		auto oldPath = home + qsl(".Kepka/");
 		auto oldSettingsBase = oldPath + qsl("tdata/settings");
 		if (QFile(oldSettingsBase + '0').exists() || QFile(oldSettingsBase + '1').exists()) {
 			return oldPath;
@@ -462,7 +462,7 @@ void psRegisterCustomScheme() {
 			s << "Exec=" << EscapeShell(QFile::encodeName(cExeDir() + cExeName())) << " -- %u\n";
 			s << "Icon=telegram\n";
 			s << "Terminal=false\n";
-			s << "StartupWMClass=TelegramDesktop\n";
+			s << "StartupWMClass=Kepka\n";
 			s << "Type=Application\n";
 			s << "Categories=Network;InstantMessaging;Qt;\n";
 			s << "MimeType=x-scheme-handler/tg;\n";
