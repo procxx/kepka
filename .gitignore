@@ -56,6 +56,16 @@ xcuserdata
 /Telegram/Makefile
 *.*~
 
+### Vim service files ##
+# swap
+.sw[a-p]
+.*.sw[a-p]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+
 _build_
 _conan_build_
 
