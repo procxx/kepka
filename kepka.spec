@@ -87,11 +87,11 @@ for size in 16 32 48 64 128 256 512; do
 done
 
 # Installing appdata for Gnome Software...
-install -d "%{buildroot}%{_datadir}/appdata"
-install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_datadir}/appdata/%{name}.appdata.xml"
+install -d "%{buildroot}%{_datadir}/metainfo"
+install -m 0644 -p lib/xdg/telegramdesktop.appdata.xml "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
 
 %check
-appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/appdata/%{name}.appdata.xml"
+appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml"
 
 %files
 %doc README.md changelog.txt
@@ -99,7 +99,7 @@ appstream-util validate-relax --nonet "%{buildroot}%{_datadir}/appdata/%{name}.a
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/metainfo/%{name}.appdata.xml
 
 %changelog
 * Thu Dec 21 2017 Vitaly Zaitsev <vitaly@easycoding.org> - 1.0.0-1
