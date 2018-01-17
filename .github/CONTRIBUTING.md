@@ -1,6 +1,6 @@
 # Contributing
 
-This document describes how you can contribute to Telegram Desktop. Please read it carefully.
+This document describes how you can contribute to Kepka. Please read it carefully.
 
 **Table of Contents**
 
@@ -17,14 +17,14 @@ This document describes how you can contribute to Telegram Desktop. Please read 
 
 ## What contributions are accepted
 
-We highly appreciate your contributions in the matter of fixing bugs and optimizing the Telegram Desktop source code and its documentation. In case of fixing the existing user experience please push to your fork and [submit a pull request][pr].
+We highly appreciate your contributions in the matter of fixing bugs and optimizing the Kepka source code and its documentation. In case of fixing the existing user experience please push to your fork and [submit a pull request][pr].
 
 Wait for us. We try to review your pull requests as fast as possible.
 If we find issues with your pull request, we may suggest some changes and improvements.
 
-Unfortunately we **do not merge** any pull requests that have new feature implementations, translations to new languages and those which introduce any new user interface elements.
+Unfortunately we **do not merge** any pull requests that have not comply with [Telegram API Terms of Use][api-tos].
 
-Telegram Desktop is not a standalone application but a part of [Telegram project][telegram], so all the decisions about the features, languages, user experience, user interface and the design are made inside Telegram team, often according to some roadmap which is not public.
+Kepka is a fork of a Telegram Desktop which a part of [Telegram project][telegram], so all the decisions about the features, languages, user experience, user interface and the design *in upstream* are made inside Telegram team, often according to some roadmap which is not public.
 
 ## Build instructions
 
@@ -33,11 +33,11 @@ environments.
 
 ## Pull upstream changes into your fork regularly
 
-Telegram Desktop is advancing quickly. It is therefore critical that you pull upstream changes into your fork on a regular basis. Nothing is worse than putting in a days of hard work into a pull request only to have it rejected because it has diverged too far from upstram.
+Kepka is advancing quickly. It is therefore critical that you pull upstream changes into your fork on a regular basis. Nothing is worse than putting in a days of hard work into a pull request only to have it rejected because it has diverged too far from upstram.
 
 To pull in upstream changes:
 
-    git remote add upstream https://github.com/telegramdesktop/tdesktop.git
+    git remote add upstream https://github.com/procxx/kepka.git
     git fetch upstream master
 
 Check the log to be sure that you actually want the changes, before merging:
@@ -56,7 +56,7 @@ For more info, see [GitHub Help][help_fork_repo].
 
 ## How to get your pull request accepted
 
-We want to improve Telegram Desktop with your contributions. But we also want to provide a stable experience for our users and the community. Follow these rules and you should succeed without a problem!
+We want to improve Kepka with your contributions. But we also want to provide a stable experience for our users and the community. Follow these rules and you should succeed without a problem!
 
 ### Keep your pull requests limited to a single issue
 
@@ -105,11 +105,51 @@ Before you submit a pull request, please test your changes. Verify that Telegram
 
   For example: `Fix #545`
 
+* For documentation commits add `[ci skip]` (or `[skip ci]`) at the end of the commit message.
+
+#### Example
+
+```Summarize changes in around 50 characters or less
+
+More detailed explanatory text, if necessary. Wrap it to about 72
+characters or so. In some contexts, the first line is treated as the
+subject of the commit and the rest of the text as the body. The
+blank line separating the summary from the body is critical (unless
+you omit the body entirely); various tools like `log`, `shortlog`
+and `rebase` can get confused if you run the two together.
+
+Explain the problem that this commit is solving. Focus on why you
+are making this change as opposed to how (the code explains that).
+Are there side effects or other unintuitive consequences of this
+change? Here's the place to explain them.
+
+Further paragraphs come after blank lines.
+
+ - Bullet points are okay, too
+
+ - Typically a hyphen or asterisk is used for the bullet, preceded
+   by a single space, with blank lines in between, but conventions
+   vary here
+
+If you use an issue tracker, put references to them at the bottom,
+like this:
+
+Resolves: #123
+See also: #456, #789
+[ci skip]
+```
+
+(Example taken from [this source][commit_message_2])
+
+
 [//]: # (LINKS)
+[procxx]: https://procxx.github.io/
 [telegram]: https://telegram.org/
 [help_fork_repo]: https://help.github.com/articles/fork-a-repo/
 [help_change_commit_message]: https://help.github.com/articles/changing-a-commit-message/
 [commit_message]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+[commit_message_2]: https://chris.beams.io/posts/git-commit/
 [pr]: https://github.com/telegramdesktop/tdesktop/compare
 [build_instructions]: https://github.com/telegramdesktop/tdesktop/blob/master/README.md#build-instructions
 [closing-issues-via-commit-messages]: https://help.github.com/articles/closing-issues-via-commit-messages/
+[api-tos]: https://core.telegram.org/api/terms
