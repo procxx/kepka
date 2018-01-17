@@ -21,6 +21,12 @@ What you need to have installed:
 * zlib
 * opus (libopus-dev)
 
+Debian/Ubuntu:
+```console
+# apt-get install qtbase5-private-dev zlib1g-dev libopenal-dev libavcodec-dev libavresample-dev libswscale-dev libopenal-data libopenal1 libavutil-dev
+```
+You most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscale`
+
 Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configuring.
 
     ccache -o sloppiness=pch_defines,time_macros
