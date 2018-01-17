@@ -107,9 +107,10 @@ Before you submit a pull request, please test your changes. Verify that Telegram
 
 * For documentation commits add `[ci skip]` (or `[skip ci]`) at the end of the commit message.
 
-#### Example
+#### Commit Message Example
 
-```Summarize changes in around 50 characters or less
+```
+Summarize changes in around 50 characters or less
 
 More detailed explanatory text, if necessary. Wrap it to about 72
 characters or so. In some contexts, the first line is treated as the
