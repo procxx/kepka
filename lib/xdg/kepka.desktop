@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Name=Kepka
+GenericName=Kepka
+Keywords=IM;Chat;
+Comment=Unofficial Telegram desktop messaging app
+Exec=/usr/bin/kepka -- %u
+Icon=kepka
+Terminal=false
+StartupWMClass=Kepka
+Type=Application
+Categories=Network;InstantMessaging;Qt;
+MimeType=x-scheme-handler/tg;
