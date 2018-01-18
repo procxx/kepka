@@ -169,7 +169,7 @@ void paintPreparedDate(Painter &p, const QString &dateText, int dateTextWidth, i
 	int left = st::msgServiceMargin.left();
 	int maxwidth = w;
 	if (Adaptive::ChatWide()) {
-		maxwidth = qMin(maxwidth, WideChatWidth());
+		maxwidth = std::min(maxwidth, WideChatWidth());
 	}
 	w = maxwidth - st::msgServiceMargin.left() - st::msgServiceMargin.left();
 
@@ -202,7 +202,7 @@ void ServiceMessagePainter::paint(
 		if (animms < st::activeFadeInDuration + st::activeFadeOutDuration) {
 			auto top = st::msgServiceMargin.top();
 			auto bottom = st::msgServiceMargin.bottom();
-			auto fill = qMin(top, bottom);
+			auto fill = std::min(top, bottom);
 			auto skiptop = top - fill;
 			auto fillheight = fill + height + fill;
 
@@ -305,14 +305,14 @@ void ServiceMessagePainter::paintComplexBubble(Painter &p, int left, int width, 
 }
 
 QVector<int> ServiceMessagePainter::countLineWidths(const Text &text, const QRect &textRect) {
-	int linesCount = qMax(textRect.height() / st::msgServiceFont->height, 1);
+	int linesCount = std::max(textRect.height() / st::msgServiceFont->height, 1);
 	QVector<int> lineWidths;
 	lineWidths.reserve(linesCount);
 	text.countLineWidths(textRect.width(), &lineWidths);
 
 	int minDelta = 2 * (historyServiceMsgRadius() + historyServiceMsgInvertedRadius() - historyServiceMsgInvertedShrink());
 	for (int i = 0, count = lineWidths.size(); i < count; ++i) {
-		int width = qMax(lineWidths.at(i), 0);
+		int width = std::max(lineWidths.at(i), 0);
 		if (i > 0) {
 			int widthBefore = lineWidths.at(i - 1);
 			if (width < widthBefore && width + minDelta > widthBefore) {

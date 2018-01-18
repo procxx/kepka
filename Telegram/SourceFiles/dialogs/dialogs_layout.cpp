@@ -153,7 +153,7 @@ void paintRow(Painter &p, const RippleRow *row, History *history, not_null<PeerD
 	if (from == history->peer && from->isVerified()) {
 		auto icon = &(active ? st::dialogsVerifiedIconActive : (selected ? st::dialogsVerifiedIconOver : st::dialogsVerifiedIcon));
 		rectForName.setWidth(rectForName.width() - icon->width());
-		icon->paint(p, rectForName.topLeft() + QPoint(qMin(from->dialogName().maxWidth(), rectForName.width()), 0), fullWidth);
+		icon->paint(p, rectForName.topLeft() + QPoint(std::min(from->dialogName().maxWidth(), rectForName.width()), 0), fullWidth);
 	}
 
 	p.setPen(active ? st::dialogsNameFgActive : (selected ? st::dialogsNameFgOver : st::dialogsNameFg));

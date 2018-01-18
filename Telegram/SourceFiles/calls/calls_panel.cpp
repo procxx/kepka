@@ -463,10 +463,10 @@ void Panel::createUserpicCache(ImagePtr image) {
 		auto width = image->width();
 		auto height = image->height();
 		if (width > height) {
-			width = qMax((width * size) / height, 1);
+			width = std::max((width * size) / height, 1);
 			height = size;
 		} else {
-			height = qMax((height * size) / width, 1);
+			height = std::max((height * size) / width, 1);
 			width = size;
 		}
 		_userPhoto = image->pixNoCache(width, height, options, st::callWidth, st::callWidth);
@@ -611,8 +611,8 @@ void Panel::paintEvent(QPaintEvent *e) {
 
 			PainterHighQualityEnabler hq(p);
 			auto marginRatio = (1. - opacity) / 5;
-			auto marginWidth = qRound(width() * marginRatio);
-			auto marginHeight = qRound(height() * marginRatio);
+			auto marginWidth = std::round(width() * marginRatio);
+			auto marginHeight = std::round(height() * marginRatio);
 			p.drawPixmap(rect().marginsRemoved(QMargins(marginWidth, marginHeight, marginWidth, marginHeight)), _animationCache, QRect(QPoint(0, 0), _animationCache.size()));
 			return;
 		}

@@ -187,7 +187,7 @@ void TopBar::updateControlsGeometry() {
 	_shortInfoLabel->setVisible(!showFull);
 
 	auto setInfoLabelGeometry = [this, left, right](auto &&infoLabel) {
-		auto minPadding = qMax(left, right);
+		auto minPadding = std::max(left, right);
 		auto infoWidth = infoLabel->naturalWidth();
 		auto infoLeft = (width() - infoWidth) / 2;
 		if (infoLeft < minPadding) {

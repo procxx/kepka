@@ -353,8 +353,8 @@ ScrollArea::ScrollArea(QWidget *parent, const style::ScrollArea &st, bool handle
 void ScrollArea::touchDeaccelerate(qint32 elapsed) {
 	qint32 x = _touchSpeed.x();
 	qint32 y = _touchSpeed.y();
-	_touchSpeed.setX((x == 0) ? x : (x > 0) ? qMax(0, x - elapsed) : qMin(0, x + elapsed));
-	_touchSpeed.setY((y == 0) ? y : (y > 0) ? qMax(0, y - elapsed) : qMin(0, y + elapsed));
+	_touchSpeed.setX((x == 0) ? x : (x > 0) ? std::max(0, x - elapsed) : std::min(0, x + elapsed));
+	_touchSpeed.setY((y == 0) ? y : (y > 0) ? std::max(0, y - elapsed) : std::min(0, y + elapsed));
 }
 
 void ScrollArea::onScrolled() {
@@ -399,12 +399,12 @@ void ScrollArea::onInnerResized() {
 
 int ScrollArea::scrollWidth() const {
 	QWidget *w(widget());
-	return w ? qMax(w->width(), width()) : width();
+	return w ? std::max(w->width(), width()) : width();
 }
 
 int ScrollArea::scrollHeight() const {
 	QWidget *w(widget());
-	return w ? qMax(w->height(), height()) : height();
+	return w ? std::max(w->height(), height()) : height();
 }
 
 int ScrollArea::scrollLeftMax() const {

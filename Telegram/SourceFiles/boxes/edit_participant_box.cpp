@@ -186,7 +186,7 @@ void EditParticipantBox::removeControl(QPointer<TWidget> widget) {
 
 void EditParticipantBox::resizeToContent() {
 	_inner->resizeToWidth(st::boxWideWidth);
-	setDimensions(_inner->width(), qMin(_inner->height(), st::boxMaxListHeight));
+	setDimensions(_inner->width(), std::min(_inner->height(), st::boxMaxListHeight));
 }
 
 EditAdminBox::EditAdminBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, const MTPChannelAdminRights &rights) : EditParticipantBox(nullptr, channel, user, (rights.c_channelAdminRights().vflags.v != 0))

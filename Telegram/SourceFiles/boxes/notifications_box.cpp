@@ -360,7 +360,7 @@ void NotificationsBox::setOverCorner(Notify::ScreenCorner corner) {
 	auto &samples = _cornerSamples[static_cast<int>(_overCorner)];
 	auto samplesAlready = samples.size();
 	auto samplesNeeded = currentCount();
-	auto samplesLeave = qMin(samplesAlready, samplesNeeded);
+	auto samplesLeave = std::min(samplesAlready, samplesNeeded);
 	for (int i = 0; i != samplesLeave; ++i) {
 		samples[i]->showFast();
 	}

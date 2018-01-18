@@ -190,9 +190,9 @@ void SettingsSlider::resizeSections(int newWidth) {
 	auto skip = 0;
 	auto x = 0.;
 	enumerateSections([this, &x, &skip, sectionWidth](Section &section) {
-		section.left = qFloor(x) + skip;
+		section.left = std::floor(x) + skip;
 		x += sectionWidth;
-		section.width = qRound(x) - (section.left - skip);
+		section.width = std::round(x) - (section.left - skip);
 		skip += _st.barSkip;
 		return true;
 	});
@@ -256,13 +256,13 @@ void SettingsSlider::paintEvent(QPaintEvent *e) {
 		}
 		auto from = section.left, tofill = section.width;
 		if (activeLeft > from) {
-			auto fill = qMin(tofill, activeLeft - from);
+			auto fill = std::min(tofill, activeLeft - from);
 			p.fillRect(myrtlrect(from, _st.barTop, fill, _st.barStroke), _st.barFg);
 			from += fill;
 			tofill -= fill;
 		}
 		if (activeLeft + section.width > from) {
-			if (auto fill = qMin(tofill, activeLeft + section.width - from)) {
+			if (auto fill = std::min(tofill, activeLeft + section.width - from)) {
 				p.fillRect(myrtlrect(from, _st.barTop, fill, _st.barStroke), _st.barFgActive);
 				from += fill;
 				tofill -= fill;

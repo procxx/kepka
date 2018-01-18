@@ -125,11 +125,11 @@ StickersListWidget::Footer::Footer(not_null<StickersListWidget*> parent) : Inner
 
 template <typename Callback>
 void StickersListWidget::Footer::enumerateVisibleIcons(Callback callback) {
-	auto iconsX = qRound(_iconsX.current());
+	int iconsX = std::round(_iconsX.current());
 	auto index = iconsX / st::emojiCategory.width;
 	auto x = _iconsLeft - (iconsX % st::emojiCategory.width);
-	for (auto index = qMin(_icons.size(), iconsX / st::emojiCategory.width),
-		last = qMin(_icons.size(), index + kVisibleIconsCount); index != last; ++index) {
+	for (auto index = std::min<int>(_icons.size(), iconsX / st::emojiCategory.width),
+		last = std::min(_icons.size(), index + kVisibleIconsCount); index != last; ++index) {
 		callback(_icons[index], x);
 		x += st::emojiCategory.width;
 	}
@@ -198,8 +198,8 @@ void StickersListWidget::Footer::paintEvent(QPaintEvent *e) {
 		paintStickerSettingsIcon(p);
 	}
 
-	auto selxrel = _iconsLeft + qRound(_iconSelX.current());
-	auto selx = selxrel - qRound(_iconsX.current());
+	auto selxrel = _iconsLeft + std::round(_iconSelX.current());
+	auto selx = selxrel - std::round(_iconsX.current());
 
 	auto clip = QRect(_iconsLeft, _iconsTop, _iconsLeft + (kVisibleIconsCount - 1) * st::emojiCategory.width - _iconsLeft, st::emojiCategory.height);
 	if (rtl()) clip.moveLeft(width() - _iconsLeft - clip.width());
@@ -258,7 +258,7 @@ void StickersListWidget::Footer::mousePressEvent(QMouseEvent *e) {
 	} else {
 		_iconDown = _iconOver;
 		_iconsMouseDown = _iconsMousePos;
-		_iconsStartX = qRound(_iconsX.current());
+		_iconsStartX = std::round(_iconsX.current());
 	}
 }
 
@@ -273,7 +273,7 @@ void StickersListWidget::Footer::mouseMoveEvent(QMouseEvent *e) {
 	}
 	if (_iconsDragging) {
 		auto newX = snap(_iconsStartX + (rtl() ? -1 : 1) * (_iconsMouseDown.x() - _iconsMousePos.x()), 0, _iconsMax);
-		if (newX != qRound(_iconsX.current())) {
+		if (newX != std::round(_iconsX.current())) {
 			_iconsX = anim::value(newX, newX);
 			_iconsStartAnim = 0;
 			_a_icons.stop();
@@ -293,7 +293,7 @@ void StickersListWidget::Footer::mouseReleaseEvent(QMouseEvent *e) {
 	_iconsMousePos = e ? e->globalPos() : QCursor::pos();
 	if (_iconsDragging) {
 		auto newX = snap(_iconsStartX + _iconsMouseDown.x() - _iconsMousePos.x(), 0, _iconsMax);
-		if (newX != qRound(_iconsX.current())) {
+		if (newX != std::round(_iconsX.current())) {
 			_iconsX = anim::value(newX, newX);
 			_iconsStartAnim = 0;
 			_a_icons.stop();
@@ -320,13 +320,13 @@ bool StickersListWidget::Footer::event(QEvent *e) {
 			auto horizontal = (ev->angleDelta().x() != 0 || ev->orientation() == Qt::Horizontal);
 			auto vertical = (ev->angleDelta().y() != 0 || ev->orientation() == Qt::Vertical);
 			if (horizontal) _horizontal = true;
-			auto newX = qRound(_iconsX.current());
+			int newX = std::round(_iconsX.current());
 			if (/*_horizontal && */horizontal) {
 				newX = snap(newX - (rtl() ? -1 : 1) * (ev->pixelDelta().x() ? ev->pixelDelta().x() : ev->angleDelta().x()), 0, _iconsMax);
 			} else if (/*!_horizontal && */vertical) {
 				newX = snap(newX - (ev->pixelDelta().y() ? ev->pixelDelta().y() : ev->angleDelta().y()), 0, _iconsMax);
 			}
-			if (newX != qRound(_iconsX.current())) {
+			if (newX != std::round(_iconsX.current())) {
 				_iconsX = anim::value(newX, newX);
 				_iconsStartAnim = 0;
 				_a_icons.stop();
@@ -353,8 +353,8 @@ void StickersListWidget::Footer::updateSelected() {
 		}
 	} else if (!_icons.isEmpty()) {
 		if (y >= _iconsTop && y < _iconsTop + st::emojiCategory.height && x >= 0 && x < (kVisibleIconsCount - 1) * st::emojiCategory.width && x < _icons.size() * st::emojiCategory.width) {
-			x += qRound(_iconsX.current());
-			newOver = qFloor(x / st::emojiCategory.width);
+			x += std::round(_iconsX.current());
+			newOver = std::floor(x / st::emojiCategory.width);
 		}
 	}
 	if (newOver != _iconOver) {
@@ -377,7 +377,7 @@ void StickersListWidget::Footer::refreshIcons(ValidateIconAnimations animations)
 	if (_icons.isEmpty()) {
 		_iconsMax = 0;
 	} else {
-		_iconsMax = qMax(int((_icons.size() + 1 - kVisibleIconsCount) * st::emojiCategory.width), 0);
+		_iconsMax = std::max(int((_icons.size() + 1 - kVisibleIconsCount) * st::emojiCategory.width), 0);
 	}
 	if (_iconsX.current() > _iconsMax) {
 		_iconsX = anim::value(_iconsMax, _iconsMax);
@@ -491,7 +491,7 @@ void StickersListWidget::readVisibleSets() {
 		if (i * rowHeight < itemsVisibleTop || (i + 1) * rowHeight > itemsVisibleBottom) {
 			continue;
 		}
-		int count = qMin(set.pack.size(), static_cast<int>(kStickersPanelPerRow));
+		int count = std::min(set.pack.size(), static_cast<int>(kStickersPanelPerRow));
 		int loaded = 0;
 		for (int j = 0; j < count; ++j) {
 			if (set.pack[j]->thumb->loaded() || set.pack[j]->loaded()) {
@@ -568,11 +568,11 @@ int StickersListWidget::countHeight() {
 			return st::stickerPanPadding + shownSets().size() * featuredRowHeight();
 		} else if (!shownSets().empty()) {
 			auto info = sectionInfo(shownSets().size() - 1);
-			return info.top + qMax(info.rowsBottom - info.top, minimalLastHeight);
+			return info.top + std::max(info.rowsBottom - info.top, minimalLastHeight);
 		}
 		return 0;
 	};
-	return qMax(minimalLastHeight, countResult()) + st::stickerPanPadding;
+	return std::max(minimalLastHeight, countResult()) + st::stickerPanPadding;
 }
 
 void StickersListWidget::installedLocally(quint64 setId) {
@@ -827,10 +827,10 @@ void StickersListWidget::paintSticker(Painter &p, Set &set, int y, int index, bo
 		sticker->checkSticker();
 	}
 
-	auto coef = qMin((st::stickerPanSize.width() - st::buttonRadius * 2) / double(sticker->dimensions.width()), (st::stickerPanSize.height() - st::buttonRadius * 2) / double(sticker->dimensions.height()));
+	auto coef = std::min((st::stickerPanSize.width() - st::buttonRadius * 2) / double(sticker->dimensions.width()), (st::stickerPanSize.height() - st::buttonRadius * 2) / double(sticker->dimensions.height()));
 	if (coef > 1) coef = 1;
-	auto w = qMax(qRound(coef * sticker->dimensions.width()), 1);
-	auto h = qMax(qRound(coef * sticker->dimensions.height()), 1);
+	auto w = std::max<int>(std::round(coef * sticker->dimensions.width()), 1);
+	auto h = std::max<int>(std::round(coef * sticker->dimensions.height()), 1);
 	auto ppos = pos + QPoint((st::stickerPanSize.width() - w) / 2, (st::stickerPanSize.height() - h) / 2);
 	if (goodThumb) {
 		p.drawPixmapLeft(ppos, width(), sticker->thumb->pix(w, h));
@@ -1431,7 +1431,7 @@ void StickersListWidget::updateSelected() {
 				}
 			} else if (yOffset >= st::stickersTrendingHeader  && yOffset < st::stickersTrendingHeader + st::stickerPanSize.height()) {
 				if (sx >= 0 && sx < kStickersPanelPerRow * st::stickerPanSize.width()) {
-					auto index = qFloor(sx / st::stickerPanSize.width());
+					int index = std::floor(sx / st::stickerPanSize.width());
 					if (index >= 0 && index < set.pack.size()) {
 						auto overDelete = false;
 						newSelected = OverSticker { section, index, overDelete };
@@ -1460,8 +1460,8 @@ void StickersListWidget::updateSelected() {
 				}
 			} else {
 				auto special = ((set.flags & MTPDstickerSet::Flag::f_official) != 0);
-				auto rowIndex = qFloor(yOffset / st::stickerPanSize.height());
-				auto columnIndex = qFloor(sx / st::stickerPanSize.width());
+				int rowIndex = std::floor(yOffset / st::stickerPanSize.height());
+				int columnIndex = std::floor(sx / st::stickerPanSize.width());
 				auto index = rowIndex * kStickersPanelPerRow + columnIndex;
 				if (index >= 0 && index < set.pack.size()) {
 					auto overDelete = false;

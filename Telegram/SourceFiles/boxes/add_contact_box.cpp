@@ -1103,7 +1103,7 @@ void EditBioBox::handleBioUpdated() {
 		cursor.setPosition(position);
 		_bio->setTextCursor(cursor);
 	}
-	auto countLeft = qMax(kMaxBioLength - text.size(), 0);
+	auto countLeft = std::max(kMaxBioLength - text.size(), 0);
 	_countdown->setText(QString::number(countLeft));
 }
 
@@ -1503,7 +1503,7 @@ void RevokePublicLinkBox::Inner::paintChat(Painter &p, const ChatRow &row, bool 
 	if (peer->isVerified()) {
 		auto icon = &st::dialogsVerifiedIcon;
 		namew -= icon->width();
-		icon->paint(p, namex + qMin(row.name.maxWidth(), namew), st::contactsPadding.top() + st::contactsNameTop, width());
+		icon->paint(p, namex + std::min(row.name.maxWidth(), namew), st::contactsPadding.top() + st::contactsNameTop, width());
 	}
 	row.name.drawLeftElided(p, namex, st::contactsPadding.top() + st::contactsNameTop, namew, width());
 

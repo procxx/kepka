@@ -1811,13 +1811,13 @@ void _writeUserSettings() {
 	data.stream << quint32(dbiDownloadPath) << (Global::AskDownloadPath() ? QString() : Global::DownloadPath()) << (Global::AskDownloadPath() ? QByteArray() : Global::DownloadPathBookmark());
 	data.stream << quint32(dbiCompressPastedImage) << qint32(cCompressPastedImage());
 	data.stream << quint32(dbiDialogLastPath) << cDialogLastPath();
-	data.stream << quint32(dbiSongVolume) << qint32(qRound(Global::SongVolume() * 1e6));
-	data.stream << quint32(dbiVideoVolume) << qint32(qRound(Global::VideoVolume() * 1e6));
+	data.stream << quint32(dbiSongVolume) << qint32(std::round(Global::SongVolume() * 1e6));
+	data.stream << quint32(dbiVideoVolume) << qint32(std::round(Global::VideoVolume() * 1e6));
 	data.stream << quint32(dbiAutoDownload) << qint32(cAutoDownloadPhoto()) << qint32(cAutoDownloadAudio()) << qint32(cAutoDownloadGif());
 	data.stream << quint32(dbiDialogsMode) << qint32(Global::DialogsModeEnabled() ? 1 : 0) << static_cast<qint32>(Global::DialogsMode());
 	data.stream << quint32(dbiModerateMode) << qint32(Global::ModerateModeEnabled() ? 1 : 0);
 	data.stream << quint32(dbiAutoPlay) << qint32(cAutoPlayGif() ? 1 : 0);
-	data.stream << quint32(dbiDialogsWidthRatio) << qint32(snap(qRound(dialogsWidthRatio() * 1000000), 0, 1000000));
+	data.stream << quint32(dbiDialogsWidthRatio) << qint32(snap<int>(std::round(dialogsWidthRatio() * 1000000), 0, 1000000));
 	data.stream << quint32(dbiUseExternalVideoPlayer) << qint32(cUseExternalVideoPlayer());
 	if (!userData.isEmpty()) {
 		data.stream << quint32(dbiAuthSessionData) << userData;

@@ -397,9 +397,9 @@ int AddParticipantsBoxController::alreadyInCount() const {
 		return 1; // self
 	}
 	if (auto chat = _peer->asChat()) {
-		return qMax(chat->count, 1);
+		return std::max(chat->count, 1);
 	} else if (auto channel = _peer->asChannel()) {
-		return qMax(channel->membersCount(), int(_alreadyIn.size()));
+		return std::max(channel->membersCount(), int(_alreadyIn.size()));
 	}
 	Unexpected("User in AddParticipantsBoxController::alreadyInCount");
 }
@@ -530,7 +530,7 @@ int EditChatAdminsBoxController::LabeledCheckbox::resizeGetHeight(int newWidth) 
 	_labelWidth = newWidth - st::contactsPadding.left() - st::contactsPadding.right();
 	_checkbox->resizeToNaturalWidth(_labelWidth);
 	_checkbox->moveToLeft(st::contactsPadding.left(), st::contactsAllAdminsTop);
-	auto labelHeight = qMax(
+	auto labelHeight = std::max(
 		_labelChecked.countHeight(_labelWidth),
 		_labelUnchecked.countHeight(_labelWidth));
 	return st::contactsAboutTop + labelHeight + st::contactsAboutBottom;

@@ -109,11 +109,11 @@ int BackgroundRow::resizeGetHeight(int newWidth) {
 	auto linkTop = 0;
 	auto linkLeft = st::settingsBackgroundSize + st::settingsSmallSkip;
 	auto linkWidth = newWidth - linkLeft;
-	_chooseFromGallery->resizeToWidth(qMin(linkWidth, _chooseFromGallery->naturalWidth()));
-	_chooseFromFile->resizeToWidth(qMin(linkWidth, _chooseFromFile->naturalWidth()));
-	_editTheme->resizeToWidth(qMin(linkWidth, _editTheme->naturalWidth()));
+	_chooseFromGallery->resizeToWidth(std::min(linkWidth, _chooseFromGallery->naturalWidth()));
+	_chooseFromFile->resizeToWidth(std::min(linkWidth, _chooseFromFile->naturalWidth()));
+	_editTheme->resizeToWidth(std::min(linkWidth, _editTheme->naturalWidth()));
 	if (_useDefaultTheme) {
-		_useDefaultTheme->resizeToWidth(qMin(linkWidth, _useDefaultTheme->naturalWidth()));
+		_useDefaultTheme->resizeToWidth(std::min(linkWidth, _useDefaultTheme->naturalWidth()));
 		_useDefaultTheme->moveToLeft(linkLeft, linkTop, newWidth);
 		linkTop += _useDefaultTheme->height() + st::settingsSmallSkip;
 	}

@@ -41,7 +41,7 @@ void VolumeController::paintEvent(QPaintEvent *e) {
 
 	qint32 top = st::mediaviewVolumeIconTop;
 	qint32 left = (width() - st::mediaviewVolumeIcon.width()) / 2;
-	qint32 mid = left + qRound(st::mediaviewVolumeIcon.width() * _volume);
+	qint32 mid = left + std::round(st::mediaviewVolumeIcon.width() * _volume);
 	qint32 right = left + st::mediaviewVolumeIcon.width();
 
 	if (mid > left) {

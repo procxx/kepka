@@ -64,7 +64,7 @@ Controller::ColumnLayout Controller::computeColumnLayout() const {
 	auto layout = Adaptive::WindowLayout::OneColumn;
 
 	auto bodyWidth = window()->bodyWidget()->width();
-	auto dialogsWidth = qRound(bodyWidth * dialogsWidthRatio().value());
+	int dialogsWidth = std::round(bodyWidth * dialogsWidthRatio().value());
 	auto chatWidth = bodyWidth - dialogsWidth;
 	accumulate_max(chatWidth, st::windowMinWidth);
 	dialogsWidth = bodyWidth - chatWidth;

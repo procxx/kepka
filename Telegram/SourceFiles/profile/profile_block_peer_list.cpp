@@ -113,7 +113,7 @@ void PeerListWidget::paintItem(Painter &p, int x, int y, Item *item, bool select
 	}
 	if (item->adminState != Item::AdminState::None) {
 		nameWidth -= st::profileMemberAdminIcon.width();
-		auto iconLeft = nameLeft + qMin(nameWidth, item->name.maxWidth());
+		auto iconLeft = nameLeft + std::min(nameWidth, item->name.maxWidth());
 		auto &icon = (item->adminState == Item::AdminState::Creator)
 			? (selected ? st::profileMemberCreatorIconOver : st::profileMemberCreatorIcon)
 			: (selected ? st::profileMemberAdminIconOver : st::profileMemberAdminIcon);
@@ -303,7 +303,7 @@ int PeerListWidget::getListLeft() const {
 }
 
 int PeerListWidget::rowWidth() const {
-	return qMin(width() - getListLeft(), st::profileBlockWideWidthMax);
+	return std::min(width() - getListLeft(), st::profileBlockWideWidthMax);
 }
 
 void PeerListWidget::preloadPhotos() {

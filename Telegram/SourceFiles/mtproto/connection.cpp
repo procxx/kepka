@@ -1139,7 +1139,7 @@ void ConnectionPrivate::onReceivedSome() {
 		qint32 ms = getms(true) - firstSentAt;
 		DEBUG_LOG(("MTP Info: response in %1ms, _waitForReceived: %2ms").arg(ms).arg(_waitForReceived));
 
-		if (ms > 0 && ms * 2 < qint32(_waitForReceived)) _waitForReceived = qMax(ms * 2, qint32(MTPMinReceiveDelay));
+		if (ms > 0 && ms * 2 < qint32(_waitForReceived)) _waitForReceived = std::max(ms * 2, qint32(MTPMinReceiveDelay));
 		firstSentAt = -1;
 	}
 }

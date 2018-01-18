@@ -703,7 +703,7 @@ QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int
 
 	if (_data.isNull()) {
 		if (h <= 0 && height() > 0) {
-			h = qRound(width() * w / double(height()));
+			h = std::round(width() * w / double(height()));
 		}
 		return blank()->pixNoCache(w, h, options, outerw, outerh);
 	}
@@ -722,10 +722,10 @@ QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int
 				p.fillRect(((outerw - w) / 2) + w, 0, result.width() - (((outerw - w) / 2) + w), result.height(), st::imageBg);
 			}
 			if (h < outerh) {
-				p.fillRect(qMax(0, (outerw - w) / 2), 0, qMin(result.width(), w), (outerh - h) / 2, st::imageBg);
-				p.fillRect(qMax(0, (outerw - w) / 2), ((outerh - h) / 2) + h, qMin(result.width(), w), result.height() - (((outerh - h) / 2) + h), st::imageBg);
+				p.fillRect(std::max(0, (outerw - w) / 2), 0, std::min(result.width(), w), (outerh - h) / 2, st::imageBg);
+				p.fillRect(std::max(0, (outerw - w) / 2), ((outerh - h) / 2) + h, std::min(result.width(), w), result.height() - (((outerh - h) / 2) + h), st::imageBg);
 			}
-			p.fillRect(qMax(0, (outerw - w) / 2), qMax(0, (outerh - h) / 2), qMin(result.width(), w), qMin(result.height(), h), st::imageBgTransparent);
+			p.fillRect(std::max(0, (outerw - w) / 2), std::max(0, (outerh - h) / 2), std::min(result.width(), w), std::min(result.height(), h), st::imageBgTransparent);
 		}
 
 		auto corners = [](Images::Options options) {

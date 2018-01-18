@@ -223,7 +223,7 @@ void AuthSession::checkAutoLock() {
 	auto shouldLockInMs = Global::AutoLock() * 1000LL;
 	auto idleForMs = psIdleTime();
 	auto notPlayingVideoForMs = now - data().lastTimeVideoPlayedAt();
-	auto checkTimeMs = qMin(idleForMs, notPlayingVideoForMs);
+	auto checkTimeMs = std::min(idleForMs, notPlayingVideoForMs);
 	if (checkTimeMs >= shouldLockInMs || (_shouldLockAt > 0 && now > _shouldLockAt + kAutoLockTimeoutLateMs)) {
 		Messenger::Instance().setupPasscode();
 	} else {

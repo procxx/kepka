@@ -166,7 +166,7 @@ void MainWindow::Private::initCustomTitle(NSWindow *window, NSView *view) {
 	[window setTitlebarAppearsTransparent:YES];
 	auto inner = [window contentLayoutRect];
 	auto full = [view frame];
-	_public->_customTitleHeight = qMax(qRound(full.size.height - inner.size.height), 0);
+	_public->_customTitleHeight = std::max<int>(std::round(full.size.height - inner.size.height), 0);
 
 #ifndef OS_MAC_OLD
 	[[NSNotificationCenter defaultCenter] addObserver:_observer selector:@selector(windowWillEnterFullScreen:) name:NSWindowWillEnterFullScreenNotification object:window];

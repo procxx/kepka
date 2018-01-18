@@ -555,7 +555,7 @@ void EmojiListWidget::onShowPicker() {
 		auto xmax = width() - _picker->width();
 		auto coef = double(sel % kEmojiPanelPerRow) / double(kEmojiPanelPerRow - 1);
 		if (rtl()) coef = 1. - coef;
-		_picker->move(qRound(xmax * coef), y);
+		_picker->move(std::round(xmax * coef), y);
 
 		emit disableScroll(true);
 	}
@@ -672,7 +672,7 @@ void EmojiListWidget::updateSelected() {
 	if (p.y() >= info.rowsTop && p.y() < info.rowsBottom) {
 		auto sx = (rtl() ? width() - p.x() : p.x()) - st::emojiPanPadding;
 		if (sx >= 0 && sx < kEmojiPanelPerRow * st::emojiPanSize.width()) {
-			newSelected = qFloor((p.y() - info.rowsTop) / st::emojiPanSize.height()) * kEmojiPanelPerRow + qFloor(sx / st::emojiPanSize.width());
+			newSelected = std::floor((p.y() - info.rowsTop) / st::emojiPanSize.height()) * kEmojiPanelPerRow + std::floor(sx / st::emojiPanSize.width());
 			if (newSelected >= _emoji[info.section].size()) {
 				newSelected = -1;
 			} else {

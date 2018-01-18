@@ -1026,7 +1026,7 @@ public:
 	}
 	void setProgress(qint64 already, qint64 size) {
 		_already = already;
-		_size = qMax(size, 0LL);
+		_size = std::max(size, 0LL);
 	}
 
 	qint64 size() const {
@@ -1236,7 +1236,7 @@ void WebLoadManager::onMeta() {
 		if (QString::fromUtf8(i->first).toLower() == "content-range") {
 			QRegularExpressionMatch m = QRegularExpression(qsl("/(\\d+)([^\\d]|$)")).match(QString::fromUtf8(i->second));
 			if (m.hasMatch()) {
-				loader->setProgress(qMax(qint64(loader->data().size()), loader->already()), m.captured(1).toLongLong());
+				loader->setProgress(std::max(qint64(loader->data().size()), loader->already()), m.captured(1).toLongLong());
 				if (!handleReplyResult(loader, WebReplyProcessProgress)) {
 					_replies.erase(j);
 					_loaders.remove(loader);

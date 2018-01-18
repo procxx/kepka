@@ -100,7 +100,7 @@ void TabbedPanel::updateContentHeight() {
 	auto addedHeight = innerPadding().top() + innerPadding().bottom();
 	auto marginsHeight = _selector->marginTop() + _selector->marginBottom();
 	auto availableHeight = _bottom - marginsHeight;
-	auto wantedContentHeight = qRound(st::emojiPanHeightRatio * availableHeight) - addedHeight;
+	int wantedContentHeight = std::round(st::emojiPanHeightRatio * availableHeight) - addedHeight;
 	auto contentHeight = marginsHeight + snap(wantedContentHeight, st::emojiPanMinHeight, st::emojiPanMaxHeight);
 	auto resultTop = _bottom - addedHeight - contentHeight;
 	if (contentHeight == _contentHeight) {

@@ -171,7 +171,7 @@ void CoverWidget::handleSeekFinished(double progress) {
 	auto type = AudioMsgId::Type::Song;
 	auto state = Media::Player::mixer()->currentState(type);
 	if (state.id && state.length) {
-		Media::Player::mixer()->seek(type, qRound(progress * state.length));
+		Media::Player::mixer()->seek(type, std::round(progress * state.length));
 	}
 
 	instance()->stopSeeking(type);
@@ -286,7 +286,7 @@ void CoverWidget::updateTimeText(const TrackState &state) {
 	_lastDurationMs = (state.length * 1000LL) / frequency;
 
 	if (state.id.audio()->loading()) {
-		_time = QString::number(qRound(state.id.audio()->progress() * 100)) + '%';
+		_time = QString::number(std::round(state.id.audio()->progress() * 100)) + '%';
 		_playbackSlider->setDisabled(true);
 	} else {
 		display = display / frequency;

@@ -61,7 +61,7 @@ void Playback::updateState(const Player::TrackState &state) {
 		progress = snap(double(position) / length, 0., 1.);
 	}
 	auto animatedPosition = position + (state.frequency * kPlaybackAnimationDurationMs / 1000);
-	auto animatedProgress = length ? qMax(double(animatedPosition) / length, 0.) : 0.;
+	auto animatedProgress = length ? std::max(double(animatedPosition) / length, 0.) : 0.;
 	if (length != _length || position != _position || wasInLoadingState) {
 		if (auto animated = (length && _length && animatedProgress > value())) {
 			setValue(animatedProgress, animated);
@@ -85,7 +85,7 @@ void Playback::updateLoadingState(double progress) {
 }
 
 double Playback::value() const {
-	return qMin(a_value.current(), 1.);
+	return std::min(a_value.current(), 1.);
 }
 
 double Playback::value(TimeMs ms) {

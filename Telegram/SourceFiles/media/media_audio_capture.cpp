@@ -126,7 +126,7 @@ struct Instance::Inner::Private {
 	static int _read_data(void *opaque, uint8_t *buf, int buf_size) {
 		auto l = reinterpret_cast<Private*>(opaque);
 
-		qint32 nbytes = qMin(l->data.size() - l->dataPos, qint32(buf_size));
+		qint32 nbytes = std::min(l->data.size() - l->dataPos, qint32(buf_size));
 		if (nbytes <= 0) {
 			return 0;
 		}
@@ -360,7 +360,7 @@ void Instance::Inner::onStop(bool needResult) {
 			double coef = 1. / fadeSamples, fadedFrom = 0;
 			for (short *ptr = ((short*)_captured.data()) + capturedSamples, *end = ptr - fadeSamples; ptr != end; ++fadedFrom) {
 				--ptr;
-				*ptr = qRound(fadedFrom * coef * *ptr);
+				*ptr = std::round(fadedFrom * coef * *ptr);
 			}
 			if (capturedSamples % d->srcSamples) {
 				qint32 s = _captured.size();
@@ -416,11 +416,11 @@ void Instance::Inner::onStop(bool needResult) {
 			}
 
 			auto sum = std::accumulate(peaks.cbegin(), peaks.cend(), 0LL);
-			peak = qMax(qint32(sum * 1.8 / peaks.size()), 2500);
+			peak = std::max(qint32(sum * 1.8 / peaks.size()), 2500);
 
 			waveform.resize(peaks.size());
 			for (qint32 i = 0, l = peaks.size(); i != l; ++i) {
-				waveform[i] = char(qMin(31U, quint32(qMin(peaks.at(i), peak)) * 31 / peak));
+				waveform[i] = char(std::min(31U, quint32(std::min(peaks.at(i), peak)) * 31 / peak));
 			}
 		}
 	}
@@ -517,7 +517,7 @@ void Instance::Inner::onTimeout() {
 			if (levelindex > skipSamples) {
 				quint16 value = qAbs(*ptr);
 				if (levelindex < skipSamples + fadeSamples) {
-					value = qRound(value * double(levelindex - skipSamples) / fadeSamples);
+					value = std::round(value * double(levelindex - skipSamples) / fadeSamples);
 				}
 				if (d->levelMax < value) {
 					d->levelMax = value;
@@ -569,14 +569,14 @@ void Instance::Inner::processFrame(qint32 offset, qint32 framesize) {
 	auto skipSamples = static_cast<int>(kCaptureSkipDuration * kCaptureFrequency / 1000);
 	auto fadeSamples = static_cast<int>(kCaptureFadeInDuration * kCaptureFrequency / 1000);
 	if (d->fullSamples < skipSamples + fadeSamples) {
-		qint32 fadedCnt = qMin(samplesCnt, skipSamples + fadeSamples - d->fullSamples);
+		qint32 fadedCnt = std::min(samplesCnt, skipSamples + fadeSamples - d->fullSamples);
 		double coef = 1. / fadeSamples, fadedFrom = d->fullSamples - skipSamples;
-		short *ptr = srcSamplesDataChannel, *zeroEnd = ptr + qMin(samplesCnt, qMax(0, skipSamples - d->fullSamples)), *end = ptr + fadedCnt;
+		short *ptr = srcSamplesDataChannel, *zeroEnd = ptr + std::min(samplesCnt, std::max(0, skipSamples - d->fullSamples)), *end = ptr + fadedCnt;
 		for (; ptr != zeroEnd; ++ptr, ++fadedFrom) {
 			*ptr = 0;
 		}
 		for (; ptr != end; ++ptr, ++fadedFrom) {
-			*ptr = qRound(fadedFrom * coef * *ptr);
+			*ptr = std::round(fadedFrom * coef * *ptr);
 		}
 	}
 

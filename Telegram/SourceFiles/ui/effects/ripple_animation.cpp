@@ -69,7 +69,7 @@ RippleAnimation::Ripple::Ripple(const style::RippleAnimation &st, QPoint origin,
 	for (auto point : points) {
 		accumulate_max(_radiusTo, style::point::dotProduct(_origin - point, _origin - point));
 	}
-	_radiusTo = qRound(sqrt(_radiusTo));
+	_radiusTo = std::round(sqrt(_radiusTo));
 
 	_show.start(UpdateCallback(_update), 0., 1., _st.showDuration, anim::easeOutQuint);
 }

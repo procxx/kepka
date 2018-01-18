@@ -386,7 +386,7 @@ void MediaView::updateControls() {
 	}
 	if (_from) {
 		_fromName.setText(st::mediaviewTextStyle, (_from->migrateTo() ? _from->migrateTo() : _from)->name, _textNameOptions);
-		_nameNav = myrtlrect(st::mediaviewTextLeft, height() - st::mediaviewTextTop, qMin(_fromName.maxWidth(), width() / 3), st::mediaviewFont->height);
+		_nameNav = myrtlrect(st::mediaviewTextLeft, height() - st::mediaviewTextTop, std::min(_fromName.maxWidth(), width() / 3), st::mediaviewFont->height);
 		_dateNav = myrtlrect(st::mediaviewTextLeft + _nameNav.width() + st::mediaviewTextSkip, height() - st::mediaviewTextTop, st::mediaviewFont->width(_dateText), st::mediaviewFont->height);
 	} else {
 		_nameNav = QRect();
@@ -417,9 +417,9 @@ void MediaView::updateControls() {
 	}
 
 	if (!_caption.isEmpty()) {
-		qint32 skipw = qMax(_dateNav.left() + _dateNav.width(), _headerNav.left() + _headerNav.width());
-		qint32 maxw = qMin(qMax(width() - 2 * skipw - st::mediaviewCaptionPadding.left() - st::mediaviewCaptionPadding.right() - 2 * st::mediaviewCaptionMargin.width(), int(st::msgMinWidth)), _caption.maxWidth());
-		qint32 maxh = qMin(_caption.countHeight(maxw), int(height() / 4 - st::mediaviewCaptionPadding.top() - st::mediaviewCaptionPadding.bottom() - 2 * st::mediaviewCaptionMargin.height()));
+		qint32 skipw = std::max(_dateNav.left() + _dateNav.width(), _headerNav.left() + _headerNav.width());
+		qint32 maxw = std::min(std::max(width() - 2 * skipw - st::mediaviewCaptionPadding.left() - st::mediaviewCaptionPadding.right() - 2 * st::mediaviewCaptionMargin.width(), int(st::msgMinWidth)), _caption.maxWidth());
+		qint32 maxh = std::min(_caption.countHeight(maxw), int(height() / 4 - st::mediaviewCaptionPadding.top() - st::mediaviewCaptionPadding.bottom() - 2 * st::mediaviewCaptionMargin.height()));
 		_captionRect = QRect((width() - maxw) / 2, height() - maxh - st::mediaviewCaptionPadding.bottom() - st::mediaviewCaptionMargin.height(), maxw, maxh);
 	} else {
 		_captionRect = QRect();
@@ -576,8 +576,8 @@ void MediaView::step_radial(TimeMs ms, bool timer) {
 void MediaView::zoomIn() {
 	qint32 newZoom = _zoom;
 	if (newZoom == ZoomToScreenLevel) {
-		if (qCeil(_zoomToScreen) <= MaxZoomLevel) {
-			newZoom = qCeil(_zoomToScreen);
+		if (std::ceil(_zoomToScreen) <= MaxZoomLevel) {
+			newZoom = std::ceil(_zoomToScreen);
 		}
 	} else {
 		if (newZoom < _zoomToScreen && (newZoom + 1 > _zoomToScreen || (_zoomToScreen > MaxZoomLevel && newZoom == MaxZoomLevel))) {
@@ -592,8 +592,8 @@ void MediaView::zoomIn() {
 void MediaView::zoomOut() {
 	qint32 newZoom = _zoom;
 	if (newZoom == ZoomToScreenLevel) {
-		if (qFloor(_zoomToScreen) >= -MaxZoomLevel) {
-			newZoom = qFloor(_zoomToScreen);
+		if (std::floor(_zoomToScreen) >= -MaxZoomLevel) {
+			newZoom = std::floor(_zoomToScreen);
 		}
 	} else {
 		if (newZoom > _zoomToScreen && (newZoom - 1 < _zoomToScreen || (_zoomToScreen < -MaxZoomLevel && newZoom == -MaxZoomLevel))) {
@@ -608,8 +608,8 @@ void MediaView::zoomOut() {
 void MediaView::zoomReset() {
 	qint32 newZoom = _zoom;
 	if (_zoom == 0) {
-		if (qFloor(_zoomToScreen) == qCeil(_zoomToScreen) && qRound(_zoomToScreen) >= -MaxZoomLevel && qRound(_zoomToScreen) <= MaxZoomLevel) {
-			newZoom = qRound(_zoomToScreen);
+		if (std::floor(_zoomToScreen) == std::ceil(_zoomToScreen) && std::round(_zoomToScreen) >= -MaxZoomLevel && std::round(_zoomToScreen) <= MaxZoomLevel) {
+			newZoom = std::round(_zoomToScreen);
 		} else {
 			newZoom = ZoomToScreenLevel;
 		}
@@ -620,11 +620,11 @@ void MediaView::zoomReset() {
 	_y = -((gifShown() ? _gif->height() : (_current.height() / cIntRetinaFactor())) / 2);
 	double z = (_zoom == ZoomToScreenLevel) ? _zoomToScreen : _zoom;
 	if (z >= 0) {
-		_x = qRound(_x * (z + 1));
-		_y = qRound(_y * (z + 1));
+		_x = std::round(_x * (z + 1));
+		_y = std::round(_y * (z + 1));
 	} else {
-		_x = qRound(_x / (-z + 1));
-		_y = qRound(_y / (-z + 1));
+		_x = std::round(_x / (-z + 1));
+		_y = std::round(_y / (-z + 1));
 	}
 	_x += width() / 2;
 	_y += height() / 2;
@@ -1204,8 +1204,8 @@ void MediaView::displayPhoto(PhotoData *photo, HistoryItem *item) {
 		if (auto photoMsg = dynamic_cast<HistoryPhoto*>(itemMsg->getMedia())) {
 			auto asBot = (item->author()->isUser()
 				&& item->author()->asUser()->botInfo);
-			auto skipw = qMax(_dateNav.left() + _dateNav.width(), _headerNav.left() + _headerNav.width());
-			auto maxw = qMin(qMax(width() - 2 * skipw - st::mediaviewCaptionPadding.left() - st::mediaviewCaptionPadding.right() - 2 * st::mediaviewCaptionMargin.width(), int(st::msgMinWidth)), _caption.maxWidth());
+			auto skipw = std::max(_dateNav.left() + _dateNav.width(), _headerNav.left() + _headerNav.width());
+			auto maxw = std::min(std::max(width() - 2 * skipw - st::mediaviewCaptionPadding.left() - st::mediaviewCaptionPadding.right() - 2 * st::mediaviewCaptionMargin.width(), int(st::msgMinWidth)), _caption.maxWidth());
 			_caption = Text(maxw);
 			_caption.setMarkedText(
 				st::mediaviewCaptionStyle,
@@ -1225,11 +1225,11 @@ void MediaView::displayPhoto(PhotoData *photo, HistoryItem *item) {
 		moveToScreen();
 	}
 	if (_w > width()) {
-		_h = qRound(_h * width() / double(_w));
+		_h = std::round(_h * width() / double(_w));
 		_w = width();
 	}
 	if (_h > height()) {
-		_w = qRound(_w * height() / double(_h));
+		_w = std::round(_w * height() / double(_h));
 		_h = height();
 	}
 	_x = (width() - _w) / 2;
@@ -1377,11 +1377,11 @@ void MediaView::displayDocument(DocumentData *doc, HistoryItem *item) { // empty
 	if ((_w > width()) || (_h > height()) || _fullScreenVideo) {
 		_zoom = ZoomToScreenLevel;
 		if (_zoomToScreen >= 0) {
-			_w = qRound(_w * (_zoomToScreen + 1));
-			_h = qRound(_h * (_zoomToScreen + 1));
+			_w = std::round(_w * (_zoomToScreen + 1));
+			_h = std::round(_h * (_zoomToScreen + 1));
 		} else {
-			_w = qRound(_w / (-_zoomToScreen + 1));
-			_h = qRound(_h / (-_zoomToScreen + 1));
+			_w = std::round(_w / (-_zoomToScreen + 1));
+			_h = std::round(_h / (-_zoomToScreen + 1));
 		}
 		snapXY();
 	} else {
@@ -1403,8 +1403,8 @@ void MediaView::updateThemePreviewGeometry() {
 		auto previewRect = QRect((width() - st::themePreviewSize.width()) / 2, (height() - st::themePreviewSize.height()) / 2, st::themePreviewSize.width(), st::themePreviewSize.height());
 		_themePreviewRect = previewRect.marginsAdded(st::themePreviewMargin);
 		if (_themeApply) {
-			auto right = qMax(width() - _themePreviewRect.x() - _themePreviewRect.width(), 0) + st::themePreviewMargin.right();
-			auto bottom = qMin(height(), _themePreviewRect.y() + _themePreviewRect.height());
+			auto right = std::max(width() - _themePreviewRect.x() - _themePreviewRect.width(), 0) + st::themePreviewMargin.right();
+			auto bottom = std::min(height(), _themePreviewRect.y() + _themePreviewRect.height());
 			_themeApply->moveToRight(right, bottom - st::themePreviewMargin.bottom() + (st::themePreviewMargin.bottom() - _themeApply->height()) / 2);
 			right += _themeApply->width() + st::themePreviewButtonsSkip;
 			_themeCancel->moveToRight(right, _themeApply->y());
@@ -1782,7 +1782,7 @@ void MediaView::paintEvent(QPaintEvent *e) {
 						_saveMsgOpacity.start(0);
 					}
 					double progress = (hidingDt >= 0) ? (hidingDt / st::mediaviewSaveMsgHiding) : (dt / st::mediaviewSaveMsgShowing);
-					_saveMsgOpacity.update(qMin(progress, 1.), anim::linear);
+					_saveMsgOpacity.update(std::min(progress, 1.), anim::linear);
                     if (_saveMsgOpacity.current() > 0) {
 						p.setOpacity(_saveMsgOpacity.current());
 						App::roundRect(p, _saveMsg, st::mediaviewSaveMsgBg, MediaviewSaveCorners);
@@ -2145,15 +2145,15 @@ void MediaView::setZoomLevel(int newZoom) {
 	_zoom = newZoom;
 	z = (_zoom == ZoomToScreenLevel) ? _zoomToScreen : _zoom;
 	if (z > 0) {
-		_w = qRound(_w * (z + 1));
-		_h = qRound(_h * (z + 1));
-		_x = qRound(nx * (z + 1) + width() / 2.);
-		_y = qRound(ny * (z + 1) + height() / 2.);
+		_w = std::round(_w * (z + 1));
+		_h = std::round(_h * (z + 1));
+		_x = std::round(nx * (z + 1) + width() / 2.);
+		_y = std::round(ny * (z + 1) + height() / 2.);
 	} else {
-		_w = qRound(_w / (-z + 1));
-		_h = qRound(_h / (-z + 1));
-		_x = qRound(nx / (-z + 1) + width() / 2.);
-		_y = qRound(ny / (-z + 1) + height() / 2.);
+		_w = std::round(_w / (-z + 1));
+		_h = std::round(_h / (-z + 1));
+		_x = std::round(nx / (-z + 1) + width() / 2.);
+		_y = std::round(ny / (-z + 1) + height() / 2.);
 	}
 	snapXY();
 	update();

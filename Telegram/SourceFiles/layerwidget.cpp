@@ -752,8 +752,8 @@ void MediaPreviewWidget::paintEvent(QPaintEvent *e) {
 		}
 	} else {
 		p.setOpacity(shown);
-//		w = qMax(qRound(w * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(w % 2), 1);
-//		h = qMax(qRound(h * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(h % 2), 1);
+//		w = std::max(std::round(w * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(w % 2), 1);
+//		h = std::max(std::round(h * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(h % 2), 1);
 	}
 	p.fillRect(r, st::stickerPreviewBg);
 	p.drawPixmap((width() - w) / 2, (height() - h) / 2, image);
@@ -872,13 +872,13 @@ QSize MediaPreviewWidget::currentDimensions() const {
 			box = QSize(2 * st::maxStickerSize, 2 * st::maxStickerSize);
 		}
 	}
-	result = QSize(qMax(convertScale(result.width()), 1), qMax(convertScale(result.height()), 1));
+	result = QSize(std::max(convertScale(result.width()), 1), std::max(convertScale(result.height()), 1));
 	if (result.width() > box.width()) {
-		result.setHeight(qMax((box.width() * result.height()) / result.width(), 1));
+		result.setHeight(std::max((box.width() * result.height()) / result.width(), 1));
 		result.setWidth(box.width());
 	}
 	if (result.height() > box.height()) {
-		result.setWidth(qMax((box.height() * result.width()) / result.height(), 1));
+		result.setWidth(std::max((box.height() * result.width()) / result.height(), 1));
 		result.setHeight(box.height());
 	}
 	if (_photo) {

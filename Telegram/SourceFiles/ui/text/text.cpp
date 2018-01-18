@@ -898,7 +898,7 @@ public:
 				_last_rPadding = b->f_rpadding();
 				_wLeft = newWidthLeft;
 
-				_lineHeight = qMax(_lineHeight, blockHeight);
+				_lineHeight = std::max(_lineHeight, blockHeight);
 
 				longWordLine = false;
 				continue;
@@ -909,7 +909,7 @@ public:
 				if (t->_words.isEmpty()) { // no words in this block, spaces only => layout this block in the same line
 					_last_rPadding += b->f_rpadding();
 
-					_lineHeight = qMax(_lineHeight, blockHeight);
+					_lineHeight = std::max(_lineHeight, blockHeight);
 
 					longWordLine = false;
 					continue;
@@ -927,7 +927,7 @@ public:
 						_last_rPadding = j->f_rpadding();
 						_wLeft = newWidthLeft;
 
-						_lineHeight = qMax(_lineHeight, blockHeight);
+						_lineHeight = std::max(_lineHeight, blockHeight);
 
 						if (wordEndsHere) {
 							longWordLine = false;
@@ -940,7 +940,7 @@ public:
 						continue;
 					}
 
-					auto elidedLineHeight = qMax(_lineHeight, blockHeight);
+					auto elidedLineHeight = std::max(_lineHeight, blockHeight);
 					auto elidedLine = _elideLast && (_y + elidedLineHeight >= _yToElide);
 					if (elidedLine) {
 						_lineHeight = elidedLineHeight;
@@ -955,7 +955,7 @@ public:
 						return;
 					}
 					_y += _lineHeight;
-					_lineHeight = qMax(0, blockHeight);
+					_lineHeight = std::max(0, blockHeight);
 					_lineStart = j->from();
 					_lineStartBlock = blockIndex;
 
@@ -974,7 +974,7 @@ public:
 				continue;
 			}
 
-			auto elidedLineHeight = qMax(_lineHeight, blockHeight);
+			auto elidedLineHeight = std::max(_lineHeight, blockHeight);
 			auto elidedLine = _elideLast && (_y + elidedLineHeight >= _yToElide);
 			if (elidedLine) {
 				_lineHeight = elidedLineHeight;
@@ -983,7 +983,7 @@ public:
 				return;
 			}
 			_y += _lineHeight;
-			_lineHeight = qMax(0, blockHeight);
+			_lineHeight = std::max(0, blockHeight);
 			_lineStart = b->from();
 			_lineStartBlock = blockIndex;
 
@@ -1158,9 +1158,9 @@ private:
 		auto currentBlock = _t->_blocks[blockIndex].get();
 		auto nextBlock = (++blockIndex < _blocksSize) ? _t->_blocks[blockIndex].get() : nullptr;
 
-		qint32 delta = (currentBlock->from() < _lineStart ? qMin(_lineStart - currentBlock->from(), 2) : 0);
+		qint32 delta = (currentBlock->from() < _lineStart ? std::min(_lineStart - currentBlock->from(), 2) : 0);
 		_localFrom = _lineStart - delta;
-		qint32 lineEnd = (_endBlock && _endBlock->from() < trimmedLineEnd && !elidedLine) ? qMin(quint16(trimmedLineEnd + 2), _t->countBlockEnd(_endBlockIter, _end)) : trimmedLineEnd;
+		qint32 lineEnd = (_endBlock && _endBlock->from() < trimmedLineEnd && !elidedLine) ? std::min(quint16(trimmedLineEnd + 2), _t->countBlockEnd(_endBlockIter, _end)) : trimmedLineEnd;
 
 		auto lineText = _t->_text.mid(_localFrom, lineEnd - _localFrom);
 		auto lineStart = delta;
@@ -1392,7 +1392,7 @@ private:
 			unsigned short *logClusters = engine.logClusters(&si);
 			QGlyphLayout glyphs = engine.shapedGlyphs(&si);
 
-			int itemStart = qMax(line.from, si.position), itemEnd;
+			int itemStart = std::max(line.from, si.position), itemEnd;
 			int itemLength = engine.length(item);
 			int glyphsStart = logClusters[itemStart - si.position], glyphsEnd;
 			if (line.from + line.length < si.position + itemLength) {
@@ -1611,7 +1611,7 @@ private:
 				if (_wLeft < si.width) {
 					lineText = lineText.mid(0, currentBlock->from() - _localFrom) + _Elide;
 					lineLength = currentBlock->from() + _Elide.size() - _lineStart;
-					_selection.to = qMin(_selection.to, currentBlock->from());
+					_selection.to = std::min(_selection.to, currentBlock->from());
 					setElideBidi(currentBlock->from(), _Elide.size());
 					elideSaveBlock(blockIndex - 1, _endBlock, currentBlock->from(), elideWidth);
 					return;
@@ -1621,7 +1621,7 @@ private:
 				unsigned short *logClusters = engine.logClusters(&si);
 				QGlyphLayout glyphs = engine.shapedGlyphs(&si);
 
-				int itemStart = qMax(line.from, si.position), itemEnd;
+				int itemStart = std::max(line.from, si.position), itemEnd;
 				int itemLength = engine.length(firstItem + i);
 				int glyphsStart = logClusters[itemStart - si.position], glyphsEnd;
 				if (line.from + line.length < si.position + itemLength) {
@@ -1643,7 +1643,7 @@ private:
 						if (lineText.size() <= pos || repeat > 3) {
 							lineText += _Elide;
 							lineLength = _localFrom + pos + _Elide.size() - _lineStart;
-							_selection.to = qMin(_selection.to, quint16(_localFrom + pos));
+							_selection.to = std::min(_selection.to, quint16(_localFrom + pos));
 							setElideBidi(_localFrom + pos, _Elide.size());
 							_blocksSize = blockIndex;
 							_endBlock = nextBlock;
@@ -1663,7 +1663,7 @@ private:
 		}
 
 		qint32 elideStart = _localFrom + lineText.size();
-		_selection.to = qMin(_selection.to, quint16(elideStart));
+		_selection.to = std::min(_selection.to, quint16(elideStart));
 		setElideBidi(elideStart, _Elide.size());
 
 		lineText += _Elide;
@@ -2515,7 +2515,7 @@ void Text::recountNaturalSize(bool initial, Qt::LayoutDirection optionsDir) {
 		accumulate_max(_maxWidth, _width);
 
 		_width += last_rBearing + (last_rPadding + b->f_width() - b__f_rbearing);
-		lineHeight = qMax(lineHeight, blockHeight);
+		lineHeight = std::max(lineHeight, blockHeight);
 
 		last_rBearing = b__f_rbearing;
 		last_rPadding = b->f_rpadding();
@@ -2747,7 +2747,7 @@ void Text::enumerateLines(int w, Callback callback) const {
 			last_rPadding = b->f_rpadding();
 			widthLeft = newWidthLeft;
 
-			lineHeight = qMax(lineHeight, blockHeight);
+			lineHeight = std::max(lineHeight, blockHeight);
 
 			longWordLine = false;
 			continue;
@@ -2758,7 +2758,7 @@ void Text::enumerateLines(int w, Callback callback) const {
 			if (t->_words.isEmpty()) { // no words in this block, spaces only => layout this block in the same line
 				last_rPadding += b->f_rpadding();
 
-				lineHeight = qMax(lineHeight, blockHeight);
+				lineHeight = std::max(lineHeight, blockHeight);
 
 				longWordLine = false;
 				continue;
@@ -2776,7 +2776,7 @@ void Text::enumerateLines(int w, Callback callback) const {
 					last_rPadding = j->f_rpadding();
 					widthLeft = newWidthLeft;
 
-					lineHeight = qMax(lineHeight, blockHeight);
+					lineHeight = std::max(lineHeight, blockHeight);
 
 					if (wordEndsHere) {
 						longWordLine = false;
@@ -2798,7 +2798,7 @@ void Text::enumerateLines(int w, Callback callback) const {
 
 				callback(width - widthLeft, lineHeight);
 
-				lineHeight = qMax(0, blockHeight);
+				lineHeight = std::max(0, blockHeight);
 				last_rBearing = j->f_rbearing();
 				last_rPadding = j->f_rpadding();
 				widthLeft = width - (j_width - last_rBearing);
@@ -2813,7 +2813,7 @@ void Text::enumerateLines(int w, Callback callback) const {
 
 		callback(width - widthLeft, lineHeight);
 
-		lineHeight = qMax(0, blockHeight);
+		lineHeight = std::max(0, blockHeight);
 		last_rBearing = b__f_rbearing;
 		last_rPadding = b->f_rpadding();
 		widthLeft = width - (b->f_width() - last_rBearing);
@@ -2923,8 +2923,8 @@ void Text::enumerateText(TextSelection selection, AppendPartCallback appendPartC
 		}
 		if (blockLnkIndex != lnkIndex) {
 			if (lnkIndex) {
-				auto rangeFrom = qMax(selection.from, lnkFrom);
-				auto rangeTo = qMin(blockFrom, selection.to);
+				auto rangeFrom = std::max(selection.from, lnkFrom);
+				auto rangeTo = std::min(blockFrom, selection.to);
 				if (rangeTo > rangeFrom) { // handle click handler
 					QStringRef r = _text.midRef(rangeFrom, rangeTo - rangeFrom);
 					if (lnkFrom != rangeFrom || blockFrom != rangeTo) {
@@ -2945,8 +2945,8 @@ void Text::enumerateText(TextSelection selection, AppendPartCallback appendPartC
 		if ((*i)->type() == TextBlockTSkip) continue;
 
 		if (!blockLnkIndex) {
-			auto rangeFrom = qMax(selection.from, blockFrom);
-			auto rangeTo = qMin(selection.to, quint16(blockFrom + countBlockLength(i, e)));
+			auto rangeFrom = std::max(selection.from, blockFrom);
+			auto rangeTo = std::min(selection.to, quint16(blockFrom + countBlockLength(i, e)));
 			if (rangeTo > rangeFrom) {
 				appendPartCallback(_text.midRef(rangeFrom, rangeTo - rangeFrom));
 			}

@@ -191,7 +191,7 @@ int InfoWidget::LabeledWidget::resizeGetHeight(int newWidth) {
 	auto labelNatural = _label->naturalWidth();
 	Assert(labelNatural >= 0);
 
-	_label->resize(qMin(newWidth, labelNatural), _label->height());
+	_label->resize(std::min(newWidth, labelNatural), _label->height());
 
 	int textLeft = _label->width() + st::normalFont->spacew;
 	int textWidth = _text->naturalWidth();
@@ -215,7 +215,7 @@ int InfoWidget::LabeledWidget::resizeGetHeight(int newWidth) {
 			_text->show();
 		}
 	}
-	return st::settingsBlockOneLineTextPart.margin.top() + qMax(_label->height(), _text->height() - st::settingsBlockOneLineTextPart.margin.top() - st::settingsBlockOneLineTextPart.margin.bottom()) + st::settingsBlockOneLineTextPart.margin.bottom();
+	return st::settingsBlockOneLineTextPart.margin.top() + std::max(_label->height(), _text->height() - st::settingsBlockOneLineTextPart.margin.top() - st::settingsBlockOneLineTextPart.margin.bottom()) + st::settingsBlockOneLineTextPart.margin.bottom();
 }
 
 } // namespace Settings

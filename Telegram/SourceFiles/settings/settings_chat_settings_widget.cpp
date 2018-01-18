@@ -77,7 +77,7 @@ DownloadPathState::DownloadPathState(QWidget *parent) : TWidget(parent)
 }
 
 int DownloadPathState::resizeGetHeight(int newWidth) {
-	_path->resizeToWidth(qMin(newWidth, _path->naturalWidth()));
+	_path->resizeToWidth(std::min(newWidth, _path->naturalWidth()));
 	_path->moveToLeft(0, 0, newWidth);
 	_clear->moveToRight(0, 0, newWidth);
 	return _path->height();

@@ -104,7 +104,7 @@ void BoxContent::onDraggingScrollDelta(int delta) {
 }
 
 void BoxContent::onDraggingScrollTimer() {
-	auto delta = (_draggingScrollDelta > 0) ? qMin(_draggingScrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : qMax(_draggingScrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
+	auto delta = (_draggingScrollDelta > 0) ? std::min(_draggingScrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : std::max(_draggingScrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + delta);
 }
 
@@ -336,7 +336,7 @@ void AbstractBox::updateTitlePosition() {
 	_titleLeft = _layerType ? st::boxLayerTitlePosition.x() : st::boxTitlePosition.x();
 	_titleTop = _layerType ? st::boxLayerTitlePosition.y() : st::boxTitlePosition.y();
 	if (_title) {
-		_title->resizeToWidth(qMin(_title->naturalWidth(), width() - _titleLeft * 2));
+		_title->resizeToWidth(std::min(_title->naturalWidth(), width() - _titleLeft * 2));
 		_title->moveToLeft(_titleLeft, _titleTop);
 	}
 }
@@ -378,7 +378,7 @@ void AbstractBox::setDimensions(int newWidth, int maxHeight) {
 			auto newGeometry = geometry();
 			auto parentHeight = parentWidget()->height();
 			if (newGeometry.top() + newGeometry.height() + st::boxVerticalMargin > parentHeight) {
-				auto newTop = qMax(parentHeight - int(st::boxVerticalMargin) - newGeometry.height(), (parentHeight - newGeometry.height()) / 2);
+				auto newTop = std::max(parentHeight - int(st::boxVerticalMargin) - newGeometry.height(), (parentHeight - newGeometry.height()) / 2);
 				if (newTop != newGeometry.top()) {
 					move(newGeometry.left(), newTop);
 				}
@@ -391,7 +391,7 @@ void AbstractBox::setDimensions(int newWidth, int maxHeight) {
 }
 
 int AbstractBox::countRealHeight() const {
-	return qMin(_fullHeight, parentWidget()->height() - 2 * st::boxVerticalMargin);
+	return std::min(_fullHeight, parentWidget()->height() - 2 * st::boxVerticalMargin);
 }
 
 int AbstractBox::countFullHeight() const {

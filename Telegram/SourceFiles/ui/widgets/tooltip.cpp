@@ -131,16 +131,16 @@ void Tooltip::popup(const QPoint &m, const QString &text, const style::Tooltip *
 	// adjust tooltip position
 	QRect r(QApplication::desktop()->screenGeometry(m));
 	if (r.x() + r.width() - _st->skip < p.x() + s.width() && p.x() + s.width() > m.x()) {
-		p.setX(qMax(r.x() + r.width() - qint32(_st->skip) - s.width(), m.x() - s.width()));
+		p.setX(std::max(r.x() + r.width() - qint32(_st->skip) - s.width(), m.x() - s.width()));
 	}
 	if (r.x() + _st->skip > p.x() && p.x() < m.x()) {
-		p.setX(qMin(m.x(), r.x() + qint32(_st->skip)));
+		p.setX(std::min(m.x(), r.x() + qint32(_st->skip)));
 	}
 	if (r.y() + r.height() - _st->skip < p.y() + s.height()) {
 		p.setY(m.y() - s.height() - _st->skip);
 	}
 	if (r.y() > p.x()) {
-		p.setY(qMin(m.y() + _st->shift.y(), r.y() + r.height() - s.height()));
+		p.setY(std::min(m.y() + _st->shift.y(), r.y() + r.height() - s.height()));
 	}
 
 	setGeometry(QRect(p, s));
@@ -167,7 +167,7 @@ void Tooltip::paintEvent(QPaintEvent *e) {
 		p.fillRect(QRect(0, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth), _st->textBorder);
 		p.fillRect(QRect(width() - st::lineWidth, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth), _st->textBorder);
 	}
-	qint32 lines = qFloor((height() - 2 * st::lineWidth - _st->textPadding.top() - _st->textPadding.bottom()) / _st->textStyle.font->height);
+	qint32 lines = std::floor((height() - 2 * st::lineWidth - _st->textPadding.top() - _st->textPadding.bottom()) / _st->textStyle.font->height);
 
 	p.setPen(_st->textFg);
 	_text.drawElided(p, st::lineWidth + _st->textPadding.left(), st::lineWidth + _st->textPadding.top(), width() - 2 * st::lineWidth - _st->textPadding.left() - _st->textPadding.right(), lines);

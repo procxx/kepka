@@ -338,8 +338,8 @@ void StickerSetBox::Inner::onPreview() {
 qint32 StickerSetBox::Inner::stickerFromGlobalPos(const QPoint &p) const {
 	QPoint l(mapFromGlobal(p));
 	if (rtl()) l.setX(width() - l.x());
-	qint32 row = (l.y() >= st::stickersPadding.top()) ? qFloor((l.y() - st::stickersPadding.top()) / st::stickersSize.height()) : -1;
-	qint32 col = (l.x() >= st::stickersPadding.left()) ? qFloor((l.x() - st::stickersPadding.left()) / st::stickersSize.width()) : -1;
+	qint32 row = (l.y() >= st::stickersPadding.top()) ? std::floor((l.y() - st::stickersPadding.top()) / st::stickersSize.height()) : -1;
+	qint32 col = (l.x() >= st::stickersPadding.left()) ? std::floor((l.x() - st::stickersPadding.left()) / st::stickersSize.width()) : -1;
 	if (row >= 0 && col >= 0 && col < kStickersPanelPerRow) {
 		qint32 result = row * kStickersPanelPerRow + col;
 		return (result < _pack.size()) ? result : -1;
@@ -355,7 +355,7 @@ void StickerSetBox::Inner::paintEvent(QPaintEvent *e) {
 
 	auto ms = getms();
 	qint32 rows = _pack.size() / kStickersPanelPerRow + ((_pack.size() % kStickersPanelPerRow) ? 1 : 0);
-	qint32 from = qFloor(e->rect().top() / st::stickersSize.height()), to = qFloor(e->rect().bottom() / st::stickersSize.height()) + 1;
+	qint32 from = std::floor(e->rect().top() / st::stickersSize.height()), to = std::floor(e->rect().bottom() / st::stickersSize.height()) + 1;
 
 	for (qint32 i = from; i < to; ++i) {
 		for (qint32 j = 0; j < kStickersPanelPerRow; ++j) {
@@ -386,9 +386,9 @@ void StickerSetBox::Inner::paintEvent(QPaintEvent *e) {
 				}
 			}
 
-			double coef = qMin((st::stickersSize.width() - st::buttonRadius * 2) / double(doc->dimensions.width()), (st::stickersSize.height() - st::buttonRadius * 2) / double(doc->dimensions.height()));
+			double coef = std::min((st::stickersSize.width() - st::buttonRadius * 2) / double(doc->dimensions.width()), (st::stickersSize.height() - st::buttonRadius * 2) / double(doc->dimensions.height()));
 			if (coef > 1) coef = 1;
-			qint32 w = qRound(coef * doc->dimensions.width()), h = qRound(coef * doc->dimensions.height());
+			qint32 w = std::round(coef * doc->dimensions.width()), h = std::round(coef * doc->dimensions.height());
 			if (w < 1) w = 1;
 			if (h < 1) h = 1;
 			QPoint ppos = pos + QPoint((st::stickersSize.width() - w) / 2, (st::stickersSize.height() - h) / 2);

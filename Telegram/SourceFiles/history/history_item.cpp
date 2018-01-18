@@ -146,7 +146,7 @@ void ReplyKeyboard::resize(int width, int height) {
 		int widthOfText = 0;
 		int maxMinButtonWidth = 0;
 		for_const (auto &button, row) {
-			widthOfText += qMax(button.text.maxWidth(), 1);
+			widthOfText += std::max(button.text.maxWidth(), 1);
 			int minButtonWidth = _st->minButtonWidth(button.type);
 			widthForText -= minButtonWidth;
 			accumulate_max(maxMinButtonWidth, minButtonWidth);
@@ -156,7 +156,7 @@ void ReplyKeyboard::resize(int width, int height) {
 
 		double x = 0;
 		for (Button &button : row) {
-			int buttonw = qMax(button.text.maxWidth(), 1);
+			int buttonw = std::max(button.text.maxWidth(), 1);
 			double textw = buttonw, minw = _st->minButtonWidth(button.type);
 			double w = textw;
 			if (exact) {
@@ -172,7 +172,7 @@ void ReplyKeyboard::resize(int width, int height) {
 
 			int rectx = static_cast<int>(std::floor(x));
 			int rectw = static_cast<int>(std::floor(x + w)) - rectx;
-			button.rect = QRect(rectx, qRound(y), rectw, qRound(buttonHeight - _st->buttonSkip()));
+			button.rect = QRect(rectx, std::round(y), rectw, std::round(buttonHeight - _st->buttonSkip()));
 			if (rtl()) button.rect.setX(_width - button.rect.x() - button.rect.width());
 			x += w + _st->buttonSkip();
 
@@ -187,7 +187,7 @@ bool ReplyKeyboard::isEnoughSpace(int width, const style::BotKeyboardButton &st)
 		int s = row.size();
 		int widthLeft = width - ((s - 1) * st.margin + s * 2 * st.padding);
 		for_const (auto &button, row) {
-			widthLeft -= qMax(button.text.maxWidth(), 1);
+			widthLeft -= std::max(button.text.maxWidth(), 1);
 			if (widthLeft < 0) {
 				if (row.size() > 3) {
 					return false;
@@ -213,7 +213,7 @@ int ReplyKeyboard::naturalWidth() const {
 		}
 		auto rowMaxButtonWidth = 0;
 		for_const (auto &button, row) {
-			accumulate_max(rowMaxButtonWidth, qMax(button.text.maxWidth(), 1) + maxMinButtonWidth);
+			accumulate_max(rowMaxButtonWidth, std::max(button.text.maxWidth(), 1) + maxMinButtonWidth);
 		}
 
 		auto rowSize = row.size();
@@ -525,7 +525,7 @@ void HistoryMessageUnreadBar::paint(Painter &p, int y, int w) const {
 	int left = st::msgServiceMargin.left();
 	int maxwidth = w;
 	if (Adaptive::ChatWide()) {
-		maxwidth = qMin(maxwidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+		maxwidth = std::min(maxwidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 	}
 	w = maxwidth;
 

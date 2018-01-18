@@ -86,7 +86,7 @@ struct LineBreakHelper
 		// of the bearing here so that we can assume it's negative in the rest
 		// of the code, as well ase use QFixed(1) as a sentinel to represent
 		// the state where we have yet to compute the right bearing.
-		rightBearing = qMin(QFixed::fromReal(rb), QFixed(0));
+		rightBearing = std::min(QFixed::fromReal(rb), QFixed(0));
 	}
 
 	inline void calculateRightBearing()

@@ -157,8 +157,8 @@ int FindTagReplacementPosition(const QString &original, ushort tag) {
 PluralResult Plural(ushort keyBase, double value) {
 	// Simplified.
 	auto n = qAbs(value);
-	auto i = qFloor(n);
-	auto integer = (qCeil(n) == i);
+	auto i = std::floor(n);
+	auto integer = (std::ceil(n) == i);
 	auto v = integer ? 0 : 6;
 	auto w = v;
 	auto f = integer ? 0 : 111111;
@@ -168,8 +168,8 @@ PluralResult Plural(ushort keyBase, double value) {
 	auto useNonDefaultPlural = (ChoosePlural != ChoosePluralEn && langpack.isNonDefaultPlural(LangKey(keyBase)));
 	auto shift = (useNonDefaultPlural ? ChoosePlural : ChoosePluralEn)((integer ? i : -1), i, v, w, f, t);
 	auto string = langpack.getValue(LangKey(keyBase + shift));
-	if (i == qCeil(n)) {
-		return { string, QString::number(qRound(value)) };
+	if (i == std::ceil(n)) {
+		return { string, QString::number(std::round(value)) };
 	}
 	return { string, QString::number(value) };
 }

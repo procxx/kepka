@@ -714,7 +714,7 @@ QRect StickersBox::Inner::relativeButtonRect(bool removeButton) const {
 }
 
 void StickersBox::Inner::paintRow(Painter &p, Row *set, int index, TimeMs ms) {
-	auto xadd = 0, yadd = qRound(set->yadd.current());
+	int xadd = 0, yadd = std::round(set->yadd.current());
 	if (xadd || yadd) p.translate(xadd, yadd);
 
 	if (_megagroupSet) {
@@ -1041,8 +1041,8 @@ double StickersBox::Inner::aboveShadowOpacity() const {
 	if (_above < 0) return 0;
 
 	auto dx = 0;
-	auto dy = qAbs(_above * _rowHeight + qRound(_rows[_above]->yadd.current()) - _started * _rowHeight);
-	return qMin((dx + dy)  * 2. / _rowHeight, 1.);
+	auto dy = qAbs(_above * _rowHeight + std::round(_rows[_above]->yadd.current()) - _started * _rowHeight);
+	return std::min((dx + dy)  * 2. / _rowHeight, 1.);
 }
 
 void StickersBox::Inner::mouseReleaseEvent(QMouseEvent *e) {
@@ -1324,7 +1324,7 @@ void StickersBox::Inner::setMinHeight(int newWidth, int minHeight) {
 
 void StickersBox::Inner::updateSize(int newWidth) {
 	auto naturalHeight = _itemsTop + int(_rows.size()) * _rowHeight + st::membersMarginBottom;
-	resize(newWidth ? newWidth : width(), qMax(_minHeight, naturalHeight));
+	resize(newWidth ? newWidth : width(), std::max(_minHeight, naturalHeight));
 	checkLoadMore();
 }
 

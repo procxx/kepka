@@ -410,7 +410,7 @@ void FileLoadTask::process() {
 			fullimage = Images::prepareOpaque(std::move(fullimage));
 		}
 	}
-	_result->filesize = (qint32)qMin(filesize, qint64(INT_MAX));
+	_result->filesize = (qint32)std::min(filesize, qint64(INT_MAX));
 
 	if (!filesize || filesize > App::kFileSizeLimit) {
 		return;

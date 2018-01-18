@@ -253,7 +253,7 @@ void Widget::handleSeekFinished(double progress) {
 
 	auto state = mixer()->currentState(_type);
 	if (state.id && state.length) {
-		mixer()->seek(_type, qRound(progress * state.length));
+		mixer()->seek(_type, std::round(progress * state.length));
 	}
 
 	instance()->stopSeeking(_type);
@@ -443,7 +443,7 @@ void Widget::updateTimeText(const TrackState &state) {
 	_lastDurationMs = (state.length * 1000LL) / frequency;
 
 	if (state.id.audio()->loading()) {
-		_time = QString::number(qRound(state.id.audio()->progress() * 100)) + '%';
+		_time = QString::number(std::round(state.id.audio()->progress() * 100)) + '%';
 		_playbackSlider->setDisabled(true);
 	} else {
 		display = display / frequency;

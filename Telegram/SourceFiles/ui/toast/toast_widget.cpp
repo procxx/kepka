@@ -53,7 +53,7 @@ void Widget::onParentResized() {
 	accumulate_min(newWidth, parentWidget()->width() - 2 * st::toastMinMargin);
 	_textWidth = newWidth - _padding.left() - _padding.right();
 	auto maxHeight = kToastMaxLines * st::toastTextStyle.font->height;
-	auto textHeight = _multiline ? qMin(_text.countHeight(_textWidth), maxHeight) : _text.minHeight();
+	auto textHeight = _multiline ? std::min(_text.countHeight(_textWidth), maxHeight) : _text.minHeight();
 	auto newHeight = _padding.top() + textHeight + _padding.bottom();
 	setGeometry((parentWidget()->width() - newWidth) / 2, (parentWidget()->height() - newHeight) / 2, newWidth, newHeight);
 }

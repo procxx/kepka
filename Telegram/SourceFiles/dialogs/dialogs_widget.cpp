@@ -436,7 +436,7 @@ void DialogsWidget::onDraggingScrollDelta(int delta) {
 }
 
 void DialogsWidget::onDraggingScrollTimer() {
-	auto delta = (_draggingScrollDelta > 0) ? qMin(_draggingScrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : qMax(_draggingScrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
+	auto delta = (_draggingScrollDelta > 0) ? std::min(_draggingScrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : std::max(_draggingScrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + delta);
 }
 
@@ -943,7 +943,7 @@ void DialogsWidget::updateControlsGeometry() {
 	auto smallLayoutRatio = (width() < st::dialogsWidthMin) ? (st::dialogsWidthMin - width()) / double(st::dialogsWidthMin - smallLayoutWidth) : 0.;
 	auto filterLeft = st::dialogsFilterPadding.x() + _mainMenuToggle->width() + st::dialogsFilterPadding.x();
 	auto filterRight = (Global::LocalPasscode() ? (st::dialogsFilterPadding.x() + _lockUnlock->width()) : st::dialogsFilterSkip) + st::dialogsFilterPadding.x();
-	auto filterWidth = qMax(width(), st::dialogsWidthMin) - filterLeft - filterRight;
+	auto filterWidth = std::max(width(), st::dialogsWidthMin) - filterLeft - filterRight;
 	auto filterAreaHeight = st::dialogsFilterPadding.y() + _mainMenuToggle->height() + st::dialogsFilterPadding.y();
 	auto filterTop = filterAreaTop + (filterAreaHeight - _filter->height()) / 2;
 	filterLeft = anim::interpolate(filterLeft, smallLayoutWidth, smallLayoutRatio);
@@ -1062,7 +1062,7 @@ void DialogsWidget::paintEvent(QPaintEvent *e) {
 		p.fillRect(above.intersected(r), st::dialogsBg);
 	}
 
-	auto belowTop = _scroll->y() + qMin(_scroll->height(), _inner->height());
+	auto belowTop = _scroll->y() + std::min(_scroll->height(), _inner->height());
 	if (!_widthAnimationCache.isNull()) {
 		p.drawPixmapLeft(0, _scroll->y(), width(), _widthAnimationCache);
 		belowTop = _scroll->y() + (_widthAnimationCache.height() / cIntRetinaFactor());

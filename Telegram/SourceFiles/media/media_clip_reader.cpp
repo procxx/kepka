@@ -63,12 +63,12 @@ QImage PrepareFrameImage(const FrameRequest &request, const QImage &original, bo
 				p.fillRect((request.outerw - request.framew) / (2 * factor) + (request.framew / factor), 0, (cache.width() / factor) - ((request.outerw - request.framew) / (2 * factor) + (request.framew / factor)), cache.height() / factor, st::imageBg);
 			}
 			if (request.frameh < request.outerh) {
-				p.fillRect(qMax(0, (request.outerw - request.framew) / (2 * factor)), 0, qMin(cache.width(), request.framew) / factor, (request.outerh - request.frameh) / (2 * factor), st::imageBg);
-				p.fillRect(qMax(0, (request.outerw - request.framew) / (2 * factor)), (request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor), qMin(cache.width(), request.framew) / factor, (cache.height() / factor) - ((request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor)), st::imageBg);
+				p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), 0, std::min(cache.width(), request.framew) / factor, (request.outerh - request.frameh) / (2 * factor), st::imageBg);
+				p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), (request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor), std::min(cache.width(), request.framew) / factor, (cache.height() / factor) - ((request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor)), st::imageBg);
 			}
 		}
 		if (hasAlpha) {
-			p.fillRect(qMax(0, (request.outerw - request.framew) / (2 * factor)), qMax(0, (request.outerh - request.frameh) / (2 * factor)), qMin(cache.width(), request.framew) / factor, qMin(cache.height(), request.frameh) / factor, st::imageBgTransparent);
+			p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), std::max(0, (request.outerh - request.frameh) / (2 * factor)), std::min(cache.width(), request.framew) / factor, std::min(cache.height(), request.frameh) / factor, st::imageBgTransparent);
 		}
 		auto position = QPoint((request.outerw - request.framew) / (2 * factor), (request.outerh - request.frameh) / (2 * factor));
 		if (needResize) {

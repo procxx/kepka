@@ -374,7 +374,7 @@ void DialogsInner::paintDialog(Painter &p, Dialogs::Row *row, int fullWidth, Pee
 	auto pos = row->pos();
 	auto xadd = 0, yadd = 0;
 	if (pos < _pinnedRows.size()) {
-		yadd = qRound(_pinnedRows[pos].yadd.current());
+		yadd = std::round(_pinnedRows[pos].yadd.current());
 	}
 	if (xadd || yadd) p.translate(xadd, yadd);
 	auto isActive = (row->history()->peer == active) || (row->history()->peer->migrateTo() && row->history()->peer->migrateTo() == active);
@@ -407,7 +407,7 @@ void DialogsInner::paintPeerSearchResult(Painter &p, const PeerSearchResult *res
 	if (peer->isVerified()) {
 		auto icon = &(active ? st::dialogsVerifiedIconActive : (selected ? st::dialogsVerifiedIconOver : st::dialogsVerifiedIcon));
 		rectForName.setWidth(rectForName.width() - icon->width());
-		icon->paint(p, rectForName.topLeft() + QPoint(qMin(peer->dialogName().maxWidth(), rectForName.width()), 0), fullWidth);
+		icon->paint(p, rectForName.topLeft() + QPoint(std::min(peer->dialogName().maxWidth(), rectForName.width()), 0), fullWidth);
 	}
 
 	QRect tr(nameleft, st::dialogsPadding.y() + st::msgNameFont->height + st::dialogsSkip, namewidth, st::dialogsTextFont->height);
@@ -784,7 +784,7 @@ bool DialogsInner::updateReorderPinned(QPoint localPosition) {
 			_a_pinnedShifting.start();
 		}
 	}
-	_aboveTopShift = qCeil(_pinnedRows[_aboveIndex].yadd.current());
+   _aboveTopShift = std::ceil(_pinnedRows[_aboveIndex].yadd.current());
 	_pinnedRows[_draggingIndex].yadd = anim::value(yaddWas - shift * rowHeight, localPosition.y() - _dragStart.y());
 	if (!_pinnedRows[_draggingIndex].animStartTime) {
 		_pinnedRows[_draggingIndex].yadd.finish();
@@ -835,7 +835,7 @@ void DialogsInner::step_pinnedShifting(TimeMs ms, bool timer) {
 			if (_aboveIndex >= 0 && _aboveIndex < _pinnedRows.size()) {
 				// Always include currently dragged chat in its current and old positions.
 				auto aboveRowBottom = top + (_aboveIndex + 1) * st::dialogsRowHeight;
-				auto aboveTopShift = qCeil(_pinnedRows[_aboveIndex].yadd.current());
+				int aboveTopShift = std::ceil(_pinnedRows[_aboveIndex].yadd.current());
 				accumulate_max(updateHeight, (aboveRowBottom - updateFrom) + _aboveTopShift);
 				accumulate_max(updateHeight, (aboveRowBottom - updateFrom) + aboveTopShift);
 				_aboveTopShift = aboveTopShift;
@@ -951,7 +951,7 @@ void DialogsInner::setSearchedPressed(int pressed) {
 
 void DialogsInner::resizeEvent(QResizeEvent *e) {
 	_addContactLnk->move((width() - _addContactLnk->width()) / 2, (st::noContactsHeight + st::noContactsFont->height) / 2);
-	auto widthForCancelButton = qMax(width() + otherWidth(), st::dialogsWidthMin);
+	auto widthForCancelButton = std::max(width() + otherWidth(), st::dialogsWidthMin);
 	_cancelSearchInPeer->moveToLeft(widthForCancelButton - st::dialogsSearchInSkip - _cancelSearchInPeer->width(), st::searchedBarHeight + (st::dialogsSearchInHeight - st::dialogsCancelSearchInPeer.height) / 2);
 	_cancelSearchFromUser->moveToLeft(widthForCancelButton - st::dialogsSearchInSkip - _cancelSearchFromUser->width(), st::searchedBarHeight + st::dialogsSearchInHeight + st::lineWidth + (st::dialogsSearchInHeight - st::dialogsCancelSearchInPeer.height) / 2);
 }
@@ -1029,7 +1029,7 @@ void DialogsInner::createDialog(History *history) {
 	if (creating) {
 		refresh();
 	} else if (_state == DefaultState && changed.movedFrom != changed.movedTo) {
-		update(0, qMin(from, to), getFullWidth(), qAbs(from - to) + st::dialogsRowHeight);
+		update(0, std::min(from, to), getFullWidth(), qAbs(from - to) + st::dialogsRowHeight);
 	}
 }
 
@@ -1068,7 +1068,7 @@ void DialogsInner::dlgUpdated(Dialogs::Mode list, Dialogs::Row *row) {
 			auto position = row->pos();
 			auto top = dialogsOffset();
 			if (position >= 0 && position < _pinnedRows.size()) {
-				top += qRound(_pinnedRows[position].yadd.current());
+				top += std::round(_pinnedRows[position].yadd.current());
 			}
 			update(0, top + position * st::dialogsRowHeight, getFullWidth(), st::dialogsRowHeight);
 		}
@@ -1098,7 +1098,7 @@ void DialogsInner::updateDialogRow(PeerData *peer, MsgId msgId, QRect updateRect
 				auto position = row->pos();
 				auto top = dialogsOffset();
 				if (position >= 0 && position < _pinnedRows.size()) {
-					top += qRound(_pinnedRows[position].yadd.current());
+					top += std::round(_pinnedRows[position].yadd.current());
 				}
 				updateRow(top + position * st::dialogsRowHeight);
 			}
@@ -1151,7 +1151,7 @@ void DialogsInner::updateSelectedRow(PeerData *peer) {
 					auto position = h->posInChatList(Global::DialogsMode());
 					auto top = dialogsOffset();
 					if (position >= 0 && position < _pinnedRows.size()) {
-						top += qRound(_pinnedRows[position].yadd.current());
+						top += std::round(_pinnedRows[position].yadd.current());
 					}
 					update(0, top + position * st::dialogsRowHeight, getFullWidth(), st::dialogsRowHeight);
 				}
@@ -1381,7 +1381,7 @@ void DialogsInner::onHashtagFilterUpdate(QStringRef newFilter) {
 	auto &recent = cRecentSearchHashtags();
 	_hashtagResults.clear();
 	if (!recent.isEmpty()) {
-		_hashtagResults.reserve(qMin(recent.size(), kHashtagResultsLimit));
+		_hashtagResults.reserve(std::min(recent.size(), kHashtagResultsLimit));
 		for (auto i = recent.cbegin(), e = recent.cend(); i != e; ++i) {
 			if (i->first.startsWith(_hashtagFilter.midRef(1), Qt::CaseInsensitive) && i->first.size() + 1 != newFilter.size()) {
 				_hashtagResults.push_back(std::make_unique<HashtagResult>(i->first));
@@ -1663,7 +1663,7 @@ void DialogsInner::notify_historyMuteUpdated(History *history) {
 		if (creating) {
 			refresh();
 		} else if (_state == DefaultState && changed.movedFrom != changed.movedTo) {
-			update(0, qMin(from, to), getFullWidth(), qAbs(from - to) + st::dialogsRowHeight);
+			update(0, std::min(from, to), getFullWidth(), qAbs(from - to) + st::dialogsRowHeight);
 		}
 	}
 }

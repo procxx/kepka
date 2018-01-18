@@ -47,7 +47,7 @@ TimeMs QtGifReaderImplementation::frameRealTime() const {
 }
 
 TimeMs QtGifReaderImplementation::framePresentationTime() const {
-	return qMax(_frameTime, Q_INT64_C(0));
+	return std::max(_frameTime, Q_INT64_C(0));
 }
 
 ReaderImplementation::ReadResult QtGifReaderImplementation::readNextFrame() {
@@ -76,7 +76,7 @@ bool QtGifReaderImplementation::renderFrame(QImage &to, bool &hasAlpha, const QS
 		qint32 w = _frame.width(), h = _frame.height();
 		if (to.width() == w && to.height() == h && to.format() == _frame.format()) {
 			if (to.byteCount() != _frame.byteCount()) {
-				int bpl = qMin(to.bytesPerLine(), _frame.bytesPerLine());
+				int bpl = std::min(to.bytesPerLine(), _frame.bytesPerLine());
 				for (int i = 0; i < h; ++i) {
 					memcpy(to.scanLine(i), _frame.constScanLine(i), bpl);
 				}

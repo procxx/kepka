@@ -372,8 +372,8 @@ bool MainWindow::canExtendWidthBy(int addToWidth) {
 
 void MainWindow::tryToExtendWidthBy(int addToWidth) {
 	auto desktop = QDesktopWidget().availableGeometry(this);
-	auto newWidth = qMin(width() + addToWidth, desktop.width());
-	auto newLeft = qMin(x(), desktop.x() + desktop.width() - newWidth);
+	auto newWidth = std::min(width() + addToWidth, desktop.width());
+	auto newLeft = std::min(x(), desktop.x() + desktop.width() - newWidth);
 	if (x() != newLeft || width() != newWidth) {
 		setGeometry(newLeft, y(), newWidth, height());
 	} else {

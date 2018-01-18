@@ -392,8 +392,8 @@ Inner::Row &Inner::layoutInlineRow(Row &row, qint32 sumWidth) {
 	for (int i = 0; i < count; ++i) {
 		int index = indices[i];
 		int w = sumWidth ? (row.items.at(index)->maxWidth() * availw / sumWidth) : row.items.at(index)->maxWidth();
-		int actualw = qMax(w, int(st::inlineResultsMinWidth));
-		row.height = qMax(row.height, row.items.at(index)->resizeGetHeight(actualw));
+		int actualw = std::max(w, int(st::inlineResultsMinWidth));
+		row.height = std::max(row.height, row.items.at(index)->resizeGetHeight(actualw));
 		if (sumWidth) {
 			availw -= actualw;
 			sumWidth -= row.items.at(index)->maxWidth();
@@ -758,7 +758,7 @@ void Widget::moveBottom(int bottom) {
 
 void Widget::updateContentHeight() {
 	auto addedHeight = innerPadding().top() + innerPadding().bottom();
-	auto wantedContentHeight = qRound(st::emojiPanHeightRatio * _bottom) - addedHeight;
+	int wantedContentHeight = std::round(st::emojiPanHeightRatio * _bottom) - addedHeight;
 	auto contentHeight = snap(wantedContentHeight, st::emojiPanMinHeight, st::emojiPanMaxHeight);
 	accumulate_min(contentHeight, _bottom - addedHeight);
 	accumulate_min(contentHeight, _contentMaxHeight);

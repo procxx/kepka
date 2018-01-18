@@ -269,7 +269,7 @@ void TopBarWidget::updateControlsGeometry() {
 	auto buttonsWidth = _forward->contentWidth() + _delete->contentWidth() + _clearSelection->width();
 	buttonsWidth += buttonsLeft + st::topBarActionSkip * 3;
 
-	auto widthLeft = qMin(width() - buttonsWidth, -2 * st::defaultActiveButton.width);
+	auto widthLeft = std::min(width() - buttonsWidth, -2 * st::defaultActiveButton.width);
 	_forward->setFullWidth(-(widthLeft / 2));
 	_delete->setFullWidth(-(widthLeft / 2));
 
