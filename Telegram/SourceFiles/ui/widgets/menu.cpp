@@ -78,7 +78,7 @@ QAction *Menu::addAction(QAction *action, const style::icon *icon, const style::
 	};
 	_actionsData.push_back(createData());
 
-	auto newWidth = qMax(width(), _st.widthMin);
+	auto newWidth = std::max(width(), _st.widthMin);
 	newWidth = processAction(action, _actions.size() - 1, newWidth);
 	auto newHeight = height() + (action->isSeparator() ? _separatorHeight : _itemHeight);
 	resize(_forceWidth ? _forceWidth : newWidth, newHeight);

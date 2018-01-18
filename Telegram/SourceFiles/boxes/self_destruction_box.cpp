@@ -65,7 +65,7 @@ void SelfDestructionBox::prepare() {
 		auto count = int(_ttlValues.size());
 		_options.reserve(count);
 		for (auto days : _ttlValues) {
-			_options.emplace_back(this, group, days, (days > 364) ? lng_self_destruct_years(lt_count, days / 365) : lng_self_destruct_months(lt_count, qMax(days / 30, 1)), st::langsButton);
+			_options.emplace_back(this, group, days, (days > 364) ? lng_self_destruct_years(lt_count, days / 365) : lng_self_destruct_months(lt_count, std::max(days / 30, 1)), st::langsButton);
 			_options.back()->moveToLeft(st::boxPadding.left(), y);
 			y += _options.back()->heightNoMargins() + st::boxOptionListSkip;
 		}

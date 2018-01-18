@@ -1680,10 +1680,10 @@ void History::setUnreadCount(int newUnreadCount) {
 	if (_unreadCount != newUnreadCount) {
 		if (newUnreadCount == 1) {
 			if (loadedAtBottom()) showFrom = lastAvailableMessage();
-			inboxReadBefore = qMax(inboxReadBefore, msgIdForRead());
+			inboxReadBefore = std::max(inboxReadBefore, msgIdForRead());
 		} else if (!newUnreadCount) {
 			showFrom = nullptr;
-			inboxReadBefore = qMax(inboxReadBefore, msgIdForRead() + 1);
+			inboxReadBefore = std::max(inboxReadBefore, msgIdForRead() + 1);
 		} else {
 			if (!showFrom && !unreadBar && loadedAtBottom()) updateShowFrom();
 		}
@@ -2069,7 +2069,7 @@ MsgId History::maxMsgId() const {
 
 MsgId History::msgIdForRead() const {
 	MsgId result = (lastMsg && lastMsg->id > 0) ? lastMsg->id : 0;
-	if (loadedAtBottom()) result = qMax(result, maxMsgId());
+	if (loadedAtBottom()) result = std::max(result, maxMsgId());
 	return result;
 }
 

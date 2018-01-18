@@ -436,7 +436,7 @@ bool HistoryService::updateDependencyItem() {
 QRect HistoryService::countGeometry() const {
 	auto result = QRect(0, 0, width(), _height);
 	if (Adaptive::ChatWide()) {
-		result.setWidth(qMin(result.width(), st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+		result.setWidth(std::min(result.width(), st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 	}
 	return result.marginsRemoved(st::msgServiceMargin);
 }
@@ -513,7 +513,7 @@ int HistoryService::resizeContentGetHeight() {
 			contentWidth = st::msgServicePadding.left() + st::msgServicePadding.right() + 1;
 		}
 
-		auto nwidth = qMax(contentWidth - st::msgServicePadding.left() - st::msgServicePadding.right(), 0);
+		auto nwidth = std::max(contentWidth - st::msgServicePadding.left() - st::msgServicePadding.right(), 0);
 		if (nwidth != _textWidth) {
 			_textWidth = nwidth;
 			_textHeight = _text.countHeight(nwidth);

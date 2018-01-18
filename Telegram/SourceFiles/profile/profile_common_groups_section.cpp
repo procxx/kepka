@@ -196,13 +196,13 @@ int InnerWidget::resizeGetHeight(int newWidth) {
 	auto contentLeftMax = st::profileCommonGroupsLeftMax;
 	auto widthWithMin = st::windowMinWidth;
 	auto widthWithMax = st::profileCommonGroupsWidthMax + 2 * contentLeftMax;
-	_contentLeft = anim::interpolate(contentLeftMax, contentLeftMin, qMax(widthWithMax - newWidth, 0) / double(widthWithMax - widthWithMin));
-	_contentWidth = qMin(newWidth - 2 * _contentLeft, st::profileCommonGroupsWidthMax);
+	_contentLeft = anim::interpolate(contentLeftMax, contentLeftMin, std::max(widthWithMax - newWidth, 0) / double(widthWithMax - widthWithMin));
+	_contentWidth = std::min(newWidth - 2 * _contentLeft, st::profileCommonGroupsWidthMax);
 
 	auto newHeight = _contentTop;
 	newHeight += _items.size() * _rowHeight;
 	newHeight += st::profileCommonGroupsSkip;
-	return qMax(newHeight, _minHeight);
+	return std::max(newHeight, _minHeight);
 }
 
 void InnerWidget::paintEvent(QPaintEvent *e) {

@@ -27,7 +27,7 @@ namespace base {
 namespace {
 
 auto MainThreadId = std::this_thread::get_id();
-const auto MaxThreadsCount = qMax(std::thread::hardware_concurrency(), 2U);
+const auto MaxThreadsCount = std::max(std::thread::hardware_concurrency(), 2U);
 
 } // namespace
 

@@ -477,8 +477,8 @@ void ChatBackground::setPreparedImage(QImage &&image) {
 	Assert(width > 0 && height > 0);
 	auto isSmallForTiled = (width < kMinimumTiledSize || height < kMinimumTiledSize);
 	if (isSmallForTiled) {
-		auto repeatTimesX = qCeil(kMinimumTiledSize / double(width));
-		auto repeatTimesY = qCeil(kMinimumTiledSize / double(height));
+		int repeatTimesX = std::ceil(kMinimumTiledSize / double(width));
+		int repeatTimesY = std::ceil(kMinimumTiledSize / double(height));
 		auto imageForTiled = QImage(width * repeatTimesX, height * repeatTimesY, QImage::Format_ARGB32_Premultiplied);
 		imageForTiled.setDevicePixelRatio(image.devicePixelRatio());
 		auto imageForTiledBytes = imageForTiled.bits();
@@ -787,23 +787,23 @@ bool IsPaletteTestingPath(const QString &path) {
 void ComputeBackgroundRects(QRect wholeFill, QSize imageSize, QRect &to, QRect &from) {
 	if (quint64(imageSize.width()) * wholeFill.height() > quint64(imageSize.height()) * wholeFill.width()) {
 		double pxsize = wholeFill.height() / double(imageSize.height());
-		int takewidth = qCeil(wholeFill.width() / pxsize);
+		int takewidth = std::ceil(wholeFill.width() / pxsize);
 		if (takewidth > imageSize.width()) {
 			takewidth = imageSize.width();
 		} else if ((imageSize.width() % 2) != (takewidth % 2)) {
 			++takewidth;
 		}
-		to = QRect(int((wholeFill.width() - takewidth * pxsize) / 2.), 0, qCeil(takewidth * pxsize), wholeFill.height());
+		to = QRect(int((wholeFill.width() - takewidth * pxsize) / 2.), 0, std::ceil(takewidth * pxsize), wholeFill.height());
 		from = QRect((imageSize.width() - takewidth) / 2, 0, takewidth, imageSize.height());
 	} else {
 		double pxsize = wholeFill.width() / double(imageSize.width());
-		int takeheight = qCeil(wholeFill.height() / pxsize);
+		int takeheight = std::ceil(wholeFill.height() / pxsize);
 		if (takeheight > imageSize.height()) {
 			takeheight = imageSize.height();
 		} else if ((imageSize.height() % 2) != (takeheight % 2)) {
 			++takeheight;
 		}
-		to = QRect(0, int((wholeFill.height() - takeheight * pxsize) / 2.), wholeFill.width(), qCeil(takeheight * pxsize));
+		to = QRect(0, int((wholeFill.height() - takeheight * pxsize) / 2.), wholeFill.width(), std::ceil(takeheight * pxsize));
 		from = QRect(0, (imageSize.height() - takeheight) / 2, imageSize.width(), takeheight);
 	}
 }

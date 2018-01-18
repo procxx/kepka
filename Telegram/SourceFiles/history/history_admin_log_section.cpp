@@ -391,10 +391,10 @@ void Widget::paintEvent(QPaintEvent *e) {
 			auto bottom = clip.top() + clip.height();
 			auto w = pix.width() / cRetinaFactor();
 			auto h = pix.height() / cRetinaFactor();
-			auto sx = qFloor(left / w);
-			auto sy = qFloor((top - fromy) / h);
-			auto cx = qCeil(right / w);
-			auto cy = qCeil((bottom - fromy) / h);
+			auto sx = std::floor(left / w);
+			auto sy = std::floor((top - fromy) / h);
+			auto cx = std::ceil(right / w);
+			auto cy = std::ceil((bottom - fromy) / h);
 			for (auto i = sx; i < cx; ++i) {
 				for (auto j = sy; j < cy; ++j) {
 					p.drawPixmap(QPointF(i * w, fromy + j * h), pix);

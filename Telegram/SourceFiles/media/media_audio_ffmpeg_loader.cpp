@@ -92,7 +92,7 @@ AbstractFFMpegLoader::~AbstractFFMpegLoader() {
 int AbstractFFMpegLoader::_read_data(void *opaque, uint8_t *buf, int buf_size) {
 	auto l = reinterpret_cast<AbstractFFMpegLoader*>(opaque);
 
-	auto nbytes = qMin(l->_data.size() - l->_dataPos, qint32(buf_size));
+	auto nbytes = std::min(l->_data.size() - l->_dataPos, qint32(buf_size));
 	if (nbytes <= 0) {
 		return 0;
 	}
@@ -125,7 +125,7 @@ int64_t AbstractFFMpegLoader::_seek_data(void *opaque, int64_t offset, int whenc
 int AbstractFFMpegLoader::_read_bytes(void *opaque, uint8_t *buf, int buf_size) {
 	auto l = reinterpret_cast<AbstractFFMpegLoader*>(opaque);
 
-	auto nbytes = qMin(static_cast<int>(l->_bytes.size()) - l->_dataPos, buf_size);
+	auto nbytes = std::min(static_cast<int>(l->_bytes.size()) - l->_dataPos, buf_size);
 	if (nbytes <= 0) {
 		return 0;
 	}

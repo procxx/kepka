@@ -1716,14 +1716,14 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 		// Check if start or end sequences intersect any existing entity.
 		auto intersectedEntityEnd = 0;
 		for_const (auto &entity, result.entities) {
-			if (qMin(part.innerStart, entity.offset() + entity.length()) > qMax(part.outerStart, entity.offset()) ||
-				qMin(part.outerEnd, entity.offset() + entity.length()) > qMax(part.innerEnd, entity.offset())) {
+			if (std::min(part.innerStart, entity.offset() + entity.length()) > std::max(part.outerStart, entity.offset()) ||
+				std::min(part.outerEnd, entity.offset() + entity.length()) > std::max(part.innerEnd, entity.offset())) {
 				intersectedEntityEnd = entity.offset() + entity.length();
 				break;
 			}
 		}
 		if (intersectedEntityEnd > 0) {
-			matchFromOffset = qMax(part.innerStart, intersectedEntityEnd);
+			matchFromOffset = std::max(part.innerStart, intersectedEntityEnd);
 			continue;
 		}
 
@@ -1799,7 +1799,7 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 		auto mDomain = RegExpDomain().match(result.text, matchOffset);
 		auto mExplicitDomain = RegExpDomainExplicit().match(result.text, matchOffset);
 		auto mHashtag = withHashtags ? RegExpHashtag().match(result.text, matchOffset) : QRegularExpressionMatch();
-		auto mMention = withMentions ? RegExpMention().match(result.text, qMax(mentionSkip, matchOffset)) : QRegularExpressionMatch();
+		auto mMention = withMentions ? RegExpMention().match(result.text, std::max(mentionSkip, matchOffset)) : QRegularExpressionMatch();
 		auto mBotCommand = withBotCommands ? RegExpBotCommand().match(result.text, matchOffset) : QRegularExpressionMatch();
 
 		EntityInTextType lnkType = EntityInTextUrl;
@@ -1831,7 +1831,7 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 			}
 			if (!(start + mentionStart + 1)->isLetter() || !(start + mentionEnd - 1)->isLetterOrNumber()) {
 				mentionSkip = mentionEnd;
-				mMention = RegExpMention().match(result.text, qMax(mentionSkip, matchOffset));
+				mMention = RegExpMention().match(result.text, std::max(mentionSkip, matchOffset));
 				if (mMention.hasMatch()) {
 					mentionStart = mMention.capturedStart();
 					mentionEnd = mMention.capturedEnd();
@@ -2022,7 +2022,7 @@ QString ApplyEntities(const TextWithEntities &text) {
 				already = offset;
 			}
 			result.append(tag);
-			closingTags.insert(qMin(entity->offset() + entity->length(), size), tag);
+			closingTags.insert(std::min(entity->offset() + entity->length(), size), tag);
 
 			++entity;
 			tag = skipTillRelevantAndGetTag();

@@ -840,7 +840,7 @@ int PeerListBox::Inner::resizeGetHeight(int newWidth) {
 			_aboveHeight = _aboveWidget->height();
 		}
 	}
-	auto labelTop = rowsTop() + qMax(1, shownRowsCount()) * _rowHeight;
+	auto labelTop = rowsTop() + std::max(1, shownRowsCount()) * _rowHeight;
 	if (_description) {
 		_description->moveToLeft(st::contactsPadding.left(), labelTop + st::membersAboutLimitPadding.top(), newWidth);
 		_description->setVisible(!showingSearch());
@@ -953,7 +953,7 @@ void PeerListBox::Inner::paintRow(Painter &p, TimeMs ms, RowIndex index) {
 	if (row->needsVerifiedIcon()) {
 		auto icon = &st::dialogsVerifiedIcon;
 		namew -= icon->width();
-		icon->paint(p, namex + qMin(name.maxWidth(), namew), st::contactsPadding.top() + st::contactsNameTop, width());
+		icon->paint(p, namex + std::min(name.maxWidth(), namew), st::contactsPadding.top() + st::contactsNameTop, width());
 	}
 	auto nameCheckedRatio = row->disabled() ? 0. : row->checkedRatio();
 	p.setPen(anim::pen(st::contactsNameFg, st::contactsNameCheckedFg, nameCheckedRatio));

@@ -130,7 +130,7 @@ void ConfirmBox::prepare() {
 
 void ConfirmBox::textUpdated() {
 	_textWidth = st::boxWidth - st::boxPadding.left() - st::boxButtonPadding.right();
-	_textHeight = qMin(_text.countHeight(_textWidth), 16 * st::boxLabelStyle.lineHeight);
+	_textHeight = std::min(_text.countHeight(_textWidth), 16 * st::boxLabelStyle.lineHeight);
 	setDimensions(st::boxWidth, st::boxPadding.top() + _textHeight + st::boxPadding.bottom());
 
 	setMouseTracking(_text.hasLinks());
@@ -227,7 +227,7 @@ void MaxInviteBox::prepare() {
 	addButton(langFactory(lng_box_ok), [this] { closeBox(); });
 
 	_textWidth = st::boxWidth - st::boxPadding.left() - st::boxButtonPadding.right();
-	_textHeight = qMin(_text.countHeight(_textWidth), 16 * st::boxLabelStyle.lineHeight);
+	_textHeight = std::min(_text.countHeight(_textWidth), 16 * st::boxLabelStyle.lineHeight);
 	setDimensions(st::boxWidth, st::boxPadding.top() + _textHeight + st::boxTextFont->height + st::boxTextFont->height * 2 + st::newGroupLinkPadding.bottom());
 
 	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::InviteLinkChanged, [this](const Notify::PeerUpdate &update) {
@@ -474,7 +474,7 @@ void DeleteMessagesBox::prepare() {
 				canDeleteAllForEveryone = false;
 			}
 		}
-		auto count = qMax(1, _ids.size());
+		auto count = std::max(1, _ids.size());
 		if (canDeleteAllForEveryone) {
 			_forEveryone.create(this, forEveryoneText, false, st::defaultBoxCheckbox);
 		} else if (peer && peer->isChannel()) {

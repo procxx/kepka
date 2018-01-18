@@ -317,7 +317,7 @@ void Mixer::Track::reattach(AudioMsgId::Type type) {
 		alSourceQueueBuffers(stream.source, 1, stream.buffers + i);
 	}
 
-	alSourcei(stream.source, AL_SAMPLE_OFFSET, qMax(state.position - bufferedPosition, Q_INT64_C(0)));
+	alSourcei(stream.source, AL_SAMPLE_OFFSET, std::max(state.position - bufferedPosition, Q_INT64_C(0)));
 	if (!IsStopped(state.state) && state.state != State::PausedAtEnd) {
 		alSourcef(stream.source, AL_GAIN, ComputeVolume(type));
 		alSourcePlay(stream.source);
@@ -830,7 +830,7 @@ void Mixer::resume(const AudioMsgId &audio, bool fast) {
 				Audio::AttachToDevice();
 				if (track->state.state == State::PausedAtEnd) {
 					if (track->isStreamCreated()) {
-						alSourcei(track->stream.source, AL_SAMPLE_OFFSET, qMax(track->state.position - track->bufferedPosition, Q_INT64_C(0)));
+						alSourcei(track->stream.source, AL_SAMPLE_OFFSET, std::max(track->state.position - track->bufferedPosition, Q_INT64_C(0)));
 						if (!checkCurrentALError(type)) return;
 					}
 				}
@@ -1067,7 +1067,7 @@ void Mixer::reattachTracks() {
 }
 
 void Mixer::setSongVolume(double volume) {
-	_volumeSong.storeRelease(qRound(volume * kVolumeRound));
+	_volumeSong.storeRelease(std::round(volume * kVolumeRound));
 }
 
 double Mixer::getSongVolume() const {
@@ -1075,7 +1075,7 @@ double Mixer::getSongVolume() const {
 }
 
 void Mixer::setVideoVolume(double volume) {
-	_volumeVideo.storeRelease(qRound(volume * kVolumeRound));
+	_volumeVideo.storeRelease(std::round(volume * kVolumeRound));
 }
 
 double Mixer::getVideoVolume() const {
@@ -1555,11 +1555,11 @@ public:
 		}
 
 		auto sum = std::accumulate(peaks.cbegin(), peaks.cend(), 0LL);
-		peak = qMax(qint32(sum * 1.8 / peaks.size()), 2500);
+		peak = std::max(qint32(sum * 1.8 / peaks.size()), 2500);
 
 		result.resize(peaks.size());
 		for (qint32 i = 0, l = peaks.size(); i != l; ++i) {
-			result[i] = char(qMin(31U, quint32(qMin(peaks.at(i), peak)) * 31 / peak));
+			result[i] = char(std::min(31U, quint32(std::min(peaks.at(i), peak)) * 31 / peak));
 		}
 
 		return true;

@@ -29,14 +29,14 @@ RadialAnimation::RadialAnimation(AnimationCallbacks &&callbacks)
 
 void RadialAnimation::start(double prg) {
 	_firstStart = _lastStart = _lastTime = getms();
-	qint32 iprg = qRound(qMax(prg, 0.0001) * AlmostFullArcLength), iprgstrict = qRound(prg * AlmostFullArcLength);
+	qint32 iprg = std::round(std::max(prg, 0.0001) * AlmostFullArcLength), iprgstrict = std::round(prg * AlmostFullArcLength);
 	a_arcEnd = anim::value(iprgstrict, iprg);
 	_animation.start();
 }
 
 void RadialAnimation::update(double prg, bool finished, TimeMs ms) {
-	auto iprg = qRound(qMax(prg, 0.0001) * AlmostFullArcLength);
-	if (iprg != qRound(a_arcEnd.to())) {
+	auto iprg = std::round(std::max(prg, 0.0001) * AlmostFullArcLength);
+	if (iprg != std::round(a_arcEnd.to())) {
 		a_arcEnd.start(iprg);
 		_lastStart = _lastTime;
 	}
@@ -44,7 +44,7 @@ void RadialAnimation::update(double prg, bool finished, TimeMs ms) {
 
 	auto dt = double(ms - _lastStart);
 	auto fulldt = double(ms - _firstStart);
-	_opacity = qMin(fulldt / st::radialDuration, 1.);
+	_opacity = std::min(fulldt / st::radialDuration, 1.);
 	if (!finished) {
 		a_arcEnd.update(1. - (st::radialDuration / (st::radialDuration + dt)), anim::linear);
 	} else if (dt >= st::radialDuration) {
@@ -79,8 +79,8 @@ void RadialAnimation::draw(Painter &p, const QRect &inner, qint32 thickness, sty
 	pen.setCapStyle(Qt::RoundCap);
 	p.setPen(pen);
 
-	auto len = MinArcLength + qRound(a_arcEnd.current());
-	auto from = QuarterArcLength - qRound(a_arcStart.current()) - len;
+	auto len = MinArcLength + std::round(a_arcEnd.current());
+	auto from = QuarterArcLength - std::round(a_arcStart.current()) - len;
 	if (rtl()) {
 		from = QuarterArcLength - (from - QuarterArcLength) - len;
 		if (from < 0) from += FullArcLength;

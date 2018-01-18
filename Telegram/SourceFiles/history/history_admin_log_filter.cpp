@@ -370,7 +370,7 @@ void FilterBox::prepare() {
 	_inner->resizeToWidth(st::boxWideWidth);
 
 	refreshButtons();
-	setDimensions(st::boxWideWidth, qMin(_inner->height(), st::boxMaxListHeight));
+	setDimensions(st::boxWideWidth, std::min(_inner->height(), st::boxMaxListHeight));
 }
 
 void FilterBox::refreshButtons() {

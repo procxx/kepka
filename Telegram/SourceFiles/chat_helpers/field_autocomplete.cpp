@@ -132,7 +132,7 @@ bool FieldAutocomplete::clearFilteredBotCommands() {
 namespace {
 template <typename T, typename U>
 inline int indexOfInFirstN(const T &v, const U &elem, int last) {
-	for (auto b = v.cbegin(), i = b, e = b + qMax(v.size(), last); i != e; ++i) {
+	for (auto b = v.cbegin(), i = b, e = b + std::max(v.size(), last); i != e; ++i) {
 		if (*i == elem) {
 			return (i - b);
 		}
@@ -366,7 +366,7 @@ void FieldAutocomplete::setBoundings(QRect boundings) {
 void FieldAutocomplete::recount(bool resetScroll) {
 	qint32 h = 0, oldst = _scroll->scrollTop(), st = oldst, maxh = 4.5 * st::mentionHeight;
 	if (!_srows.isEmpty()) {
-		qint32 stickersPerRow = qMax(1, qint32(_boundings.width() - 2 * st::stickerPanPadding) / qint32(st::stickerPanSize.width()));
+		qint32 stickersPerRow = std::max(1, qint32(_boundings.width() - 2 * st::stickerPanPadding) / qint32(st::stickerPanSize.width()));
 		qint32 rows = rowscount(_srows.size(), stickersPerRow);
 		h = st::stickerPanPadding + rows * st::stickerPanSize.height();
 	} else if (!_mrows.isEmpty()) {
@@ -564,9 +564,9 @@ void FieldAutocompleteInner::paintEvent(QPaintEvent *e) {
 					sticker->checkSticker();
 				}
 
-				double coef = qMin((st::stickerPanSize.width() - st::buttonRadius * 2) / double(sticker->dimensions.width()), (st::stickerPanSize.height() - st::buttonRadius * 2) / double(sticker->dimensions.height()));
+				double coef = std::min((st::stickerPanSize.width() - st::buttonRadius * 2) / double(sticker->dimensions.width()), (st::stickerPanSize.height() - st::buttonRadius * 2) / double(sticker->dimensions.height()));
 				if (coef > 1) coef = 1;
-				qint32 w = qRound(coef * sticker->dimensions.width()), h = qRound(coef * sticker->dimensions.height());
+				qint32 w = std::round(coef * sticker->dimensions.width()), h = std::round(coef * sticker->dimensions.height());
 				if (w < 1) w = 1;
 				if (h < 1) h = 1;
 				QPoint ppos = pos + QPoint((st::stickerPanSize.width() - w) / 2, (st::stickerPanSize.height() - h) / 2);
@@ -578,7 +578,7 @@ void FieldAutocompleteInner::paintEvent(QPaintEvent *e) {
 			}
 		}
 	} else {
-		qint32 from = qFloor(e->rect().top() / st::mentionHeight), to = qFloor(e->rect().bottom() / st::mentionHeight) + 1;
+		qint32 from = std::floor(e->rect().top() / st::mentionHeight), to = std::floor(e->rect().bottom() / st::mentionHeight) + 1;
 		qint32 last = _mrows->isEmpty() ? (_hrows->isEmpty() ? _brows->size() : _hrows->size()) : _mrows->size();
 		auto filter = _parent->filter();
 		bool hasUsername = filter.indexOf('@') > 0;
@@ -684,7 +684,7 @@ void FieldAutocompleteInner::paintEvent(QPaintEvent *e) {
 }
 
 void FieldAutocompleteInner::resizeEvent(QResizeEvent *e) {
-	_stickersPerRow = qMax(1, qint32(width() - 2 * st::stickerPanPadding) / qint32(st::stickerPanSize.width()));
+	_stickersPerRow = std::max(1, qint32(width() - 2 * st::stickerPanPadding) / qint32(st::stickerPanSize.width()));
 }
 
 void FieldAutocompleteInner::mouseMoveEvent(QMouseEvent *e) {

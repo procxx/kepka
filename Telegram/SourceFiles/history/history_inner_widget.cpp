@@ -273,10 +273,10 @@ void HistoryInner::enumerateUserpics(Method method) {
 			}
 			// Attach userpic to the bottom of the visible area with the same margin as the last message.
 			auto userpicMinBottomSkip = st::historyPaddingBottom + st::msgMargin.bottom();
-			auto userpicBottom = qMin(itembottom - message->marginBottom(), _visibleAreaBottom - userpicMinBottomSkip);
+			auto userpicBottom = std::min(itembottom - message->marginBottom(), _visibleAreaBottom - userpicMinBottomSkip);
 
 			// Do not let the userpic go above the attached messages pack top line.
-			userpicBottom = qMax(userpicBottom, lowestAttachedItemTop + st::msgPhotoSize);
+			userpicBottom = std::max(userpicBottom, lowestAttachedItemTop + st::msgPhotoSize);
 
 			// Call the template callback function that was passed
 			// and return if it finished everything it needed.
@@ -328,11 +328,11 @@ void HistoryInner::enumerateDates(Method method) {
 				lowestInOneDayItemBottom = itembottom - item->marginBottom();
 			}
 			// Attach date to the top of the visible area with the same margin as it has in service message.
-			int dateTop = qMax(itemtop, _visibleAreaTop) + st::msgServiceMargin.top();
+			int dateTop = std::max(itemtop, _visibleAreaTop) + st::msgServiceMargin.top();
 
 			// Do not let the date go below the single-day messages pack bottom line.
 			int dateHeight = st::msgServicePadding.bottom() + st::msgServiceFont->height + st::msgServicePadding.top();
-			dateTop = qMin(dateTop, lowestInOneDayItemBottom - dateHeight);
+			dateTop = std::min(dateTop, lowestInOneDayItemBottom - dateHeight);
 
 			// Call the template callback function that was passed
 			// and return if it finished everything it needed.
@@ -649,8 +649,8 @@ void HistoryInner::touchResetSpeed() {
 void HistoryInner::touchDeaccelerate(qint32 elapsed) {
 	qint32 x = _touchSpeed.x();
 	qint32 y = _touchSpeed.y();
-	_touchSpeed.setX((x == 0) ? x : (x > 0) ? qMax(0, x - elapsed) : qMin(0, x + elapsed));
-	_touchSpeed.setY((y == 0) ? y : (y > 0) ? qMax(0, y - elapsed) : qMin(0, y + elapsed));
+	_touchSpeed.setX((x == 0) ? x : (x > 0) ? std::max(0, x - elapsed) : std::min(0, x + elapsed));
+	_touchSpeed.setY((y == 0) ? y : (y > 0) ? std::max(0, y - elapsed) : std::min(0, y + elapsed));
 }
 
 void HistoryInner::touchEvent(QTouchEvent *e) {
@@ -1581,7 +1581,7 @@ void HistoryInner::keyPressEvent(QKeyEvent *e) {
 
 void HistoryInner::recountHeight() {
 	int visibleHeight = _scroll->height();
-	int oldHistoryPaddingTop = qMax(visibleHeight - historyHeight() - st::historyPaddingBottom, 0);
+	int oldHistoryPaddingTop = std::max(visibleHeight - historyHeight() - st::historyPaddingBottom, 0);
 	if (_botAbout && !_botAbout->info->text.isEmpty()) {
 		accumulate_max(oldHistoryPaddingTop, st::msgMargin.top() + st::msgMargin.bottom() + st::msgPadding.top() + st::msgPadding.bottom() + st::msgNameFont->height + st::botDescSkip + _botAbout->height);
 	}
@@ -1612,7 +1612,7 @@ void HistoryInner::recountHeight() {
 		qint32 tw = _scroll->width() - st::msgMargin.left() - st::msgMargin.right();
 		if (tw > st::msgMaxWidth) tw = st::msgMaxWidth;
 		tw -= st::msgPadding.left() + st::msgPadding.right();
-		qint32 mw = qMax(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
+		qint32 mw = std::max(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
 		if (tw > mw) tw = mw;
 
 		_botAbout->width = tw;
@@ -1621,10 +1621,10 @@ void HistoryInner::recountHeight() {
 		qint32 descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
 		qint32 descMaxWidth = _scroll->width();
 		if (Adaptive::ChatWide()) {
-			descMaxWidth = qMin(descMaxWidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+			descMaxWidth = std::min(descMaxWidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 		}
 		qint32 descAtX = (descMaxWidth - _botAbout->width) / 2 - st::msgPadding.left();
-		qint32 descAtY = qMin(_historyPaddingTop - descH, qMax(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
+		qint32 descAtY = std::min(_historyPaddingTop - descH, std::max(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
 
 		_botAbout->rect = QRect(descAtX, descAtY, _botAbout->width + st::msgPadding.left() + st::msgPadding.right(), descH - st::msgMargin.top() - st::msgMargin.bottom());
 	} else if (_botAbout) {
@@ -1632,7 +1632,7 @@ void HistoryInner::recountHeight() {
 		_botAbout->rect = QRect();
 	}
 
-	int newHistoryPaddingTop = qMax(visibleHeight - historyHeight() - st::historyPaddingBottom, 0);
+	int newHistoryPaddingTop = std::max(visibleHeight - historyHeight() - st::historyPaddingBottom, 0);
 	if (_botAbout && !_botAbout->info->text.isEmpty()) {
 		accumulate_max(newHistoryPaddingTop, st::msgMargin.top() + st::msgMargin.bottom() + st::msgPadding.top() + st::msgPadding.bottom() + st::msgNameFont->height + st::botDescSkip + _botAbout->height);
 	}
@@ -1656,7 +1656,7 @@ void HistoryInner::updateBotInfo(bool recount) {
 				qint32 tw = _scroll->width() - st::msgMargin.left() - st::msgMargin.right();
 				if (tw > st::msgMaxWidth) tw = st::msgMaxWidth;
 				tw -= st::msgPadding.left() + st::msgPadding.right();
-				qint32 mw = qMax(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
+				qint32 mw = std::max(_botAbout->info->text.maxWidth(), st::msgNameFont->width(lang(lng_bot_description)));
 				if (tw > mw) tw = mw;
 
 				_botAbout->width = tw;
@@ -1674,7 +1674,7 @@ void HistoryInner::updateBotInfo(bool recount) {
 		if (_botAbout->height > 0) {
 			qint32 descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
 			qint32 descAtX = (_scroll->width() - _botAbout->width) / 2 - st::msgPadding.left();
-			qint32 descAtY = qMin(_historyPaddingTop - descH, (_scroll->height() - descH) / 2) + st::msgMargin.top();
+			qint32 descAtY = std::min(_historyPaddingTop - descH, (_scroll->height() - descH) / 2) + st::msgMargin.top();
 
 			_botAbout->rect = QRect(descAtX, descAtY, _botAbout->width + st::msgPadding.left() + st::msgPadding.right(), descH - st::msgMargin.top() - st::msgMargin.bottom());
 		} else {
@@ -1796,7 +1796,7 @@ void HistoryInner::repaintScrollDateCallback() {
 
 void HistoryInner::updateSize() {
 	int visibleHeight = _scroll->height();
-	int newHistoryPaddingTop = qMax(visibleHeight - historyHeight() - st::historyPaddingBottom, 0);
+	int newHistoryPaddingTop = std::max(visibleHeight - historyHeight() - st::historyPaddingBottom, 0);
 	if (_botAbout && !_botAbout->info->text.isEmpty()) {
 		accumulate_max(newHistoryPaddingTop, st::msgMargin.top() + st::msgMargin.bottom() + st::msgPadding.top() + st::msgPadding.bottom() + st::msgNameFont->height + st::botDescSkip + _botAbout->height);
 	}
@@ -1805,10 +1805,10 @@ void HistoryInner::updateSize() {
 		qint32 descH = st::msgMargin.top() + st::msgPadding.top() + st::msgNameFont->height + st::botDescSkip + _botAbout->height + st::msgPadding.bottom() + st::msgMargin.bottom();
 		qint32 descMaxWidth = _scroll->width();
 		if (Adaptive::ChatWide()) {
-			descMaxWidth = qMin(descMaxWidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+			descMaxWidth = std::min(descMaxWidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 		}
 		qint32 descAtX = (descMaxWidth - _botAbout->width) / 2 - st::msgPadding.left();
-		qint32 descAtY = qMin(newHistoryPaddingTop - descH, qMax(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
+		qint32 descAtY = std::min(newHistoryPaddingTop - descH, std::max(0, (_scroll->height() - descH) / 2)) + st::msgMargin.top();
 
 		_botAbout->rect = QRect(descAtX, descAtY, _botAbout->width + st::msgPadding.left() + st::msgPadding.right(), descH - st::msgMargin.top() - st::msgMargin.bottom());
 	}
@@ -2082,7 +2082,7 @@ void HistoryInner::onUpdateSelected() {
 					auto dateLeft = st::msgServiceMargin.left();
 					auto maxwidth = item->history()->width;
 					if (Adaptive::ChatWide()) {
-						maxwidth = qMin(maxwidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
+						maxwidth = std::min(maxwidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
 					}
 					auto widthForDate = maxwidth - st::msgServiceMargin.left() - st::msgServiceMargin.left();
 
@@ -2159,7 +2159,7 @@ void HistoryInner::onUpdateSelected() {
 				if (dragState.afterSymbol && _mouseSelectType == TextSelectType::Letters) {
 					++second;
 				}
-				auto selState = TextSelection { qMin(second, _mouseTextSymbol), qMax(second, _mouseTextSymbol) };
+				auto selState = TextSelection { std::min(second, _mouseTextSymbol), std::max(second, _mouseTextSymbol) };
 				if (_mouseSelectType != TextSelectType::Letters) {
 					selState = _mouseActionItem->adjustSelection(selState, _mouseSelectType);
 				}

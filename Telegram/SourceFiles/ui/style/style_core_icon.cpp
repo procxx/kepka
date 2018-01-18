@@ -39,7 +39,7 @@ inline int pxAdjust(int value, int scale) {
 	if (value < 0) {
 		return -pxAdjust(-value, scale);
 	}
-	return qFloor((value * scale / 4.) + 0.1);
+	return std::floor((value * scale / 4.) + 0.1);
 }
 
 QImage createIconMask(const IconMask *mask, DBIScale scale) {
@@ -51,7 +51,7 @@ QImage createIconMask(const IconMask *mask, DBIScale scale) {
 	// 200x 100x
 	// 150x 125x
 	int width = maskImage.width() / 3;
-	int height = qRound((maskImage.height() * 2) / 7.);
+	int height = std::round((maskImage.height() * 2) / 7.);
 	auto r = QRect(0, 0, width * 2, height * 2);
 	if (!cRetina() && scale != dbisTwo) {
 		if (scale == dbisOne) {

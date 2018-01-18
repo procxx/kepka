@@ -118,7 +118,7 @@ void CoverWidget::onCancelPhotoUpload() {
 int CoverWidget::countPhotoLeft(int newWidth) const {
 	int result = st::profilePhotoLeftMin;
 	result += (newWidth - st::windowMinWidth) / 2;
-	return qMin(result, st::profilePhotoLeftMax);
+	return std::min(result, st::profilePhotoLeftMax);
 }
 
 int CoverWidget::resizeGetHeight(int newWidth) {
@@ -160,7 +160,7 @@ void CoverWidget::refreshNameGeometry(int newWidth) {
 		nameWidth -= st::profileVerifiedCheckShift + st::profileVerifiedCheck.width();
 	}
 	int marginsAdd = st::profileNameLabel.margin.left() + st::profileNameLabel.margin.right();
-	_name->resizeToWidth(qMin(nameWidth - marginsAdd, _name->naturalWidth()) + marginsAdd);
+	_name->resizeToWidth(std::min(nameWidth - marginsAdd, _name->naturalWidth()) + marginsAdd);
 	_name->moveToLeft(nameLeft, nameTop);
 }
 
@@ -380,7 +380,7 @@ void CoverWidget::refreshStatusText() {
 		_statusText = App::onlineText(_peerUser, currentTime, true);
 		_statusTextIsOnline = App::onlineColorUse(_peerUser, currentTime);
 	} else if (_peerChat && _peerChat->amIn()) {
-		auto fullCount = qMax(_peerChat->count, _peerChat->participants.size());
+		auto fullCount = std::max(_peerChat->count, _peerChat->participants.size());
 		if (_onlineCount > 0 && _onlineCount <= fullCount) {
 			auto membersCount = lng_chat_status_members(lt_count, fullCount);
 			auto onlineCount = lng_chat_status_online(lt_count, _onlineCount);

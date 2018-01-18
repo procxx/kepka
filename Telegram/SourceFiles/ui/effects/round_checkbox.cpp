@@ -65,7 +65,7 @@ RoundCheckbox::RoundCheckbox(const style::RoundCheckbox &st, base::lambda<void()
 
 QRect RoundCheckbox::cacheDestRect(int x, int y, double scale) const {
 	auto iconSizeFull = kWideScale * _st.size;
-	auto iconSize = qRound(iconSizeFull * scale);
+	int iconSize = std::round(iconSizeFull * scale);
 	if (iconSize % 2 != iconSizeFull % 2) {
 		++iconSize;
 	}
@@ -101,9 +101,9 @@ void RoundCheckbox::paint(Painter &p, TimeMs ms, int x, int y, int outerWidth, d
 		} else if (fadeIn == 1.) {
 			p.drawPixmapLeft(to, outerWidth, _wideCheckFullCache, cacheFrom);
 		} else {
-			auto realDivider = ((kWideScale - 1) * _st.size / 2 + qMax(fadeIn - 0.5, 0.) * 2. * _st.size);
-			auto divider = qRound(realDivider * masterScale);
-			auto cacheDivider = qRound(realDivider) * cIntRetinaFactor();
+			auto realDivider = ((kWideScale - 1) * _st.size / 2 + std::max(fadeIn - 0.5, 0.) * 2. * _st.size);
+			auto divider = std::round(realDivider * masterScale);
+			auto cacheDivider = std::round(realDivider) * cIntRetinaFactor();
 			p.drawPixmapLeft(QRect(to.x(), to.y(), divider, to.height()), outerWidth, _wideCheckFullCache, QRect(0, 0, cacheDivider, cacheFrom.height()));
 			p.drawPixmapLeft(QRect(to.x() + divider, to.y(), to.width() - divider, to.height()), outerWidth, _wideCheckBgCache, QRect(cacheDivider, 0, cacheFrom.width() - cacheDivider, _wideCheckBgCache.height()));
 		}
@@ -190,9 +190,9 @@ void RoundCheckbox::prepareWideCheckIconCache(Icon *icon) {
 		Painter p(&wideCache);
 		p.setCompositionMode(QPainter::CompositionMode_Source);
 		auto iconSize = kWideScale * _st.size;
-		auto realDivider = ((kWideScale - 1) * _st.size / 2 + qMax(icon->fadeIn.current(1.) - 0.5, 0.) * 2. * _st.size);
-		auto divider = qRound(realDivider);
-		auto cacheDivider = qRound(realDivider) * cIntRetinaFactor();
+		auto realDivider = ((kWideScale - 1) * _st.size / 2 + std::max(icon->fadeIn.current(1.) - 0.5, 0.) * 2. * _st.size);
+		auto divider = std::round(realDivider);
+		auto cacheDivider = std::round(realDivider) * cIntRetinaFactor();
 		p.drawPixmapLeft(QRect(0, 0, divider, iconSize), cacheWidth, _wideCheckFullCache, QRect(0, 0, divider * cIntRetinaFactor(), _wideCheckFullCache.height()));
 		p.drawPixmapLeft(QRect(divider, 0, iconSize - divider, iconSize), cacheWidth, _wideCheckBgCache, QRect(cacheDivider, 0, _wideCheckBgCache.width() - cacheDivider, _wideCheckBgCache.height()));
 	}
@@ -243,7 +243,7 @@ void RoundImageCheckbox::paint(Painter &p, TimeMs ms, int x, int y, int outerWid
 
 	auto selectionLevel = _selection.current(checked() ? 1. : 0.);
 	if (_selection.animating()) {
-		auto userpicRadius = qRound(kWideScale * (_st.imageRadius + (_st.imageSmallRadius - _st.imageRadius) * selectionLevel));
+		auto userpicRadius = std::round(kWideScale * (_st.imageRadius + (_st.imageSmallRadius - _st.imageRadius) * selectionLevel));
 		auto userpicShift = kWideScale * _st.imageRadius - userpicRadius;
 		auto userpicLeft = x - (kWideScale - 1) * _st.imageRadius + userpicShift;
 		auto userpicTop = y - (kWideScale - 1) * _st.imageRadius + userpicShift;

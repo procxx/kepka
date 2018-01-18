@@ -931,7 +931,7 @@ int getPaletteIndex(QLatin1String name) {\n\
 				for (auto i = 1; i != usedIfForCheckCount; ++i) {
 					checkTypes.push_back(UsedCheckType::UpcomingIf);
 					chars.push_back(keyChar);
-					checkLengthHistory.push_back(qMax(minimalLengthCheck, checkLengthHistory.back()));
+					checkLengthHistory.push_back(std::max(minimalLengthCheck, checkLengthHistory.back()));
 					keyChar = name[checking + i];
 				}
 			} else {
@@ -940,7 +940,7 @@ int getPaletteIndex(QLatin1String name) {\n\
 			}
 			++tabsUsed;
 			chars.push_back(keyChar);
-			checkLengthHistory.push_back(qMax(minimalLengthCheck, checkLengthHistory.back()));
+			checkLengthHistory.push_back(std::max(minimalLengthCheck, checkLengthHistory.back()));
 		}
 		source_->stream() << tabs(tabsUsed) << "return (size == " << chars.size() << ") ? " << index << " : -1;\n";
 	}

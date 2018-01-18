@@ -273,7 +273,7 @@ void Generator::addTextBubble(QString text, QString date, Status status) {
 	accumulate_min(width, st::msgPadding.left() + bubble.text.maxWidth() + st::msgPadding.right());
 	accumulate_min(width, st::msgMaxWidth);
 
-	auto textWidth = qMax(width - st::msgPadding.left() - st::msgPadding.right(), 1);
+	auto textWidth = std::max(width - st::msgPadding.left() - st::msgPadding.right(), 1);
 	auto textHeight = bubble.text.countHeight(textWidth);
 
 	auto height = st::msgPadding.top() + textHeight + st::msgPadding.bottom();
@@ -297,7 +297,7 @@ void Generator::addPhotoBubble(QString image, QString caption, QString date, Sta
 	accumulate_min(width, bubble.photoWidth);
 	accumulate_min(width, st::msgMaxWidth);
 
-	auto textWidth = qMax(width - st::msgPadding.left() - st::msgPadding.right(), 1);
+	auto textWidth = std::max(width - st::msgPadding.left() - st::msgPadding.right(), 1);
 	auto textHeight = bubble.text.countHeight(textWidth);
 
 	auto height = st::mediaCaptionSkip + textHeight + st::msgPadding.bottom();
@@ -416,8 +416,8 @@ void Generator::paintHistoryBackground() {
 	if (tiled) {
 		auto width = background.width();
 		auto height = background.height();
-		auto repeatTimesX = qCeil(_history.width() * cIntRetinaFactor() / double(width));
-		auto repeatTimesY = qCeil((_history.height() - fromy) * cIntRetinaFactor() / double(height));
+		int repeatTimesX = std::ceil(_history.width() * cIntRetinaFactor() / double(width));
+		int repeatTimesY = std::ceil((_history.height() - fromy) * cIntRetinaFactor() / double(height));
 		auto imageForTiled = QImage(width * repeatTimesX, height * repeatTimesY, QImage::Format_ARGB32_Premultiplied);
 		imageForTiled.setDevicePixelRatio(background.devicePixelRatio());
 		auto imageForTiledBytes = imageForTiled.bits();

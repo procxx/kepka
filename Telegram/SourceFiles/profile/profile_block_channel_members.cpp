@@ -82,7 +82,7 @@ void ChannelMembersWidget::refreshAdmins() {
 	auto getAdminsText = [this] {
 		if (auto channel = peer()->asChannel()) {
 			if (!channel->isMegagroup() && channel->canViewAdmins()) {
-				auto adminsCount = qMax(channel->adminsCount(), 1);
+				auto adminsCount = std::max(channel->adminsCount(), 1);
 				return lng_channel_admins_link(lt_count, adminsCount);
 			}
 		}
@@ -105,7 +105,7 @@ void ChannelMembersWidget::refreshMembers() {
 	auto getMembersText = [this]() -> QString {
 		if (auto channel = peer()->asChannel()) {
 			if (!channel->isMegagroup() && channel->canViewMembers()) {
-				int membersCount = qMax(channel->membersCount(), 1);
+				int membersCount = std::max(channel->membersCount(), 1);
 				return lng_channel_members_link(lt_count, membersCount);
 			}
 		}

@@ -120,7 +120,7 @@ void InnerWidget::paintEvent(QPaintEvent *e) {
 	if (_mode == Mode::TwoColumn) {
 		int leftHeight = countBlocksHeight(RectPart::Left);
 		int rightHeight = countBlocksHeight(RectPart::Right);
-		int shadowHeight = rightHeight;// qMin(leftHeight, rightHeight);
+		int shadowHeight = rightHeight;// std::min(leftHeight, rightHeight);
 
 		int shadowLeft = _blocksLeft + _leftColumnWidth + _columnDivider;
 		int shadowTop = _blocksTop + st::profileBlockMarginTop;
@@ -149,7 +149,7 @@ int InnerWidget::countBlocksHeight(RectPart countSide) const {
 int InnerWidget::countBlocksLeft(int newWidth) const {
 	int result = st::profileBlockLeftMin;
 	result += (newWidth - st::windowMinWidth) / 2;
-	return qMin(result, st::profileBlockLeftMax);
+	return std::min(result, st::profileBlockLeftMax);
 }
 
 InnerWidget::Mode InnerWidget::countBlocksMode(int newWidth) const {
@@ -239,7 +239,7 @@ int InnerWidget::resizeGetHeight(int newWidth) {
 	update();
 	auto naturalHeight = countHeight();
 
-	_addedHeight = qMax(_minHeight - naturalHeight, 0);
+	_addedHeight = std::max(_minHeight - naturalHeight, 0);
 	return naturalHeight + _addedHeight;
 }
 
@@ -248,7 +248,7 @@ int InnerWidget::countHeight() const {
 	auto leftHeight = countBlocksHeight(RectPart::Left);
 	auto rightHeight = countBlocksHeight(RectPart::Right);
 
-	auto blocksHeight = (_mode == Mode::OneColumn) ? (leftHeight + rightHeight) : qMax(leftHeight, rightHeight);
+	auto blocksHeight = (_mode == Mode::OneColumn) ? (leftHeight + rightHeight) : std::max(leftHeight, rightHeight);
 	newHeight += st::profileBlocksTop + blocksHeight + st::profileBlocksBottom;
 
 	return newHeight;

@@ -1169,7 +1169,7 @@ void MainWidget::addParticipants(PeerData *chatOrChannel, const std::vector<not_
 		}
 	} else if (chatOrChannel->isChannel()) {
 		QVector<MTPInputUser> inputUsers;
-		inputUsers.reserve(qMin(int(users.size()), int(MaxUsersPerInvite)));
+		inputUsers.reserve(std::min(int(users.size()), int(MaxUsersPerInvite)));
 		for (auto i = users.cbegin(), e = users.cend(); i != e; ++i) {
 			inputUsers.push_back((*i)->inputUser);
 			if (inputUsers.size() == MaxUsersPerInvite) {
@@ -1331,8 +1331,8 @@ void MainWidget::onCacheBackground() {
 			auto h = bg.height() / cRetinaFactor();
 			auto sx = 0;
 			auto sy = 0;
-			auto cx = qCeil(_willCacheFor.width() / w);
-			auto cy = qCeil(_willCacheFor.height() / h);
+			auto cx = std::ceil(_willCacheFor.width() / w);
+			auto cy = std::ceil(_willCacheFor.height() / h);
 			for (int i = sx; i < cx; ++i) {
 				for (int j = sy; j < cy; ++j) {
 					p.drawPixmap(QPointF(i * w, j * h), bg);
@@ -3200,7 +3200,7 @@ void MainWidget::updateControlsGeometry() {
 		_dialogs->stopWidthAnimation();
 	}
 	auto sectionTop = getSectionTop();
-	auto dialogsWidth = qRound(_a_dialogsWidth.current(_dialogsWidth));
+	int dialogsWidth = std::round(_a_dialogsWidth.current(_dialogsWidth));
 	if (Adaptive::OneColumn()) {
 		if (_callTopBar) {
 			_callTopBar->resizeToWidth(dialogsWidth);
@@ -3384,8 +3384,8 @@ void MainWidget::updateWindowAdaptiveLayout() {
 		if (_history->willSwitchToTabbedSelectorWithWidth(chatWidth)) {
 			auto thirdColumnWidth = _history->tabbedSelectorSectionWidth();
 			auto twoColumnsWidth = (layout.bodyWidth - thirdColumnWidth);
-			auto sameRatioChatWidth = twoColumnsWidth - qRound(dialogsWidthRatio * twoColumnsWidth);
-			auto desiredChatWidth = qMax(sameRatioChatWidth, HistoryLayout::WideChatWidth());
+			int sameRatioChatWidth = twoColumnsWidth - std::round(dialogsWidthRatio * twoColumnsWidth);
+			auto desiredChatWidth = std::max(sameRatioChatWidth, HistoryLayout::WideChatWidth());
 			chatWidth -= thirdColumnWidth;
 			auto extendChatBy = desiredChatWidth - chatWidth;
 			accumulate_min(extendChatBy, layout.dialogsWidth - st::dialogsWidthMin);
@@ -3824,7 +3824,7 @@ void MainWidget::onGetDifferenceTimeByPts() {
 	}
 	for (ChannelGetDifferenceTime::iterator i = _channelGetDifferenceTimeByPts.begin(); i != _channelGetDifferenceTimeByPts.cend();) {
 		if (i.value() > now) {
-			wait = wait ? qMin(wait, i.value() - now) : (i.value() - now);
+			wait = wait ? std::min(wait, i.value() - now) : (i.value() - now);
 			++i;
 		} else {
 			getChannelDifference(i.key(), ChannelDifferenceRequest::PtsGapOrShortPoll);
@@ -3851,7 +3851,7 @@ void MainWidget::onGetDifferenceTimeAfterFail() {
 	}
 	for (auto i = _channelGetDifferenceTimeAfterFail.begin(); i != _channelGetDifferenceTimeAfterFail.cend();) {
 		if (i.value() > now) {
-			wait = wait ? qMin(wait, i.value() - now) : (i.value() - now);
+			wait = wait ? std::min(wait, i.value() - now) : (i.value() - now);
 			++i;
 		} else {
 			getChannelDifference(i.key(), ChannelDifferenceRequest::AfterFail);
@@ -4415,7 +4415,7 @@ void MainWidget::updateOnline(bool gotOtherOffline) {
 				_idleFinishTimer.start(900);
 			}
 		} else {
-			updateIn = qMin(updateIn, int(Global::OfflineIdleTimeout() - idle));
+			updateIn = std::min(updateIn, int(Global::OfflineIdleTimeout() - idle));
 		}
 	}
 	auto ms = getms(true);
@@ -4441,7 +4441,7 @@ void MainWidget::updateOnline(bool gotOtherOffline) {
 
 		updateOnlineDisplay();
 	} else if (isOnline) {
-		updateIn = qMin(updateIn, int(_lastSetOnline + Global::OnlineUpdatePeriod() - ms));
+		updateIn = std::min(updateIn, int(_lastSetOnline + Global::OnlineUpdatePeriod() - ms));
 	}
 	_onlineTimer.start(updateIn);
 }

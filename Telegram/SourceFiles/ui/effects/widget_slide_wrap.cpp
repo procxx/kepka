@@ -65,7 +65,7 @@ void WidgetSlideWrap<TWidget>::showAnimated() {
 		if (!_hiding) return;
 	}
 	_hiding = false;
-	_forceHeight = qRound(_a_height.current(0.));
+	_forceHeight = std::round(_a_height.current(0.));
 	_a_height.start([this] { animationCallback(); }, 0., _realSize.height(), _duration);
 }
 
@@ -122,7 +122,7 @@ int WidgetSlideWrap<TWidget>::resizeGetHeight(int newWidth) {
 }
 
 void WidgetSlideWrap<TWidget>::animationCallback() {
-	_forceHeight = qRound(_a_height.current(_hiding ? 0 : -1));
+	_forceHeight = std::round(_a_height.current(_hiding ? 0 : -1));
 	resizeToWidth(_realSize.width());
 	if (!_a_height.animating()) {
 		_forceHeight = _hiding ? 0 : -1;

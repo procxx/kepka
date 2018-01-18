@@ -222,7 +222,7 @@ int FlatLabel::countTextWidth() const {
 
 int FlatLabel::countTextHeight(int textWidth) {
 	_fullTextHeight = _text.countHeight(textWidth);
-	return _st.maxHeight ? qMin(_fullTextHeight, _st.maxHeight) : _fullTextHeight;
+	return _st.maxHeight ? std::min(_fullTextHeight, _st.maxHeight) : _fullTextHeight;
 }
 
 void FlatLabel::refreshSize() {
@@ -618,7 +618,7 @@ std::unique_ptr<CrossFadeAnimation> FlatLabel::CrossFade(FlatLabel *from, FlatLa
 	auto was = prepareData(from);
 	auto now = prepareData(to);
 
-	auto maxLines = qMax(was.lineWidths.size(), now.lineWidths.size());
+	auto maxLines = std::max(was.lineWidths.size(), now.lineWidths.size());
 	auto fillDataTill = [maxLines](Data &data) {
 		for (auto i = data.lineWidths.size(); i != maxLines; ++i) {
 			data.lineWidths.push_back(-1);
@@ -690,7 +690,7 @@ void FlatLabel::updateHover(const Text::StateResult &state) {
 			if (state.afterSymbol && _selectionType == TextSelectType::Letters) {
 				++second;
 			}
-			auto selection = _text.adjustSelection({ qMin(second, _dragSymbol), qMax(second, _dragSymbol) }, _selectionType);
+			auto selection = _text.adjustSelection({ std::min(second, _dragSymbol), std::max(second, _dragSymbol) }, _selectionType);
 			if (_selection != selection) {
 				_selection = selection;
 				_savedSelection = { 0, 0 };
@@ -744,8 +744,8 @@ Text::StateResult FlatLabel::getTextState(const QPoint &m) const {
 	bool heightExceeded = _st.maxHeight && (_st.maxHeight < _fullTextHeight || textWidth < _text.maxWidth());
 	bool renderElided = _breakEverywhere || heightExceeded;
 	if (renderElided) {
-		auto lineHeight = qMax(_st.style.lineHeight, _st.style.font->height);
-		auto lines = _st.maxHeight ? qMax(_st.maxHeight / lineHeight, 1) : ((height() / lineHeight) + 2);
+		auto lineHeight = std::max(_st.style.lineHeight, _st.style.font->height);
+		auto lines = _st.maxHeight ? std::max(_st.maxHeight / lineHeight, 1) : ((height() / lineHeight) + 2);
 		request.lines = lines;
 		if (_breakEverywhere) {
 			request.flags |= Text::StateRequest::Flag::BreakEverywhere;
@@ -773,8 +773,8 @@ void FlatLabel::paintEvent(QPaintEvent *e) {
 	bool heightExceeded = _st.maxHeight && (_st.maxHeight < _fullTextHeight || textWidth < _text.maxWidth());
 	bool renderElided = _breakEverywhere || heightExceeded;
 	if (renderElided) {
-		auto lineHeight = qMax(_st.style.lineHeight, _st.style.font->height);
-		auto lines = _st.maxHeight ? qMax(_st.maxHeight / lineHeight, 1) : ((height() / lineHeight) + 2);
+		auto lineHeight = std::max(_st.style.lineHeight, _st.style.font->height);
+		auto lines = _st.maxHeight ? std::max(_st.maxHeight / lineHeight, 1) : ((height() / lineHeight) + 2);
 		_text.drawElided(p, _st.margin.left(), _st.margin.top(), textWidth, lines, _st.align, e->rect().y(), e->rect().bottom(), 0, _breakEverywhere, selection);
 	} else {
 		_text.draw(p, _st.margin.left(), _st.margin.top(), textWidth, _st.align, e->rect().y(), e->rect().bottom(), selection);

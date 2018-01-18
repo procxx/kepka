@@ -87,8 +87,8 @@ void SendFilesBox::prepareSingleFileLayout() {
 			if (_animated) {
 				auto limitW = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
 				auto limitH = st::confirmMaxHeight;
-				maxW = qMax(image.width(), 1);
-				maxH = qMax(image.height(), 1);
+				maxW = std::max(image.width(), 1);
+				maxH = std::max(image.height(), 1);
 				if (maxW * limitH > maxH * limitW) {
 					if (maxW < limitW) {
 						maxH = maxH * limitW / maxW;
@@ -109,12 +109,12 @@ void SendFilesBox::prepareSingleFileLayout() {
 			}
 			_previewWidth = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
 			if (image.width() < _previewWidth) {
-				_previewWidth = qMax(image.width(), kMinPreviewWidth);
+				_previewWidth = std::max(image.width(), kMinPreviewWidth);
 			}
-			auto maxthumbh = qMin(qRound(1.5 * _previewWidth), st::confirmMaxHeight);
-			_previewHeight = qRound(originalHeight * double(_previewWidth) / originalWidth);
+			auto maxthumbh = std::min<int>(std::round(1.5 * _previewWidth), st::confirmMaxHeight);
+			_previewHeight = std::round(originalHeight * double(_previewWidth) / originalWidth);
 			if (_previewHeight > maxthumbh) {
-				_previewWidth = qRound(_previewWidth * double(maxthumbh) / _previewHeight);
+				_previewWidth = std::round(_previewWidth * double(maxthumbh) / _previewHeight);
 				accumulate_max(_previewWidth, kMinPreviewWidth);
 				_previewHeight = maxthumbh;
 			}
@@ -182,7 +182,7 @@ void SendFilesBox::prepareDocumentLayout() {
 		auto filename = filedialogDefaultName(qsl("image"), qsl(".png"), QString(), true);
 		_nameText.setText(st::semiboldTextStyle, filename, _textNameOptions);
 		_statusText = qsl("%1x%2").arg(_image.width()).arg(_image.height());
-		_statusWidth = qMax(_nameText.maxWidth(), st::normalFont->width(_statusText));
+		_statusWidth = std::max(_nameText.maxWidth(), st::normalFont->width(_statusText));
 		_fileIsImage = true;
 	} else {
 		auto fileinfo = QFileInfo(filepath);
@@ -202,7 +202,7 @@ void SendFilesBox::prepareDocumentLayout() {
 		auto nameString = DocumentData::composeNameString(filename, songTitle, songPerformer);
 		_nameText.setText(st::semiboldTextStyle, nameString, _textNameOptions);
 		_statusText = formatSizeText(fileinfo.size());
-		_statusWidth = qMax(_nameText.maxWidth(), st::normalFont->width(_statusText));
+		_statusWidth = std::max(_nameText.maxWidth(), st::normalFont->width(_statusText));
 	}
 }
 
@@ -226,7 +226,7 @@ SendFilesBox::SendFilesBox(QWidget*, const QString &phone, const QString &firstn
 	auto name = lng_full_name(lt_first_name, _contactFirstName, lt_last_name, _contactLastName);
 	_nameText.setText(st::semiboldTextStyle, name, _textNameOptions);
 	_statusText = _contactPhone;
-	_statusWidth = qMax(_nameText.maxWidth(), st::normalFont->width(_statusText));
+	_statusWidth = std::max(_nameText.maxWidth(), st::normalFont->width(_statusText));
 	_contactPhotoEmpty.set(0, name);
 }
 
@@ -510,7 +510,7 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 				_name.setText(st::semiboldTextStyle, doc->composeNameString(), _textNameOptions);
 			}
 			_status = formatSizeText(doc->size);
-			_statusw = qMax(_name.maxWidth(), st::normalFont->width(_status));
+			_statusw = std::max(_name.maxWidth(), st::normalFont->width(_status));
 			_isImage = doc->isImage();
 			_isAudio = (doc->voice() || doc->song());
 		}
@@ -519,8 +519,8 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 		if (_animated) {
 			qint32 limitW = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
 			qint32 limitH = st::confirmMaxHeight;
-			maxW = qMax(dimensions.width(), 1);
-			maxH = qMax(dimensions.height(), 1);
+			maxW = std::max(dimensions.width(), 1);
+			maxH = std::max(dimensions.height(), 1);
 			if (maxW * limitH > maxH * limitW) {
 				if (maxW < limitW) {
 					maxH = maxH * limitW / maxW;
@@ -547,10 +547,10 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 		if (_thumb.width() < _thumbw) {
 			_thumbw = (_thumb.width() > 20) ? _thumb.width() : 20;
 		}
-		qint32 maxthumbh = qMin(qRound(1.5 * _thumbw), int(st::confirmMaxHeight));
-		_thumbh = qRound(th * double(_thumbw) / tw);
+		qint32 maxthumbh = std::min<int>(std::round(1.5 * _thumbw), int(st::confirmMaxHeight));
+		_thumbh = std::round(th * double(_thumbw) / tw);
 		if (_thumbh > maxthumbh) {
-			_thumbw = qRound(_thumbw * double(maxthumbh) / _thumbh);
+			_thumbw = std::round(_thumbw * double(maxthumbh) / _thumbh);
 			_thumbh = maxthumbh;
 			if (_thumbw < 10) {
 				_thumbw = 10;

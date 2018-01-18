@@ -140,10 +140,10 @@ void InnerWidget::enumerateUserpics(Method method) {
 			}
 			// Attach userpic to the bottom of the visible area with the same margin as the last message.
 			auto userpicMinBottomSkip = st::historyPaddingBottom + st::msgMargin.bottom();
-			auto userpicBottom = qMin(itembottom - message->marginBottom(), _visibleBottom - userpicMinBottomSkip);
+			auto userpicBottom = std::min(itembottom - message->marginBottom(), _visibleBottom - userpicMinBottomSkip);
 
 			// Do not let the userpic go above the attached messages pack top line.
-			userpicBottom = qMax(userpicBottom, lowestAttachedItemTop + st::msgPhotoSize);
+			userpicBottom = std::max(userpicBottom, lowestAttachedItemTop + st::msgPhotoSize);
 
 			// Call the template callback function that was passed
 			// and return if it finished everything it needed.
@@ -181,11 +181,11 @@ void InnerWidget::enumerateDates(Method method) {
 				lowestInOneDayItemBottom = itembottom - item->marginBottom();
 			}
 			// Attach date to the top of the visible area with the same margin as it has in service message.
-			auto dateTop = qMax(itemtop, _visibleTop) + st::msgServiceMargin.top();
+			auto dateTop = std::max(itemtop, _visibleTop) + st::msgServiceMargin.top();
 
 			// Do not let the date go below the single-day messages pack bottom line.
 			auto dateHeight = st::msgServicePadding.bottom() + st::msgServiceFont->height + st::msgServicePadding.top();
-			dateTop = qMin(dateTop, lowestInOneDayItemBottom - dateHeight);
+			dateTop = std::min(dateTop, lowestInOneDayItemBottom - dateHeight);
 
 			// Call the template callback function that was passed
 			// and return if it finished everything it needed.
@@ -1333,7 +1333,7 @@ void InnerWidget::updateSelected() {
 				if (dragState.afterSymbol && _mouseSelectType == TextSelectType::Letters) {
 					++second;
 				}
-				auto selection = TextSelection { qMin(second, _mouseTextSymbol), qMax(second, _mouseTextSymbol) };
+				auto selection = TextSelection { std::min(second, _mouseTextSymbol), std::max(second, _mouseTextSymbol) };
 				if (_mouseSelectType != TextSelectType::Letters) {
 					selection = _mouseActionItem->adjustSelection(selection, _mouseSelectType);
 				}

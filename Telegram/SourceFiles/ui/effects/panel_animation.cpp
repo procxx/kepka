@@ -159,7 +159,7 @@ void RoundShadowAnimation::paintShadowCorner(int left, int top, const QImage &im
 	for (auto y = 0; y != imageHeight; ++y) {
 		for (auto x = 0; x != imageWidth; ++x) {
 			auto source = *frameInts;
-			auto shadowAlpha = qMax(_frameAlpha - int(source >> 24), 0);
+			auto shadowAlpha = std::max(_frameAlpha - int(source >> 24), 0);
 			*frameInts = anim::unshifted(anim::shifted(source) * 256 + anim::shifted(*imageInts) * shadowAlpha);
 			++frameInts;
 			++imageInts;
@@ -274,30 +274,30 @@ void PanelAnimation::setFinalImage(QImage &&finalImage, QRect inner) {
 }
 
 void PanelAnimation::setStartWidth() {
-	_startWidth = qRound(_st.startWidth * _finalInnerWidth);
+	_startWidth = std::round(_st.startWidth * _finalInnerWidth);
 	if (_startWidth >= 0) Assert(_startWidth <= _finalInnerWidth);
 }
 
 void PanelAnimation::setStartHeight() {
-	_startHeight = qRound(_st.startHeight * _finalInnerHeight);
+	_startHeight = std::round(_st.startHeight * _finalInnerHeight);
 	if (_startHeight >= 0) Assert(_startHeight <= _finalInnerHeight);
 }
 
 void PanelAnimation::setStartAlpha() {
-	_startAlpha = qRound(_st.startOpacity * 255);
+	_startAlpha = std::round(_st.startOpacity * 255);
 	Assert(_startAlpha >= 0 && _startAlpha < 256);
 }
 
 void PanelAnimation::setStartFadeTop() {
-	_startFadeTop = qRound(_st.startFadeTop * _finalInnerHeight);
+	_startFadeTop = std::round(_st.startFadeTop * _finalInnerHeight);
 }
 
 void PanelAnimation::createFadeMask() {
-	auto resultHeight = qRound(_finalImage.height() * _st.fadeHeight);
+	int resultHeight = std::round(_finalImage.height() * _st.fadeHeight);
 	if (auto remove = (resultHeight % cIntRetinaFactor())) {
 		resultHeight -= remove;
 	}
-	auto finalAlpha = qRound(_st.fadeOpacity * 255);
+	int finalAlpha = std::round(_st.fadeOpacity * 255);
 	Assert(finalAlpha >= 0 && finalAlpha < 256);
 	auto result = QImage(cIntRetinaFactor(), resultHeight, QImage::Format_ARGB32_Premultiplied);
 	auto ints = reinterpret_cast<quint32*>(result.bits());
@@ -386,7 +386,7 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, doubl
 	if (auto decrease = (fadeTop % cIntRetinaFactor())) {
 		fadeTop -= decrease;
 	}
-	auto fadeBottom = (fadeTop < frameHeight) ? qMin(fadeTop + _fadeHeight, frameHeight) : frameHeight;
+	auto fadeBottom = (fadeTop < frameHeight) ? std::min(fadeTop + _fadeHeight, frameHeight) : frameHeight;
 	auto fadeSkipLines = 0;
 	if (_origin == Origin::BottomLeft || _origin == Origin::BottomRight) {
 		fadeTop = frameHeight - fadeTop;

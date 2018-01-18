@@ -221,9 +221,9 @@ void Photo::initDimensions() {
 }
 
 qint32 Photo::resizeGetHeight(qint32 width) {
-	width = qMin(width, _maxw);
+	width = std::min(width, _maxw);
 	if (width != _width || width != _height) {
-		_width = qMin(width, _maxw);
+		_width = std::min(width, _maxw);
 		_height = _width;
 	}
 	return _height;
@@ -321,7 +321,7 @@ void Video::initDimensions() {
 }
 
 qint32 Video::resizeGetHeight(qint32 width) {
-	_width = qMin(width, _maxw);
+	_width = std::min(width, _maxw);
 	_height = _width;
 	return _height;
 }
@@ -866,7 +866,7 @@ void Document::paint(Painter &p, const QRect &clip, TextSelection selection, con
 	}
 
 	int availwidth = _width - nameleft - nameright;
-	int namewidth = qMin(availwidth, _name.maxWidth());
+	int namewidth = std::min(availwidth, _name.maxWidth());
 	if (clip.intersects(rtlrect(nameleft, nametop, namewidth, st::semiboldFont->height, _width))) {
 		p.setPen(st::historyFileNameInFg);
 		_name.drawLeftElided(p, nameleft, nametop, namewidth, _width);
@@ -929,7 +929,7 @@ void Document::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoin
 				link = _namel;
 				return;
 			}
-			if (rtlrect(nameleft, nametop, qMin(_width - nameleft - nameright, _name.maxWidth()), st::semiboldFont->height, _width).contains(point)) {
+			if (rtlrect(nameleft, nametop, std::min(_width - nameleft - nameright, _name.maxWidth()), st::semiboldFont->height, _width).contains(point)) {
 				link = _namel;
 				return;
 			}
@@ -1064,8 +1064,8 @@ Link::Link(HistoryMedia *media, HistoryItem *parent) : ItemBase(parent) {
 			th = st::linksPhotoSize;
 		}
 	}
-	_pixw = qMax(tw, 1);
-	_pixh = qMax(th, 1);
+	_pixw = std::max(tw, 1);
+	_pixh = std::max(th, 1);
 
 	if (_page) {
 		_title = _page->title;
@@ -1101,14 +1101,14 @@ void Link::initDimensions() {
 		_minh += st::semiboldFont->height;
 	}
 	if (!_text.isEmpty()) {
-		_minh += qMin(3 * st::normalFont->height, _text.countHeight(_maxw - st::linksPhotoSize - st::linksPhotoPadding));
+		_minh += std::min(3 * st::normalFont->height, _text.countHeight(_maxw - st::linksPhotoSize - st::linksPhotoPadding));
 	}
 	_minh += _links.size() * st::normalFont->height;
-	_minh = qMax(_minh, qint32(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
+	_minh = std::max(_minh, qint32(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
 }
 
 qint32 Link::resizeGetHeight(qint32 width) {
-	_width = qMin(width, _maxw);
+	_width = std::min(width, _maxw);
 	qint32 w = _width - st::linksPhotoSize - st::linksPhotoPadding;
 	for (qint32 i = 0, l = _links.size(); i < l; ++i) {
 		_links.at(i).lnk->setFullDisplayed(w >= _links.at(i).width);
@@ -1119,10 +1119,10 @@ qint32 Link::resizeGetHeight(qint32 width) {
 		_height += st::semiboldFont->height;
 	}
 	if (!_text.isEmpty()) {
-		_height += qMin(3 * st::normalFont->height, _text.countHeight(_width - st::linksPhotoSize - st::linksPhotoPadding));
+		_height += std::min(3 * st::normalFont->height, _text.countHeight(_width - st::linksPhotoSize - st::linksPhotoPadding));
 	}
 	_height += _links.size() * st::normalFont->height;
-	_height = qMax(_height, qint32(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
+	_height = std::max(_height, qint32(st::linksPhotoSize)) + st::linksMargin.top() + st::linksMargin.bottom() + st::linksBorder;
 	return _height;
 }
 
@@ -1175,14 +1175,14 @@ void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const P
 	p.setPen(st::linksTextFg);
 	p.setFont(st::semiboldFont);
 	if (!_title.isEmpty()) {
-		if (clip.intersects(rtlrect(left, top, qMin(w, _titlew), st::semiboldFont->height, _width))) {
+		if (clip.intersects(rtlrect(left, top, std::min(w, _titlew), st::semiboldFont->height, _width))) {
 			p.drawTextLeft(left, top, _width, (w < _titlew) ? st::semiboldFont->elided(_title, w) : _title);
 		}
 		top += st::semiboldFont->height;
 	}
 	p.setFont(st::msgFont);
 	if (!_text.isEmpty()) {
-		qint32 h = qMin(st::normalFont->height * 3, _text.countHeight(w));
+		qint32 h = std::min(st::normalFont->height * 3, _text.countHeight(w));
 		if (clip.intersects(rtlrect(left, top, w, h, _width))) {
 			_text.drawLeftElided(p, left, top, w, _width, 3);
 		}
@@ -1191,7 +1191,7 @@ void Link::paint(Painter &p, const QRect &clip, TextSelection selection, const P
 
 	p.setPen(st::windowActiveTextFg);
 	for (qint32 i = 0, l = _links.size(); i < l; ++i) {
-		if (clip.intersects(rtlrect(left, top, qMin(w, _links.at(i).width), st::normalFont->height, _width))) {
+		if (clip.intersects(rtlrect(left, top, std::min(w, _links.at(i).width), st::normalFont->height, _width))) {
 			p.setFont(ClickHandler::showAsActive(_links.at(i).lnk) ? st::normalFont->underline() : st::normalFont);
 			p.drawTextLeft(left, top, _width, (w < _links.at(i).width) ? st::normalFont->elided(_links.at(i).text, w) : _links.at(i).text);
 		}
@@ -1215,17 +1215,17 @@ void Link::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint po
 		top += (st::linksPhotoSize - st::semiboldFont->height - st::normalFont->height) / 2;
 	}
 	if (!_title.isEmpty()) {
-		if (rtlrect(left, top, qMin(w, _titlew), st::semiboldFont->height, _width).contains(point)) {
+		if (rtlrect(left, top, std::min(w, _titlew), st::semiboldFont->height, _width).contains(point)) {
 			link = _photol;
 			return;
 		}
 		top += st::webPageTitleFont->height;
 	}
 	if (!_text.isEmpty()) {
-		top += qMin(st::normalFont->height * 3, _text.countHeight(w));
+		top += std::min(st::normalFont->height * 3, _text.countHeight(w));
 	}
 	for (qint32 i = 0, l = _links.size(); i < l; ++i) {
-		if (rtlrect(left, top, qMin(w, _links.at(i).width), st::normalFont->height, _width).contains(point)) {
+		if (rtlrect(left, top, std::min(w, _links.at(i).width), st::normalFont->height, _width).contains(point)) {
 			link = _links.at(i).lnk;
 			return;
 		}

@@ -428,7 +428,7 @@ bool CheckBetaVersionDir() {
 			QByteArray k;
 			dataStream >> v >> k;
 			if (dataStream.status() == QDataStream::Ok) {
-				cSetBetaVersion(qMax(v, AppVersion * 1000ULL));
+				cSetBetaVersion(std::max(v, AppVersion * 1000ULL));
 				cSetBetaPrivateKey(k);
 				cSetRealBetaVersion(v);
 			} else {

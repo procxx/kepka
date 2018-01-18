@@ -926,7 +926,7 @@ void FlatTextarea::insertFromMimeData(const QMimeData *source) {
 		_insertedTags.clear();
 	}
 	auto cursor = textCursor();
-	_realInsertPosition = qMin(cursor.position(), cursor.anchor());
+	_realInsertPosition = std::min(cursor.position(), cursor.anchor());
 	_realCharsAdded = text.size();
 	QTextEdit::insertFromMimeData(source);
 	if (!_inDrop) {
@@ -1129,7 +1129,7 @@ void FlatTextarea::processFormatting(int insertPosition, int insertEnd) {
 					}
 				}
 
-				auto *ch = textStart + qMax(changedPositionInFragment, 0);
+				auto *ch = textStart + std::max(changedPositionInFragment, 0);
 				for (; ch < textEnd; ++ch) {
 					int emojiLength = 0;
 					if (auto emoji = Ui::Emoji::Find(ch, textEnd, &emojiLength)) {
@@ -1815,7 +1815,7 @@ bool InputArea::heightAutoupdated() {
 
 	myEnsureResized(this);
 
-	int newh = qCeil(_inner->document()->size().height()) + _st.textMargins.top() + _st.textMargins.bottom();
+	int newh = std::ceil(_inner->document()->size().height()) + _st.textMargins.top() + _st.textMargins.bottom();
 	if (newh > _st.heightMax) {
 		newh = _st.heightMax;
 	} else if (newh < _st.heightMin) {
@@ -1904,8 +1904,8 @@ void InputArea::paintEvent(QPaintEvent *e) {
 	auto borderOpacity = _a_borderOpacity.current(ms, _borderVisible ? 1. : 0.);
 	if (_st.borderActive && (borderOpacity > 0.)) {
 		auto borderStart = snap(_borderAnimationStart, 0, width());
-		auto borderFrom = qRound(borderStart * (1. - borderShownDegree));
-		auto borderTo = borderStart + qRound((width() - borderStart) * borderShownDegree);
+		auto borderFrom = std::round(borderStart * (1. - borderShownDegree));
+		auto borderTo = borderStart + std::round((width() - borderStart) * borderShownDegree);
 		if (borderTo > borderFrom) {
 			auto borderFg = anim::brush(_st.borderFgActive, _st.borderFgError, errorDegree);
 			p.setOpacity(borderOpacity);
@@ -2637,8 +2637,8 @@ void InputField::paintEvent(QPaintEvent *e) {
 	auto borderOpacity = _a_borderOpacity.current(ms, _borderVisible ? 1. : 0.);
 	if (_st.borderActive && (borderOpacity > 0.)) {
 		auto borderStart = snap(_borderAnimationStart, 0, width());
-		auto borderFrom = qRound(borderStart * (1. - borderShownDegree));
-		auto borderTo = borderStart + qRound((width() - borderStart) * borderShownDegree);
+		auto borderFrom = std::round(borderStart * (1. - borderShownDegree));
+		auto borderTo = borderStart + std::round((width() - borderStart) * borderShownDegree);
 		if (borderTo > borderFrom) {
 			auto borderFg = anim::brush(_st.borderFgActive, _st.borderFgError, errorDegree);
 			p.setOpacity(borderOpacity);
@@ -3412,8 +3412,8 @@ void MaskedInputField::paintEvent(QPaintEvent *e) {
 	auto borderOpacity = _a_borderOpacity.current(ms, _borderVisible ? 1. : 0.);
 	if (_st.borderActive && (borderOpacity > 0.)) {
 		auto borderStart = snap(_borderAnimationStart, 0, width());
-		auto borderFrom = qRound(borderStart * (1. - borderShownDegree));
-		auto borderTo = borderStart + qRound((width() - borderStart) * borderShownDegree);
+		auto borderFrom = std::round(borderStart * (1. - borderShownDegree));
+		auto borderTo = borderStart + std::round((width() - borderStart) * borderShownDegree);
 		if (borderTo > borderFrom) {
 			auto borderFg = anim::brush(_st.borderFgActive, _st.borderFgError, errorDegree);
 			p.setOpacity(borderOpacity);
@@ -4003,7 +4003,7 @@ void PhoneInput::correctValue(const QString &was, qint32 wasCursor, QString &now
 	}
 
 	QString newText;
-	int oldPos(nowCursor), newPos(-1), oldLen(now.length()), digitCount = qMin(digits.size(), MaxPhoneCodeLength + MaxPhoneTailLength);
+	int oldPos(nowCursor), newPos(-1), oldLen(now.length()), digitCount = std::min(digits.size(), MaxPhoneCodeLength + MaxPhoneTailLength);
 
 	bool inPart = !_pattern.isEmpty(), plusFound = false;
 	int curPart = 0, leftInPart = inPart ? _pattern.at(curPart) : 0;

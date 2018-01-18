@@ -79,7 +79,7 @@ bool isValidColor(const QString &str) {
 }
 
 uchar toGray(uchar r, uchar g, uchar b) {
-	return qMax(qMin(int(0.21 * r + 0.72 * g + 0.07 * b), 255), 0);
+	return std::max(std::min(int(0.21 * r + 0.72 * g + 0.07 * b), 255), 0);
 }
 
 uchar readHexUchar(QChar ch) {

@@ -47,7 +47,7 @@ int BlockWidget::resizeGetHeight(int newWidth) {
 		row.child->moveToLeft(x + row.margin.left(), result + row.margin.top(), newWidth);
 		auto availRowWidth = availw - row.margin.left() - row.margin.right() - x;
 		auto natural = row.child->naturalWidth();
-		auto rowWidth = (natural < 0) ? availRowWidth : qMin(natural, availRowWidth);
+		auto rowWidth = (natural < 0) ? availRowWidth : std::min(natural, availRowWidth);
 		if (row.child->widthNoMargins() != rowWidth) {
 			row.child->resizeToWidth(rowWidth);
 		}

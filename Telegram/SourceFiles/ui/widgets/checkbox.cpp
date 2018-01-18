@@ -268,7 +268,7 @@ void RadioView::paint(Painter &p, int left, int top, int outerWidth, TimeMs ms) 
 	pen.setWidth(_st->thickness);
 	p.setPen(pen);
 	p.setBrush(_st->bg);
-	//qint32 skip = qCeil(_st->thickness / 2.);
+	//qint32 skip = std::ceil(_st->thickness / 2.);
 	//p.drawEllipse(_checkRect.marginsRemoved(QMargins(skip, skip, skip, skip)));
 	p.drawEllipse(rtlrect(QRectF(left, top, _st->diameter, _st->diameter).marginsRemoved(QMarginsF(_st->thickness / 2., _st->thickness / 2., _st->thickness / 2., _st->thickness / 2.)), outerWidth));
 
@@ -278,7 +278,7 @@ void RadioView::paint(Painter &p, int left, int top, int outerWidth, TimeMs ms) 
 
 		auto skip0 = _st->diameter / 2., skip1 = _st->skip / 10., checkSkip = skip0 * (1. - toggled) + skip1 * toggled;
 		p.drawEllipse(rtlrect(QRectF(left, top, _st->diameter, _st->diameter).marginsRemoved(QMarginsF(checkSkip, checkSkip, checkSkip, checkSkip)), outerWidth));
-		//qint32 fskip = qFloor(checkSkip), cskip = qCeil(checkSkip);
+		//qint32 fskip = std::floor(checkSkip), cskip = std::ceil(checkSkip);
 		//if (2 * fskip < _checkRect.width()) {
 		//	if (fskip != cskip) {
 		//		p.setOpacity(double(cskip) - checkSkip);
@@ -376,7 +376,7 @@ void Checkbox::paintEvent(QPaintEvent *e) {
 	}
 	if (realCheckRect.contains(e->rect())) return;
 
-	auto textWidth = qMax(width() - (_checkRect.width() + _st.textPosition.x() + _st.textPosition.x()), 1);
+	auto textWidth = std::max(width() - (_checkRect.width() + _st.textPosition.x() + _st.textPosition.x()), 1);
 
 	p.setPen(_st.textFg);
 	_text.drawLeftElided(p, _st.margin.left() + _checkRect.width() + _st.textPosition.x(), _st.margin.top() + _st.textPosition.y(), textWidth, width());

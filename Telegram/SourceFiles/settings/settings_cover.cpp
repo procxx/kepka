@@ -145,7 +145,7 @@ void CoverWidget::refreshNameGeometry(int newWidth) {
 	}
 	int marginsAdd = st::settingsNameLabel.margin.left() + st::settingsNameLabel.margin.right();
 
-	_name->resizeToWidth(qMin(nameWidth - marginsAdd, _name->naturalWidth()) + marginsAdd);
+	_name->resizeToWidth(std::min(nameWidth - marginsAdd, _name->naturalWidth()) + marginsAdd);
 	_name->moveToLeft(nameLeft, nameTop, newWidth);
 
 	_editNameInline->moveToLeft(nameLeft + _name->width(), nameTop, newWidth);

@@ -135,7 +135,7 @@ void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::c
 		transformLoadingCross(loading, pathDelete, pathDeleteSize);
 
 		auto loadingArc = (loading >= 0.5) ? (loading - 1.) : loading;
-		loadingArcLength = qRound(-loadingArc * 2 * FullArcLength);
+		loadingArcLength = std::round(-loadingArc * 2 * FullArcLength);
 	}
 
 	if (shown < 1.) {
@@ -164,7 +164,7 @@ void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::c
 		auto roundSkip = (st.size * (1 - sqrt2) + 2 * sqrt2 * deleteSkip + st.stroke) / 2;
 		auto roundPart = QRectF(x + roundSkip, y + roundSkip, st.size - 2 * roundSkip, st.size - 2 * roundSkip);
 		if (shown < 1.) {
-			loadingArcStart -= qRound(-(shown - 1.) * FullArcLength / 4.);
+			loadingArcStart -= std::round(-(shown - 1.) * FullArcLength / 4.);
 		}
 		p.setBrush(Qt::NoBrush);
 		auto pen = color->p;

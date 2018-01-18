@@ -269,7 +269,7 @@ void ShareBox::onMustScrollTo(int top, int bottom) {
 }
 
 void ShareBox::scrollAnimationCallback() {
-	//auto scrollTop = qRound(_scrollAnimation.current(scrollArea()->scrollTop()));
+	//auto scrollTop = std::round(_scrollAnimation.current(scrollArea()->scrollTop()));
 	//scrollArea()->scrollToY(scrollTop);
 }
 
@@ -370,7 +370,7 @@ void ShareBox::Inner::repaintChatAtIndex(int index) {
 
 	auto row = index / _columnCount;
 	auto column = index % _columnCount;
-	update(rtlrect(_rowsLeft + qFloor(column * _rowWidthReal), row * _rowHeight, _rowWidth, _rowHeight, width()));
+   update(rtlrect(_rowsLeft + std::floor(column * _rowWidthReal), row * _rowHeight, _rowWidth, _rowHeight, width()));
 }
 
 ShareBox::Inner::Chat *ShareBox::Inner::getChatAtIndex(int index) {
@@ -497,7 +497,7 @@ void ShareBox::Inner::setActive(int active) {
 }
 
 void ShareBox::Inner::paintChat(Painter &p, TimeMs ms, Chat *chat, int index) {
-	auto x = _rowsLeft + qFloor((index % _columnCount) * _rowWidthReal);
+	auto x = _rowsLeft + std::floor((index % _columnCount) * _rowWidthReal);
 	auto y = _rowsTop + (index / _columnCount) * _rowHeight;
 
 	auto outerWidth = width();
@@ -596,8 +596,8 @@ void ShareBox::Inner::mouseMoveEvent(QMouseEvent *e) {
 void ShareBox::Inner::updateUpon(const QPoint &pos) {
 	auto x = pos.x(), y = pos.y();
 	auto row = (y - _rowsTop) / _rowHeight;
-	auto column = qFloor((x - _rowsLeft) / _rowWidthReal);
-	auto left = _rowsLeft + qFloor(column * _rowWidthReal) + st::shareColumnSkip / 2;
+	auto column = std::floor((x - _rowsLeft) / _rowWidthReal);
+	auto left = _rowsLeft + std::floor(column * _rowWidthReal) + st::shareColumnSkip / 2;
 	auto top = _rowsTop + row * _rowHeight + st::sharePhotoTop;
 	auto xupon = (x >= left) && (x < left + (_rowWidth - st::shareColumnSkip));
 	auto yupon = (y >= top) && (y < top + st::sharePhotoCheckbox.imageRadius * 2 + st::shareNameTop + st::shareNameStyle.font->height * 2);
@@ -622,8 +622,8 @@ void ShareBox::Inner::onSelectActive() {
 void ShareBox::Inner::resizeEvent(QResizeEvent *e) {
 	_columnSkip = (width() - _columnCount * st::sharePhotoCheckbox.imageRadius * 2) / double(_columnCount + 1);
 	_rowWidthReal = st::sharePhotoCheckbox.imageRadius * 2 + _columnSkip;
-	_rowsLeft = qFloor(_columnSkip / 2);
-	_rowWidth = qFloor(_rowWidthReal);
+	_rowsLeft = std::floor(_columnSkip / 2);
+	_rowWidth = std::floor(_rowWidthReal);
 	update();
 }
 

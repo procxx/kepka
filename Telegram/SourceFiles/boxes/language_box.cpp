@@ -133,7 +133,7 @@ void LanguageBox::refresh() {
 	refreshLanguages();
 
 	_inner->refresh();
-	setDimensions(st::langsWidth, qMin(_inner->height(), st::boxMaxListHeight));
+	setDimensions(st::langsWidth, std::min(_inner->height(), st::boxMaxListHeight));
 }
 
 void LanguageBox::refreshLanguages() {

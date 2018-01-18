@@ -619,9 +619,9 @@ void Widget::Step::paintCover(Painter &p, int top) {
 	}
 	if (top < 0) {
 		auto shown = double(coverHeight) / st::introCoverHeight;
-		auto leftShown = qRound(shown * (left + st::introCoverLeft.width()));
+		auto leftShown = std::round(shown * (left + st::introCoverLeft.width()));
 		left = leftShown - st::introCoverLeft.width();
-		auto rightShown = qRound(shown * (right + st::introCoverRight.width()));
+		auto rightShown = std::round(shown * (right + st::introCoverRight.width()));
 		right = rightShown - st::introCoverRight.width();
 	}
 	st::introCoverLeft.paint(p, left, coverHeight - st::introCoverLeft.height(), width());
@@ -630,7 +630,7 @@ void Widget::Step::paintCover(Painter &p, int top) {
 	auto planeLeft = (width() - st::introCoverIcon.width()) / 2 - st::introCoverIconLeft;
 	auto planeTop = top + st::introCoverIconTop;
 	if (top < 0 && !_hasCover) {
-		auto deltaLeft = -qRound(double(st::introPlaneWidth / st::introPlaneHeight) * top);
+		auto deltaLeft = -std::round(double(st::introPlaneWidth / st::introPlaneHeight) * top);
 //		auto deltaTop = top;
 		planeLeft += deltaLeft;
 	//	planeTop += top;
@@ -646,7 +646,7 @@ int Widget::Step::contentTop() const {
 	auto result = height() - st::introStepHeight - st::introStepHeightAdd;
 	if (_hasCover) {
 		auto added = 1. - snap(double(height() - st::windowMinHeight) / (st::introStepHeightFull - st::windowMinHeight), 0., 1.);
-		result += qRound(added * st::introStepHeightAdd);
+		result += std::round(added * st::introStepHeightAdd);
 	}
 	return result;
 }

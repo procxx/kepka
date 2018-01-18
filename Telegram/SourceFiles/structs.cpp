@@ -138,7 +138,7 @@ void EmptyUserpic::Impl::paintSquare(Painter &p, int x, int y, int size) {
 StorageKey EmptyUserpic::Impl::uniqueKey() const {
 	auto first = 0xFFFFFFFF00000000ULL | anim::getPremultiplied(_color->c);
 	auto second = quint64(0);
-	memcpy(&second, _string.constData(), qMin(sizeof(second), _string.size() * sizeof(QChar)));
+	memcpy(&second, _string.constData(), std::min(sizeof(second), _string.size() * sizeof(QChar)));
 	return StorageKey(first, second);
 }
 
@@ -1122,7 +1122,7 @@ bool PtsWaiter::check(ChannelData *channel, qint32 pts, qint32 count) { // retur
 		return true;
 	}
 
-	_last = qMax(_last, pts);
+	_last = std::max(_last, pts);
 	_count += count;
 	if (_last == _count) {
 		_good = _last;

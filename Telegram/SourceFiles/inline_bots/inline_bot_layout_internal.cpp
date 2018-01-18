@@ -109,7 +109,7 @@ void Gif::initDimensions() {
 		_maxw = 0;
 	} else {
 		w = w * st::inlineMediaHeight / h;
-		_maxw = qMax(w, qint32(st::inlineResultsMinWidth));
+		_maxw = std::max(w, qint32(st::inlineResultsMinWidth));
 	}
 	_minh = st::inlineMediaHeight + st::inlineResultsSkip;
 }
@@ -423,12 +423,12 @@ void Sticker::clickHandlerActiveChanged(const ClickHandlerPtr &p, bool active) {
 }
 
 QSize Sticker::getThumbSize() const {
-	int width = qMax(content_width(), 1), height = qMax(content_height(), 1);
+	int width = std::max(content_width(), 1), height = std::max(content_height(), 1);
 	double coefw = (st::stickerPanSize.width() - st::buttonRadius * 2) / double(width);
 	double coefh = (st::stickerPanSize.height() - st::buttonRadius * 2) / double(height);
-	double coef = qMin(qMin(coefw, coefh), 1.);
-	int w = qRound(coef * content_width()), h = qRound(coef * content_height());
-	return QSize(qMax(w, 1), qMax(h, 1));
+	double coef = std::min(std::min(coefw, coefh), 1.);
+	int w = std::round(coef * content_width()), h = std::round(coef * content_height());
+	return QSize(std::max(w, 1), std::max(h, 1));
 }
 
 void Sticker::prepareThumb() const {
@@ -470,7 +470,7 @@ void Photo::initDimensions() {
 		_maxw = 0;
 	} else {
 		w = w * st::inlineMediaHeight / h;
-		_maxw = qMax(w, qint32(st::inlineResultsMinWidth));
+		_maxw = std::max(w, qint32(st::inlineResultsMinWidth));
 	}
 	_minh = st::inlineMediaHeight + st::inlineResultsSkip;
 }
@@ -577,7 +577,7 @@ void Video::initDimensions() {
 		title = lang(lng_media_video);
 	}
 	_title.setText(st::semiboldTextStyle, title, titleOpts);
-	qint32 titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
+	qint32 titleHeight = std::min(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
 
 	qint32 descriptionLines = withThumb ? (titleHeight > st::semiboldFont->height ? 1 : 2) : 3;
 
@@ -587,7 +587,7 @@ void Video::initDimensions() {
 		description = _duration;
 	}
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	qint32 descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
+	qint32 descriptionHeight = std::min(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = st::inlineThumbSize;
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
@@ -620,7 +620,7 @@ void Video::paint(Painter &p, const QRect &clip, const PaintContext *context) co
 
 	p.setPen(st::inlineTitleFg);
 	_title.drawLeftElided(p, left, st::inlineRowMargin, _width - left, _width, 2);
-	qint32 titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+	qint32 titleHeight = std::min(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 
 	p.setPen(st::inlineDescriptionFg);
 	qint32 descriptionLines = withThumb ? (titleHeight > st::semiboldFont->height ? 1 : 2) : 3;
@@ -646,7 +646,7 @@ void Video::prepareThumb(qint32 width, qint32 height) const {
 	ImagePtr thumb = content_thumb();
 	if (thumb->loaded()) {
 		if (_thumb.width() != width * cIntRetinaFactor() || _thumb.height() != height * cIntRetinaFactor()) {
-			qint32 w = qMax(convertScale(thumb->width()), 1), h = qMax(convertScale(thumb->height()), 1);
+			qint32 w = std::max(convertScale(thumb->width()), 1), h = std::max(convertScale(thumb->height()), 1);
 			if (w * height > h * width) {
 				if (height < h) {
 					w = w * height / h;
@@ -893,18 +893,18 @@ void Contact::initDimensions() {
 	qint32 textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
 	TextParseOptions titleOpts = { 0, _maxw, st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	qint32 titleHeight = qMin(_title.countHeight(_maxw), st::semiboldFont->height);
+	qint32 titleHeight = std::min(_title.countHeight(_maxw), st::semiboldFont->height);
 
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, st::normalFont->height, Qt::LayoutDirectionAuto };
 	_description.setText(st::defaultTextStyle, _result->getLayoutDescription(), descriptionOpts);
-	qint32 descriptionHeight = qMin(_description.countHeight(_maxw), st::normalFont->height);
+	qint32 descriptionHeight = std::min(_description.countHeight(_maxw), st::normalFont->height);
 
 	_minh = st::msgFileSize;
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
 }
 
 qint32 Contact::resizeGetHeight(qint32 width) {
-	_width = qMin(width, _maxw);
+	_width = std::min(width, _maxw);
 	_height = _minh;
 	return _height;
 }
@@ -953,7 +953,7 @@ void Contact::prepareThumb(int width, int height) const {
 
 	if (thumb->loaded()) {
 		if (_thumb.width() != width * cIntRetinaFactor() || _thumb.height() != height * cIntRetinaFactor()) {
-			int w = qMax(convertScale(thumb->width()), 1), h = qMax(convertScale(thumb->height()), 1);
+			int w = std::max(convertScale(thumb->width()), 1), h = std::max(convertScale(thumb->height()), 1);
 			if (w * height > h * width) {
 				if (height < h) {
 					w = w * height / h;
@@ -990,22 +990,22 @@ void Article::initDimensions() {
 	qint32 textWidth = _maxw - (_withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
 	TextParseOptions titleOpts = { 0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	qint32 titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
+	qint32 titleHeight = std::min(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
 
 	qint32 descriptionLines = (_withThumb || _url) ? 2 : 3;
 	QString description = _result->getLayoutDescription();
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, descriptionLines * st::normalFont->height, Qt::LayoutDirectionAuto };
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	qint32 descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
+	qint32 descriptionHeight = std::min(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = titleHeight + descriptionHeight;
 	if (_url) _minh += st::normalFont->height;
-	if (_withThumb) _minh = qMax(_minh, qint32(st::inlineThumbSize));
+	if (_withThumb) _minh = std::max(_minh, qint32(st::inlineThumbSize));
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
 }
 
 qint32 Article::resizeGetHeight(qint32 width) {
-	_width = qMin(width, _maxw);
+	_width = std::min(width, _maxw);
 	if (_url) {
 		_urlText = getResultUrl();
 		_urlWidth = st::normalFont->width(_urlText);
@@ -1051,14 +1051,14 @@ void Article::paint(Painter &p, const QRect &clip, const PaintContext *context) 
 
 	p.setPen(st::inlineTitleFg);
 	_title.drawLeftElided(p, left, st::inlineRowMargin, _width - left, _width, 2);
-	qint32 titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+	qint32 titleHeight = std::min(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 
 	p.setPen(st::inlineDescriptionFg);
 	qint32 descriptionLines = (_withThumb || _url) ? 2 : 3;
 	_description.drawLeftElided(p, left, st::inlineRowMargin + titleHeight, _width - left, _width, descriptionLines);
 
 	if (_url) {
-		qint32 descriptionHeight = qMin(_description.countHeight(_width - left), st::normalFont->height * descriptionLines);
+		qint32 descriptionHeight = std::min(_description.countHeight(_width - left), st::normalFont->height * descriptionLines);
 		p.drawTextLeft(left, st::inlineRowMargin + titleHeight + descriptionHeight, _width, _urlText, _urlWidth);
 	}
 
@@ -1076,9 +1076,9 @@ void Article::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint
 	if (QRect(left, 0, _width - left, _height).contains(point)) {
 		if (_url) {
 			auto left = st::inlineThumbSize + st::inlineThumbSkip;
-			auto titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+			auto titleHeight = std::min(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 			auto descriptionLines = 2;
-			auto descriptionHeight = qMin(_description.countHeight(_width - left), st::normalFont->height * descriptionLines);
+			auto descriptionHeight = std::min(_description.countHeight(_width - left), st::normalFont->height * descriptionLines);
 			if (rtlrect(left, st::inlineRowMargin + titleHeight + descriptionHeight, _urlWidth, st::normalFont->height, _width).contains(point)) {
 				link = _url;
 				return;
@@ -1100,7 +1100,7 @@ void Article::prepareThumb(int width, int height) const {
 
 	if (thumb->loaded()) {
 		if (_thumb.width() != width * cIntRetinaFactor() || _thumb.height() != height * cIntRetinaFactor()) {
-			int w = qMax(convertScale(thumb->width()), 1), h = qMax(convertScale(thumb->height()), 1);
+			int w = std::max(convertScale(thumb->width()), 1), h = std::max(convertScale(thumb->height()), 1);
 			if (w * height > h * width) {
 				if (height < h) {
 					w = w * height / h;
@@ -1158,13 +1158,13 @@ void Game::initDimensions() {
 	qint32 textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
 	TextParseOptions titleOpts = { 0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto };
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	qint32 titleHeight = qMin(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
+	qint32 titleHeight = std::min(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
 
 	qint32 descriptionLines = 2;
 	QString description = _result->getLayoutDescription();
 	TextParseOptions descriptionOpts = { TextParseMultiline, _maxw, descriptionLines * st::normalFont->height, Qt::LayoutDirectionAuto };
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	qint32 descriptionHeight = qMin(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
+	qint32 descriptionHeight = std::min(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = titleHeight + descriptionHeight;
 	accumulate_max(_minh, st::inlineThumbSize);
@@ -1240,7 +1240,7 @@ void Game::paint(Painter &p, const QRect &clip, const PaintContext *context) con
 
 	p.setPen(st::inlineTitleFg);
 	_title.drawLeftElided(p, left, st::inlineRowMargin, _width - left, _width, 2);
-	qint32 titleHeight = qMin(_title.countHeight(_width - left), st::semiboldFont->height * 2);
+	qint32 titleHeight = std::min(_title.countHeight(_width - left), st::semiboldFont->height * 2);
 
 	p.setPen(st::inlineDescriptionFg);
 	qint32 descriptionLines = 2;
@@ -1278,7 +1278,7 @@ void Game::prepareThumb(int width, int height) const {
 
 	if (thumb->loaded()) {
 		if (_thumb.width() != width * cIntRetinaFactor() || _thumb.height() != height * cIntRetinaFactor()) {
-			int w = qMax(convertScale(thumb->width()), 1), h = qMax(convertScale(thumb->height()), 1);
+			int w = std::max(convertScale(thumb->width()), 1), h = std::max(convertScale(thumb->height()), 1);
 			auto resizeByHeight1 = (w * height > h * width) && (h >= height);
 			auto resizeByHeight2 = (h * width >= w * height) && (w < width);
 			if (resizeByHeight1 || resizeByHeight2) {

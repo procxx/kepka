@@ -211,7 +211,7 @@ TimeMs FFMpegReaderImplementation::frameRealTime() const {
 }
 
 TimeMs FFMpegReaderImplementation::framePresentationTime() const {
-	return qMax(_frameTime + _frameTimeCorrection, Q_INT64_C(0));
+	return std::max(_frameTime + _frameTimeCorrection, Q_INT64_C(0));
 }
 
 TimeMs FFMpegReaderImplementation::durationMs() const {
@@ -240,7 +240,7 @@ bool FFMpegReaderImplementation::renderFrame(QImage &to, bool &hasAlpha, const Q
 	}
 	hasAlpha = (_frame->format == AV_PIX_FMT_BGRA || (_frame->format == -1 && _codecContext->pix_fmt == AV_PIX_FMT_BGRA));
 	if (_frame->width == toSize.width() && _frame->height == toSize.height() && hasAlpha) {
-		qint32 sbpl = _frame->linesize[0], dbpl = to.bytesPerLine(), bpl = qMin(sbpl, dbpl);
+		qint32 sbpl = _frame->linesize[0], dbpl = to.bytesPerLine(), bpl = std::min(sbpl, dbpl);
 		uchar *s = _frame->data[0], *d = to.bits();
 		for (qint32 i = 0, l = _frame->height; i < l; ++i) {
 			memcpy(d + i * dbpl, s + i * sbpl, bpl);

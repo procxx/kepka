@@ -687,7 +687,7 @@ void ApiWrap::lastParticipantsDone(ChannelData *peer, const MTPchannels_ChannelP
 	if (!keyboardBotFound) {
 		h->clearLastKeyboard();
 	}
-	int newMembersCount = qMax(d.vcount.v, v.count());
+	int newMembersCount = std::max(d.vcount.v, v.count());
 	if (newMembersCount > peer->membersCount()) {
 		peer->setMembersCount(newMembersCount);
 	}
@@ -1334,7 +1334,7 @@ void ApiWrap::resolveWebPages() {
 				}
 			}
 		} else {
-			m = qMin(m, i.key()->pendingTill - t);
+         m = std::min(m, i.key()->pendingTill - t);
 		}
 	}
 

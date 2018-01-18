@@ -171,11 +171,11 @@ void FilledSlider::paintEvent(QPaintEvent *e) {
 	auto disabled = isDisabled();
 	auto over = getCurrentOverFactor(ms);
 	auto lineWidth = _st.lineWidth + ((_st.fullWidth - _st.lineWidth) * over);
-	auto lineWidthRounded = qFloor(lineWidth);
+	auto lineWidthRounded = std::floor(lineWidth);
 	auto lineWidthPartial = lineWidth - lineWidthRounded;
 	auto seekRect = getSeekRect();
 	auto value = getCurrentValue();
-	auto from = seekRect.x(), mid = qRound(from + value * seekRect.width()), end = from + seekRect.width();
+	int from = seekRect.x(), mid = std::round(from + value * seekRect.width()), end = from + seekRect.width();
 	if (mid > from) {
 		p.setOpacity(masterOpacity);
 		p.fillRect(from, height() - lineWidthRounded, (mid - from), lineWidthRounded, disabled ? _st.disabledFg : _st.activeFg);
@@ -230,7 +230,7 @@ void MediaSlider::paintEvent(QPaintEvent *e) {
 	auto markerLength = (horizontal ? seekRect.width() : seekRect.height());
 	auto from = _alwaysDisplayMarker ? 0 : markerFrom;
 	auto length = _alwaysDisplayMarker ? (horizontal ? width() : height()) : markerLength;
-	auto mid = qRound(from + value * length);
+	auto mid = std::round(from + value * length);
 	auto end = from + length;
 	auto activeFg = disabled ? _st.activeFgDisabled : anim::brush(_st.activeFg, _st.activeFgOver, over);
 	auto inactiveFg = disabled ? _st.inactiveFgDisabled : anim::brush(_st.inactiveFg, _st.inactiveFgOver, over);
@@ -254,7 +254,7 @@ void MediaSlider::paintEvent(QPaintEvent *e) {
 	}
 	auto markerSizeRatio = disabled ? 0. : (_alwaysDisplayMarker ? 1. : over);
 	if (markerSizeRatio > 0) {
-		auto position = qRound(markerFrom + value * markerLength) - (horizontal ? seekRect.x() : seekRect.y());
+		auto position = std::round(markerFrom + value * markerLength) - (horizontal ? seekRect.x() : seekRect.y());
 		auto seekButton = horizontal
 			? QRect(position, (height() - _st.seekSize.height()) / 2, _st.seekSize.width(), _st.seekSize.height())
 			: QRect((width() - _st.seekSize.width()) / 2, position, _st.seekSize.width(), _st.seekSize.height());

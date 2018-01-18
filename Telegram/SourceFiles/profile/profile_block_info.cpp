@@ -111,7 +111,7 @@ int InfoWidget::resizeGetHeight(int newWidth) {
 				text->show();
 			}
 		}
-		newHeight += qMax(label->height(), text->height() - st::profileBlockTextPart.margin.top() - st::profileBlockTextPart.margin.bottom()) + st::profileBlockOneLineSkip;
+		newHeight += std::max(label->height(), text->height() - st::profileBlockTextPart.margin.top() - st::profileBlockTextPart.margin.bottom()) + st::profileBlockOneLineSkip;
 	};
 	moveLabeledText(_channelLinkLabel, _channelLink, _channelLinkShort);
 	moveLabeledText(_mobileNumberLabel, _mobileNumber, nullptr);

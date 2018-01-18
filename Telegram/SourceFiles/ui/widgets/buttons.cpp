@@ -431,7 +431,7 @@ void RoundButton::resizeToText() {
 		resize(innerWidth - _st.width + _st.padding.left() + _st.padding.right(), _st.height + _st.padding.top() + _st.padding.bottom());
 	} else {
 		if (_st.width < innerWidth + (_st.height - _st.font->height)) {
-			_text = _st.font->elided(computeFullText(), qMax(_st.width - (_st.height - _st.font->height), 1));
+			_text = _st.font->elided(computeFullText(), std::max(_st.width - (_st.height - _st.font->height), 1));
 			_textWidth = _st.font->width(_text);
 		}
 		resize(_st.width + _st.padding.left() + _st.padding.right(), _st.height + _st.padding.top() + _st.padding.bottom());
@@ -600,7 +600,7 @@ void LeftOutlineButton::setText(const QString &text) {
 }
 
 int LeftOutlineButton::resizeGetHeight(int newWidth) {
-	int availableWidth = qMax(newWidth - _st.padding.left() - _st.padding.right(), 1);
+	int availableWidth = std::max(newWidth - _st.padding.left() - _st.padding.right(), 1);
 	if ((availableWidth < _fullTextWidth) || (_textWidth < availableWidth)) {
 		_text = _st.font->elided(_fullText, availableWidth);
 		_textWidth = _st.font->width(_text);

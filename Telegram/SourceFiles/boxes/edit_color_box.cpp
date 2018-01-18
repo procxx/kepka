@@ -202,7 +202,7 @@ void EditColorBox::Picker::updateCurrentPoint(QPoint localPosition) {
 
 void EditColorBox::Picker::setHSV(int hue, int saturation, int brightness) {
 	_topleft = QColor(255, 255, 255);
-	_topright.setHsv(qMax(0, hue), 255, 255);
+	_topright.setHsv(std::max(0, hue), 255, 255);
 	_topright = _topright.toRgb();
 	_bottomleft = _bottomright = QColor(0, 0, 0);
 
@@ -305,11 +305,11 @@ void EditColorBox::Slider::paintEvent(QPaintEvent *e) {
 	}
 	p.drawPixmap(to, _pixmap, _pixmap.rect());
 	if (isHorizontal()) {
-		auto x = st::colorSliderSkip + qRound(_value * to.width());
+		auto x = st::colorSliderSkip + std::round(_value * to.width());
 		st::colorSliderArrowTop.paint(p, x - st::colorSliderArrowTop.width() / 2, 0, width());
 		st::colorSliderArrowBottom.paint(p, x - st::colorSliderArrowBottom.width() / 2, height() - st::colorSliderArrowBottom.height(), width());
 	} else {
-		auto y = st::colorSliderSkip + qRound(_value * to.height());
+		auto y = st::colorSliderSkip + std::round(_value * to.height());
 		st::colorSliderArrowLeft.paint(p, 0, y - st::colorSliderArrowLeft.height() / 2, width());
 		st::colorSliderArrowRight.paint(p, width() - st::colorSliderArrowRight.width(), y - st::colorSliderArrowRight.height() / 2, width());
 	}
@@ -737,10 +737,10 @@ void EditColorBox::saveColor() {
 }
 
 void EditColorBox::updateHSVFields() {
-	auto hue = qRound((1. - _hueSlider->value()) * 360);
-	auto saturation = qRound(_picker->valueX() * 255);
-	auto brightness = qRound((1. - _picker->valueY()) * 255);
-	auto alpha = qRound(_opacitySlider->value() * 255);
+	auto hue = std::round((1. - _hueSlider->value()) * 360);
+	auto saturation = std::round(_picker->valueX() * 255);
+	auto brightness = std::round((1. - _picker->valueY()) * 255);
+	auto alpha = std::round(_opacitySlider->value() * 255);
 	_hueField->setTextWithFocus(QString::number(hue));
 	_saturationField->setTextWithFocus(QString::number(percentFromByte(saturation)));
 	_brightnessField->setTextWithFocus(QString::number(percentFromByte(brightness)));
@@ -827,10 +827,10 @@ void EditColorBox::updateFromColor(QColor color) {
 }
 
 void EditColorBox::updateFromControls() {
-	auto hue = qRound((1. - _hueSlider->value()) * 360);
-	auto saturation = qRound(_picker->valueX() * 255);
-	auto brightness = qRound((1. - _picker->valueY()) * 255);
-	auto alpha = qRound(_opacitySlider->value() * 255);
+	auto hue = std::round((1. - _hueSlider->value()) * 360);
+	auto saturation = std::round(_picker->valueX() * 255);
+	auto brightness = std::round((1. - _picker->valueY()) * 255);
+	auto alpha = std::round(_opacitySlider->value() * 255);
 	setHSV(hue, saturation, brightness, alpha);
 	updateHSVFields();
 	updateControlsFromHSV(hue, saturation, brightness);
@@ -840,7 +840,7 @@ void EditColorBox::updateFromHSVFields() {
 	auto hue = _hueField->value();
 	auto saturation = percentToByte(_saturationField->value());
 	auto brightness = percentToByte(_brightnessField->value());
-	auto alpha = qRound(_opacitySlider->value() * 255);
+	auto alpha = std::round(_opacitySlider->value() * 255);
 	setHSV(hue, saturation, brightness, alpha);
 	updateControlsFromHSV(hue, saturation, brightness);
 }
@@ -849,7 +849,7 @@ void EditColorBox::updateFromRGBFields() {
 	auto red = _redField->value();
 	auto blue = _blueField->value();
 	auto green = _greenField->value();
-	auto alpha = qRound(_opacitySlider->value() * 255);
+	auto alpha = std::round(_opacitySlider->value() * 255);
 	setRGB(red, green, blue, alpha);
 	updateResultField();
 }

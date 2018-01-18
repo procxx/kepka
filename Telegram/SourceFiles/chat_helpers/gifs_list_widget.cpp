@@ -182,7 +182,7 @@ int GifsListWidget::countHeight() {
 	for (int i = 0, l = _rows.count(); i < l; ++i) {
 		result += _rows[i].height;
 	}
-	return qMax(minimalLastHeight, result) + st::stickerPanPadding;
+	return std::max(minimalLastHeight, result) + st::stickerPanPadding;
 }
 
 GifsListWidget::~GifsListWidget() {
@@ -581,8 +581,8 @@ GifsListWidget::Row &GifsListWidget::layoutInlineRow(Row &row, qint32 sumWidth) 
 	for (int i = 0; i < count; ++i) {
 		int index = indices[i];
 		int w = sumWidth ? (row.items.at(index)->maxWidth() * availw / sumWidth) : row.items.at(index)->maxWidth();
-		int actualw = qMax(w, int(st::inlineResultsMinWidth));
-		row.height = qMax(row.height, row.items[index]->resizeGetHeight(actualw));
+		int actualw = std::max(w, int(st::inlineResultsMinWidth));
+		row.height = std::max(row.height, row.items[index]->resizeGetHeight(actualw));
 		if (sumWidth) {
 			availw -= actualw;
 			sumWidth -= row.items.at(index)->maxWidth();

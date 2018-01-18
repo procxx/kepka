@@ -463,7 +463,7 @@ void HistoryMessageReply::updateName() const {
 			w += st::msgServiceFont->spacew + _replyToVia->_maxWidth;
 		}
 
-		_maxReplyWidth = previewSkip + qMax(w, qMin(replyToText.maxWidth(), qint32(st::maxSignatureSize)));
+		_maxReplyWidth = previewSkip + std::max(w, std::min(replyToText.maxWidth(), qint32(st::maxSignatureSize)));
 	} else {
 		_maxReplyWidth = st::msgDateFont->width(lang(replyToMsgId ? lng_profile_loading : lng_deleted_message));
 	}
@@ -1142,9 +1142,9 @@ bool HistoryMessage::drawBubble() const {
 }
 
 QRect HistoryMessage::countGeometry() const {
-	auto maxwidth = qMin(st::msgMaxWidth, _maxw);
+	auto maxwidth = std::min(st::msgMaxWidth, _maxw);
 	if (_media && _media->currentWidth() < maxwidth) {
-		maxwidth = qMax(_media->currentWidth(), qMin(maxwidth, plainMaxWidth()));
+		maxwidth = std::max(_media->currentWidth(), std::min(maxwidth, plainMaxWidth()));
 	}
 
 	auto contentLeft = (!isPost() && out() && !Adaptive::ChatWide()) ? st::msgMargin.right() : st::msgMargin.left();
@@ -1619,7 +1619,7 @@ void HistoryMessage::draw(Painter &p, QRect clip, TextSelection selection, TimeM
 		if (animms < st::activeFadeInDuration + st::activeFadeOutDuration) {
 			auto top = marginTop();
 			auto bottom = marginBottom();
-			auto fill = qMin(top, bottom);
+			auto fill = std::min(top, bottom);
 			auto skiptop = top - fill;
 			auto fillheight = fill + g.height() + fill;
 
@@ -1878,7 +1878,7 @@ int HistoryMessage::performResizeGetHeight() {
 			if (emptyText()) {
 				_height = 0;
 			} else {
-				auto textWidth = qMax(contentWidth - st::msgPadding.left() - st::msgPadding.right(), 1);
+				auto textWidth = std::max(contentWidth - st::msgPadding.left() - st::msgPadding.right(), 1);
 				if (textWidth != _textWidth) {
 					_textWidth = textWidth;
 					_textHeight = _text.countHeight(textWidth);

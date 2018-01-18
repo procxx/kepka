@@ -348,7 +348,7 @@ void OverviewInner::repaintItem(MsgId itemId, qint32 itemIndex) {
 			double w = (double(_width - st::overviewPhotoSkip) / _photosInRow);
 			qint32 vsize = (_rowWidth + st::overviewPhotoSkip);
 			qint32 row = itemIndex / _photosInRow, col = itemIndex % _photosInRow;
-			update(qint32(col * w), _marginTop + qint32(row * vsize), qCeil(w), vsize);
+			update(qint32(col * w), _marginTop + qint32(row * vsize), std::ceil(w), vsize);
 		} else {
 			qint32 top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) top = _height - top;
@@ -365,8 +365,8 @@ void OverviewInner::touchResetSpeed() {
 void OverviewInner::touchDeaccelerate(qint32 elapsed) {
 	qint32 x = _touchSpeed.x();
 	qint32 y = _touchSpeed.y();
-	_touchSpeed.setX((x == 0) ? x : (x > 0) ? qMax(0, x - elapsed) : qMin(0, x + elapsed));
-	_touchSpeed.setY((y == 0) ? y : (y > 0) ? qMax(0, y - elapsed) : qMin(0, y + elapsed));
+	_touchSpeed.setX((x == 0) ? x : (x > 0) ? std::max(0, x - elapsed) : std::min(0, x + elapsed));
+	_touchSpeed.setY((y == 0) ? y : (y > 0) ? std::max(0, y - elapsed) : std::min(0, y + elapsed));
 }
 
 void OverviewInner::touchEvent(QTouchEvent *e) {
@@ -1316,8 +1316,8 @@ qint32 OverviewInner::resizeToWidth(qint32 nwidth, qint32 scrollTop, qint32 minH
 		}
 		auto widthWithMin = st::windowMinWidth;
 		auto widthWithMax = st::overviewFileLayout.maxWidth + 2 * contentLeftMax;
-		_rowsLeft = anim::interpolate(contentLeftMax, contentLeftMin, qMax(widthWithMax - _width, 0) / double(widthWithMax - widthWithMin));
-		_rowWidth = qMin(_width - 2 * _rowsLeft, st::overviewFileLayout.maxWidth);
+		_rowsLeft = anim::interpolate(contentLeftMax, contentLeftMin, std::max(widthWithMax - _width, 0) / double(widthWithMax - widthWithMin));
+		_rowWidth = std::min(_width - 2 * _rowsLeft, st::overviewFileLayout.maxWidth);
 	}
 
 	_search->setGeometry(_rowsLeft, st::linksSearchTop, _rowWidth, _search->height());
@@ -1630,7 +1630,7 @@ void OverviewInner::mediaOverviewUpdated() {
 		auto migrateCount = migratedIndexSkip();
 		auto wasCount = _items.size();
 		auto fullCount = (migrateCount + o.size());
-		auto tocheck = qMin(fullCount, _itemsToBeLoaded);
+		auto tocheck = std::min(fullCount, _itemsToBeLoaded);
 		_items.reserve(tocheck);
 
 		auto index = 0;
@@ -1672,7 +1672,7 @@ void OverviewInner::mediaOverviewUpdated() {
 		auto migratedOverview = _migrated ? &_migrated->overview(_type) : nullptr;
 		auto migrateCount = migratedIndexSkip();
 		auto l = _inSearch ? _searchResults.size() : (migrateCount + o.size());
-		auto tocheck = qMin(l, _itemsToBeLoaded);
+		auto tocheck = std::min(l, _itemsToBeLoaded);
 		_items.reserve((withDates ? 2 : 1) * tocheck); // day items
 
 		auto migrateIt = migratedOverview ? migratedOverview->end() : o.end();
@@ -1835,7 +1835,7 @@ void OverviewInner::repaintItem(const HistoryItem *msg) {
 					double w = (double(width() - st::overviewPhotoSkip) / _photosInRow);
 					qint32 vsize = (_rowWidth + st::overviewPhotoSkip);
 					qint32 row = i / _photosInRow, col = i % _photosInRow;
-					update(qint32(col * w), _marginTop + qint32(row * vsize), qCeil(w), vsize);
+					update(qint32(col * w), _marginTop + qint32(row * vsize), std::ceil(w), vsize);
 					break;
 				}
 			}
@@ -1866,17 +1866,17 @@ int OverviewInner::countHeight() {
 
 void OverviewInner::recountMargins() {
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-		_marginBottom = qMax(_minHeight - _height - _marginTop, 0);
+		_marginBottom = std::max(_minHeight - _height - _marginTop, 0);
 		_marginTop = 0;
 	} else if (_type == OverviewMusicFiles) {
 		_marginTop = st::playlistPadding;
-		_marginBottom = qMax(_minHeight - _height - _marginTop, qint32(st::playlistPadding));
+		_marginBottom = std::max(_minHeight - _height - _marginTop, qint32(st::playlistPadding));
 	} else if (_type == OverviewLinks || _type == OverviewFiles) {
 		_marginTop = st::linksSearchTop + _search->height();
-		_marginBottom = qMax(_minHeight - _height - _marginTop, qint32(st::playlistPadding));
+		_marginBottom = std::max(_minHeight - _height - _marginTop, qint32(st::playlistPadding));
 	} else {
 		_marginBottom = st::playlistPadding;
-		_marginTop = qMax(_minHeight - _height - _marginBottom, qint32(st::playlistPadding));
+		_marginTop = std::max(_minHeight - _height - _marginBottom, qint32(st::playlistPadding));
 	}
 }
 
@@ -2334,7 +2334,7 @@ QPoint OverviewWidget::clampMousePosition(QPoint point) {
 }
 
 void OverviewWidget::onScrollTimer() {
-	qint32 d = (_scrollDelta > 0) ? qMin(_scrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : qMax(_scrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
+	qint32 d = (_scrollDelta > 0) ? std::min(_scrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : std::max(_scrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + d);
 }
 

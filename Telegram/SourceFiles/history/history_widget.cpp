@@ -453,7 +453,7 @@ void HistoryHider::updateControlsGeometry() {
 			_send->show();
 			_cancel->show();
 		}
-		h += st::boxTopMargin + qMax(st::boxTextFont->height, st::boxLabelStyle.lineHeight) + st::boxButtonPadding.top() + _send->height() + st::boxButtonPadding.bottom();
+		h += st::boxTopMargin + std::max(st::boxTextFont->height, st::boxLabelStyle.lineHeight) + st::boxButtonPadding.top() + _send->height() + st::boxButtonPadding.bottom();
 	} else {
 		h += st::historyForwardChooseFont->height;
 		_send->hide();
@@ -939,7 +939,7 @@ void HistoryWidget::scrollToAnimationCallback(FullMsgId attachToId) {
 	if (itemTop < 0) {
 		_scrollToAnimation.finish();
 	} else {
-		synteticScrollToY(qRound(_scrollToAnimation.current()) + itemTop);
+		synteticScrollToY(std::round(_scrollToAnimation.current()) + itemTop);
 	}
 	if (!_scrollToAnimation.animating()) {
 		preloadHistoryByScroll();
@@ -1057,7 +1057,7 @@ int HistoryWidget::itemTopForHighlight(not_null<HistoryItem*> item) const {
 	if (heightLeft <= 0) {
 		return itemTop;
 	}
-	return qMax(itemTop - (heightLeft / 2), 0);
+	return std::max(itemTop - (heightLeft / 2), 0);
 }
 
 void HistoryWidget::start() {
@@ -1551,7 +1551,7 @@ bool HistoryWidget::cmd_search() {
 bool HistoryWidget::cmd_next_chat() {
 	PeerData *p = 0;
 	MsgId m = 0;
-	App::main()->peerAfter(_peer, qMax(_showAtMsgId, 0), p, m);
+	App::main()->peerAfter(_peer, std::max(_showAtMsgId, 0), p, m);
 	if (p) {
 		Ui::showPeerHistory(p, m);
 		return true;
@@ -1562,7 +1562,7 @@ bool HistoryWidget::cmd_next_chat() {
 bool HistoryWidget::cmd_previous_chat() {
 	PeerData *p = 0;
 	MsgId m = 0;
-	App::main()->peerBefore(_peer, qMax(_showAtMsgId, 0), p, m);
+	App::main()->peerBefore(_peer, std::max(_showAtMsgId, 0), p, m);
 	if (p) {
 		Ui::showPeerHistory(p, m);
 		return true;
@@ -3777,7 +3777,7 @@ void HistoryWidget::onKbToggle(bool manual) {
 		_kbScroll->show();
 		_kbShown = true;
 
-		qint32 maxh = qMin(_keyboard->height(), st::historyComposeFieldMaxHeight - (st::historyComposeFieldMaxHeight / 2));
+		qint32 maxh = std::min(_keyboard->height(), st::historyComposeFieldMaxHeight - (st::historyComposeFieldMaxHeight / 2));
 		_field->setMaxHeight(st::historyComposeFieldMaxHeight - maxh);
 
 		_kbReplyTo = (_peer->isChat() || _peer->isChannel() || _keyboard->forceReply()) ? App::histItemById(_keyboard->forMsgId()) : 0;
@@ -4108,7 +4108,7 @@ void HistoryWidget::moveFieldControls() {
 	auto maxKeyboardHeight = st::historyComposeFieldMaxHeight - _field->height();
 	_keyboard->resizeToWidth(_chatWidth, maxKeyboardHeight);
 	if (_kbShown) {
-		keyboardHeight = qMin(_keyboard->height(), maxKeyboardHeight);
+		keyboardHeight = std::min(_keyboard->height(), maxKeyboardHeight);
 		bottom -= keyboardHeight;
 		_kbScroll->setGeometryToLeft(0, bottom, _chatWidth, keyboardHeight);
 	}
@@ -4898,7 +4898,7 @@ int HistoryWidget::countInitialScrollTop() {
 	} else {
 		return countAutomaticScrollTop();
 	}
-	return qMin(result, _scroll->scrollTopMax());
+	return std::min(result, _scroll->scrollTopMax());
 }
 
 int HistoryWidget::countAutomaticScrollTop() {
@@ -4932,7 +4932,7 @@ int HistoryWidget::countAutomaticScrollTop() {
 			}
 		}
 	}
-	return qMin(result, _scroll->scrollTopMax());
+	return std::min(result, _scroll->scrollTopMax());
 }
 
 void HistoryWidget::updateHistoryGeometry(bool initial, bool loadedDown, const ScrollChange &change) {
@@ -4990,7 +4990,7 @@ void HistoryWidget::updateHistoryGeometry(bool initial, bool loadedDown, const S
 	_updateHistoryGeometryRequired = false;
 
 	if ((!initial && !wasAtBottom) || (loadedDown && (!_history->showFrom || _history->unreadBar || _history->loadedAtBottom()) && (!_migrated || !_migrated->showFrom || _migrated->unreadBar || _history->loadedAtBottom()))) {
-		auto toY = qMin(_list->historyScrollTop(), _scroll->scrollTopMax());
+		auto toY = std::min(_list->historyScrollTop(), _scroll->scrollTopMax());
 		if (change.type == ScrollChangeAdd) {
 			toY += change.value;
 		} else if (change.type == ScrollChangeNoJumpToBottom) {
@@ -5117,7 +5117,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 				_botKeyboardShow->hide();
 				_botCommandStart->hide();
 			}
-			qint32 maxh = hasMarkup ? qMin(_keyboard->height(), st::historyComposeFieldMaxHeight - (st::historyComposeFieldMaxHeight / 2)) : 0;
+			qint32 maxh = hasMarkup ? std::min(_keyboard->height(), st::historyComposeFieldMaxHeight - (st::historyComposeFieldMaxHeight / 2)) : 0;
 			_field->setMaxHeight(st::historyComposeFieldMaxHeight - maxh);
 			_kbShown = hasMarkup;
 			_kbReplyTo = (_peer->isChat() || _peer->isChannel() || _keyboard->forceReply()) ? App::histItemById(_keyboard->forMsgId()) : 0;
@@ -6500,7 +6500,7 @@ void HistoryWidget::paintEditHeader(Painter &p, const QRect &rect, int left, int
 	if (editTimeLeft < 2) {
 		editTimeLeftText = qsl("0:00");
 	} else if (editTimeLeft > kDisplayEditTimeWarningMs) {
-		updateIn = static_cast<int>(qMin(editTimeLeft - kDisplayEditTimeWarningMs, qint64(kFullDayInMs)));
+		updateIn = static_cast<int>(std::min(editTimeLeft - kDisplayEditTimeWarningMs, qint64(kFullDayInMs)));
 	} else {
 		updateIn = static_cast<int>(editTimeLeft % 1000);
 		if (!updateIn) {
@@ -6528,8 +6528,8 @@ void HistoryWidget::drawRecording(Painter &p, double recordActive) {
 	p.setPen(Qt::NoPen);
 	p.setBrush(st::historyRecordSignalColor);
 
-	auto delta = qMin(a_recordingLevel.current() / 0x4000, 1.);
-	auto d = 2 * qRound(st::historyRecordSignalMin + (delta * (st::historyRecordSignalMax - st::historyRecordSignalMin)));
+	auto delta = std::min(a_recordingLevel.current() / 0x4000, 1.);
+	auto d = 2 * std::round(st::historyRecordSignalMin + (delta * (st::historyRecordSignalMax - st::historyRecordSignalMin)));
 	{
 		PainterHighQualityEnabler hq(p);
 		p.drawEllipse(_attachToggle->x() + (_tabbedSelectorToggle->width() - d) / 2, _attachToggle->y() + (_attachToggle->height() - d) / 2, d, d);
@@ -6634,10 +6634,10 @@ void HistoryWidget::paintEvent(QPaintEvent *e) {
 			auto bottom = r.top() + r.height();
 			auto w = pix.width() / cRetinaFactor();
 			auto h = pix.height() / cRetinaFactor();
-			auto sx = qFloor(left / w);
-			auto sy = qFloor((top - fromy) / h);
-			auto cx = qCeil(right / w);
-			auto cy = qCeil((bottom - fromy) / h);
+			auto sx = std::floor(left / w);
+			auto sy = std::floor((top - fromy) / h);
+			auto cx = std::ceil(right / w);
+			auto cy = std::ceil((bottom - fromy) / h);
 			for (auto i = sx; i < cx; ++i) {
 				for (auto j = sy; j < cy; ++j) {
 					p.drawPixmap(QPointF(i * w, fromy + j * h), pix);
@@ -6707,7 +6707,7 @@ QPoint HistoryWidget::clampMousePosition(QPoint point) {
 }
 
 void HistoryWidget::onScrollTimer() {
-	auto d = (_scrollDelta > 0) ? qMin(_scrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : qMax(_scrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
+	auto d = (_scrollDelta > 0) ? std::min(_scrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : std::max(_scrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + d);
 }
 
