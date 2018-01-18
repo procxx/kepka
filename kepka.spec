@@ -31,7 +31,6 @@ BuildRequires: mapbox-variant-devel
 BuildRequires: ffmpeg-devel >= 3.1
 BuildRequires: openal-soft-devel
 BuildRequires: qt5-qtbase-devel
-BuildRequires: libtgvoip-devel
 BuildRequires: libstdc++-devel
 BuildRequires: range-v3-devel
 BuildRequires: openssl-devel
@@ -66,7 +65,7 @@ mkdir %{_target_platform}
 %build
 # Building application...
 pushd %{_target_platform}
-    %cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
+    %cmake -G Ninja -DPACKAGED_BUILD=1 -DCMAKE_BUILD_TYPE=Release ..
     %ninja_build
 popd
 

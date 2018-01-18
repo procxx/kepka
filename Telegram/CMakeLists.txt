@@ -7,6 +7,12 @@ if (LINUX)
     endif()
 endif()
 
+if (PACKAGED_BUILD)
+    add_definitions(-DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME)
+    add_definitions(-DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION)
+    add_definitions(-DTDESKTOP_DISABLE_UNITY_INTEGRATION)
+endif()
+
 ##================================================
 ## Codegen Tools
 ##================================================
