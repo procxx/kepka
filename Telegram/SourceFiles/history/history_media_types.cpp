@@ -36,6 +36,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/window_controller.h"
 #include "styles/style_history.h"
 #include "calls/calls_instance.h"
+#include <algorithm>
 
 namespace {
 
@@ -3225,7 +3226,7 @@ QString siteNameFromUrl(const QString &url) {
 
 qint32 articleThumbWidth(PhotoData *thumb, qint32 height) {
 	qint32 w = thumb->medium->width(), h = thumb->medium->height();
-	return std::max(std::min(height * w / h, height), 1);
+	return std::clamp(height * w / h, 1, height);
 }
 
 qint32 articleThumbHeight(PhotoData *thumb, qint32 width) {

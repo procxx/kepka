@@ -571,7 +571,7 @@ void Instance::Inner::processFrame(qint32 offset, qint32 framesize) {
 	if (d->fullSamples < skipSamples + fadeSamples) {
 		qint32 fadedCnt = std::min(samplesCnt, skipSamples + fadeSamples - d->fullSamples);
 		double coef = 1. / fadeSamples, fadedFrom = d->fullSamples - skipSamples;
-		short *ptr = srcSamplesDataChannel, *zeroEnd = ptr + std::min(samplesCnt, std::max(0, skipSamples - d->fullSamples)), *end = ptr + fadedCnt;
+		short *ptr = srcSamplesDataChannel, *zeroEnd = ptr + std::clamp(skipSamples - d->fullSamples, 0, samplesCnt), *end = ptr + fadedCnt;
 		for (; ptr != zeroEnd; ++ptr, ++fadedFrom) {
 			*ptr = 0;
 		}

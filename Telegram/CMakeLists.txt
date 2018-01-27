@@ -641,10 +641,10 @@ if(NOT WIN32)
     set_flag_if_supported(Telegram WNCE -Wno-c++1z-extensions)
 endif()
 
-# Enable C++14 support for msvc (@todo this should be done in cmake - see ver 3.10 or above)
+# Enable C++17 support for msvc (@todo this should be done in cmake - see ver 3.10 or above)
 if(WIN32)
     target_compile_options(Telegram PRIVATE
-        /std:c++14
+        /std:c++latest
         /EHsc   # Catch C++ exceptions only, extern C functions never throw a C++ exception.
     )
 endif()
