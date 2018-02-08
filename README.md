@@ -52,7 +52,7 @@ $ mkdir build
 $ cd build
 $ set PATH=%QTDIR%\bin;%PATH%
 $ cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE="%VCPKG%\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-$ cmake --build .
+$ cmake --build . --config RelWithDebInfo
 ```
 ![Preview of Telegram Desktop][preview_image]
 
@@ -68,6 +68,8 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 
 ## Third-party
 
+* [CMake 3.9+][cmake-build]
+
 * Qt 5.9+ ([LGPL](http://doc.qt.io/qt-5/lgpl.html))
 * OpenSSL 1.0.1g ([OpenSSL License](https://www.openssl.org/source/license.html))
 * zlib 1.2.8 ([zlib License](http://www.zlib.net/zlib_license.html))
@@ -80,8 +82,6 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 * Open Sans font ([Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.html))
 * Emoji alpha codes ([MIT License](https://github.com/emojione/emojione/blob/master/extras/alpha-codes/LICENSE.md))
 * Catch test framework ([Boost License](https://github.com/philsquared/Catch/blob/master/LICENSE.txt))
-
-* [CMake][cmake-build]
 
 [//]: # (LINKS)
 [cmake]: https://cmake.org/
