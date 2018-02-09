@@ -116,7 +116,7 @@ void ApiWrap::addLocalChangelogs(int oldAppVersion) {
 #endif // Q_OS_WIN
 	}
 	if (!addedSome) {
-		auto text = lng_new_version_wrap(lt_version, str_const_toString(AppVersionStr), lt_changes, lang(lng_new_version_minor), lt_link, qsl("https://desktop.telegram.org/changelog")).trimmed();
+		auto text = lng_new_version_wrap(lt_version, str_const_toString(AppVersionStr), lt_changes, lang(lng_new_version_minor), lt_link, lang(lng_url_changelog)).trimmed();
 		addLocalChangelog(text);
 	}
 }

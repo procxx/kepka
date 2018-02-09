@@ -18,6 +18,12 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+"appname" = "Kepka";
+"lng_url_about" = "https://github.com/procxx/kepka";
+"lng_url_changelog" = "https://github.com/procxx/kepka/releases";
+
+// basic lang info
+
 "lng_language_name" = "English";
 "lng_switch_to_this" = "Switch to English";
 
