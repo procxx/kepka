@@ -43,9 +43,14 @@ inline constexpr void noop() {
 	std::abort();
 }
 
-inline constexpr void validate(bool condition, const char *message, const char *file, int line) {
+inline
+#if !defined(_MSC_VER) || (_MSC_VER > 1900)
+constexpr
+#endif
+  void validate(bool condition, const char *message, const char *file, int line) {
 	(GSL_UNLIKELY(!(condition))) ? fail(message, file, line) : noop();
 }
+
 
 } // namespace assertion
 } // namespace base
