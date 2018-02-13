@@ -75,6 +75,7 @@ add_custom_command(
     MAIN_DEPENDENCY
         ${CMAKE_CURRENT_SOURCE_DIR}/Resources/langs/lang.strings
 )
+
 add_custom_target(lang_output
     DEPENDS lang_auto.h lang_auto.cpp)
 

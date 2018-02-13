@@ -61,7 +61,7 @@ void AboutBox::resizeEvent(QResizeEvent *e) {
 }
 
 void AboutBox::showVersionHistory() {
-	QDesktopServices::openUrl(qsl("https://desktop.telegram.org/changelog"));
+	QDesktopServices::openUrl(lang(lng_url_changelog));
 }
 
 void AboutBox::keyPressEvent(QKeyEvent *e) {

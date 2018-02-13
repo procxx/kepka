@@ -66,9 +66,9 @@ MainMenu::MainMenu(QWidget *parent) : TWidget(parent)
 	refreshMenu();
 
 	_telegram->setRichText(textcmdLink(1, str_const_toString(AppName)));
-	_telegram->setLink(1, MakeShared<UrlClickHandler>(qsl("https://desktop.telegram.org")));
+	_telegram->setLink(1, MakeShared<UrlClickHandler>(lang(lng_url_about)));
 	_version->setRichText(textcmdLink(1, lng_settings_current_version(lt_version, currentVersionText())) + QChar(' ') + QChar(8211) + QChar(' ') + textcmdLink(2, lang(lng_menu_about)));
-	_version->setLink(1, MakeShared<UrlClickHandler>(qsl("https://desktop.telegram.org/changelog")));
+	_version->setLink(1, MakeShared<UrlClickHandler>(lang(lng_url_changelog)));
 	_version->setLink(2, MakeShared<LambdaClickHandler>([] { Ui::show(Box<AboutBox>()); }));
 
 	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
