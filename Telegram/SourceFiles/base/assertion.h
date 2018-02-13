@@ -43,6 +43,8 @@ inline constexpr void noop() {
 	std::abort();
 }
 
+// Since MSVC 2015 cannot understand "constexpr void" (void is literal since C++14)
+// we have to use conditional compilation 
 inline
 #if !defined(_MSC_VER) || (_MSC_VER > 1900)
 constexpr
