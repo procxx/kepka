@@ -43,9 +43,16 @@ inline constexpr void noop() {
 	std::abort();
 }
 
-inline constexpr void validate(bool condition, const char *message, const char *file, int line) {
+// Since MSVC 2015 cannot understand "constexpr void" (void is literal since C++14)
+// we have to use conditional compilation 
+inline
+#if !defined(_MSC_VER) || (_MSC_VER > 1900)
+constexpr
+#endif
+  void validate(bool condition, const char *message, const char *file, int line) {
 	(GSL_UNLIKELY(!(condition))) ? fail(message, file, line) : noop();
 }
+
 
 } // namespace assertion
 } // namespace base

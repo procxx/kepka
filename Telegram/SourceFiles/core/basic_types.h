@@ -54,4 +54,4 @@ void as_const(const T&&) = delete;
 #include <cstdint>
 
 #define qsl(s) QStringLiteral(s)
-#define qstr(s) QLatin1String(s, sizeof(s) - 1)
+#define qstr(s) QLatin1String(s, static_cast<int>(sizeof(s)-1))
