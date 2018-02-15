@@ -1427,6 +1427,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 "lng_mac_menu_add_contact" = "Add Contact";
 "lng_mac_menu_new_group" = "New Group";
 "lng_mac_menu_new_channel" = "New Channel";
-"lng_mac_menu_show" = "Show {telegram}";
+"lng_mac_menu_show" = "Show Telegram";
 
 // Keys finished
