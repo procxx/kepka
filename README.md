@@ -4,9 +4,9 @@
 )](https://ci.appveyor.com/project/procxx/tdesktop)
 
 
-# [Telegram Desktop][telegram_desktop] - pro.cxx fork
+# Kepka - Unofficial [Telegram Desktop][telegram_desktop] fork from pro.cxx community
 
-This is the complete source code and the build instructions for the alpha version of the pro.cxx fork of desktop client for the [Telegram][telegram] messenger, based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
+This is the complete source code and the build instructions for the Kepka's alpha version based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
 
 ## Build instructions
 
