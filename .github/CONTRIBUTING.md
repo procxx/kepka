@@ -150,7 +150,7 @@ See also: #456, #789
 [help_change_commit_message]: https://help.github.com/articles/changing-a-commit-message/
 [commit_message]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 [commit_message_2]: https://chris.beams.io/posts/git-commit/
-[pr]: https://github.com/telegramdesktop/tdesktop/compare
-[build_instructions]: https://github.com/telegramdesktop/tdesktop/blob/master/README.md#build-instructions
+[pr]: https://github.com/procxx/kepka/compare
+[build_instructions]: https://github.com/procxx/kepka/blob/dev/README.md#build-instructions
 [closing-issues-via-commit-messages]: https://help.github.com/articles/closing-issues-via-commit-messages/
 [api-tos]: https://core.telegram.org/api/terms
