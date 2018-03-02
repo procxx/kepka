@@ -166,14 +166,14 @@ void MainWindow::firstShow() {
 		: lng_enable_notifications_from_tray);
 
 	if (isLinux) {
-		trayIconMenu->addAction(lang(lng_open_from_tray), this, SLOT(showFromTray()))->setEnabled(true);
+		trayIconMenu->addAction(lng_open_from_tray(lt_appname, lang(appname)), this, SLOT(showFromTray()))->setEnabled(true);
 		trayIconMenu->addAction(lang(lng_minimize_to_tray), this, SLOT(minimizeToTray()))->setEnabled(true);
 		trayIconMenu->addAction(notificationActionText, this, SLOT(toggleDisplayNotifyFromTray()))->setEnabled(true);
-		trayIconMenu->addAction(lang(lng_quit_from_tray), this, SLOT(quitFromTray()))->setEnabled(true);
+		trayIconMenu->addAction(lng_quit_from_tray(lt_appname, lang(appname)), this, SLOT(quitFromTray()))->setEnabled(true);
 	} else {
 		trayIconMenu->addAction(lang(lng_minimize_to_tray), this, SLOT(minimizeToTray()))->setEnabled(true);
 		trayIconMenu->addAction(notificationActionText, this, SLOT(toggleDisplayNotifyFromTray()))->setEnabled(true);
-		trayIconMenu->addAction(lang(lng_quit_from_tray), this, SLOT(quitFromTray()))->setEnabled(true);
+		trayIconMenu->addAction(lng_quit_from_tray(lt_appname, lang(appname)), this, SLOT(quitFromTray()))->setEnabled(true);
 	}
 	Global::RefWorkMode().setForced(Global::WorkMode().value(), true);
 
@@ -610,7 +610,7 @@ void MainWindow::updateTrayMenu(bool force) {
 		disconnect(toggleAction, SIGNAL(triggered(bool)), this, SLOT(minimizeToTray()));
 		disconnect(toggleAction, SIGNAL(triggered(bool)), this, SLOT(showFromTray()));
 		connect(toggleAction, SIGNAL(triggered(bool)), this, active ? SLOT(minimizeToTray()) : SLOT(showFromTray()));
-		toggleAction->setText(lang(active ? lng_minimize_to_tray : lng_open_from_tray));
+		toggleAction->setText(active ? lang(lng_minimize_to_tray) : lng_open_from_tray(lt_appname, lang(appname)));
 
 		// On macOS just remove trayIcon menu if the window is not active.
 		// So we will activate the window on click instead of showing the menu.
