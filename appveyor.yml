@@ -26,40 +26,16 @@ environment:
   qt_dir: C:\Qt\5.9\msvc2017_64
 
 install:
-  - cmd: >-
-      vcpkg install --triplet x64-windows openal-soft openssl opus zlib ffmpeg
-
-      appveyor DownloadFile https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-win.zip
-
-      mkdir %APPVEYOR_BUILD_FOLDER%\build
-
-      7z x ninja-win.zip -o%APPVEYOR_BUILD_FOLDER%\build > nul
+  - cmd: .appveyor\install.cmd
 
 before_build:
-  - cmd: >-
-      set PATH=C:\Python35;%QT_DIR%\bin;%PATH%
-
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"      
-
-      cd %APPVEYOR_BUILD_FOLDER%\build
+  - cmd: .appveyor\before_build.cmd
 
 build_script:
-  - cmd: >-
-      cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-
-      cmake --build . --config RelWithDebInfo
+  - cmd: .appveyor\build.cmd
 
 after_build:
-  - cmd: >-
-      for %%f in (Qt5Core,Qt5Gui,Qt5Network,Qt5Widgets) do xcopy %QT_DIR%\bin\%%f.dll Telegram /Q /Y /I
-
-      xcopy %QT_DIR%\plugins\imageformats\qwebp.dll Telegram\imageformats\ /Q /Y /I
-
-      xcopy %QT_DIR%\plugins\imageformats\qjpeg.dll Telegram\imageformats\ /Q /Y /I
-
-      xcopy %QT_DIR%\plugins\platforms\qwindows.dll Telegram\platforms\ /Q /Y /I
-
-      7z a -mmt kepka.zip Telegram\Telegram.exe Telegram\Telegram.pdb Telegram\*.dll Telegram\platforms\* Telegram\imageformats\*
+  - ps: .appveyor\after_build.cmd
 
 artifacts:
   - path: build\kepka.zip
