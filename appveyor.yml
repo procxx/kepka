@@ -35,10 +35,11 @@ build_script:
   - cmd: .appveyor\build.cmd
 
 after_build:
-  - ps: .appveyor\after_build.cmd
+  - ps: .appveyor\after_build.ps1
 
 artifacts:
   - path: build\kepka.zip
+  - path: build\pdb.zip
 
 notifications:
   - provider: GitHubPullRequest
