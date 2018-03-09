@@ -14,7 +14,6 @@ shallow_clone: true
 clone_folder: C:\projects\tdesktop
 
 test: off
-deploy: off
 
 matrix:
   fast_finish: true
@@ -39,9 +38,19 @@ after_build:
 
 artifacts:
   - path: build\kepka.zip
+    name: application
   - path: build\pdb.zip
+    name: debug-info
 
 notifications:
   - provider: GitHubPullRequest
     auth_token:
       secure: RTsEg5GuO6yWL2ha/fURkT9p6pzW/DS/yT0dR8Re7HsHxtQRkzaKU15n7pQdtEPN
+
+deploy:
+  provider: GitHub
+  auth_token:
+    secure: RTsEg5GuO6yWL2ha/fURkT9p6pzW/DS/yT0dR8Re7HsHxtQRkzaKU15n7pQdtEPN
+  artifact: application,debug-info
+  on:
+    appveyor_repo_tag: true
