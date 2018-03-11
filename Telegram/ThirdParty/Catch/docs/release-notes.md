@@ -1,4 +1,104 @@
 <a id="top"></a>
+
+# 2.2.0
+
+## Fixes
+* Hidden tests are not listed by default when listing tests (#1175)
+  * This makes `catch_discover_tests` CMake script work better
+* Fixed regression that meant `<windows.h>` could potentially not be included properly (#1197)
+* Fixed installing `Catch2ConfigVersion.cmake` when Catch2 is a subproject.
+
+## Improvements
+* Added an option to warn (+ exit with error) when no tests were ran (#1158)
+  * Use as `-w NoTests`
+* Added provisional support for Emscripten (#1114)
+* [Added a way to override the fallback stringifier](https://github.com/catchorg/Catch2/blob/master/docs/configuration.md#fallback-stringifier) (#1024)
+  * This allows project's own stringification machinery to be easily reused for Catch
+* `Catch::Session::run()` now accepts `char const * const *`, allowing it to accept array of string literals (#1031, #1178)
+  * The embedded version of Clara was bumped to v1.1.3
+* Various minor performance improvements
+* Added support for DJGPP DOS crosscompiler (#1206)
+
+
+# 2.1.2
+
+## Fixes
+* Fixed compilation error with `-fno-rtti` (#1165)
+* Fixed NoAssertion warnings
+* `operator<<` is used before range-based stringification (#1172)
+* Fixed `-Wpedantic` warnings (extra semicolons and binary literals) (#1173)
+
+
+## Improvements
+* Added `CATCH_VERSION_{MAJOR,MINOR,PATCH}` macros (#1131)
+* Added `BrightYellow` colour for use in reporters (#979)
+  * It is also used by ConsoleReporter for reconstructed expressions
+
+## Other changes
+* Catch is now exported as a CMake package and linkable target (#1170)
+
+# 2.1.1
+
+## Improvements
+* Static arrays are now properly stringified like ranges across MSVC/GCC/Clang
+* Embedded newer version of Clara -- v1.1.1
+  * This should fix some warnings dragged in from Clara
+* MSVC's CLR exceptions are supported
+
+
+## Fixes
+* Fixed compilation when comparison operators do not return bool (#1147)
+* Fixed CLR exceptions blowing up the executable during translation (#1138)
+
+
+## Other changes
+* Many CMake changes
+  * `NO_SELFTEST` option is deprecated, use `BUILD_TESTING` instead.
+  * Catch specific CMake options were prefixed with `CATCH_` for namespacing purposes
+  * Other changes to simplify Catch2's packaging
+
+
+
+# 2.1.0
+
+## Improvements
+* Various performance improvements
+  * On top of the performance regression fixes
+* Experimental support for PCH was added (#1061)
+* `CATCH_CONFIG_EXTERNAL_INTERFACES` now brings in declarations of Console, Compact, XML and JUnit reporters
+* `MatcherBase` no longer has a pointless second template argument
+* Reduced the number of warning suppressions that leak into user's code
+  * Bugs in g++ 4.x and 5.x mean that some of them have to be left in
+
+
+## Fixes
+* Fixed performance regression from Catch classic
+  * One of the performance improvement patches for Catch classic was not applied to Catch2
+* Fixed platform detection for iOS (#1084)
+* Fixed compilation when `g++` is used together with `libc++` (#1110)
+* Fixed TeamCity reporter compilation with the single header version
+  * To fix the underlying issue we will be versioning reporters in single_include folder per release
+* The XML reporter will now report `WARN` messages even when not used with `-s`
+* Fixed compilation when `VectorContains` matcher was combined using `&&` (#1092)
+* Fixed test duration overflowing after 10 seconds (#1125, #1129)
+* Fixed `std::uncaught_exception` deprecation warning (#1124)
+
+
+## New features
+* New Matchers
+  * Regex matcher for strings, `Matches`.
+  * Set-equal matcher for vectors, `UnorderedEquals`
+  * Floating point matchers, `WithinAbs` and `WithinULP`.
+* Stringification now attempts to decompose all containers (#606)
+  * Containers are objects that respond to ADL `begin(T)` and `end(T)`.
+
+
+## Other changes
+* Reporters will now be versioned in the `single_include` folder to ensure their compatibility with the last released version
+
+
+
+
 # 2.0.1
 
 ## Breaking changes
@@ -86,6 +186,41 @@
 
 
 # Older versions
+
+## 1.11.x
+
+### 1.11.0
+
+#### Fixes
+* The original expression in `REQUIRE_FALSE( expr )` is now reporter properly as `!( expr )` (#1051)
+  * Previously the parentheses were missing and `x != y` would be expanded as `!x != x`
+* `Approx::Margin` is now inclusive (#952)
+  * Previously it was meant and documented as inclusive, but the check itself wasn't
+  * This means that `REQUIRE( 0.25f == Approx( 0.0f ).margin( 0.25f ) )` passes, instead of fails
+* `RandomNumberGenerator::result_type` is now unsigned (#1050)
+
+#### Improvements
+* `__JETBRAINS_IDE__` macro handling is now CLion version specific (#1017)
+  * When CLion 2017.3 or newer is detected, `__COUNTER__` is used instead of
+* TeamCity reporter now explicitly flushes output stream after each report (#1057)
+  * On some platforms, output from redirected streams would show up only after the tests finished running
+* `ParseAndAddCatchTests` now can add test files as dependency to CMake configuration
+  * This means you do not have to manually rerun CMake configuration step to detect new tests
+
+## 1.10.x
+
+### 1.10.0
+
+#### Fixes
+* Evaluation layer has been rewritten (backported from Catch 2)
+  * The new layer is much simpler and fixes some issues (#981)
+* Implemented workaround for VS 2017 raw string literal stringification bug (#995)
+* Fixed interaction between `[!shouldfail]` and `[!mayfail]` tags and sections
+  * Previously sections with failing assertions would be marked as failed, not failed-but-ok
+
+#### Improvements
+* Added [libidentify](https://github.com/janwilmans/LibIdentify) support
+* Added "wait-for-keypress" option
 
 ## 1.9.x
 
@@ -264,8 +399,8 @@ Cygwin issue with `gettimeofday` - `#define` was not early enough
 * Cygwin compatibility fixes
   * Signal handling is no longer compiled by default.
   * Usage of `gettimeofday` inside Catch should no longer cause compilation errors.
-* Improved `-Wparentheses` supression for gcc (#674)
-  * When compiled with gcc 4.8 or newer, the supression is localized to assertions only
+* Improved `-Wparentheses` suppression for gcc (#674)
+  * When compiled with gcc 4.8 or newer, the suppression is localized to assertions only
   * Otherwise it is supressed for the whole TU
 * Fixed test spec parser issue (with escapes in multiple names)
 
@@ -284,7 +419,7 @@ Xml:
 * C-escape control characters instead of XML encoding them (which requires XML 1.1)
 * Revert XML output to XML 1.0
 * Can provide stylesheet references by extending the XML reporter
-* Added description and tags attribites to XML Reporter
+* Added description and tags attributes to XML Reporter
 * Tags are closed and the stream flushed more eagerly to avoid stdout interpolation
 
 

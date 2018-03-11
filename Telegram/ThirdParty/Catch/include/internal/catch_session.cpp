@@ -18,101 +18,109 @@
 #include "catch_random_number_generator.h"
 #include "catch_startup_exception_registry.h"
 #include "catch_text.h"
+#include "catch_stream.h"
+#include "catch_windows_h_proxy.h"
 
 #include <cstdlib>
 #include <iomanip>
 
+namespace Catch {
 
-namespace {
-    const int MaxExitCode = 255;
-    using Catch::IStreamingReporterPtr;
-    using Catch::IConfigPtr;
-    using Catch::Config;
+    namespace {
+        const int MaxExitCode = 255;
 
-    IStreamingReporterPtr createReporter(std::string const& reporterName, IConfigPtr const& config) {
-        auto reporter = Catch::getRegistryHub().getReporterRegistry().create(reporterName, config);
-        CATCH_ENFORCE(reporter, "No reporter registered with name: '" << reporterName << "'");
+        IStreamingReporterPtr createReporter(std::string const& reporterName, IConfigPtr const& config) {
+            auto reporter = Catch::getRegistryHub().getReporterRegistry().create(reporterName, config);
+            CATCH_ENFORCE(reporter, "No reporter registered with name: '" << reporterName << "'");
 
-        return reporter;
-    }
+            return reporter;
+        }
 
 #ifndef CATCH_CONFIG_DEFAULT_REPORTER
 #define CATCH_CONFIG_DEFAULT_REPORTER "console"
 #endif
 
-    IStreamingReporterPtr makeReporter(std::shared_ptr<Config> const& config) {
-        auto const& reporterNames = config->getReporterNames();
-        if (reporterNames.empty())
-            return createReporter(CATCH_CONFIG_DEFAULT_REPORTER, config);
+        IStreamingReporterPtr makeReporter(std::shared_ptr<Config> const& config) {
+            auto const& reporterNames = config->getReporterNames();
+            if (reporterNames.empty())
+                return createReporter(CATCH_CONFIG_DEFAULT_REPORTER, config);
 
-        IStreamingReporterPtr reporter;
-        for (auto const& name : reporterNames)
-            addReporter(reporter, createReporter(name, config));
-        return reporter;
-    }
+            IStreamingReporterPtr reporter;
+            for (auto const& name : reporterNames)
+                addReporter(reporter, createReporter(name, config));
+            return reporter;
+        }
 
 #undef CATCH_CONFIG_DEFAULT_REPORTER
 
-    void addListeners(IStreamingReporterPtr& reporters, IConfigPtr const& config) {
-        auto const& listeners = Catch::getRegistryHub().getReporterRegistry().getListeners();
-        for (auto const& listener : listeners)
-            addReporter(reporters, listener->create(Catch::ReporterConfig(config)));
-    }
-
-
-    Catch::Totals runTests(std::shared_ptr<Config> const& config) {
-        using namespace Catch;
-        IStreamingReporterPtr reporter = makeReporter(config);
-        addListeners(reporter, config);
-
-        RunContext context(config, std::move(reporter));
-
-        Totals totals;
-
-        context.testGroupStarting(config->name(), 1, 1);
-
-        TestSpec testSpec = config->testSpec();
-        if (!testSpec.hasFilters())
-            testSpec = TestSpecParser(ITagAliasRegistry::get()).parse("~[.]").testSpec(); // All not hidden tests
-
-        auto const& allTestCases = getAllTestCasesSorted(*config);
-        for (auto const& testCase : allTestCases) {
-            if (!context.aborting() && matchTest(testCase, testSpec, *config))
-                totals += context.runTest(testCase);
-            else
-                context.reporter().skipTest(testCase);
+        void addListeners(IStreamingReporterPtr& reporters, IConfigPtr const& config) {
+            auto const& listeners = Catch::getRegistryHub().getReporterRegistry().getListeners();
+            for (auto const& listener : listeners)
+                addReporter(reporters, listener->create(Catch::ReporterConfig(config)));
         }
 
-        context.testGroupEnded(config->name(), totals, 1, 1);
-        return totals;
-    }
 
-    void applyFilenamesAsTags(Catch::IConfig const& config) {
-        using namespace Catch;
-        auto& tests = const_cast<std::vector<TestCase>&>(getAllTestCasesSorted(config));
-        for (auto& testCase : tests) {
-            auto tags = testCase.tags;
+        Catch::Totals runTests(std::shared_ptr<Config> const& config) {
+            IStreamingReporterPtr reporter = makeReporter(config);
+            addListeners(reporter, config);
 
-            std::string filename = testCase.lineInfo.file;
-            auto lastSlash = filename.find_last_of("\\/");
-            if (lastSlash != std::string::npos) {
-                filename.erase(0, lastSlash);
-                filename[0] = '#';
+            RunContext context(config, std::move(reporter));
+
+            Totals totals;
+
+            context.testGroupStarting(config->name(), 1, 1);
+
+            TestSpec testSpec = config->testSpec();
+
+            auto const& allTestCases = getAllTestCasesSorted(*config);
+            for (auto const& testCase : allTestCases) {
+                if (!context.aborting() && matchTest(testCase, testSpec, *config))
+                    totals += context.runTest(testCase);
+                else
+                    context.reporter().skipTest(testCase);
             }
 
-            auto lastDot = filename.find_last_of('.');
-            if (lastDot != std::string::npos) {
-                filename.erase(lastDot);
+            if (config->warnAboutNoTests() && totals.testCases.total() == 0) {
+                ReusableStringStream testConfig;
+
+                bool first = true;
+                for (const auto& input : config->getTestsOrTags()) {
+                    if (!first) { testConfig << ' '; }
+                    first = false;
+                    testConfig << input;
+                }
+
+                context.reporter().noMatchingTestCases(testConfig.str());
+                totals.error = -1;
             }
 
-            tags.push_back(std::move(filename));
-            setTags(testCase, tags);
+            context.testGroupEnded(config->name(), totals, 1, 1);
+            return totals;
         }
-    }
 
-}
+        void applyFilenamesAsTags(Catch::IConfig const& config) {
+            auto& tests = const_cast<std::vector<TestCase>&>(getAllTestCasesSorted(config));
+            for (auto& testCase : tests) {
+                auto tags = testCase.tags;
 
-namespace Catch {
+                std::string filename = testCase.lineInfo.file;
+                auto lastSlash = filename.find_last_of("\\/");
+                if (lastSlash != std::string::npos) {
+                    filename.erase(0, lastSlash);
+                    filename[0] = '#';
+                }
+
+                auto lastDot = filename.find_last_of('.');
+                if (lastDot != std::string::npos) {
+                    filename.erase(lastDot);
+                }
+
+                tags.push_back(std::move(filename));
+                setTags(testCase, tags);
+            }
+        }
+
+    } // anon namespace
 
     Session::Session() {
         static bool alreadyInstantiated = false;
@@ -125,7 +133,7 @@ namespace Catch {
         if ( !exceptions.empty() ) {
             m_startupExceptions = true;
             Colour colourGuard( Colour::Red );
-            Catch::cerr() << "Errors occured during startup!" << '\n';
+            Catch::cerr() << "Errors occurred during startup!" << '\n';
             // iterate over all exceptions and notify user
             for ( const auto& ex_ptr : exceptions ) {
                 try {
@@ -157,7 +165,7 @@ namespace Catch {
                 << std::left << std::setw(16) << "version: " << libraryVersion() << std::endl;
     }
 
-    int Session::applyCommandLine( int argc, char* argv[] ) {
+    int Session::applyCommandLine( int argc, char const * const * argv ) {
         if( m_startupExceptions )
             return 1;
 
@@ -194,7 +202,7 @@ namespace Catch {
         return returnCode;
     }
 
-#if defined(WIN32) && defined(UNICODE)
+#if defined(CATCH_CONFIG_WCHAR) && defined(WIN32) && defined(UNICODE)
     int Session::run( int argc, wchar_t* const argv[] ) {
 
         char **utf8Argv = new char *[ argc ];
@@ -265,7 +273,11 @@ namespace Catch {
             if( Option<std::size_t> listed = list( config() ) )
                 return static_cast<int>( *listed );
 
-            return (std::min)( MaxExitCode, static_cast<int>( runTests( m_config ).assertions.failed ) );
+            auto totals = runTests( m_config );
+            // Note that on unices only the lower 8 bits are usually used, clamping
+            // the return value to 255 prevents false negative when some multiple
+            // of 256 tests has failed
+            return (std::min) (MaxExitCode, (std::max) (totals.error, static_cast<int>(totals.assertions.failed)));
         }
         catch( std::exception& ex ) {
             Catch::cerr() << ex.what() << std::endl;

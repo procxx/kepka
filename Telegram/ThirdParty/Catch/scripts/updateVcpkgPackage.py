@@ -8,7 +8,7 @@ from releaseCommon import Version
 
 print(catchPath)
 
-default_path = '../vcpkg/ports/catch/'
+default_path = '../vcpkg/ports/catch2/'
 
 def adjusted_path(path):
     return os.path.join(catchPath, path)
@@ -89,7 +89,7 @@ def git_push(path_to_repo):
     # Make sure we branch off master
     subprocess.call('git checkout master', shell=True)
     
-    # Update repo to current master, so we don't work off old version of the portsfile 
+    # Update repo to current master, so we don't work off old version of the portfile 
     subprocess.call('git pull Microsoft master', shell=True)
     subprocess.call('git push', shell=True)
 

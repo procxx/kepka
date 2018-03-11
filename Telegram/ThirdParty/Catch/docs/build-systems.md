@@ -28,9 +28,14 @@ The advantage of this format is that the JUnit Ant schema is widely understood b
 The disadvantage is that this schema was designed to correspond to how JUnit works - and there is a significant mismatch with how Catch works. Additionally the format is not streamable (because opening elements hold counts of failed and passing tests as attributes) - so the whole test run must complete before it can be written.
 
 ## Other reporters
-Other reporters are not part of the single-header distribution and need to be downloaded and included separately. All reporters are stored in `include/reporters` directory in the git repository, and are named `catch_reporter_*.hpp`. For example, to use the TeamCity reporter you need to download `include/reporters/catch_reporter_teamcity.hpp` and include it after Catch itself.
+Other reporters are not part of the single-header distribution and need
+to be downloaded and included separately. All reporters are stored in
+`single_include` directory in the git repository, and are named
+`catch_reporter_*.hpp`. For example, to use the TeamCity reporter you
+need to download `single_include/catch_reporter_teamcity.hpp` and include
+it after Catch itself.
 
-```
+```cpp
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "catch_reporter_teamcity.hpp"
@@ -124,7 +129,15 @@ The advantage of this approach is that you can always automatically update Catch
 
 
 ### Automatic test registration
-If you are also using ctest, `contrib/ParseAndAddCatchTests.cmake` is a CMake script that attempts to parse your test files and automatically register all test cases, using tags as labels. This means that these
+We provide 2 CMake scripts that can automatically register Catch-based
+tests with CTest,
+  * `contrib/ParseAndAddCatchTests.cmake`
+  * `contrib/CatchAddTests.cmake`
+
+The first is based on parsing the test implementation files, and attempts
+to register all `TEST_CASE`s using their tags as labels. This means that
+these:
+
 ```cpp
 TEST_CASE("Test1", "[unit]") {
     int a = 1;
@@ -144,7 +157,14 @@ TEST_CASE("Test3", "[a][b][c]") {
     REQUIRE(a == b);
 }
 ```
-would be registered as 3 tests, `Test1`, `Test2` and `Test3`, and 4 ctest labels would be created, `a`, `b`, `c` and `unit`.
+would be registered as 3 tests, `Test1`, `Test2` and `Test3`,
+and 4 CTest labels would be created, `a`, `b`, `c` and `unit`.
+
+
+The second is based on parsing the output of a Catch binary given
+`--list-test-names-only`. This means that it deals with inactive
+(e.g. commented-out) tests better, but requires CMake 3.10 for full
+functionality.
 
 ### CodeCoverage module (GCOV, LCOV...)
 

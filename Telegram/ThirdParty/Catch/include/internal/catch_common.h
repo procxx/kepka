@@ -43,7 +43,10 @@ namespace Catch {
     struct SourceLineInfo {
 
         SourceLineInfo() = delete;
-        SourceLineInfo( char const* _file, std::size_t _line ) noexcept;
+        SourceLineInfo( char const* _file, std::size_t _line ) noexcept
+        :   file( _file ),
+            line( _line )
+        {}
 
         SourceLineInfo( SourceLineInfo const& other )        = default;
         SourceLineInfo( SourceLineInfo && )                  = default;
@@ -59,11 +62,6 @@ namespace Catch {
     };
 
     std::ostream& operator << ( std::ostream& os, SourceLineInfo const& info );
-
-    // This is just here to avoid compiler warnings with macro constants and boolean literals
-    inline bool isTrue( bool value ){ return value; }
-    bool alwaysTrue();
-    bool alwaysFalse();
 
     // Use this in variadic streaming macros to allow
     //    >> +StreamEndStop

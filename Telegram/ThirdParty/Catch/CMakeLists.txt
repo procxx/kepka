@@ -1,9 +1,19 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 
-project(CatchSelfTest)
+# detect if Catch is being bundled,
+# disable testsuite in that case
+if(NOT DEFINED PROJECT_NAME)
+  set(NOT_SUBPROJECT ON)
+endif()
 
-option(USE_VALGRIND "Perform SelfTests with Valgrind" OFF)
-option(BUILD_EXAMPLES "Build documentation examples" OFF)
+project(Catch2 LANGUAGES CXX VERSION 2.2.0)
+
+include(GNUInstallDirs)
+
+option(CATCH_USE_VALGRIND "Perform SelfTests with Valgrind" OFF)
+option(CATCH_BUILD_EXAMPLES "Build documentation examples" OFF)
+option(CATCH_ENABLE_COVERAGE "Generate coverage for codecov.io" OFF)
+option(CATCH_ENABLE_WERROR "Enable all warnings as errors" ON)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -12,7 +22,6 @@ set(CATCH_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SELF_TEST_DIR ${CATCH_DIR}/projects/SelfTest)
 set(BENCHMARK_DIR ${CATCH_DIR}/projects/Benchmark)
 set(HEADER_DIR ${CATCH_DIR}/include)
-set(CATCH_VERSION_NUMBER 2.0.1)
 
 if(USE_WMAIN)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ENTRY:wmainCRTStartup")
@@ -178,6 +187,7 @@ set(INTERNAL_HEADERS
         ${HEADER_DIR}/internal/catch_timer.h
         ${HEADER_DIR}/internal/catch_tostring.h
         ${HEADER_DIR}/internal/catch_totals.h
+        ${HEADER_DIR}/internal/catch_uncaught_exceptions.h
         ${HEADER_DIR}/internal/catch_user_interfaces.h
         ${HEADER_DIR}/internal/catch_version.h
         ${HEADER_DIR}/internal/catch_wildcard_pattern.h
@@ -238,6 +248,7 @@ set(IMPL_SOURCES
         ${HEADER_DIR}/internal/catch_timer.cpp
         ${HEADER_DIR}/internal/catch_tostring.cpp
         ${HEADER_DIR}/internal/catch_totals.cpp
+        ${HEADER_DIR}/internal/catch_uncaught_exceptions.cpp
         ${HEADER_DIR}/internal/catch_version.cpp
         ${HEADER_DIR}/internal/catch_wildcard_pattern.cpp
         ${HEADER_DIR}/internal/catch_xmlwriter.cpp
@@ -280,11 +291,22 @@ set(HEADERS
 SOURCE_GROUP("Tests" FILES ${TEST_SOURCES})
 SOURCE_GROUP("Surrogates" FILES ${SURROGATE_SOURCES})
 
-# configure the executable
 
 # Projects consuming Catch via ExternalProject_Add might want to use install step
 # without building all of our selftests.
-if (NOT NO_SELFTEST)
+
+if(DEFINED NO_SELFTEST)
+    message(DEPRECATION "*** CMake option NO_SELFTEST is deprecated; use BUILD_TESTING instead")
+    if (NO_SELFTEST)
+        set(BUILD_TESTING OFF CACHE BOOL "Disable Catch2 internal testsuite" FORCE)
+    else()
+        set(BUILD_TESTING ON CACHE BOOL "Disable Catch2 internal testsuite" FORCE)
+    endif()
+endif()
+
+include(CTest)
+
+if (BUILD_TESTING AND NOT_SUBPROJECT)
     add_executable(SelfTest ${TEST_SOURCES} ${IMPL_SOURCES} ${REPORTER_SOURCES} ${SURROGATE_SOURCES} ${HEADERS})
     target_include_directories(SelfTest PRIVATE ${HEADER_DIR})
 
@@ -299,59 +321,95 @@ if (NOT NO_SELFTEST)
     set_property(TARGET SelfTest PROPERTY CXX_STANDARD_REQUIRED ON)
     set_property(TARGET SelfTest PROPERTY CXX_EXTENSIONS OFF)
 
-
-    # Add desired warnings
-    if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU" )
-        target_compile_options( SelfTest PRIVATE -Wall -Wextra -Wunreachable-code -Werror )
+    if (CATCH_ENABLE_COVERAGE)
+        set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
+        list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
+        find_package(codecov)
+        add_coverage(SelfTest)
+        list(APPEND LCOV_REMOVE_PATTERNS "'/usr/*'")
+        coverage_evaluate()
     endif()
-    # Clang specific warning go here
+
+    # Add per compiler options
+    if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU" )
+        target_compile_options( SelfTest PRIVATE -Wall -Wextra -Wunreachable-code -Wpedantic)
+        if (CATCH_ENABLE_WERROR)
+            target_compile_options( SelfTest PRIVATE -Werror)
+        endif()
+    endif()
+    # Clang specific options go here
     if ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
-        # Actually keep these
         target_compile_options( SelfTest PRIVATE -Wweak-vtables -Wexit-time-destructors -Wglobal-constructors -Wmissing-noreturn )
     endif()
     if ( CMAKE_CXX_COMPILER_ID MATCHES "MSVC" )
-        target_compile_options( SelfTest PRIVATE /W4 /w44265 /WX /w44061 /w44062 )
+		STRING(REGEX REPLACE "/W[0-9]" "/W4" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) # override default warning level
+        target_compile_options( SelfTest PRIVATE /w44265 /w44061 /w44062 )
+        if (CATCH_ENABLE_WERROR)
+            target_compile_options( SelfTest PRIVATE /WX)
+        endif()
+        # Force MSVC to consider everything as encoded in utf-8
+        target_compile_options( SelfTest PRIVATE /utf-8 )
     endif()
 
 
     # configure unit tests via CTest
-    enable_testing()
+    include(CTest)
     add_test(NAME RunTests COMMAND $<TARGET_FILE:SelfTest>)
 
-    add_test(NAME ListTests COMMAND $<TARGET_FILE:SelfTest> --list-tests)
-    set_tests_properties(ListTests PROPERTIES PASS_REGULAR_EXPRESSION "[0-9]+ test cases")
+    add_test(NAME ListTests COMMAND $<TARGET_FILE:SelfTest> --list-tests --verbosity high)
+    set_tests_properties(ListTests PROPERTIES 
+        PASS_REGULAR_EXPRESSION "[0-9]+ test cases"
+        FAIL_REGULAR_EXPRESSION "Hidden Test"
+    )
 
     add_test(NAME ListTags COMMAND $<TARGET_FILE:SelfTest> --list-tags)
-    set_tests_properties(ListTags PROPERTIES PASS_REGULAR_EXPRESSION "[0-9]+ tags")
+    set_tests_properties(ListTags PROPERTIES 
+        PASS_REGULAR_EXPRESSION "[0-9]+ tags" 
+        FAIL_REGULAR_EXPRESSION "[.]")
+
+    add_test(NAME ListReporters COMMAND $<TARGET_FILE:SelfTest> --list-reporters)
+    set_tests_properties(ListReporters PROPERTIES PASS_REGULAR_EXPRESSION "Available reporters:")
+
+    add_test(NAME ListTestNamesOnly COMMAND $<TARGET_FILE:SelfTest> --list-test-names-only)
+    set_tests_properties(ListTestNamesOnly PROPERTIES 
+        PASS_REGULAR_EXPRESSION "Regex string matcher"
+        FAIL_REGULAR_EXPRESSION "Hidden Test")
+
+    add_test(NAME NoAssertions COMMAND $<TARGET_FILE:SelfTest> -w NoAssertions)
+    set_tests_properties(NoAssertions PROPERTIES PASS_REGULAR_EXPRESSION "No assertions in test case")
+
+    add_test(NAME NoTest COMMAND $<TARGET_FILE:SelfTest> -w NoTests "___nonexistent_test___")
+    set_tests_properties(NoTest PROPERTIES PASS_REGULAR_EXPRESSION "No test cases matched")
 
     # AppVeyor has a Python 2.7 in path, but doesn't have .py files as autorunnable
     add_test(NAME ApprovalTests COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/approvalTests.py $<TARGET_FILE:SelfTest>)
     set_tests_properties(ApprovalTests PROPERTIES FAIL_REGULAR_EXPRESSION "Results differed")
-    
-    if (USE_VALGRIND)
+
+    if (CATCH_USE_VALGRIND)
         add_test(NAME ValgrindRunTests COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:SelfTest>)
-        add_test(NAME ValgrindListTests COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:SelfTest> --list-tests)
+        add_test(NAME ValgrindListTests COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:SelfTest> --list-tests --verbosity high)
         set_tests_properties(ValgrindListTests PROPERTIES PASS_REGULAR_EXPRESSION "definitely lost: 0 bytes in 0 blocks")
         add_test(NAME ValgrindListTags COMMAND valgrind --leak-check=full --error-exitcode=1 $<TARGET_FILE:SelfTest> --list-tags)
         set_tests_properties(ValgrindListTags PROPERTIES PASS_REGULAR_EXPRESSION "definitely lost: 0 bytes in 0 blocks")
     endif()
-    
+
 endif() # !NO_SELFTEST
 
 
-if(BUILD_EXAMPLES)
+if(CATCH_BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
+install(DIRECTORY "single_include/" DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/catch")
 
-install(DIRECTORY "single_include/" DESTINATION "include/catch")
+install(DIRECTORY docs/ DESTINATION "${CMAKE_INSTALL_DOCDIR}")
 
 ## Provide some pkg-config integration
 # Don't bother on Windows
 if(NOT WIN32 OR NOT CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
 
     set(PKGCONFIG_INSTALL_DIR
-        "${CMAKE_INSTALL_PREFIX}/share/pkgconfig"
+        "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig"
         CACHE PATH "Path where catch.pc is installed"
     )
 
@@ -359,3 +417,38 @@ if(NOT WIN32 OR NOT CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/catch.pc DESTINATION ${PKGCONFIG_INSTALL_DIR})
 
 endif()
+
+# add catch as a 'linkable' target
+add_library(Catch INTERFACE)
+
+# depend on some obvious c++11 features so the dependency is transitively added dependants
+target_compile_features(Catch INTERFACE cxx_auto_type cxx_constexpr cxx_noexcept)
+
+target_include_directories(Catch
+	INTERFACE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/single_include>
+		$<INSTALL_INTERFACE:include/catch>
+		$<INSTALL_INTERFACE:include>)
+
+# provide a namespaced alias for clients to 'link' against if catch is included as a sub-project
+add_library(Catch2::Catch ALIAS Catch)
+
+set(CATCH_CMAKE_CONFIG_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/Catch2")
+
+# create and install an export set for catch target as Catch2::Catch
+install(TARGETS Catch EXPORT Catch2Config DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(EXPORT Catch2Config
+	NAMESPACE Catch2::
+	DESTINATION ${CATCH_CMAKE_CONFIG_DESTINATION})
+
+# install Catch2ConfigVersion.cmake file to handle versions in find_package
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+	"${CMAKE_CURRENT_BINARY_DIR}/Catch2ConfigVersion.cmake"
+	COMPATIBILITY SameMajorVersion)
+
+install(FILES
+	"${CMAKE_CURRENT_BINARY_DIR}/Catch2ConfigVersion.cmake"
+	DESTINATION ${CATCH_CMAKE_CONFIG_DESTINATION})

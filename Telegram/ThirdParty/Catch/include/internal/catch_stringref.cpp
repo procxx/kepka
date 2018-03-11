@@ -15,6 +15,13 @@
 
 #include <ostream>
 #include <cstring>
+#include <cstdint>
+
+namespace {
+    const uint32_t byte_2_lead = 0xC0;
+    const uint32_t byte_3_lead = 0xE0;
+    const uint32_t byte_4_lead = 0xF0;
+}
 
 namespace Catch {
     StringRef::StringRef( char const* rawChars ) noexcept
@@ -36,7 +43,7 @@ namespace Catch {
            const_cast<StringRef*>( this )->takeOwnership();
         return m_start;
     }
-    auto StringRef::data() const noexcept -> char const* {
+    auto StringRef::currentData() const noexcept -> char const* {
         return m_start;
     }
 
@@ -79,13 +86,12 @@ namespace Catch {
         // Make adjustments for uft encodings
         for( size_type i=0; i < m_size; ++i ) {
             char c = m_start[i];
-            if( ( c & 0b11000000 ) == 0b11000000 ) {
-                if( ( c & 0b11100000 ) == 0b11000000 )
+            if( ( c & byte_2_lead ) == byte_2_lead ) {
+                noChars--;
+                if (( c & byte_3_lead ) == byte_3_lead )
                     noChars--;
-                else if( ( c & 0b11110000 ) == 0b11100000 )
-                    noChars-=2;
-                else if( ( c & 0b11111000 ) == 0b11110000 )
-                    noChars-=3;
+                if( ( c & byte_4_lead ) == byte_4_lead )
+                    noChars--;
             }
         }
         return noChars;
@@ -106,7 +112,12 @@ namespace Catch {
     }
 
     auto operator << ( std::ostream& os, StringRef const& str ) -> std::ostream& {
-        return os << str.c_str();
+        return os.write(str.currentData(), str.size());
+    }
+
+    auto operator+=( std::string& lhs, StringRef const& rhs ) -> std::string& {
+        lhs.append(rhs.currentData(), rhs.size());
+        return lhs;
     }
 
 } // namespace Catch

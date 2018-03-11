@@ -13,6 +13,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <string>
+#include "catch_compiler_capabilities.h"
 #include "catch_stream.h"
 
 #ifdef __OBJC__
@@ -57,25 +58,43 @@ namespace Catch {
             static const bool value = decltype(test<std::ostream, const T&>(0))::value;
         };
 
+        template<typename E>
+        std::string convertUnknownEnumToString( E e );
+
+        template<typename T>
+        typename std::enable_if<!std::is_enum<T>::value, std::string>::type convertUnstreamable( T const& value ) {
+#if !defined(CATCH_CONFIG_FALLBACK_STRINGIFIER)
+            (void)value;
+            return Detail::unprintableString;
+#else
+            return CATCH_CONFIG_FALLBACK_STRINGIFIER(value);
+#endif
+        }
+        template<typename T>
+        typename std::enable_if<std::is_enum<T>::value, std::string>::type convertUnstreamable( T const& value ) {
+            return convertUnknownEnumToString( value );
+        }
+
     } // namespace Detail
 
+
     // If we decide for C++14, change these to enable_if_ts
-    template <typename T>
+    template <typename T, typename = void>
     struct StringMaker {
         template <typename Fake = T>
         static
         typename std::enable_if<::Catch::Detail::IsStreamInsertable<Fake>::value, std::string>::type
-            convert(const Fake& t) {
+            convert(const Fake& value) {
                 ReusableStringStream rss;
-                rss << t;
+                rss << value;
                 return rss.str();
         }
 
         template <typename Fake = T>
         static
         typename std::enable_if<!::Catch::Detail::IsStreamInsertable<Fake>::value, std::string>::type
-            convert(const Fake&) {
-                return Detail::unprintableString;
+            convert( const Fake& value ) {
+                return Detail::convertUnstreamable( value );
         }
     };
 
@@ -88,8 +107,12 @@ namespace Catch {
             return ::Catch::StringMaker<typename std::remove_cv<typename std::remove_reference<T>::type>::type>::convert(e);
         }
 
-    } // namespace Detail
+        template<typename E>
+        std::string convertUnknownEnumToString( E e ) {
+            return ::Catch::Detail::stringify(static_cast<typename std::underlying_type<E>::type>(e));
+        }
 
+    } // namespace Detail
 
     // Some predefined specializations
 
@@ -97,10 +120,12 @@ namespace Catch {
     struct StringMaker<std::string> {
         static std::string convert(const std::string& str);
     };
+#ifdef CATCH_CONFIG_WCHAR
     template<>
     struct StringMaker<std::wstring> {
         static std::string convert(const std::wstring& wstr);
     };
+#endif
 
     template<>
     struct StringMaker<char const *> {
@@ -110,6 +135,7 @@ namespace Catch {
     struct StringMaker<char *> {
         static std::string convert(char * str);
     };
+#ifdef CATCH_CONFIG_WCHAR
     template<>
     struct StringMaker<wchar_t const *> {
         static std::string convert(wchar_t const * str);
@@ -118,6 +144,7 @@ namespace Catch {
     struct StringMaker<wchar_t *> {
         static std::string convert(wchar_t * str);
     };
+#endif
 
     template<int SZ>
     struct StringMaker<char[SZ]> {
@@ -233,20 +260,6 @@ namespace Catch {
         }
     }
 
-    template<typename T, typename Allocator>
-    struct StringMaker<std::vector<T, Allocator> > {
-        static std::string convert( std::vector<T,Allocator> const& v ) {
-            return ::Catch::Detail::rangeToString( v.begin(), v.end() );
-        }
-    };
-
-    template<typename T>
-    struct EnumStringMaker {
-        static std::string convert(const T& t) {
-            return ::Catch::Detail::stringify(static_cast<typename std::underlying_type<T>::type>(t));
-        }
-    };
-
 #ifdef __OBJC__
     template<>
     struct StringMaker<NSString*> {
@@ -344,6 +357,61 @@ namespace Catch {
 }
 #endif // CATCH_CONFIG_ENABLE_TUPLE_STRINGMAKER
 
+namespace Catch {
+    struct not_this_one {}; // Tag type for detecting which begin/ end are being selected
+
+    // Import begin/ end from std here so they are considered alongside the fallback (...) overloads in this namespace
+    using std::begin;
+    using std::end;
+
+    not_this_one begin( ... );
+    not_this_one end( ... );
+
+    template <typename T>
+    struct is_range {
+        static const bool value =
+            !std::is_same<decltype(begin(std::declval<T>())), not_this_one>::value &&
+            !std::is_same<decltype(end(std::declval<T>())), not_this_one>::value;
+    };
+
+    template<typename Range>
+    std::string rangeToString( Range const& range ) {
+        return ::Catch::Detail::rangeToString( begin( range ), end( range ) );
+    }
+
+    // Handle vector<bool> specially
+    template<typename Allocator>
+    std::string rangeToString( std::vector<bool, Allocator> const& v ) {
+        ReusableStringStream rss;
+        rss << "{ ";
+        bool first = true;
+        for( bool b : v ) {
+            if( first )
+                first = false;
+            else
+                rss << ", ";
+            rss << ::Catch::Detail::stringify( b );
+        }
+        rss << " }";
+        return rss.str();
+    }
+
+    template<typename R>
+    struct StringMaker<R, typename std::enable_if<is_range<R>::value && !::Catch::Detail::IsStreamInsertable<R>::value>::type> {
+        static std::string convert( R const& range ) {
+            return rangeToString( range );
+        }
+    };
+
+    template <typename T, int SZ>
+    struct StringMaker<T[SZ]> {
+        static std::string convert(T const(&arr)[SZ]) {
+            return rangeToString(arr);
+        }
+    };
+
+
+} // namespace Catch
 
 // Separate std::chrono::duration specialization
 #if defined(CATCH_CONFIG_ENABLE_CHRONO_STRINGMAKER)

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuitesloose text artifact
 >
-  <testsuite name="<exe-name>" errors="15" failures="92" tests="952" hostname="tbd" time="{duration}" timestamp="{iso8601-timestamp}">
+  <testsuite name="<exe-name>" errors="17" failures="105" tests="1022" hostname="tbd" time="{duration}" timestamp="{iso8601-timestamp}">
     <testcase classname="<exe-name>.global" name="# A test name that starts with a #" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="#1005: Comparing pointer to int and long (NULL can be either on various systems)" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="#1027" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="#1147" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="#1175 - Hidden Test" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="#748 - captures with unexpected exceptions/outside assertions" time="{duration}">
       <error type="TEST_CASE">
 expected exception
@@ -276,9 +278,11 @@ Message.tests.cpp:<line number>
     <testcase classname="<exe-name>.global" name="Floating point matchers: double/Margin" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Floating point matchers: double/ULPs" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Floating point matchers: double/Composed" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="Floating point matchers: double/Constructor validation" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Floating point matchers: float/Margin" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Floating point matchers: float/ULPs" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Floating point matchers: float/Composed" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="Floating point matchers: float/Constructor validation" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Greater-than inequalities with different epsilons" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="INFO and WARN do not abort tests" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="INFO gets logged on failure" time="{duration}">
@@ -501,7 +505,7 @@ Matchers.tests.cpp:<line number>
       </failure>
     </testcase>
     <testcase classname="<exe-name>.global" name="SUCCEED counts as a test pass" time="{duration}"/>
-    <testcase classname="<exe-name>.global" name="SUCCESS does not require an argument" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="SUCCEED does not require an argument" time="{duration}"/>
     <testcase classname="<exe-name>.Fixture" name="Scenario: BDD tests requiring Fixtures to provide commonly-accessed data or methods/Given: No operations precede me" time="{duration}"/>
     <testcase classname="<exe-name>.Fixture" name="Scenario: BDD tests requiring Fixtures to provide commonly-accessed data or methods/Given: No operations precede me/When: We get the count/Then: Subsequently values are higher" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Scenario: Do that thing with the thing/Given: This stuff exists/When: I do this/Then: it should do this" time="{duration}"/>
@@ -517,6 +521,7 @@ A string sent directly to stdout
       </system-out>
       <system-err>
 A string sent directly to stderr
+A string sent to stderr via clog
       </system-err>
     </testcase>
     <testcase classname="<exe-name>.global" name="Some simple comparisons between doubles" time="{duration}"/>
@@ -534,15 +539,14 @@ Matchers.tests.cpp:<line number>
 Matchers.tests.cpp:<line number>
       </failure>
     </testcase>
+    <testcase classname="<exe-name>.global" name="Static arrays are convertible to string/Single item" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="Static arrays are convertible to string/Multiple" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="Static arrays are convertible to string/Non-trivial inner items" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="String matchers" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/Empty string" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/From string literal" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/From string literal/c_str() does not cause copy" time="{duration}"/>
-    <testcase classname="<exe-name>.global" name="StringRef/From sub-string" time="{duration}">
-      <failure message="false" type="REQUIRE">
-String.tests.cpp:<line number>
-      </failure>
-    </testcase>
+    <testcase classname="<exe-name>.global" name="StringRef/From sub-string" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/Substrings/zero-based substring" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/Substrings/c_str() causes copy" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/Substrings/non-zero-based substring" time="{duration}"/>
@@ -555,6 +559,7 @@ String.tests.cpp:<line number>
     <testcase classname="<exe-name>.global" name="StringRef/to std::string/implicitly constructed" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/to std::string/explicitly constructed" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="StringRef/to std::string/assigned" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="StringRef/Counting utf-8 codepoints" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Stringifying std::chrono::duration helpers" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Stringifying std::chrono::duration with weird ratios" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Stringifying std::chrono::time_point&lt;system_clock>" time="{duration}"/>
@@ -576,6 +581,12 @@ Misc.tests.cpp:<line number>
     <testcase classname="<exe-name>.global" name="Test enum bit values" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="The NO_FAIL macro reports a failure but does not fail the test" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="This test 'should' fail but doesn't" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="Thrown string literals are translated" time="{duration}">
+      <error type="TEST_CASE">
+For some reason someone is throwing a string literal!
+Exception.tests.cpp:<line number>
+      </error>
+    </testcase>
     <testcase classname="<exe-name>.global" name="Tracker" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Tracker/successfully close one section" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Tracker/fail one section" time="{duration}"/>
@@ -605,6 +616,7 @@ Exception.tests.cpp:<line number>
     <testcase classname="<exe-name>.global" name="Vector matchers/Contains (vector)" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Vector matchers/Contains (element), composed" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Vector matchers/Equals" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="Vector matchers/UnorderedEquals" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="Vector matchers that fail/Contains (element)" time="{duration}">
       <failure message="{ 1, 2, 3 } Contains: -1" type="CHECK_THAT">
 Matchers.tests.cpp:<line number>
@@ -632,6 +644,20 @@ Matchers.tests.cpp:<line number>
 Matchers.tests.cpp:<line number>
       </failure>
       <failure message="{ 1, 2, 3 } Equals: {  }" type="CHECK_THAT">
+Matchers.tests.cpp:<line number>
+      </failure>
+    </testcase>
+    <testcase classname="<exe-name>.global" name="Vector matchers that fail/UnorderedEquals" time="{duration}">
+      <failure message="{ 1, 2, 3 } UnorderedEquals: {  }" type="CHECK_THAT">
+Matchers.tests.cpp:<line number>
+      </failure>
+      <failure message="{  } UnorderedEquals: { 1, 2, 3 }" type="CHECK_THAT">
+Matchers.tests.cpp:<line number>
+      </failure>
+      <failure message="{ 1, 3 } UnorderedEquals: { 1, 2, 3 }" type="CHECK_THAT">
+Matchers.tests.cpp:<line number>
+      </failure>
+      <failure message="{ 3, 1 } UnorderedEquals: { 1, 2, 3 }" type="CHECK_THAT">
 Matchers.tests.cpp:<line number>
       </failure>
     </testcase>
@@ -680,6 +706,7 @@ Exception.tests.cpp:<line number>
     <testcase classname="<exe-name>.global" name="XmlEncode/string with quotes" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="XmlEncode/string with control char (1)" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="XmlEncode/string with control char (x7F)" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="array&lt;int, N> -> toString" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="atomic if" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="boolean member" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="checkedElse" time="{duration}"/>
@@ -781,31 +808,40 @@ i := 7
 Message.tests.cpp:<line number>
       </failure>
     </testcase>
+    <testcase classname="<exe-name>.global" name="std::map is convertible string/empty" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="std::map is convertible string/single item" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="std::map is convertible string/several items" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="std::pair&lt;int,const std::string> -> toString" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="std::pair&lt;int,std::string> -> toString" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="std::set is convertible string/empty" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="std::set is convertible string/single item" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="std::set is convertible string/several items" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="std::vector&lt;std::pair&lt;std::string,int> > -> toString" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="string literals of different sizes can be compared" time="{duration}">
       <failure message="&quot;first&quot; == &quot;second&quot;" type="REQUIRE">
 Tricky.tests.cpp:<line number>
       </failure>
     </testcase>
+    <testcase classname="<exe-name>.global" name="stringify ranges" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="stringify( has_maker )" time="{duration}"/>
-    <testcase classname="<exe-name>.global" name="stringify( has_maker_and_toString )" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="stringify( has_maker_and_operator )" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="stringify( has_neither )" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="stringify( has_operator )" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="stringify( vectors&lt;has_maker> )" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="stringify( vectors&lt;has_maker_and_operator> )" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="stringify( vectors&lt;has_operator> )" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="thrown std::strings are translated" time="{duration}">
+      <error type="TEST_CASE">
+Why would you throw a std::string?
+Exception.tests.cpp:<line number>
+      </error>
+    </testcase>
     <testcase classname="<exe-name>.global" name="toString on const wchar_t const pointer returns the string contents" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="toString on const wchar_t pointer returns the string contents" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="toString on wchar_t const pointer returns the string contents" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="toString on wchar_t returns the string contents" time="{duration}"/>
-    <testcase classname="<exe-name>.global" name="toString( vectors&lt;has_maker )" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="toString(enum class w/operator&lt;&lt;)" time="{duration}"/>
-    <testcase classname="<exe-name>.global" name="toString(enum class)" time="{duration}">
-      <failure message="&quot;{?}&quot; == &quot;0&quot;" type="CHECK">
-EnumToString.tests.cpp:<line number>
-      </failure>
-      <failure message="&quot;{?}&quot; == &quot;1&quot;" type="CHECK">
-EnumToString.tests.cpp:<line number>
-      </failure>
-    </testcase>
+    <testcase classname="<exe-name>.global" name="toString(enum class)" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="toString(enum w/operator&lt;&lt;)" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="toString(enum)" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="tuple&lt;>" time="{duration}"/>
@@ -815,6 +851,7 @@ EnumToString.tests.cpp:<line number>
     <testcase classname="<exe-name>.global" name="tuple&lt;string,string>" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="tuple&lt;tuple&lt;int>,tuple&lt;>,float>" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="vec&lt;vec&lt;string,alloc>> -> toString" time="{duration}"/>
+    <testcase classname="<exe-name>.global" name="vector&lt;bool> -> toString" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="vector&lt;int,allocator> -> toString" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="vector&lt;int> -> toString" time="{duration}"/>
     <testcase classname="<exe-name>.global" name="vector&lt;string> -> toString" time="{duration}"/>
@@ -833,6 +870,7 @@ Message from section two
     </system-out>
     <system-err>
 A string sent directly to stderr
+A string sent to stderr via clog
     </system-err>
   </testsuite>
 </testsuites>
