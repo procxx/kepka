@@ -14,16 +14,21 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <catch/catch.hpp>
+#include <catch/catch.hpp> // for AssertionHandler, StringRef, CHECK, CHECK...
 
-#include <gsl/multi_span>
+#include <gsl/gsl_byte>   // for byte
+#include <gsl/gsl_util>   // for narrow_cast
+#include <gsl/multi_span> // for strided_span, index, multi_span, strided_...
 
-#include <iostream>
-#include <list>
-#include <map>
-#include <memory>
-#include <string>
-#include <vector>
+#include <iostream>    // for size_t
+#include <iterator>    // for begin, end
+#include <numeric>     // for iota
+#include <type_traits> // for integral_constant<>::value, is_convertible
+#include <vector>      // for vector
+
+namespace gsl {
+struct fail_fast;
+}  // namespace gsl
 
 using namespace std;
 using namespace gsl;
@@ -43,8 +48,8 @@ TEST_CASE("span_section_test")
     int a[30][4][5];
 
     const auto av = as_multi_span(a);
-    const auto sub = av.section({15, 0, 0}, gsl::index<3>{2, 2, 2});
-    const auto subsub = sub.section({1, 0, 0}, gsl::index<3>{1, 1, 1});
+    const auto sub = av.section({15, 0, 0}, gsl::multi_span_index<3>{2, 2, 2});
+    const auto subsub = sub.section({1, 0, 0}, gsl::multi_span_index<3>{1, 1, 1});
     (void) subsub;
 }
 
@@ -74,18 +79,18 @@ TEST_CASE("strided_span_constructors")
         const int carr[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
         strided_span<int, 1> sav1{arr, {{9}, {1}}}; // T -> T
-        CHECK(sav1.bounds().index_bounds() == index<1>{9});
+        CHECK(sav1.bounds().index_bounds() == multi_span_index<1>{9});
         CHECK(sav1.bounds().stride() == 1);
         CHECK((sav1[0] == 1 && sav1[8] == 9));
 
         strided_span<const int, 1> sav2{carr, {{4}, {2}}}; // const T -> const T
-        CHECK(sav2.bounds().index_bounds() == index<1>{4});
-        CHECK(sav2.bounds().strides() == index<1>{2});
+        CHECK(sav2.bounds().index_bounds() == multi_span_index<1>{4});
+        CHECK(sav2.bounds().strides() == multi_span_index<1>{2});
         CHECK((sav2[0] == 1 && sav2[3] == 7));
 
         strided_span<int, 2> sav3{arr, {{2, 2}, {6, 2}}}; // T -> const T
-        CHECK((sav3.bounds().index_bounds() == index<2>{2, 2}));
-        CHECK((sav3.bounds().strides() == index<2>{6, 2}));
+        CHECK((sav3.bounds().index_bounds() == multi_span_index<2>{2, 2}));
+        CHECK((sav3.bounds().strides() == multi_span_index<2>{6, 2}));
         CHECK((sav3[{0, 0}] == 1 && sav3[{0, 1}] == 3 && sav3[{1, 0}] == 7));
     }
 
@@ -98,8 +103,8 @@ TEST_CASE("strided_span_constructors")
             const multi_span<int> src = arr;
 
             strided_span<int, 1> sav{src, {2, 1}};
-            CHECK(sav.bounds().index_bounds() == index<1>{2});
-            CHECK(sav.bounds().strides() == index<1>{1});
+            CHECK(sav.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav[1] == 2);
 
 #if _MSC_VER > 1800
@@ -110,8 +115,8 @@ TEST_CASE("strided_span_constructors")
             strided_span<const int, 1> sav_c{multi_span<const int>{src},
                                              strided_bounds<1>{2, 1}};
 #endif
-            CHECK(sav_c.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_c.bounds().strides() == index<1>{1});
+            CHECK(sav_c.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_c.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_c[1] == 2);
 
 #if _MSC_VER > 1800
@@ -120,8 +125,8 @@ TEST_CASE("strided_span_constructors")
             strided_span<volatile int, 1> sav_v{multi_span<volatile int>{src},
                                                 strided_bounds<1>{2, 1}};
 #endif
-            CHECK(sav_v.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_v.bounds().strides() == index<1>{1});
+            CHECK(sav_v.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_v.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_v[1] == 2);
 
 #if _MSC_VER > 1800
@@ -130,8 +135,8 @@ TEST_CASE("strided_span_constructors")
             strided_span<const volatile int, 1> sav_cv{multi_span<const volatile int>{src},
                                                        strided_bounds<1>{2, 1}};
 #endif
-            CHECK(sav_cv.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_cv.bounds().strides() == index<1>{1});
+            CHECK(sav_cv.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_cv.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_cv[1] == 2);
         }
 
@@ -140,8 +145,8 @@ TEST_CASE("strided_span_constructors")
             const multi_span<const int> src{arr};
 
             strided_span<const int, 1> sav_c{src, {2, 1}};
-            CHECK(sav_c.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_c.bounds().strides() == index<1>{1});
+            CHECK(sav_c.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_c.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_c[1] == 2);
 
 #if _MSC_VER > 1800
@@ -151,8 +156,8 @@ TEST_CASE("strided_span_constructors")
                                                        strided_bounds<1>{2, 1}};
 #endif
 
-            CHECK(sav_cv.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_cv.bounds().strides() == index<1>{1});
+            CHECK(sav_cv.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_cv.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_cv[1] == 2);
         }
 
@@ -161,8 +166,8 @@ TEST_CASE("strided_span_constructors")
             const multi_span<volatile int> src{arr};
 
             strided_span<volatile int, 1> sav_v{src, {2, 1}};
-            CHECK(sav_v.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_v.bounds().strides() == index<1>{1});
+            CHECK(sav_v.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_v.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_v[1] == 2);
 
 #if _MSC_VER > 1800
@@ -171,8 +176,8 @@ TEST_CASE("strided_span_constructors")
             strided_span<const volatile int, 1> sav_cv{multi_span<const volatile int>{src},
                                                        strided_bounds<1>{2, 1}};
 #endif
-            CHECK(sav_cv.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_cv.bounds().strides() == index<1>{1});
+            CHECK(sav_cv.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_cv.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_cv[1] == 2);
         }
 
@@ -181,8 +186,8 @@ TEST_CASE("strided_span_constructors")
             const multi_span<const volatile int> src{arr};
 
             strided_span<const volatile int, 1> sav_cv{src, {2, 1}};
-            CHECK(sav_cv.bounds().index_bounds() == index<1>{2});
-            CHECK(sav_cv.bounds().strides() == index<1>{1});
+            CHECK(sav_cv.bounds().index_bounds() == multi_span_index<1>{2});
+            CHECK(sav_cv.bounds().strides() == multi_span_index<1>{1});
             CHECK(sav_cv[1] == 2);
         }
     }
@@ -201,7 +206,7 @@ TEST_CASE("strided_span_constructors")
 
         const strided_span<int, 1> src{arr, {2, 1}};
         strided_span<const int, 1> sav{src};
-        CHECK(sav.bounds().index_bounds() == index<1>{2});
+        CHECK(sav.bounds().index_bounds() == multi_span_index<1>{2});
         CHECK(sav.bounds().stride() == 1);
         CHECK(sav[1] == 5);
 
@@ -216,15 +221,15 @@ TEST_CASE("strided_span_constructors")
         const strided_span<int, 1> src1{arr1, {2, 1}};
         strided_span<int, 1> sav1{src1};
 
-        CHECK(sav1.bounds().index_bounds() == index<1>{2});
+        CHECK(sav1.bounds().index_bounds() == multi_span_index<1>{2});
         CHECK(sav1.bounds().stride() == 1);
         CHECK(sav1[0] == 3);
 
         int arr2[6] = {1, 2, 3, 4, 5, 6};
         const strided_span<const int, 2> src2{arr2, {{3, 2}, {2, 1}}};
         strided_span<const int, 2> sav2{src2};
-        CHECK((sav2.bounds().index_bounds() == index<2>{3, 2}));
-        CHECK((sav2.bounds().strides() == index<2>{2, 1}));
+        CHECK((sav2.bounds().index_bounds() == multi_span_index<2>{3, 2}));
+        CHECK((sav2.bounds().strides() == multi_span_index<2>{2, 1}));
         CHECK((sav2[{0, 0}] == 1 && sav2[{2, 0}] == 5));
     }
 
@@ -236,8 +241,8 @@ TEST_CASE("strided_span_constructors")
         const strided_span<int, 1> src{arr1, {{2}, {1}}};
         strided_span<const int, 1> sav{arr2, {{3}, {2}}};
         strided_span<const int, 1>& sav_ref = (sav = src);
-        CHECK(sav.bounds().index_bounds() == index<1>{2});
-        CHECK(sav.bounds().strides() == index<1>{1});
+        CHECK(sav.bounds().index_bounds() == multi_span_index<1>{2});
+        CHECK(sav.bounds().strides() == multi_span_index<1>{1});
         CHECK(sav[0] == 1);
         CHECK(&sav_ref == &sav);
     }
@@ -249,8 +254,8 @@ TEST_CASE("strided_span_constructors")
         const strided_span<int, 1> src1{arr1, {2, 1}};
         strided_span<int, 1> sav1{arr1b, {1, 1}};
         strided_span<int, 1>& sav1_ref = (sav1 = src1);
-        CHECK(sav1.bounds().index_bounds() == index<1>{2});
-        CHECK(sav1.bounds().strides() == index<1>{1});
+        CHECK(sav1.bounds().index_bounds() == multi_span_index<1>{2});
+        CHECK(sav1.bounds().strides() == multi_span_index<1>{1});
         CHECK(sav1[0] == 3);
         CHECK(&sav1_ref == &sav1);
 
@@ -259,8 +264,8 @@ TEST_CASE("strided_span_constructors")
         const strided_span<const int, 2> src2{arr2, {{3, 2}, {2, 1}}};
         strided_span<const int, 2> sav2{arr2b, {{1, 1}, {1, 1}}};
         strided_span<const int, 2>& sav2_ref = (sav2 = src2);
-        CHECK((sav2.bounds().index_bounds() == index<2>{3, 2}));
-        CHECK((sav2.bounds().strides() == index<2>{2, 1}));
+        CHECK((sav2.bounds().index_bounds() == multi_span_index<2>{3, 2}));
+        CHECK((sav2.bounds().strides() == multi_span_index<2>{2, 1}));
         CHECK((sav2[{0, 0}] == 1 && sav2[{2, 0}] == 5));
         CHECK(&sav2_ref == &sav2);
     }
@@ -317,7 +322,7 @@ TEST_CASE("strided_span_column_major")
     // Section
     strided_span<int, 2> cm_sec = cm_sav.section({2, 1}, {3, 2});
 
-    CHECK((cm_sec.bounds().index_bounds() == index<2>{3, 2}));
+    CHECK((cm_sec.bounds().index_bounds() == multi_span_index<2>{3, 2}));
     CHECK((cm_sec[{0, 0}] == 8));
     CHECK((cm_sec[{0, 1}] == 9));
     CHECK((cm_sec[{1, 0}] == 11));
@@ -366,7 +371,7 @@ TEST_CASE("strided_span_bounds")
     {
         // strided array ctor with matching strided bounds
         strided_span<int, 1> sav{arr, {4, 1}};
-        CHECK(sav.bounds().index_bounds() == index<1>{4});
+        CHECK(sav.bounds().index_bounds() == multi_span_index<1>{4});
         CHECK(sav[3] == 3);
         CHECK_THROWS_AS(sav[4], fail_fast);
     }
@@ -374,7 +379,7 @@ TEST_CASE("strided_span_bounds")
     {
         // strided array ctor with smaller strided bounds
         strided_span<int, 1> sav{arr, {2, 1}};
-        CHECK(sav.bounds().index_bounds() == index<1>{2});
+        CHECK(sav.bounds().index_bounds() == multi_span_index<1>{2});
         CHECK(sav[1] == 1);
         CHECK_THROWS_AS(sav[2], fail_fast);
     }
@@ -382,7 +387,7 @@ TEST_CASE("strided_span_bounds")
     {
         // strided array ctor with fitting irregular bounds
         strided_span<int, 1> sav{arr, {2, 3}};
-        CHECK(sav.bounds().index_bounds() == index<1>{2});
+        CHECK(sav.bounds().index_bounds() == multi_span_index<1>{2});
         CHECK(sav[0] == 0);
         CHECK(sav[1] == 3);
         CHECK_THROWS_AS(sav[2], fail_fast);
@@ -428,7 +433,7 @@ TEST_CASE("strided_span_bounds")
         strided_span<int, 2> sav7{av.as_multi_span(dim<2>(), dim<2>()),
                                   {{1, 1}, {1, 1}, {1, 1}}};
 
-        index<1> index{0, 1};
+        multi_span_index<1> index{0, 1};
         strided_span<int, 1> sav8{arr, {1, {1, 1}}};
         strided_span<int, 1> sav9{arr, {{1, 1}, {1, 1}}};
         strided_span<int, 1> sav10{av, {1, {1, 1}}};
@@ -543,7 +548,7 @@ TEST_CASE("empty_strided_spans")
         multi_span<int, 0> empty_av(nullptr);
         strided_span<int, 1> empty_sav{empty_av, {0, 1}};
 
-        CHECK(empty_sav.bounds().index_bounds() == index<1>{0});
+        CHECK(empty_sav.bounds().index_bounds() == multi_span_index<1>{0});
         CHECK_THROWS_AS(empty_sav[0], fail_fast);
         CHECK_THROWS_AS(empty_sav.begin()[0], fail_fast);
         CHECK_THROWS_AS(empty_sav.cbegin()[0], fail_fast);
@@ -557,7 +562,7 @@ TEST_CASE("empty_strided_spans")
     {
         strided_span<int, 1> empty_sav{nullptr, 0, {0, 1}};
 
-        CHECK(empty_sav.bounds().index_bounds() == index<1>{0});
+        CHECK(empty_sav.bounds().index_bounds() == multi_span_index<1>{0});
         CHECK_THROWS_AS(empty_sav[0], fail_fast);
         CHECK_THROWS_AS(empty_sav.begin()[0], fail_fast);
         CHECK_THROWS_AS(empty_sav.cbegin()[0], fail_fast);
@@ -577,7 +582,7 @@ void iterate_every_other_element(multi_span<int, dynamic_range> av)
 #if _MSC_VER > 1800
     auto bounds = strided_bounds<1>({length}, {2});
 #else
-    auto bounds = strided_bounds<1>(index<1>{length}, index<1>{2});
+    auto bounds = strided_bounds<1>(multi_span_index<1>{length}, multi_span_index<1>{2});
 #endif
     strided_span<int, 1> strided(&av.data()[1], av.size() - 1, bounds);
 
@@ -633,7 +638,7 @@ void iterate_second_slice(multi_span<int, dynamic_range, dynamic_range, dynamic_
     for (auto i = 0; i < section.extent<0>(); ++i) {
         for (auto j = 0; j < section.extent<1>(); ++j)
             for (auto k = 0; k < section.extent<2>(); ++k) {
-                auto idx = index<3>{i, j, k}; // avoid braces in the CHECK macro
+                auto idx = multi_span_index<3>{i, j, k}; // avoid braces in the CHECK macro
                 CHECK(section[idx] == expected[2 * i + 2 * j + k]);
             }
     }

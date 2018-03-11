@@ -14,13 +14,23 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <catch/catch.hpp>
+#include <catch/catch.hpp> // for AssertionHandler, StringRef, CHECK, TEST_...
 
-#include <gsl/gsl>
+#include <gsl/gsl_util> // for narrow, finally, narrow_cast, narrowing_e...
 
-#include <functional>
+#include <algorithm>   // for move
+#include <functional>  // for reference_wrapper, _Bind_helper<>::type
+#include <limits>      // for numeric_limits
+#include <stdint.h>    // for uint32_t, int32_t
+#include <type_traits> // for is_same
 
 using namespace gsl;
+
+TEST_CASE("sanity check for gsl::index typedef")
+{
+    static_assert(std::is_same<gsl::index, std::ptrdiff_t>::value,
+                  "gsl::index represents wrong arithmetic type");
+}
 
 void f(int& i) { i += 1; }
 
