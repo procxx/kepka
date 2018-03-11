@@ -28,7 +28,7 @@ Debian/Ubuntu:
 
 You most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscale`
 
-After that, go to the [next section](#Configuring-and-building).
+After that, go to the [next section](#configuring-and-building).
 
 Fedora:
 ```console
