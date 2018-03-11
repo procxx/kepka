@@ -6,6 +6,6 @@
 [subrepo]
 	remote = https://github.com/Microsoft/GSL.git
 	branch = master
-	commit = 1c95f9436eae69c9b9315911ef6aa210df7d1e31
-	parent = 0dde6bbc3b558644359e5ee49725e508babcea8b
+	commit = c9e423d7cf2afb88672e31f55e4b30c53be7aae3
+	parent = dde6ba57a8584fda72b205bd8aff8ce452bdc8de
 	cmdver = 0.3.1
