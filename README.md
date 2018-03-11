@@ -25,6 +25,11 @@ Debian/Ubuntu:
 ```console
 # apt-get install qtbase5-private-dev zlib1g-dev libopenal-dev libavcodec-dev libavresample-dev libswscale-dev libopenal-data libopenal1 libavutil-dev
 ```
+
+Fedora:
+```console
+# dnf install rpm-build rpmdevtools mock mock-rpmfusion-free
+```
 You most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscale`
 
 Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configuring.
