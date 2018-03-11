@@ -30,7 +30,38 @@ Fedora:
 ```console
 # dnf install rpm-build rpmdevtools mock mock-rpmfusion-free
 ```
-You most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscale`
+
+Add yourself to `mock` group (you must run this only for the first time after installing mock):
+```bash
+sudo usermod -a -G mock $(whoami)
+```
+
+You need to relogin to your system or run:
+```bash
+newgrp mock
+```
+
+Create RPM build base directories:
+```bash
+rpmdev-setuptree
+```
+
+Download sources:
+```bash
+spectool -g -R kepka.spec
+```
+
+Generate SRPM:
+```bash
+rpmbuild -bs kepka.spec
+```
+
+Start mock build sequence:
+```bash
+mock -r fedora-$(rpm -E %fedora)-$(uname -m)-rpmfusion_free --rebuild ~/rpmbuild/SRPMS/kepka*.src.rpm
+```
+
+After installing dependencies on your distro, you most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscale`
 
 Provide paths to OpenAL-soft and Qt5 in CMAKE_PREFIX_PATH variable when configuring.
 
