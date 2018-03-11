@@ -9,7 +9,7 @@
 
 Most test frameworks have a large collection of assertion macros to capture all possible conditional forms (```_EQUALS```, ```_NOTEQUALS```, ```_GREATER_THAN``` etc).
 
-Catch is different. Because it decomposes natural C-style conditional expressions most of these forms are reduced to one or two that you will use all the time. That said there are a rich set of auxilliary macros as well. We'll describe all of these here.
+Catch is different. Because it decomposes natural C-style conditional expressions most of these forms are reduced to one or two that you will use all the time. That said there are a rich set of auxiliary macros as well. We'll describe all of these here.
 
 Most of these macros come in two forms:
 
@@ -21,7 +21,7 @@ The ```CHECK``` family are equivalent but execution continues in the same test c
 * **REQUIRE(** _expression_ **)** and  
 * **CHECK(** _expression_ **)**
 
-Evaluates the expression and records the result. If an exception is thrown it is caught, reported, and counted as a failure. These are the macros you will use most of  the time
+Evaluates the expression and records the result. If an exception is thrown, it is caught, reported, and counted as a failure. These are the macros you will use most of the time.
 
 Examples:
 ```

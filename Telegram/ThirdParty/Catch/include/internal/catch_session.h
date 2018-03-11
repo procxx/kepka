@@ -25,12 +25,12 @@ namespace Catch {
         void showHelp() const;
         void libIdentify();
 
-        int applyCommandLine( int argc, char* argv[] );
+        int applyCommandLine( int argc, char const * const * argv );
 
         void useConfigData( ConfigData const& configData );
 
         int run( int argc, char* argv[] );
-    #if defined(WIN32) && defined(UNICODE)
+    #if defined(CATCH_CONFIG_WCHAR) && defined(WIN32) && defined(UNICODE)
         int run( int argc, wchar_t* const argv[] );
     #endif
         int run();

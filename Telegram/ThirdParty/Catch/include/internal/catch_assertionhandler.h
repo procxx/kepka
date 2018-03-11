@@ -8,17 +8,21 @@
 #ifndef TWOBLUECUBES_CATCH_ASSERTIONHANDLER_H_INCLUDED
 #define TWOBLUECUBES_CATCH_ASSERTIONHANDLER_H_INCLUDED
 
-#include "catch_decomposer.h"
 #include "catch_assertioninfo.h"
+#include "catch_decomposer.h"
+#include "catch_interfaces_capture.h"
 
 namespace Catch {
 
     struct TestFailureException{};
     struct AssertionResultData;
+    struct IResultCapture;
+    class RunContext;
 
     class LazyExpression {
         friend class AssertionHandler;
         friend struct AssertionStats;
+        friend class RunContext;
 
         ITransientExpression const* m_transientExpression = nullptr;
         bool m_isNegated;
@@ -32,11 +36,16 @@ namespace Catch {
         friend auto operator << ( std::ostream& os, LazyExpression const& lazyExpr ) -> std::ostream&;
     };
 
+    struct AssertionReaction {
+        bool shouldDebugBreak = false;
+        bool shouldThrow = false;
+    };
+
     class AssertionHandler {
         AssertionInfo m_assertionInfo;
-        bool m_shouldDebugBreak = false;
-        bool m_shouldThrow = false;
-        bool m_inExceptionGuard = false;
+        AssertionReaction m_reaction;
+        bool m_completed = false;
+        IResultCapture& m_resultCapture;
 
     public:
         AssertionHandler
@@ -44,26 +53,32 @@ namespace Catch {
                 SourceLineInfo const& lineInfo,
                 StringRef capturedExpression,
                 ResultDisposition::Flags resultDisposition );
-        ~AssertionHandler();
+        ~AssertionHandler() {
+            if ( !m_completed ) {
+                m_resultCapture.handleIncomplete( m_assertionInfo );
+            }
+        }
 
-        void handle( ITransientExpression const& expr );
 
         template<typename T>
-        void handle( ExprLhs<T> const& expr ) {
-            handle( expr.makeUnaryExpr() );
+        void handleExpr( ExprLhs<T> const& expr ) {
+            handleExpr( expr.makeUnaryExpr() );
         }
-        void handle( ResultWas::OfType resultType );
-        void handle( ResultWas::OfType resultType, StringRef const& message );
-        void handle( ResultWas::OfType resultType, ITransientExpression const* expr, bool negated );
-        void handle( AssertionResultData const& resultData, ITransientExpression const* expr );
+        void handleExpr( ITransientExpression const& expr );
 
-        auto shouldDebugBreak() const -> bool;
+        void handleMessage(ResultWas::OfType resultType, StringRef const& message);
+
+        void handleExceptionThrownAsExpected();
+        void handleUnexpectedExceptionNotThrown();
+        void handleExceptionNotThrownAsExpected();
+        void handleThrowingCallSkipped();
+        void handleUnexpectedInflightException();
+
+        void complete();
+        void setCompleted();
+
+        // query
         auto allowThrows() const -> bool;
-        void reactWithDebugBreak() const;
-        void reactWithoutDebugBreak() const;
-        void useActiveException();
-        void setExceptionGuard();
-        void unsetExceptionGuard();
     };
 
     void handleExceptionMatchExpr( AssertionHandler& handler, std::string const& str, StringRef matcherString );

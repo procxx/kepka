@@ -8,6 +8,7 @@
 
 #include "catch_message.h"
 #include "catch_interfaces_capture.h"
+#include "catch_uncaught_exceptions.h"
 
 namespace Catch {
 
@@ -50,10 +51,8 @@ namespace Catch {
     }
 
     ScopedMessage::~ScopedMessage() {
-        if ( !std::uncaught_exception() ){
+        if ( !uncaught_exceptions() ){
             getResultCapture().popScopedMessage(m_info);
         }
     }
-
-
 } // end namespace Catch

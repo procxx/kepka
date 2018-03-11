@@ -30,7 +30,7 @@ int main( int argc, char* argv[] ) {
 
 ## Amending the config
 
-If you still want Catch to process the command line, but you want to programatically tweak the config, you can do so in one of two ways:
+If you still want Catch to process the command line, but you want to programmatically tweak the config, you can do so in one of two ways:
 
 ```c++
 #define CATCH_CONFIG_RUNNER
@@ -81,6 +81,7 @@ int main( int argc, char* argv[] )
   int height = 0; // Some user variable you want to be able to set
   
   // Build a new parser on top of Catch's
+  using namespace Catch::clara;
   auto cli 
     = session.cli() // Get Catch's composite command line parser
     | Opt( height, "height" ) // bind variable to a new option, with a hint string
@@ -104,6 +105,20 @@ int main( int argc, char* argv[] )
 ```
 
 See the [Clara documentation](https://github.com/philsquared/Clara/blob/master/README.md) for more details.
+
+
+## Version detection
+
+Catch provides a triplet of macros providing the header's version, 
+
+* `CATCH_VERSION_MAJOR`
+* `CATCH_VERSION_MINOR`
+* `CATCH_VERSION_PATCH`
+
+these macros expand into a single number, that corresponds to the appropriate
+part of the version. As an example, given single header version v2.3.4,
+the macros would expand into `2`, `3`, and `4` respectively.
+
 
 ---
 

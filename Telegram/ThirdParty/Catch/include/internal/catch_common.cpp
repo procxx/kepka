@@ -15,10 +15,6 @@
 
 namespace Catch {
 
-    SourceLineInfo::SourceLineInfo( char const* _file, std::size_t _line ) noexcept
-    :   file( _file ),
-        line( _line )
-    {}
     bool SourceLineInfo::empty() const noexcept {
         return file[0] == '\0';
     }
@@ -37,9 +33,6 @@ namespace Catch {
 #endif
         return os;
     }
-
-    bool alwaysTrue() { return true; }
-    bool alwaysFalse() { return false; }
 
     std::string StreamEndStop::operator+() const {
         return std::string();

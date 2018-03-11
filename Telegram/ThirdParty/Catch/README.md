@@ -2,15 +2,16 @@
 ![catch logo](artwork/catch2-logo-small.png)
 
 [![Github Releases](https://img.shields.io/github/release/catchorg/catch2.svg)](https://github.com/catchorg/catch2/releases)
-[![Build Status](https://travis-ci.org/catchorg/Catch2.svg)](https://travis-ci.org/catchorg/Catch2)
-[![Build status](https://ci.appveyor.com/api/projects/status/hrtk60hv6tw6fght?svg=true)](https://ci.appveyor.com/project/catchorg/catch2)
-[![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/tB8z0G3kMAIZkIca)
+[![Build Status](https://travis-ci.org/catchorg/Catch2.svg?branch=master)](https://travis-ci.org/catchorg/Catch2)
+[![Build status](https://ci.appveyor.com/api/projects/status/github/catchorg/Catch2?svg=true)](https://ci.appveyor.com/project/catchorg/catch2)
+[![codecov](https://codecov.io/gh/catchorg/Catch2/branch/master/graph/badge.svg)](https://codecov.io/gh/catchorg/Catch2)
+[![Try online](https://img.shields.io/badge/try-online-blue.svg)](https://wandbox.org/permlink/vOtfjd7LKmcj4JqD)
 
-<a href="https://github.com/catchorg/Catch2/releases/download/v2.0.1/catch.hpp">The latest version of the single header can be downloaded directly using this link</a>
+<a href="https://github.com/catchorg/Catch2/releases/download/v2.2.0/catch.hpp">The latest version of the single header can be downloaded directly using this link</a>
 
 ## Catch2 is released!
 
-If you've been using an earlier version of Catch, please see the 
+If you've been using an earlier version of Catch, please see the
 Breaking Changes section of [the release notes](https://github.com/catchorg/Catch2/releases/tag/v2.0.1)
 before moving to Catch2. You might also like to read [this blog post](http://www.levelofindirection.com/journal/2017/11/3/catch2-released.html) for more details.
 

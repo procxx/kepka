@@ -7,6 +7,8 @@
 [Terminal colour](#terminal-colour)<br>
 [Console width](#console-width)<br>
 [stdout](#stdout)<br>
+[Fallback stringifier](#fallback-stringifier)<br>
+[Default reporter](#default-reporter)<br>
 [Other toggles](#other-toggles)<br>
 [Windows header clutter](#windows-header-clutter)<br>
 [Enabling stringification](#enabling-stringification)<br>
@@ -24,7 +26,7 @@ Although Catch is header only it still, internally, maintains a distinction betw
 
 # Reporter / Listener interfaces
 
-    CATCH_CONFIG_EXTERNAL_INTERFACES  // Brings in neccessary headers for Reporter/Listener implementation
+    CATCH_CONFIG_EXTERNAL_INTERFACES  // Brings in necessary headers for Reporter/Listener implementation
 
 Brings in various parts of Catch that are required for user defined Reporters and Listeners. This means that new Reporters and Listeners can be defined in this file as well as in the main file.
 
@@ -73,6 +75,40 @@ Catch does not use ```std::cout```, ```std::cerr``` and ```std::clog``` directly
 This can be useful on certain platforms that do not provide the standard iostreams, such as certain embedded systems.
 
 
+## Fallback stringifier
+
+By default Catch's stringification machinery falls back to a "{?}". To
+let projects reuse their own existing stringification machinery, this
+fallback can be overridden by defining `CATCH_CONFIG_FALLBACK_STRINGIFIER`
+to a name of a function that should perform the stringification instead.
+
+The provided function must return std::string and must accept any type
+(e.g. via overloading).
+
+_Note that if the provided function does not handle a type and this type
+requires to be stringified, the compilation will fail._
+
+
+## Default reporter
+
+Catch's default reporter can be changed by defining macro
+`CATCH_CONFIG_DEFAULT_REPORTER` to string literal naming the desired
+default reporter.
+
+This means that defining `CATCH_CONFIG_DEFAULT_REPORTER` to `"console"`
+is equivalent with the out-of-the-box experience.
+
+
+## C++17 toggles
+
+    CATCH_CONFIG_CPP17_UNCAUGHT_EXCEPTIONS  // Use std::uncaught_exceptions instead of std::uncaught_exception
+
+Catch contains basic compiler/standard detection and attempts to use
+some C++17 features whenever appropriate. This automatic detection
+can be manually overridden in both directions, that is, a feature
+can be enabled by defining the macro in the table above, and disabled
+by using `_NO_` in the macro, e.g. `CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS`.
+
 
 ## Other toggles
 
@@ -84,6 +120,7 @@ This can be useful on certain platforms that do not provide the standard iostrea
     CATCH_CONFIG_WINDOWS_CRTDBG             // Enable leak checking using Windows's CRT Debug Heap
     CATCH_CONFIG_DISABLE_STRINGIFICATION    // Disable stringifying the original expression
     CATCH_CONFIG_DISABLE                    // Disables assertions and test case registration
+    CATCH_CONFIG_WCHAR                      // Enables use of wchart_t
 
 Currently Catch enables `CATCH_CONFIG_WINDOWS_SEH` only when compiled with MSVC, because some versions of MinGW do not have the necessary Win32 API support.
 
@@ -91,12 +128,15 @@ Currently Catch enables `CATCH_CONFIG_WINDOWS_SEH` only when compiled with MSVC,
 
 `CATCH_CONFIG_WINDOWS_CRTDBG` is off by default. If enabled, Windows's CRT is used to check for memory leaks, and displays them after the tests finish running.
 
+`CATCH_CONFIG_WCHAR` is on by default, but can be disabled. Currently
+it is only used in support for DJGPP cross-compiler.
+
 These toggles can be disabled by using `_NO_` form of the toggle, e.g. `CATCH_CONFIG_NO_WINDOWS_SEH`.
 
 ### `CATCH_CONFIG_FAST_COMPILE`
 Defining this flag speeds up compilation of test files by ~20%, by making 2 changes:
 * The `-b` (`--break`) flag no longer makes Catch break into debugger in the same stack frame as the failed test, but rather in a stack frame *below*.
-* Non-exception family of macros ({`REQUIRE`,`CHECK`}{`_`,`_FALSE`, `_FALSE`}, no longer use local try-cache block. This disables exception translation, but should not lead to false negatives.
+* Non-exception family of macros ({`REQUIRE`,`CHECK`}{`_`,`_FALSE`, `_THAT`}, no longer use local try-catch block. This disables exception translation, but should not lead to false negatives.
 
 `CATCH_CONFIG_FAST_COMPILE` has to be either defined, or not defined, in all translation units that are linked into single test binary, or the behaviour of setting `-b` flag and throwing unexpected exceptions will be unpredictable.
 
