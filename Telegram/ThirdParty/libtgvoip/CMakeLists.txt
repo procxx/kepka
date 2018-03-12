@@ -93,7 +93,7 @@ add_library(tgvoip STATIC
 )
 
 if (WIN32)
-    target_compile_definitions(tgvoip PRIVATE -DNOMINMAX -D_USING_V110_SDK71_ -DTGVOIP_WINXP_COMPAT)
+    target_compile_definitions(tgvoip PRIVATE -DNOMINMAX -D_USING_V110_SDK71_ -DTGVOIP_WINXP_COMPAT -D_CRT_SECURE_NO_WARNINGS)
     target_sources(tgvoip PRIVATE
         os/windows/NetworkSocketWinsock.cpp
         os/windows/AudioInputWave.cpp
