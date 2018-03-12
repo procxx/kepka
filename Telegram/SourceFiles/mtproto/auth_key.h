@@ -66,7 +66,7 @@ public:
 	}
 
 	void write(QDataStream &to) const {
-		to.writeRawData(reinterpret_cast<const char*>(_key.data()), _key.size());
+		to.writeRawData(reinterpret_cast<const char*>(_key.data()), static_cast<int>(_key.size()));
 	}
 
 	bool equals(const std::shared_ptr<AuthKey> &other) const {

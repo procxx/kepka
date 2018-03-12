@@ -241,10 +241,10 @@ private:
 		return &ZeroRuntimeComposerMetadata;
 	}
 
-	void *_dataptrunsafe(int skip) const {
+	void *_dataptrunsafe(size_t skip) const {
 		return (char*)_data + skip;
 	}
-	void *_dataptr(int skip) const {
+	void *_dataptr(size_t skip) const {
 		return (skip >= sizeof(_meta())) ? _dataptrunsafe(skip) : nullptr;
 	}
 	const RuntimeComposerMetadata *&_meta() const {
