@@ -415,29 +415,29 @@ private:
 class Subscriber {
 protected:
 	template <typename EventType, typename Handler, typename Lambda>
-	int subscribe(base::Observable<EventType, Handler> &observable, Lambda &&handler) {
+	size_t subscribe(base::Observable<EventType, Handler> &observable, Lambda &&handler) {
 		_subscriptions.push_back(observable.add_subscription(std::forward<Lambda>(handler)));
 		return _subscriptions.size();
 	}
 
 	template <typename EventType, typename Handler, typename Lambda>
-	int subscribe(base::Observable<EventType, Handler> *observable, Lambda &&handler) {
+	size_t subscribe(base::Observable<EventType, Handler> *observable, Lambda &&handler) {
 		return subscribe(*observable, std::forward<Lambda>(handler));
 	}
 
 	template <typename Type, typename Lambda>
-	int subscribe(const base::Variable<Type> &variable, Lambda &&handler) {
+	size_t subscribe(const base::Variable<Type> &variable, Lambda &&handler) {
 		return subscribe(variable.changed(), std::forward<Lambda>(handler));
 	}
 
 	template <typename Type, typename Lambda>
-	int subscribe(const base::Variable<Type> *variable, Lambda &&handler) {
+	size_t subscribe(const base::Variable<Type> *variable, Lambda &&handler) {
 		return subscribe(variable->changed(), std::forward<Lambda>(handler));
 	}
 
-	void unsubscribe(int index) {
+	void unsubscribe(size_t index) {
 		if (!index) return;
-		auto count = static_cast<int>(_subscriptions.size());
+		auto count = _subscriptions.size();
 		Assert(index > 0 && index <= count);
 		_subscriptions[index - 1].destroy();
 		if (index == count) {

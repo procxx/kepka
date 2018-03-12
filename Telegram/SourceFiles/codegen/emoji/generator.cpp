@@ -339,8 +339,8 @@ std::vector<One> Items;\n\
 	source_->popNamespace().newline().pushNamespace("internal");
 	source_->stream() << "\
 \n\
-EmojiPtr ByIndex(int index) {\n\
-	return (index >= 0 && index < Items.size()) ? &Items[index] : nullptr;\n\
+EmojiPtr ByIndex(size_t index) {\n\
+	return index < Items.size() ? &Items[index] : nullptr;\n\
 }\n\
 \n\
 EmojiPtr FindReplace(const QChar *start, const QChar *end, int *outLength) {\n\
@@ -384,7 +384,7 @@ bool Generator::writeHeader() {
 \n\
 void Init();\n\
 \n\
-EmojiPtr ByIndex(int index);\n\
+EmojiPtr ByIndex(size_t index);\n\
 \n\
 EmojiPtr Find(const QChar *ch, const QChar *end, int *outLength = nullptr);\n\
 \n\
