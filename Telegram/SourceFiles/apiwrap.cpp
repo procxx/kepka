@@ -96,29 +96,9 @@ void ApiWrap::addLocalChangelogs(int oldAppVersion) {
 		App::wnd()->serviceNotification(textWithEntities, MTP_messageMediaEmpty(), unixtime());
 		addedSome = true;
 	};
-	if (cAlphaVersion() || cBetaVersion()) {
-		auto addLocalAlphaChangelog = [this, oldAppVersion, addLocalChangelog](int changeVersion, const char *changes) {
-			if (oldAppVersion < changeVersion) {
-				auto changeVersionString = QString::number(changeVersion / 1000000) + '.' + QString::number((changeVersion % 1000000) / 1000) + ((changeVersion % 1000) ? ('.' + QString::number(changeVersion % 1000)) : QString());
-				auto text = qsl("New in version %1:\n\n").arg(changeVersionString) + QString::fromUtf8(changes).trimmed();
-				addLocalChangelog(text);
-			}
-		};
-		addLocalAlphaChangelog(1001008, "\xE2\x80\x94 Toggle night mode in the main menu.\n");
-		addLocalAlphaChangelog(1001010, "\xE2\x80\x94 Filter added to channel and supergroup event log.\n\xE2\x80\x94 Search by username in privacy exceptions editor fixed.\n\xE2\x80\x94 Adding admins in channels fixed.");
-		addLocalAlphaChangelog(1001011, "\xE2\x80\x94 Send **bold** and __italic__ text in your messages (in addition to already supported `monospace` and ```multiline monospace```).\n\xE2\x80\x94 Search in channel and supergroup admin event log.\n\xE2\x80\x94 Ban members from right click menu in supergroup admin event log.");
-		addLocalAlphaChangelog(1001012, "\xE2\x80\x94 Click on forwarded messages bar to change the recipient chat in case you chose a wrong one first.\n\xE2\x80\x94 Quickly share posts from channels and media messages from bots.\n\xE2\x80\x94 Search in large supergroup members by name.\n\xE2\x80\x94 Search in channel members by name if you're a channel admin.\n\xE2\x80\x94 Copy links to messages in public supergroups.");
-		addLocalAlphaChangelog(1001014, "\xE2\x80\x94 Bug fixes and other minor improvements.");
-#ifdef Q_OS_WIN
-		addLocalAlphaChangelog(1001023, "\xE2\x80\x94 See the message author photo and name while searching specific chat messages.\n\xE2\x80\x94 Fix \"Send To\" menu action on Windows.");
-#else // Q_OS_WIN
-		addLocalAlphaChangelog(1001023, "\xE2\x80\x94 See the message author photo and name while searching specific chat messages.");
-#endif // Q_OS_WIN
-	}
-	if (!addedSome) {
-		auto text = lng_new_version_wrap(lt_version, str_const_toString(AppVersionStr), lt_changes, lang(lng_new_version_minor), lt_link, lang(lng_url_changelog)).trimmed();
-		addLocalChangelog(text);
-	}
+	auto text = lng_new_version_wrap(lt_version, str_const_toString(AppVersionStr), lt_changes,
+		lang(lng_new_version_minor), lt_link, lang(lng_url_changelog)).trimmed();
+	addLocalChangelog(text);
 }
 
 void ApiWrap::applyUpdates(const MTPUpdates &updates, quint64 sentMessageRandomId) {
