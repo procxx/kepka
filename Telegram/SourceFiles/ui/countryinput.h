@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "boxes/abstract_box.h"
 #include "styles/style_widgets.h"
+#include "ui/effects/ripple_animation.h"
 
 QString findValidCode(QString fullCode);
 

@@ -20,6 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/observer.h"
+#include "ui/twidget.h"
+#include "media/media_clip_reader.h"
+
+class HistoryItem;
+
 namespace Media {
 namespace Clip {
 class Playback;

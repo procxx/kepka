@@ -19,6 +19,11 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
+#include <cstddef>
+#include <QAtomicInt>
+
+#include "base/assertion.h"
+#include "core/utils.h"
 
 class RuntimeComposer;
 typedef void(*RuntimeComponentConstruct)(void *location, RuntimeComposer *composer);

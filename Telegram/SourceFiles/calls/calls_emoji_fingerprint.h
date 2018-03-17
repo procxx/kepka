@@ -20,6 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <vector>
+#include <core/basic_types.h>
+#include "settings.h"
+
 namespace Calls {
 
 class Call;

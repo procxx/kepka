@@ -20,6 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QMouseEvent>
+
+#include "base/lambda.h"
+#include "ui/twidget.h"
+#include "ui/animation.h"
+#include "structs.h"
+
+class BoxContent;
+
 namespace Window {
 class MainMenu;
 class Controller;

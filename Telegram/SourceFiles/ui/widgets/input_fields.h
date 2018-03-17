@@ -20,8 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "styles/style_widgets.h"
+#include <QTextEdit>
+#include <QTouchEvent>
+#include <QTextFragment>
+#include <QLineEdit>
 
+#include "base/lambda.h"
+#include "styles/style_widgets.h"
+#include "history/history.h"
+#include "ui/twidget.h"
 class UserData;
 
 namespace Ui {

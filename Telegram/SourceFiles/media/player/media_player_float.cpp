@@ -18,8 +18,10 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QMouseEvent>
+#include <QApplication>
+#include "facades.h"
 #include "media/player/media_player_float.h"
-
 #include "styles/style_media_player.h"
 #include "history/history_media.h"
 #include "media/media_clip_reader.h"

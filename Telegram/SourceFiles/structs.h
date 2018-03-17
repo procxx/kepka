@@ -20,6 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QPair>
+#include <QTextEdit>
+#include <QTextCursor>
+#include <QScrollBar>
+
+#include "scheme.h"
+#include "ui/images.h"
+#include "ui/twidget.h"
+#include "ui/text/text.h"
+
 using MediaKey = QPair<quint64, quint64>;
 
 inline quint64 mediaMix32To64(qint32 a, qint32 b) {

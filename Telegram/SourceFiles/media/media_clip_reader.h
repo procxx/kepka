@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "storage/localimageloader.h"
+#include "window/notifications_manager_default.h"
 
 class FileLocation;
 

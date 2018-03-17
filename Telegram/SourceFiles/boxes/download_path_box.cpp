@@ -27,6 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/buttons.h"
 #include "platform/platform_specific.h"
 #include "styles/style_boxes.h"
+#include "facades.h"
 
 DownloadPathBox::DownloadPathBox(QWidget *parent)
 : _path(Global::DownloadPath())

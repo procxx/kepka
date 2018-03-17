@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/peer_list_box.h"
 #include "base/flat_set.h"
 #include "base/weak_unique_ptr.h"
+#include "history/history.h"
 
 // Not used for now.
 //

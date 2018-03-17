@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "ui/animation.h"
 #include "structs.h"
 #include "dialogs/dialogs_common.h"
 #include "ui/effects/send_action_animations.h"
@@ -28,6 +29,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/variant.h"
 #include "base/flat_set.h"
 #include "base/flags.h"
+#include "base/optional.h"
 
 void HistoryInit();
 

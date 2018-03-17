@@ -18,8 +18,9 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QApplication>
+#include <QClipboard>
 #include "history/history_item.h"
-
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "history/history_service_layout.h"

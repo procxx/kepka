@@ -20,7 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QWidget>
+#include <QAbstractNativeEventFilter>
 #include <windows.h>
+
+#include "core/basic_types.h"
+#include "core/utils.h"
+
+#include "history/history_location_manager.h"
 
 namespace Platform {
 
@@ -96,6 +104,7 @@ QAbstractNativeEventFilter *psNativeEventFilter();
 
 void psNewVersion();
 
+class TWidget;
 void psUpdateOverlayed(TWidget *widget);
 inline QByteArray psDownloadPathBookmark(const QString &path) {
 	return QByteArray();

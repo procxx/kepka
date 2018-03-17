@@ -20,9 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QImage>
 #include "base/observer.h"
 #include "mtproto/auth_key.h"
 #include "base/timer.h"
+#include "mtproto/rpc_sender.h"
+#include "structs.h"
+#include "single_timer.h"
 
 namespace App {
 void quit();
@@ -58,6 +62,14 @@ class Instance;
 class Translator;
 class CloudManager;
 } // namespace Lang
+
+
+class PhotoData;
+class MainWindow;
+class PhotoOpenClickHandler;
+class HistoryItem;
+class DocumentData;
+class PeerData;
 
 class Messenger final : public QObject, public RPCSender, private base::Subscriber {
 	Q_OBJECT

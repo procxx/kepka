@@ -25,7 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwindow.h"
 #include "ui/widgets/checkbox.h"
 #include "styles/style_boxes.h"
-
+#include "facades.h"
 void AutoLockBox::prepare() {
 	setTitle(langFactory(lng_passcode_autolock));
 

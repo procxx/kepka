@@ -28,6 +28,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/sender.h"
 #include "base/flat_map.h"
 #include "base/flat_set.h"
+#include "structs.h"
+#include "facades.h"
 
 class AuthSession;
 
@@ -42,6 +44,8 @@ inline const MTPVector<MTPChat> *getChatsFromMessagesChats(const MTPmessages_Cha
 }
 
 } // namespace Api
+
+class History;
 
 class ApiWrap : private MTP::Sender, private base::Subscriber {
 public:

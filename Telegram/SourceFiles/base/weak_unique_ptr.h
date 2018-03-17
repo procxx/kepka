@@ -20,7 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <memory>
 // @todo replace this with std::experimental::observer_ptr
+#include <utility>
+#include <QCoreApplication>
 
 namespace base {
 
@@ -131,11 +134,11 @@ weak_unique_ptr<T> make_weak_unique(const std::unique_ptr<T> &value) {
 #ifdef QT_VERSION
 template <typename Lambda>
 inline void InvokeQueued(base::enable_weak_from_this *context, Lambda &&lambda) {
-	QObject proxy;
-	QObject::connect(&proxy, &QObject::destroyed, QCoreApplication::instance(), [guard = base::make_weak_unique(context), lambda = std::forward<Lambda>(lambda)] {
-		if (guard) {
-			lambda();
-		}
-	}, Qt::QueuedConnection);
+    QObject proxy;
+    QObject::connect(&proxy, &QObject::destroyed, QCoreApplication::instance(), [guard = base::make_weak_unique(context), lambda = std::forward<Lambda>(lambda)] {
+        if (guard) {
+            lambda();
+        }
+    }, Qt::QueuedConnection);
 }
 #endif // QT_VERSION

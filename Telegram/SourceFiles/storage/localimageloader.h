@@ -20,7 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QByteArray>
+#include <QMap>
+#include <QList>
+#include <QImage>
+#include <QMutex>
 #include "base/variant.h"
+#include "structs.h"
 
 enum class CompressConfirm {
 	Auto,

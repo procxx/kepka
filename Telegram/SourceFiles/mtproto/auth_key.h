@@ -23,6 +23,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <array>
 #include <memory>
 
+#include <QtGlobal>
+#include <gsl/gsl_byte>
+#include "mtproto/core_types.h"
+#include <QDataStream>
+
 namespace MTP {
 
 class AuthKey {

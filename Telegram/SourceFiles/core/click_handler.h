@@ -20,6 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QSharedPointer>
+
+#include "core/utils.h"
+#include "base/lambda.h"
+
 class ClickHandler;
 using ClickHandlerPtr = QSharedPointer<ClickHandler>;
 

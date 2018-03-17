@@ -20,9 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QSystemTrayIcon>
+#include <QPaintEvent>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QLabel>
+#include <QCheckBox>
 #include "platform/platform_specific.h"
 #include "platform/platform_main_window.h"
 #include "core/single_timer.h"
+
+#include "ui/twidget.h"
+#include "layerwidget.h"
 
 class PasscodeWidget;
 class MainWidget;

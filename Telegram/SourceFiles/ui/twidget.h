@@ -20,7 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QPainter>
+#include <QFontMetrics>
+#include <QWidget>
+#include <QEvent>
+#include <QPointer>
+#include "base/lambda.h"
 #include "base/flags.h"
+#include "ui/style/style_core.h"
+#include "styles/palette.h"
+#include "styles/style_basic.h"
+
 
 namespace Fonts {
 

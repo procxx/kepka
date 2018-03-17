@@ -19,7 +19,6 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/connection.h"
-
 #include "mtproto/rsa_public_key.h"
 #include "mtproto/rpc_sender.h"
 #include "mtproto/dc_options.h"

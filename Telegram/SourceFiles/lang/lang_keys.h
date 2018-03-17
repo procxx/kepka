@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QDate>
+#include "base/lambda.h"
 #include "lang/lang_instance.h"
 
 inline QString lang(LangKey key) {

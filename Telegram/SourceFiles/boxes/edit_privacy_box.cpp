@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "base/lambda_guard.h"
 #include "boxes/edit_privacy_box.h"
 
 #include "styles/style_boxes.h"
@@ -29,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "apiwrap.h"
 #include "auth_session.h"
 #include "lang/lang_keys.h"
+
 
 namespace {
 

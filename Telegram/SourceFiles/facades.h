@@ -22,6 +22,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/type_traits.h"
 #include "base/observer.h"
+#include "base/lambda_guard.h"
+#include "core/click_handler.h"
+#include "scheme.h"
+#include "app.h"
+#include "ui/twidget.h"
+#include "history/history_item.h"
 
 class LayerWidget;
 class BoxContent;

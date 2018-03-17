@@ -20,6 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QApplication>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QClipboard>
+#include "scheme.h"
+#include "core/click_handler.h"
+#include "ui/images.h"
+
 void initLocationManager();
 void reinitLocationManager();
 void deinitLocationManager();

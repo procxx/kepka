@@ -23,6 +23,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/observer.h"
 #include "base/flags.h"
 
+#include "structs.h"
+#include "history/history.h"
+
 namespace Notify {
 
 // Generic notifications about updates of some PeerData.

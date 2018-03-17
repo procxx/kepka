@@ -20,8 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <set>
+#include <QByteArray>
+#include <QDateTime>
+#include <QReadWriteLock> 
+#include <QRegularExpression>
+#include <QMimeType>
+#include <QStringList>
+#include <QFileInfo>
+
+#include "base/assertion.h"
 #include "core/basic_types.h"
 #include "base/flags.h"
+#include "logs.h"
 
 // Define specializations for QByteArray for Qt 5.3.2, because
 // QByteArray in Qt 5.3.2 doesn't declare "pointer" subtype.
@@ -218,11 +229,11 @@ private:
 };
 
 inline QString str_const_toString(const str_const &str) {
-	return QString::fromUtf8(str.c_str(), str.size());
+	return QString::fromUtf8(str.c_str(), static_cast<int>(str.size()));
 }
 
 inline QByteArray str_const_toByteArray(const str_const &str) {
-	return QByteArray::fromRawData(str.c_str(), str.size());
+	return QByteArray::fromRawData(str.c_str(), static_cast<int>(str.size()));
 }
 
 template <typename T>

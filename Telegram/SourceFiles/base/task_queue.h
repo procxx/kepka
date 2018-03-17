@@ -21,6 +21,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <memory>
+#include <deque>
+#include <QMutex>
+#include "base/lambda.h"
+#include "core/utils.h"
 
 namespace base {
 

@@ -18,8 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QTextStream>
 #include "lang/lang_file_parser.h"
-
 #include "base/parse_helper.h"
 
 namespace Lang {

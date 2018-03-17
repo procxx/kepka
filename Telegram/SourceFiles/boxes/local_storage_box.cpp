@@ -26,6 +26,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 #include "mainwindow.h"
 #include "auth_session.h"
+#include "facades.h"
 
 LocalStorageBox::LocalStorageBox(QWidget *parent)
 : _clear(this, lang(lng_local_storage_clear), st::boxLinkButton) {

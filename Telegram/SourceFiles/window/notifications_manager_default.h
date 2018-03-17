@@ -20,8 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/observer.h"
 #include "window/notifications_manager.h"
 #include "core/single_timer.h"
+#include "history/history_item.h"
+#include "structs.h"
+#include "ui/animation.h"
+
+class History;
 
 namespace Ui {
 class IconButton;

@@ -20,7 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QTimer>
+#include "base/observer.h"
 #include "ui/twidget.h"
+#include "ui/animation.h"
+#include "structs.h"
 
 namespace Ui {
 class ScrollArea;

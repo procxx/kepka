@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/observer.h"
 #include "mtproto/sender.h"
 #include "base/weak_unique_ptr.h"
 

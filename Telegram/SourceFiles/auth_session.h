@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/timer.h"
+#include "structs.h"
 
 namespace Storage {
 class Downloader;
@@ -43,6 +44,8 @@ enum class SelectorTab;
 } // namespace ChatHelpers
 
 class ApiWrap;
+class History;
+class HistoryItem;
 
 class AuthSessionData final {
 public:

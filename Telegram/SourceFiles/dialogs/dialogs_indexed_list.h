@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "structs.h"
 #include "dialogs/dialogs_common.h"
 #include "dialogs/dialogs_list.h"
 

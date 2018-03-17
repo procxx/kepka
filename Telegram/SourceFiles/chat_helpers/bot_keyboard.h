@@ -20,7 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "history/history_item.h"
+#include "ui/twidget.h"
 #include "ui/widgets/tooltip.h"
+#include "structs.h"
+
+class HistoryItem;
 
 class BotKeyboard : public TWidget, public Ui::AbstractTooltipShower, public ClickHandlerHost {
 	Q_OBJECT

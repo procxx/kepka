@@ -20,9 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QClipboard>
 #include "ui/widgets/tooltip.h"
 #include "ui/widgets/scroll_area.h"
 #include "window/top_bar_widget.h"
+#include "history/history.h"
+#include "history/history_item.h"
 
 namespace Window {
 class Controller;

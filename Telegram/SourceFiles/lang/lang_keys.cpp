@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 
 #include "lang/lang_file_parser.h"
+#include "ui/text/text.h"
 
 bool langFirstNameGoesSecond() {
 	auto fullname = lang(lng_full_name__tagged);

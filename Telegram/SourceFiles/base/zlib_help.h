@@ -23,8 +23,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QByteArray>
+
 #include "minizip/zip.h"
 #include "minizip/unzip.h"
+
+#include "logs.h"
 
 namespace zlib {
 namespace internal {

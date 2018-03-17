@@ -20,6 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QByteArray>
+#include <QImage>
+#include <QSize>
+#include <QBuffer>
+#include <core/utils.h>
+
 class FileLocation;
 
 namespace Media {

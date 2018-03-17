@@ -22,6 +22,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "lang_auto.h"
 #include "base/weak_unique_ptr.h"
+#include "base/observer.h"
+#include "core/basic_types.h"
+#include "core/utils.h"
+#include "scheme.h"
 
 namespace Lang {
 

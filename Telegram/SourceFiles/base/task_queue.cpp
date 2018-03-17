@@ -18,10 +18,15 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "base/task_queue.h"
 
+#include <algorithm>
 #include <thread>
 #include <condition_variable>
+#include <QMutex>
+#include <QWaitCondition>
+#include "base/assertion.h"
+#include "base/task_queue.h"
+#include "facades.h"
 
 namespace base {
 namespace {

@@ -18,6 +18,9 @@
 #pragma once
 
 #include "base/timer.h"
+#include "ui/twidget.h"
+#include "ui/text/text.h"
+#include "ui/animation.h"
 
 namespace style {
 struct Tooltip;

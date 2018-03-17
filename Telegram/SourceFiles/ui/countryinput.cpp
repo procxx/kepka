@@ -28,6 +28,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "countries.h"
 #include "styles/style_boxes.h"
 #include "styles/style_intro.h"
+#include "facades.h"
 
 namespace {
 

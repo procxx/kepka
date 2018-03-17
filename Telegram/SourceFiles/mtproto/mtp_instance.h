@@ -22,6 +22,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <map>
 #include <set>
+#include <vector>
+#include <memory>
+#include <QString>
+#include <QObject>
+#include "core/basic_types.h"
+#include "mtproto/core_types.h"
+#include "mtproto/rpc_sender.h"
+#include "mtproto/connection.h"
 
 namespace MTP {
 namespace internal {

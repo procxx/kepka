@@ -20,10 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "core/basic_types.h"
-#include <QtCore/QTimer>
-#include <QtGui/QColor>
+#include <QTimer>
+#include <QColor>
+#include <QPen>
+#include <QBrush>
+#include <QColor>
+#include <QPainterPath>
 #include <cstdint>
+
+#include "core/basic_types.h"
+#include "core/utils.h"
+#include "base/lambda.h"
+#include "style/style_core_types.h"
+#include "mtproto/facade.h"
 
 namespace Media {
 namespace Clip {

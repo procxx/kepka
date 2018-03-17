@@ -20,8 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QTimer>
+#include <base/lambda.h>
 #include "core/basic_types.h"
-
+#include "core/utils.h"
 class SingleTimer : public QTimer { // single shot timer with check
 	Q_OBJECT
 

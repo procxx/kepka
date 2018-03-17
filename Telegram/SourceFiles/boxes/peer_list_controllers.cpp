@@ -18,8 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "base/algorithm.h"
 #include "boxes/peer_list_controllers.h"
-
 #include "styles/style_boxes.h"
 #include "styles/style_profile.h"
 #include "boxes/confirm_box.h"
