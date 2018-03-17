@@ -48,7 +48,7 @@ public:
 		stream() << "\n";
 		return *this;
 	}
-	CppFile &include(const QString &header);
+    CppFile &include(const QString &header, bool global = false);
 
 	// Empty name adds anonymous namespace.
 	CppFile &pushNamespace(const QString &name = QString());

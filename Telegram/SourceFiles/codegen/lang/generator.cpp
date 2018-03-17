@@ -115,6 +115,11 @@ Generator::Generator(const LangPack &langpack, const QString &destBasePath, cons
 
 bool Generator::writeHeader() {
 	header_ = std::make_unique<common::CppFile>(basePath_ + ".h", project_);
+
+    header_->include("utility", true);
+    header_->include("QString", true);
+    header_->include("QLatin1String", true);
+
 	header_->include("lang/lang_tag.h").newline().pushNamespace("Lang").stream() << "\
 \n\
 constexpr auto kTagsCount = " << langpack_.tags.size() << ";\n\

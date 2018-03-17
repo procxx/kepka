@@ -74,8 +74,11 @@ CppFile::CppFile(const QString &path, const ProjectInfo &project)
 	}
 }
 
-CppFile &CppFile::include(const QString &header) {
-	stream() << "#include \"" << header << "\"";
+CppFile &CppFile::include(const QString &header, bool global ) {
+    if (global)
+        stream() << QString("#include <%1>").arg(header);
+    else
+        stream() << QString("#include \"%1\"").arg(header);
 	return newline();
 }
 

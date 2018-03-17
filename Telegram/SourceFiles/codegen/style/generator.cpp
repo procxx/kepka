@@ -216,6 +216,7 @@ Generator::Generator(const structure::Module &module, const QString &destBasePat
 bool Generator::writeHeader() {
 	header_ = std::make_unique<common::CppFile>(basePath_ + ".h", project_);
 
+    header_->include("styles/style_basic.h").newline();
 	header_->include("ui/style/style_core.h").newline();
 
 	if (!writeHeaderStyleNamespace()) {

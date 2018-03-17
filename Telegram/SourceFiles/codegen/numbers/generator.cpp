@@ -39,6 +39,7 @@ Generator::Generator(const Rules &rules, const QString &destBasePath, const comm
 bool Generator::writeHeader() {
 	header_ = std::make_unique<common::CppFile>(basePath_ + ".h", project_);
 
+    header_->include("QString", true);
 	header_->stream() << "QVector<int> phoneNumberParse(const QString &number);\n";
 
 	return header_->finalize();
@@ -47,6 +48,7 @@ bool Generator::writeHeader() {
 bool Generator::writeSource() {
 	source_ = std::make_unique<common::CppFile>(basePath_ + ".cpp", project_);
 
+    source_->include("QVector", true);
 	source_->stream() << "\
 QVector<int> phoneNumberParse(const QString &number) {\n\
 	QVector<int> result;\n\
