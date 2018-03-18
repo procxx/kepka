@@ -592,7 +592,7 @@ add_definitions(-DAL_ALEXT_PROTOTYPES)
 add_definitions(-DTGVOIP_USE_CXX11_LIB)
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
-add_definitions(-DTDESKTOP_DISABLE_GTK_INTEGRATION) # Linux only
+add_definitions(-DTDESKTOP_DISABLE_UNITY_INTEGRATION) # Linux only
 
 if (LINUX)
     add_definitions(-D_REENTRANT)
