@@ -107,9 +107,6 @@ QString _trayIconImageFile() {
 	return QString();
 }
 
-#ifndef TDESKTOP_DISABLE_UNITY_INTEGRATION
-UnityLauncherEntry *_psUnityLauncherEntry = nullptr;
-#endif // !TDESKTOP_DISABLE_UNITY_INTEGRATION
 
 } // namespace
 
@@ -207,16 +204,6 @@ void MainWindow::updateIconCounters() {
 
 	auto counter = App::histories().unreadBadge();
 
-#if !defined(TDESKTOP_DISABLE_UNITY_INTEGRATION)
-	if (_psUnityLauncherEntry) {
-		if (counter > 0) {
-			Libs::unity_launcher_entry_set_count(_psUnityLauncherEntry, (counter > 9999) ? 9999 : counter);
-			Libs::unity_launcher_entry_set_count_visible(_psUnityLauncherEntry, TRUE);
-		} else {
-			Libs::unity_launcher_entry_set_count_visible(_psUnityLauncherEntry, FALSE);
-		}
-	}
-#endif // !TDESKTOP_DISABLE_UNITY_INTEGRATION
 
 	if (noQtTrayIcon) {
 	} else if (trayIcon) {
@@ -245,14 +232,6 @@ void MainWindow::LibsLoaded() {
 
 	if (noQtTrayIcon) cSetSupportTray(false);
 
-#ifndef TDESKTOP_DISABLE_UNITY_INTEGRATION
-	useUnityCount = (Libs::unity_launcher_entry_get_for_desktop_id != nullptr)
-			&& (Libs::unity_launcher_entry_set_count != nullptr)
-			&& (Libs::unity_launcher_entry_set_count_visible != nullptr);
-	if (useUnityCount) {
-		DEBUG_LOG(("Unity count api loaded!"));
-	}
-#endif // !TDESKTOP_DISABLE_UNITY_INTEGRATION
 }
 
 void MainWindow::psCreateTrayIcon() {
@@ -266,23 +245,6 @@ void MainWindow::psCreateTrayIcon() {
 void MainWindow::psFirstShow() {
 	psCreateTrayIcon();
 
-#if !defined(TDESKTOP_DISABLE_UNITY_INTEGRATION)
-	if (useUnityCount) {
-		_psUnityLauncherEntry = Libs::unity_launcher_entry_get_for_desktop_id("telegramdesktop.desktop");
-		if (_psUnityLauncherEntry) {
-			LOG(("Found Unity Launcher entry telegramdesktop.desktop!"));
-		} else {
-			_psUnityLauncherEntry = Libs::unity_launcher_entry_get_for_desktop_id("Telegram.desktop");
-			if (_psUnityLauncherEntry) {
-				LOG(("Found Unity Launcher entry Telegram.desktop!"));
-			} else {
-				LOG(("Could not get Unity Launcher entry!"));
-			}
-		}
-	} else {
-		LOG(("Not using Unity Launcher count."));
-	}
-#endif // !TDESKTOP_DISABLE_UNITY_INTEGRATION
 
 	psUpdateMargins();
 
@@ -317,12 +279,6 @@ void MainWindow::psUpdateMargins() {
 }
 
 MainWindow::~MainWindow() {
-#ifndef TDESKTOP_DISABLE_UNITY_INTEGRATION
-	if (_psUnityLauncherEntry) {
-		Libs::g_object_unref(_psUnityLauncherEntry);
-		_psUnityLauncherEntry = nullptr;
-	}
-#endif // ! TDESKTOP_DISABLE_UNITY_INTEGRATION
 }
 
 } // namespace Platform
