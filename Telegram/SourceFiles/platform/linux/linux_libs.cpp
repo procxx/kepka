@@ -47,25 +47,10 @@ bool loadLibrary(QLibrary &lib, const char *name, int version) {
 
 } // namespace
 
-#ifndef TDESKTOP_DISABLE_UNITY_INTEGRATION
-f_unity_launcher_entry_set_count unity_launcher_entry_set_count = nullptr;
-f_unity_launcher_entry_set_count_visible unity_launcher_entry_set_count_visible = nullptr;
-f_unity_launcher_entry_get_for_desktop_id unity_launcher_entry_get_for_desktop_id = nullptr;
-#endif // !TDESKTOP_DISABLE_UNITY_INTEGRATION
 
 void start() {
 	DEBUG_LOG(("Loading libraries"));
 
-#ifndef TDESKTOP_DISABLE_UNITY_INTEGRATION
-	if (DesktopEnvironment::TryUnityCounter()) {
-		QLibrary lib_unity(qstr("unity"), 9, 0);
-		loadLibrary(lib_unity, "unity", 9);
-
-		load(lib_unity, "unity_launcher_entry_get_for_desktop_id", unity_launcher_entry_get_for_desktop_id);
-		load(lib_unity, "unity_launcher_entry_set_count", unity_launcher_entry_set_count);
-		load(lib_unity, "unity_launcher_entry_set_count_visible", unity_launcher_entry_set_count_visible);
-	}
-#endif // !TDESKTOP_DISABLE_UNITY_INTEGRATION
 }
 
 } // namespace Libs

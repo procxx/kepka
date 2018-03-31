@@ -10,7 +10,6 @@ endif()
 if (PACKAGED_BUILD)
     add_definitions(-DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME)
     add_definitions(-DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION)
-    add_definitions(-DTDESKTOP_DISABLE_UNITY_INTEGRATION)
 endif()
 
 ##================================================
@@ -592,7 +591,6 @@ add_definitions(-DAL_ALEXT_PROTOTYPES)
 add_definitions(-DTGVOIP_USE_CXX11_LIB)
 
 add_definitions(-DTDESKTOP_DISABLE_CRASH_REPORTS)
-add_definitions(-DTDESKTOP_DISABLE_UNITY_INTEGRATION) # Linux only
 
 if (LINUX)
     add_definitions(-D_REENTRANT)
