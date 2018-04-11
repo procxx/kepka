@@ -18,15 +18,18 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+
+#include <assert.h>
+
 #include "ui/text/text.h"
 
+#include "core/utils.h"                // makeShared
+#include "core/click_handler_types.h"  // UrlClickHandler
 
-#include "core/click_handler_types.h"
-#include "ui/text/text_block.h"
-#include "lang/lang_keys.h"
-#include "platform/platform_specific.h"
-#include "boxes/confirm_box.h"
-#include "mainwindow.h"
+#include "ui/text/text_block.h"        // TextBlockTSkip, ...
+#include "styles/style_basic.h"        // style::TextStyle
+
+class HiddenUrlClickHandler;
 
 namespace {
 
