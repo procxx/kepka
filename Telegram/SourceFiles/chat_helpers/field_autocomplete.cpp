@@ -234,13 +234,24 @@ void FieldAutocomplete::updateFiltered(bool resetScroll) {
 		}
 	} else if (_type == Type::Hashtags) {
 		bool listAllSuggestions = _filter.isEmpty();
+		bool isInteger = false;
+		int ghTextIssueId = _filter.toInt(&isInteger);
+		int size = 0;
+		if (isInteger) {
+			size++;
+		}
 		auto &recent(cRecentWriteHashtags());
-		hrows.reserve(recent.size());
-		for (auto i = recent.cbegin(), e = recent.cend(); i != e; ++i) {
-			if (!listAllSuggestions && (!i->first.startsWith(_filter, Qt::CaseInsensitive) || i->first.size() == _filter.size())) {
-				continue;
+		hrows.reserve(recent.size() + size);
+		if (isInteger) {
+			hrows.push_back(QString("github.com/procxx/kepka/issues/%1").arg(_filter));
+		}
+		if (listAllSuggestions) {
+			for_const (auto &i, recent) {
+				if (!i.first.startsWith(_filter, Qt::CaseInsensitive) || i.first.size() == _filter.size()) {
+					continue;
+				}
+				hrows.push_back("#" + i.first);
 			}
-			hrows.push_back(i->first);
 		}
 	} else if (_type == Type::BotCommands) {
 		bool listAllSuggestions = _filter.isEmpty();
@@ -629,8 +640,8 @@ void FieldAutocompleteInner::paintEvent(QPaintEvent *e) {
 				}
 			} else if (!_hrows->isEmpty()) {
 				QString hrow = _hrows->at(i);
-				QString first = filterIsEmpty ? QString() : ('#' + hrow.mid(0, filterSize));
-				QString second = filterIsEmpty ? ('#' + hrow) : hrow.mid(filterSize);
+				QString first = filterIsEmpty ? QString() : (/*'#' + */hrow.mid(0, filterSize));
+				QString second = filterIsEmpty ? (/*'#' + */hrow) : hrow.mid(filterSize);
 				qint32 firstwidth = st::mentionFont->width(first), secondwidth = st::mentionFont->width(second);
 				if (htagwidth < firstwidth + secondwidth) {
 					if (htagwidth < firstwidth + st::mentionFont->elidew) {
@@ -742,7 +753,7 @@ bool FieldAutocompleteInner::chooseSelected(FieldAutocomplete::ChooseMethod meth
 		}
 	} else if (!_hrows->isEmpty()) {
 		if (_sel >= 0 && _sel < _hrows->size()) {
-			emit hashtagChosen('#' + _hrows->at(_sel), method);
+			emit hashtagChosen(/*'#' + */_hrows->at(_sel), method);
 			return true;
 		}
 	} else if (!_brows->isEmpty()) {
