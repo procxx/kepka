@@ -22,7 +22,6 @@ features
 * Leverages native precompiled header generation features of IDEs (Visual Studio and Xcode).
 * Compatible with CMake's [cross-compiling][ccrc] support.
 * Compatible with compiler wrappers like [ccache][ccch].
-* Applicable to CMake based Qt projects.
 * Tested with Windows, Linux and OS X.
 * MIT licensed.
 
@@ -31,7 +30,8 @@ requirements
 
 * [CMake 2.8.12][cmk] or newer. The executable `cmake` should be on the system path.
 * [Visual Studio C++][vslstd], [MinGW][mingw] or [Cygwin][cgwn] under Windows.
-* [GCC][gcc] or [Clang][clang] under Linux or OS X.
+* [Clang][clang] under Windows, Linux or OS X.
+* [GCC][gcc] under Linux or OS X.
 * [Intel C++ compiler][intel] under Windows, Linux or OS X.
 * [Xcode][xcdt] application or Xcode Command Line Tools under OS X.
 
@@ -117,8 +117,8 @@ known issues
 
 [ccch]:https://ccache.samba.org/
 [ccrc]:https://cmake.org/Wiki/CMake_Cross_Compiling
-[cgwn]:http://www.cygwin.com/
-[clang]:http://clang.llvm.org/
+[cgwn]:https://www.cygwin.com/
+[clang]:https://clang.llvm.org/
 [cmk]:https://cmake.org/download/
 [gcc]:https://gcc.gnu.org/
 [manual]:https://github.com/sakra/cotire/blob/master/MANUAL.md
@@ -130,8 +130,8 @@ known issues
 [vslstd]:https://www.visualstudio.com/
 [xcdt]:https://developer.apple.com/xcode/
 [PCHH]:https://gcc.gnu.org/wiki/PCHHaters
-[EoUB]:https://engineering-game-dev.com/2009/12/15/the-evils-of-unity-builds/
-[jom]:http://wiki.qt.io/Jom
+[EoUB]:http://altdevblog.com/2011/08/14/the-evils-of-unity-builds/
+[jom]:https://wiki.qt.io/Jom
 [intel]:https://software.intel.com/en-us/c-compilers
 [XGE]:https://www.incredibuild.com/
-[shrp]:http://unriskinsight.blogspot.co.at/2014/09/sharpen-your-tools.html
+[shrp]:https://unriskinsight.blogspot.co.at/2014/09/sharpen-your-tools.html
