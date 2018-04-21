@@ -107,7 +107,9 @@ private:
 	void createControls();
 
 	object_ptr<Ui::Checkbox> _replaceEmoji = { nullptr };
+	object_ptr<Ui::Checkbox> _messageFormat = { nullptr };
 	object_ptr<Ui::Checkbox> _dontAskDownloadPath = { nullptr };
+	void toggleMessageFormat();
 
 #ifndef OS_WIN_STORE
 	object_ptr<Ui::WidgetSlideWrap<DownloadPathState>> _downloadPath = { nullptr };

@@ -313,6 +313,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 "lng_settings_section_chat_settings" = "Chat Settings";
 "lng_settings_replace_emojis" = "Replace emoji";
+"lng_settings_message_formatting" = "Enable typographic replacements (<< into «, -- into –, etc.)";
 "lng_settings_view_emojis" = "View list";
 "lng_settings_send_enter" = "Send by Enter";
 "lng_settings_send_ctrlenter" = "Send by Ctrl+Enter";
