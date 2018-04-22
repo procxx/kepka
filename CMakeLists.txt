@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(kepka-desktop)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cotire/CMake;${PROJECT_SOURCE_DIR}/modules/")
-include(cotire)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules/")
 include(CTest)
 
 if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.10)
