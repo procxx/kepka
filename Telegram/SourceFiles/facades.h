@@ -20,17 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/type_traits.h"
-#include "base/observer.h"
 #include "base/lambda_guard.h"
-#include "core/click_handler.h"
-#include "scheme.h"
-#include "app.h"
-#include "ui/twidget.h"
-#include "history/history_item.h"
+#include "structs.h"
+#include "history/history.h" // For MediaOverviewType ffs..
 
+class PeerData;
 class LayerWidget;
 class BoxContent;
+class UserData;
+class History;
+class HistoryItem;
 
 namespace InlineBots {
 namespace Layout {
@@ -114,20 +113,12 @@ void repaintHistoryItem(not_null<const HistoryItem*> item);
 void autoplayMediaInlineAsync(const FullMsgId &msgId);
 
 void showPeerProfile(const PeerId &peer);
-inline void showPeerProfile(const PeerData *peer) {
-	showPeerProfile(peer->id);
-}
-inline void showPeerProfile(const History *history) {
-	showPeerProfile(history->peer->id);
-}
+void showPeerProfile(const PeerData *peer);
+void showPeerProfile(const History *history);
 
 void showPeerOverview(const PeerId &peer, MediaOverviewType type);
-inline void showPeerOverview(const PeerData *peer, MediaOverviewType type) {
-	showPeerOverview(peer->id, type);
-}
-inline void showPeerOverview(const History *history, MediaOverviewType type) {
-	showPeerOverview(history->peer->id, type);
-}
+void showPeerOverview(const PeerData *peer, MediaOverviewType type);
+void showPeerOverview(const History *history, MediaOverviewType type);
 
 enum class ShowWay {
 	ClearStack,
@@ -135,22 +126,12 @@ enum class ShowWay {
 	Backward,
 };
 void showPeerHistory(const PeerId &peer, MsgId msgId, ShowWay way = ShowWay::ClearStack);
-inline void showPeerHistory(const PeerData *peer, MsgId msgId, ShowWay way = ShowWay::ClearStack) {
-	showPeerHistory(peer->id, msgId, way);
-}
-inline void showPeerHistory(const History *history, MsgId msgId, ShowWay way = ShowWay::ClearStack) {
-	showPeerHistory(history->peer->id, msgId, way);
-}
-inline void showPeerHistoryAtItem(const HistoryItem *item, ShowWay way = ShowWay::ClearStack) {
-	showPeerHistory(item->history()->peer->id, item->id, way);
-}
+void showPeerHistory(const PeerData *peer, MsgId msgId, ShowWay way = ShowWay::ClearStack);
+void showPeerHistory(const History *history, MsgId msgId, ShowWay way = ShowWay::ClearStack);
+void showPeerHistoryAtItem(const HistoryItem *item, ShowWay way = ShowWay::ClearStack);
 void showPeerHistoryAsync(const PeerId &peer, MsgId msgId, ShowWay way = ShowWay::ClearStack);
-inline void showChatsList() {
-	showPeerHistory(PeerId(0), 0, ShowWay::ClearStack);
-}
-inline void showChatsListAsync() {
-	showPeerHistoryAsync(PeerId(0), 0, ShowWay::ClearStack);
-}
+void showChatsList();
+void showChatsListAsync();
 PeerData *getPeerForMouseAction();
 
 bool skipPaintEvent(QWidget *widget, QPaintEvent *event);
