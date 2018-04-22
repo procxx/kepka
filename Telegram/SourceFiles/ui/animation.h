@@ -430,7 +430,7 @@ QPainterPath path(QPointF (&from)[N]) {
 bool Disabled();
 void SetDisabled(bool disabled);
 
-};
+} // anim namespace
 
 class BasicAnimation;
 
