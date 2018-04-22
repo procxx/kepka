@@ -21,7 +21,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <QThread>
-#include "facades.h"
 #include "mtproto/core_types.h"
 #include "mtproto/auth_key.h"
 #include "mtproto/dc_options.h"
