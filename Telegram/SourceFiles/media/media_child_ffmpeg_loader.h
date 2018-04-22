@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "media/media_audio_loader.h"
 #include "media/media_audio.h"
+#include "media/media_defs.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -30,7 +31,6 @@ extern "C" {
 #include <libswresample/swresample.h>
 } // extern "C"
 
-#include <AL/al.h>
 
 struct VideoSoundData {
 	AVCodecContext *context = nullptr;

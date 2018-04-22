@@ -44,7 +44,10 @@ if (LINUX)
     find_package(ALSA)
     find_package(PulseAudio)
     find_package(Qt5 COMPONENTS DBus)
-else(LINUX)
+elseif(APPLE AND PROCXX_USE_NATIVE_OPEN_AL)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -framework OpenAL")
+    set(PROCXX_USE_NATIVE_OPEN_AL_MAC 1)
+else()
     # Needs OpenAL-SOFT
     # Install via `brew install openal-soft` and configure with cmake call from README.md
     find_package(OpenAL REQUIRED NO_MODULE)

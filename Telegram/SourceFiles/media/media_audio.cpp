@@ -27,9 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/platform_audio.h"
 #include "base/task_queue.h"
 
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <AL/alext.h>
+#include "media/media_defs.h"
 
 #include <numeric>
 
@@ -1344,8 +1342,13 @@ bool audioDeviceIsConnected() {
 	if (!AudioDevice) {
 		return false;
 	}
+#if defined (PROCXX_USE_NATIVE_OPEN_AL_MAC)
+#pragma message ("Mac OS Native OpenAL not support ALC_EXT_disconnect")
+   auto isConnected = ALint(1);
+#else
 	auto isConnected = ALint(0);
 	alcGetIntegerv(AudioDevice, ALC_CONNECTED, 1, &isConnected);
+#endif
 	if (Audio::ContextErrorHappened()) {
 		return false;
 	}
