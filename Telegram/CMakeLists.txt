@@ -189,8 +189,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # cmakelists file. To do: get rid of the PCH requirement for more flexible build structure.
 
 add_executable(Telegram WIN32 MACOSX_BUNDLE
-    SourceFiles/stdafx.cpp
-
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/numbers.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lang_auto.cpp
