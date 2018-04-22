@@ -26,6 +26,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QPushButton>
 #include <QLabel>
 #include <QCheckBox>
+#include <QNetworkReply>
 #include "platform/platform_specific.h"
 #include "platform/platform_main_window.h"
 #include "core/single_timer.h"
