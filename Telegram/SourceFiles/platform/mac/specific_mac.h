@@ -18,6 +18,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "platform/mac/specific_mac_p.h"
+class QAbstractNativeEventFilter;
+class LocationCoords;
 
 namespace Platform {
 
