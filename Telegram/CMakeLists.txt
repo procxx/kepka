@@ -12,6 +12,9 @@ if (PACKAGED_BUILD)
     add_definitions(-DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION)
 endif()
 
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H")
+
 ##================================================
 ## Codegen Tools
 ##================================================
