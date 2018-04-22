@@ -20,23 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "history/history.h"
 
-#include "history/history_message.h"
-#include "history/history_media_types.h"
-#include "history/history_service.h"
-#include "dialogs/dialogs_indexed_list.h"
-#include "styles/style_dialogs.h"
-#include "data/data_drafts.h"
-#include "lang/lang_keys.h"
-#include "apiwrap.h"
-#include "mainwidget.h"
-#include "mainwindow.h"
-#include "storage/localstorage.h"
-#include "window/top_bar_widget.h"
-#include "observer_peer.h"
-#include "auth_session.h"
-#include "window/notifications_manager.h"
-#include "calls/calls_instance.h"
-
 namespace {
 
 constexpr auto kStatusShowClientsideTyping = 6000;

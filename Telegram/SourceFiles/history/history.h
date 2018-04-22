@@ -20,16 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/animation.h"
-#include "structs.h"
-#include "dialogs/dialogs_common.h"
-#include "ui/effects/send_action_animations.h"
-#include "base/observer.h"
+#include "ui/animation.h" // For BasicAnimation
+#include "ui/effects/send_action_animations.h" // For SendActionAnimation
+#include "dialogs/dialogs_common.h" // For Dialogs::Mode
 #include "base/timer.h"
-#include "base/variant.h"
-#include "base/flat_set.h"
-#include "base/flags.h"
 #include "base/optional.h"
+#include "base/flat_set.h"
 
 void HistoryInit();
 
