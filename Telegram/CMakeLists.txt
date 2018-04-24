@@ -569,7 +569,7 @@ include_directories(ThirdParty) # For minizip/ but we use fully-qualified
 include_directories(ThirdParty/GSL/include ThirdParty/variant/include
     ThirdParty/emoji_suggestions ThirdParty/libtgvoip)
 
-include_directories(SourceFiles SourceFiles/core)
+include_directories(SourceFiles)
 
 include_directories(${OPENAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
     ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS} ${PULSEAUDIO_INCLUDE_DIR})

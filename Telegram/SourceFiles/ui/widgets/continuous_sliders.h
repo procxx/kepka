@@ -21,7 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/lambda.h"
-#include "single_timer.h"
+#include "core/single_timer.h"
 #include "styles/style_widgets.h"
 #include "ui/twidget.h"
 #include "ui/animation.h"

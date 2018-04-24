@@ -26,7 +26,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/timer.h"
 #include "mtproto/rpc_sender.h"
 #include "structs.h"
-#include "single_timer.h"
+#include "core/single_timer.h"
 
 namespace App {
 void quit();

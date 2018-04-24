@@ -23,7 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <type_traits>
 #include "base/observer.h"
 #include "structs.h"
-#include "single_timer.h"
+#include "core/single_timer.h"
 
 class AuthSession;
 class History;
