@@ -24,6 +24,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_widgets.h"
 #include "styles/style_history.h"
 #include "facades.h"
+#include "app.h"
 
 BotKeyboard::BotKeyboard(QWidget *parent) : TWidget(parent)
 , _st(&st::botKbButton) {

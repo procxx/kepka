@@ -30,7 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "apiwrap.h"
 #include "auth_session.h"
 #include "lang/lang_keys.h"
-
+#include "app.h" // For App::user, App::feedUsers
 
 namespace {
 

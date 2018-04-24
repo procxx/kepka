@@ -34,6 +34,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/scroll_area.h"
 #include "auth_session.h"
 #include "messenger.h"
+#include <QApplication>
+#include <QClipboard>
 
 namespace {
 

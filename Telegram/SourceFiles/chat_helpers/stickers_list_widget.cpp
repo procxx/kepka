@@ -36,6 +36,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "auth_session.h"
 #include "observer_peer.h"
 #include "apiwrap.h"
+#include "chat_helpers/tabbed_selector.h"
+#include <QApplication>
+#include <QWidget>
 
 namespace ChatHelpers {
 namespace {

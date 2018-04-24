@@ -38,6 +38,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/platform_specific.h"
 #include "base/task_queue.h"
 #include "window/main_window.h"
+#include "app.h"
+#include <QApplication>
 
 namespace Calls {
 namespace {

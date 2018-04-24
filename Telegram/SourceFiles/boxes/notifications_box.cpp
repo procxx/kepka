@@ -32,6 +32,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "auth_session.h"
 #include "window/notifications_manager.h"
 #include "platform/platform_specific.h"
+#include "app.h" // For App::pixmapFromImageInPlace
 
 namespace {
 

@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/connection.h"
 #include "mtproto/dcenter.h"
 #include "mtproto/auth_key.h"
+#include "scheme.h"
 
 namespace MTP {
 namespace internal {

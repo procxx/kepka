@@ -30,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "observer_peer.h"
 #include "boxes/abstract_box.h"
 #include "base/timer.h"
+#include "app.h"
 
 namespace Calls {
 namespace {

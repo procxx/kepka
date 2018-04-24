@@ -36,6 +36,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "media/media_audio_track.h"
 
 #include "boxes/rate_call_box.h"
+#include "app.h"
+
 namespace Calls {
 namespace {
 

@@ -32,6 +32,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "settings/settings_background_widget.h"
 #include "settings/settings_privacy_widget.h"
 #include "settings/settings_advanced_widget.h"
+#include "app.h"
 
 namespace Settings {
 
