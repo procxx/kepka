@@ -1275,6 +1275,34 @@ void DialogsInner::handlePeerNameChange(not_null<PeerData*> peer, const PeerData
 }
 
 void DialogsInner::onFilterUpdate(QString newFilter, bool force) {
+	enum NewFilterMode : uint64_t
+	{
+		NewFilter_Unread = 0x1,
+		NewFilter_Read = 0x2,
+		NewFilter_Muted = 0x4,
+		NewFilter_Unmuted = 0x8,
+		NewFilter_TestPeer = 0x10,
+	};
+	QString searchFilterKeywords[] = { "!unread", "!read", "!unmuted", "!muted", "!test" };
+	uint64_t newFilterMode = 0;
+	uint64_t index = 1;
+	for (const auto &filterKeyword : searchFilterKeywords) {
+		if (newFilter.contains(filterKeyword)) {
+			newFilter.replace(filterKeyword, "");
+			newFilterMode |= index;
+		}
+		index <<= 1;
+	}
+	// clean mutual exclusive flags
+	if ((newFilterMode & NewFilter_Read) &&
+		(newFilterMode & NewFilter_Unread)) {
+		newFilterMode &= ~(NewFilter_Read | NewFilter_Unread);
+	}
+	if ((newFilterMode & NewFilter_Muted) &&
+		(newFilterMode & NewFilter_Unmuted)) {
+		newFilterMode &= ~(NewFilter_Muted | NewFilter_Unmuted);
+	}
+
 	auto words = TextUtilities::PrepareSearchWords(newFilter);
 	newFilter = words.isEmpty() ? QString() : words.join(' ');
 	if (newFilter != _filter || force) {
@@ -1284,11 +1312,75 @@ void DialogsInner::onFilterUpdate(QString newFilter, bool force) {
 		} else {
 			QStringList::const_iterator fb = words.cbegin(), fe = words.cend(), fi;
 
+			if (newFilterMode & NewFilter_TestPeer) {
+				static PeerId testPeerId = 100000000001ULL;
+				static UserId testUserId = App::self()->bareId();
+				class MockPeerData : public PeerData
+				{
+					PeerId mockPeerId;
+				public:
+					MockPeerData(PeerId testPeerId, QString testName)
+						: PeerData(mockPeerId), mockPeerId(testPeerId)
+					{
+						this->name = testName;
+					}
+				};
+
+				class MockHistoryItem : public HistoryItem
+				{
+
+				public:
+					MockHistoryItem(History *hist) : HistoryItem(hist, 1, 0, QDateTime::currentDateTime(), testUserId) {}
+					virtual void draw(Painter &p, QRect clip, TextSelection selection, TimeMs ms) const override
+					{
+						p.drawText(clip, "Ты хуй, блядь!");
+						// throw std::logic_error("The method or operation is not implemented.");
+					}
+
+					virtual HistoryTextState getState(QPoint point, HistoryStateRequest request) const WARN_UNUSED_RESULT override
+					{
+						return HistoryTextState();
+						// throw std::logic_error("The method or operation is not implemented.");
+					}
+
+					virtual void initDimensions() override
+					{
+						// throw std::logic_error("The method or operation is not implemented.");
+					}
+
+					virtual int resizeContentGetHeight() override
+					{
+						return 100;
+						// throw std::logic_error("The method or operation is not implemented.");
+					}
+
+				};
+				// testPeerId.
+				static MockPeerData alreadyLivingData(testPeerId, "test username");
+				static Dialogs::List list(Dialogs::SortMode::Name);
+				static History testHistory(testPeerId);
+				static MockHistoryItem testHistoryItem(&testHistory);
+				bool fstTime = false;
+				if (!fstTime) {
+					testHistory.notifies.push_back(&testHistoryItem);
+					testHistory.setUnreadCount(rand() % 100);
+					list.addToEnd(&testHistory);
+				}
+			}
+
 			_state = FilteredState;
 			_filterResults.clear();
 			if (!_searchInPeer && !words.isEmpty()) {
 				const Dialogs::List *toFilter = nullptr;
 				if (!_dialogs->isEmpty()) {
+					// the first step is to exclude all dialogs which doesn't
+					// met to our new filters
+
+					//for (const auto &row : _dialogs->all()) {
+					//	if (row.begin())
+					//}
+
+					// After that we will filter via word
 					for (fi = fb; fi != fe; ++fi) {
 						auto found = _dialogs->filtered(fi->at(0));
 						if (found->isEmpty()) {
