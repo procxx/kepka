@@ -13,7 +13,7 @@ if (PACKAGED_BUILD)
 endif()
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H")
 
 ##================================================
 ## Codegen Tools
@@ -584,7 +584,7 @@ if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_USING_V110_SDK71_
         -DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE
         -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
-        -DHAVE_STDINT_H)
+        -DHAVE_STDINT_H -DNOMINMAX)
 endif()
 
 add_definitions(-DAL_LIBTYPE_STATIC)
