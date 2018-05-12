@@ -23,6 +23,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/auth_key.h"
 #include "mtproto/connection_abstract.h"
 
+#include <QAbstractSocket>
+#include <QTcpSocket>
+#include <QTimer>
+
 namespace MTP {
 namespace internal {
 

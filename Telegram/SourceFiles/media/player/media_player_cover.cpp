@@ -31,6 +31,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "media/player/media_player_volume_controller.h"
 #include "styles/style_media_player.h"
 #include "styles/style_mediaview.h"
+#include "layout.h"
 
 namespace Media {
 namespace Player {

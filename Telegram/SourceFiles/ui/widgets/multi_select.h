@@ -21,6 +21,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "styles/style_widgets.h"
+#include "base/lambda.h"
+#include "base/object_ptr.h"
+#include "ui/twidget.h"
+
+#include <QPointer>
+#include "ui/animation.h"
+#include "ui/text/text.h"
+
+class QPaintEvent;
+class QMouseEvent;
+class QKeyEvent;
 
 namespace Ui {
 

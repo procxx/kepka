@@ -20,6 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/lambda.h"
+
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include "mtproto/mtp_instance.h"
+
 namespace MTP {
 
 class SpecialConfigRequest : public QObject {

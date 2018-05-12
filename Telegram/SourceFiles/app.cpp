@@ -50,6 +50,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/notifications_manager.h"
 #include "platform/platform_notifications_manager.h"
 
+#include <QLinkedList>   // used in list of PhotosData
+#include <QFontDatabase>
+#include <QBuffer>
+#include <QImageReader>
+
 namespace {
 	App::LaunchState _launchState = App::Launched;
 

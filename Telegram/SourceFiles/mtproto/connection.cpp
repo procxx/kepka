@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/rpc_sender.h"
 #include "mtproto/dc_options.h"
 #include "mtproto/connection_abstract.h"
+#include "mtproto/facade.h"
 #include "zlib.h"
 #include "lang/lang_keys.h"
 #include "base/openssl_help.h"
@@ -32,6 +33,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <openssl/sha.h>
 #include <openssl/md5.h>
 #include <openssl/rand.h>
+#include "facades.h"
 
 namespace MTP {
 namespace internal {
@@ -2183,7 +2185,7 @@ void ConnectionPrivate::requestsAcked(const QVector<MTPlong> &ids, bool byRespon
 }
 
 void ConnectionPrivate::handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states, QVector<MTPlong> &acked) {
-	quint32 idsCount = ids.size();
+	auto idsCount = ids.size();
 	if (!idsCount) {
 		DEBUG_LOG(("Message Info: void ids vector in handleMsgsStates()"));
 		return;

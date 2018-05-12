@@ -21,6 +21,25 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/observer.h"
+#include "base/object_ptr.h"
+#include "ui/twidget.h"
+#include "structs.h"
+
+class PhotoData;
+class PeerData;
+class UserData;
+class ChatData;
+class ChannelData;
+
+class Painter;
+
+class QMimeData;
+class QWidget;
+class QPaintEvent;
+class QDragEvent;
+class QDragEnterEvent;
+class QDragLeaveEvent;
+class QDropEvent;
 
 namespace style {
 struct RoundButton;

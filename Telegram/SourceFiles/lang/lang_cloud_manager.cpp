@@ -29,6 +29,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/confirm_box.h"
 #include "lang/lang_file_parser.h"
 #include "core/file_utilities.h"
+#include "app.h"
 
 namespace Lang {
 

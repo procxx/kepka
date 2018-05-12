@@ -21,6 +21,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "settings/settings_block_widget.h"
+#include "ui/twidget.h"
+#include "base/observer.h"
+
+class QPaintEvent;
 
 namespace Ui {
 class FlatLabel;

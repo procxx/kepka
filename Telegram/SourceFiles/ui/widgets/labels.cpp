@@ -23,6 +23,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/popup_menu.h"
 #include "mainwindow.h"
 #include "lang/lang_keys.h"
+#include "app.h"
+#include "facades.h"
+#include "QDrag"
 
 namespace Ui {
 namespace {

@@ -32,6 +32,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/file_utilities.h"
 #include "facades.h"
 
+#include "app.h" // App::userLoaded
+
 namespace {
 
 QString tryConvertUrlToLocal(QString url) {

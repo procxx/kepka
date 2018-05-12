@@ -42,6 +42,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/edit_color_box.h"
 #include "lang/lang_keys.h"
 
+#include "app.h"
+#include "facades.h"
+
+#include <QBuffer>
+
 namespace Window {
 namespace Theme {
 namespace {

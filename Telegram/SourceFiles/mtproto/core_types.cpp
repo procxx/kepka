@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/core_types.h"
 
 #include "zlib.h"
+#include "scheme.h"
 
 quint32 MTPstring::innerLength() const {
 	quint32 l = v.length();

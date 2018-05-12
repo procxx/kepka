@@ -20,6 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "mtproto/core_types.h"
+
+#include <gsl/gsl>
+
+#include <QMutex>
+#include <QMutexLocker>
+#include <QReadWriteLock>
+
 namespace MTP {
 
 class Instance;
@@ -32,7 +40,7 @@ class Dcenter : public QObject {
 	Q_OBJECT
 
 public:
-	Dcenter(not_null<Instance*> instance, DcId dcId, AuthKeyPtr &&key);
+	Dcenter(gsl::not_null<Instance*> instance, DcId dcId, AuthKeyPtr &&key);
 
 	QReadWriteLock *keyMutex() const;
 	const AuthKeyPtr &getKey() const;
@@ -59,7 +67,7 @@ private slots:
 private:
 	mutable QReadWriteLock keyLock;
 	mutable QMutex initLock;
-	not_null<Instance*> _instance;
+	gsl::not_null<Instance*> _instance;
 	DcId _id = 0;
 	AuthKeyPtr _key;
 	bool _connectionInited = false;

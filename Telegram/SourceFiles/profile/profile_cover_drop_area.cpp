@@ -21,6 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "profile/profile_cover_drop_area.h"
 
 #include "styles/style_profile.h"
+#include <QWidget>
+#include <qPaintEvent>
 
 namespace Profile {
 

@@ -18,12 +18,13 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
 #include "platform/win/window_title_win.h"
 
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/shadow.h"
 #include "styles/style_window.h"
+
+#include <QWindow>
 
 namespace Platform {
 

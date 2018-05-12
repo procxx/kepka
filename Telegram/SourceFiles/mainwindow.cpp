@@ -55,6 +55,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "auth_session.h"
 #include "window/window_controller.h"
 
+#include <QWindow>
+#include <QAction>
+#include <QScreen>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QDesktopServices>
+#include <QHttpMultiPart>
+
 namespace {
 
 // Code for testing languages is F7-F6-F7-F8

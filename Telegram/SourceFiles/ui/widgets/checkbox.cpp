@@ -22,6 +22,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "lang/lang_keys.h"
 #include "ui/effects/ripple_animation.h"
+#include "app.h"
+
+#include <QRect>
+#include <qevent.h>
 
 namespace Ui {
 namespace {

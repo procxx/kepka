@@ -21,6 +21,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "profile/profile_block_peer_list.h"
+#include "core/click_handler.h"
+#include "QTimer"
+#include "structs.h"
+
+class UserData;
+class ChannelData;
+class ChatData;
 
 namespace Ui {
 class FlatLabel;

@@ -37,6 +37,8 @@ Q_DECLARE_METATYPE(ClickHandlerPtr);
 Q_DECLARE_METATYPE(Qt::MouseButton);
 Q_DECLARE_METATYPE(Ui::ShowWay);
 
+// class PeerData;
+
 namespace App {
 namespace internal {
 
@@ -285,13 +287,13 @@ void showPeerHistory(const PeerId &peer, MsgId msgId, ShowWay way) {
 	if (MainWidget *m = App::main()) m->ui_showPeerHistory(peer, msgId, way);
 }
 
-void showPeerHistory(const PeerData *peer, MsgId msgId, ShowWay way = ShowWay::ClearStack) {
+void showPeerHistory(const PeerData *peer, MsgId msgId, ShowWay way) {
 	showPeerHistory(peer->id, msgId, way);
 }
-void showPeerHistory(const History *history, MsgId msgId, ShowWay way = ShowWay::ClearStack) {
+void showPeerHistory(const History *history, MsgId msgId, ShowWay way) {
 	showPeerHistory(history->peer->id, msgId, way);
 }
-void showPeerHistoryAtItem(const HistoryItem *item, ShowWay way = ShowWay::ClearStack) {
+void showPeerHistoryAtItem(const HistoryItem *item, ShowWay way) {
 	showPeerHistory(item->history()->peer->id, item->id, way);
 }
 

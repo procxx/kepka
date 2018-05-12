@@ -21,6 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "profile/profile_block_widget.h"
+#include "ui/text/text_entity.h"
+#include "mtproto/rpc_sender.h"
 
 namespace style {
 struct FlatLabel;

@@ -75,6 +75,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "calls/calls_instance.h"
 #include "calls/calls_top_bar.h"
 
+#include <QAction>
+#include <QWindow>
+
 namespace {
 
 constexpr auto kSaveFloatPlayerPositionTimeoutMs = TimeMs(1000);

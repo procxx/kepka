@@ -33,6 +33,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/edit_privacy_box.h"
 #include "boxes/self_destruction_box.h"
 #include "settings/settings_privacy_controllers.h"
+#include "scheme.h"
 
 namespace Settings {
 

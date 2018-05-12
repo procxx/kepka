@@ -52,6 +52,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/confirm_phone_box.h"
 #include "boxes/share_box.h"
 
+#include <QMimeDatabase>
+#include <QDesktopServices>
+#include <QBuffer>
+#include <QWindow>
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QScreen>
+
 namespace {
 
 constexpr auto kQuitPreventTimeoutMs = 1500;

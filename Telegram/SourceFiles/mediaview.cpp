@@ -42,6 +42,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "storage/file_download.h"
 #include "calls/calls_instance.h"
 
+#include <QApplication>
+#include <QWidget>
+#include <QWindow>
+#include <QDesktopWidget>
+#include <QImageReader>
+
 namespace {
 
 TextParseOptions _captionTextOptions = {

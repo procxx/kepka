@@ -25,6 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_profile.h"
 #include "styles/style_widgets.h"
 #include "auth_session.h"
+#include "app.h"
 
 namespace Profile {
 

@@ -21,6 +21,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "application.h"
 #include "twidget.h"
 #include "mainwindow.h"
+#include "QWindow"
+#include "window\main_window.h"
+#include "messenger.h"
+#include "app.h"
+#include "QFontDatabase"
 
 namespace Fonts {
 namespace {

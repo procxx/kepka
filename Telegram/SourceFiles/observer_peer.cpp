@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "observer_peer.h"
 
 #include "base/observer.h"
+#include "facades.h"
 
 namespace Notify {
 namespace {

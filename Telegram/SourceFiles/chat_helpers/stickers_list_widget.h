@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "chat_helpers/tabbed_selector.h"
 #include "base/variant.h"
+#include "ui/effects/ripple_animation.h"
 
 namespace Window {
 class Controller;

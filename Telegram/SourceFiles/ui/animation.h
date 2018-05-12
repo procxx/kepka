@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#define _USE_MATH_DEFINES // for M_PI in MSVC (GCC and Clang has it as extension)
+
 #include <QTimer>
 #include <QColor>
 #include <QPen>
@@ -27,6 +29,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QColor>
 #include <QPainterPath>
 #include <cstdint>
+#include <cmath>
 
 #include "core/basic_types.h"
 #include "core/utils.h"

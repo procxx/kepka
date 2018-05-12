@@ -21,6 +21,9 @@
 #include "ui/widgets/inner_dropdown.h"
 #include "ui/widgets/menu.h"
 
+#include <QKeyEvent>
+#include <QMouseEvent>
+
 namespace Ui {
 
 class DropdownMenu : public InnerDropdown {

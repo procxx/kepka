@@ -19,6 +19,8 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
+#include "base/object_ptr.h"
+#include <gsl/gsl>
 
 namespace Window {
 
@@ -27,7 +29,7 @@ class SectionWidget;
 
 class SectionMemento {
 public:
-	virtual object_ptr<Window::SectionWidget> createWidget(QWidget *parent, not_null<Window::Controller*> controller, const QRect &geometry) = 0;
+	virtual object_ptr<Window::SectionWidget> createWidget(QWidget *parent, gsl::not_null<Window::Controller*> controller, const QRect &geometry) = 0;
 	virtual ~SectionMemento() {
 	}
 

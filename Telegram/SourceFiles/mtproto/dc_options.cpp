@@ -22,6 +22,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "storage/serialize_common.h"
 
+#include "mtproto/facade.h"
+#include "facades.h"
+
+#include <QHostAddress>
+
 namespace MTP {
 
 class DcOptions::WriteLocker {

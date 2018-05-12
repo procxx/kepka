@@ -31,6 +31,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/window_slide_animation.h"
 #include "window/window_controller.h"
 #include "auth_session.h"
+#include "base/observer.h"
+#include "app.h"
+
+#include <QWidget>
 
 PasscodeWidget::PasscodeWidget(QWidget *parent) : TWidget(parent)
 , _passcode(this, st::passcodeInput, langFactory(lng_passcode_ph))

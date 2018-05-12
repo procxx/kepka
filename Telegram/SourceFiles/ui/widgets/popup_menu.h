@@ -20,6 +20,9 @@
 #include "styles/style_widgets.h"
 #include "ui/widgets/menu.h"
 #include "ui/effects/panel_animation.h"
+#include "ui/animation.h"
+#include "qevent.h"
+#include "base/lambda.h"
 
 namespace Ui {
 

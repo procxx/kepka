@@ -22,6 +22,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "window/section_widget.h"
 #include "window/section_memento.h"
+#include "ui/effects/ripple_animation.h"
+#include "ui/text/text.h"
+#include "structs.h"
 
 namespace Notify {
 struct PeerUpdate;

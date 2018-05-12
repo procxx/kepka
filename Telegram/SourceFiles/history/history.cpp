@@ -19,6 +19,24 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "history/history.h"
+#include "lang_auto.h"
+#include "layout.h"
+#include "history_message.h"
+#include "history_media_types.h"
+#include "facades.h"
+#include "auth_session.h"
+#include "data/data_drafts.h"
+#include "app.h"
+#include "mainwidget.h"
+#include "styles/style_dialogs.h"
+#include "apiwrap.h"
+#include "history_service.h"
+#include "observer_peer.h"
+#include "calls/calls_instance.h"
+#include "messenger.h"
+#include "dialogs/dialogs_indexed_list.h"
+#include "dialogs/dialogs_row.h"
+#include "storage/localstorage.h"
 
 namespace {
 

@@ -25,6 +25,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/auth_key.h"
 #include "base/openssl_help.h"
 #include <openssl/aes.h>
+#include "app.h"
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 namespace MTP {
 namespace {

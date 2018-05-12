@@ -28,6 +28,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/platform_specific.h"
 #include "base/parse_helper.h"
 
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QDirIterator>
+#include "QShortcut"
+#include "QJsonArray"
+
 namespace ShortcutCommands {
 
 using Handler = bool(*)();

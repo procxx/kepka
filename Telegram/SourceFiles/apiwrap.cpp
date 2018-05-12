@@ -35,6 +35,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/notifications_manager.h"
 #include "chat_helpers/message_field.h"
 #include "chat_helpers/stickers.h"
+#include "base/algorithm.h" // for_each_apply
 
 namespace {
 

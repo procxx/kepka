@@ -20,8 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/object_ptr.h"
 #include "base/observer.h"
 #include "styles/style_boxes.h"
+#include "ui/twidget.h"
+
+class QPaintEvent;
 
 namespace Ui {
 class Checkbox;

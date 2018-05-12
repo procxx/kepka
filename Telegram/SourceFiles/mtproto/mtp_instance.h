@@ -30,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/core_types.h"
 #include "mtproto/rpc_sender.h"
 #include "mtproto/connection.h"
+#include "mtproto/session.h"
 
 namespace MTP {
 namespace internal {

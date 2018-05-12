@@ -20,7 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QPaintEvent>
+#include <gsl/gsl>
+
+#include "ui/twidget.h"
+
 #include "base/observer.h"
+
+class PeerData;
 
 namespace Profile {
 
@@ -35,9 +42,9 @@ public:
 	virtual void showFinished() {
 	}
 
-	virtual void saveState(not_null<SectionMemento*> memento) {
+	virtual void saveState(gsl::not_null<SectionMemento*> memento) {
 	}
-	virtual void restoreState(not_null<SectionMemento*> memento) {
+	virtual void restoreState(gsl::not_null<SectionMemento*> memento) {
 	}
 
 protected:

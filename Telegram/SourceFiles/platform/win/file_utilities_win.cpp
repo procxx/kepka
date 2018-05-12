@@ -18,8 +18,16 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
+#include <windows.h>
+#include <windowsx.h>
 #include <ShlGuid.h>
+
+#include <QDialog>
+#include <QSettings>
+#include <QFileDialog>
+#include <QStandardPaths>
+#include <QDesktopServices>
+
 #include "platform/win/file_utilities_win.h"
 
 #include "mainwindow.h"
@@ -27,6 +35,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/win/windows_dlls.h"
 #include "lang/lang_keys.h"
 #include "messenger.h"
+#include "app.h"
+#include <winerror.h>
+#include <Shlwapi.h>
 
 
 HBITMAP qt_pixmapToWinHBITMAP(const QPixmap &, int hbitmapFormat);

@@ -20,9 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-class TWidget;
 
+#include "ui/twidget.h"
+#include "base/lambda.h"
+#include "base/object_ptr.h"
 #include "styles/style_widgets.h"
+#include "ui/animation.h"
+
+#include <QSize>
+#include <QPixmap>
+
+class QWidget;
+class QPaintEvent;
 
 namespace Ui {
 

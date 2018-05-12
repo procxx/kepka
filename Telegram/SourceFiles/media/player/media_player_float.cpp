@@ -28,6 +28,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "media/view/media_clip_playback.h"
 #include "media/media_audio.h"
 #include "styles/style_history.h"
+#include "app.h"
 
 namespace Media {
 namespace Player {

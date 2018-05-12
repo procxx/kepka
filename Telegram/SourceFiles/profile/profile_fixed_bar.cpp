@@ -30,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "observer_peer.h"
 #include "styles/style_boxes.h"
 #include "profile/profile_back_button.h"
+#include "QWidget"
 
 namespace Profile {
 namespace {

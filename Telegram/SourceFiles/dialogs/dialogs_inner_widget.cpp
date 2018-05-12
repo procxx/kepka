@@ -40,6 +40,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/window_controller.h"
 #include "ui/widgets/multi_select.h"
 
+#include <string.h> // memcmp
+
 namespace {
 
 constexpr auto kHashtagResultsLimit = 5;

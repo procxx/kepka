@@ -20,6 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/style/style_core_font.h"
 
+#include <QMap>
+#include <QString>
+#include <QVector>
+#include "ui/twidget.h"
+#include "core/basic_types.h"
+
 namespace style {
 namespace internal {
 namespace {

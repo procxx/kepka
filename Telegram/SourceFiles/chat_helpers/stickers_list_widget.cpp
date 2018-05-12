@@ -37,6 +37,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "observer_peer.h"
 #include "apiwrap.h"
 #include "chat_helpers/tabbed_selector.h"
+#include "app.h"
+
 #include <QApplication>
 #include <QWidget>
 

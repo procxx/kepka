@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <signal.h>
 #include <new>
+#include <QMutex>
 
 #include "platform/platform_specific.h"
 #include "mtproto/connection.h"
@@ -50,6 +51,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #endif // Q_OS_LINUX64 || Q_OS_LINUX32
 
 #endif // !TDESKTOP_DISABLE_CRASH_REPORTS
+#include "facades.h"
 
 enum LogDataType {
 	LogDataMain,

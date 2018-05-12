@@ -22,6 +22,10 @@
 #include "application.h"
 #include "mainwindow.h"
 #include "lang/lang_keys.h"
+#include "app.h"
+#include "ui/effects/panel_animation.h"
+
+#include <QWindow>
 
 namespace Ui {
 

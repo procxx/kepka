@@ -22,6 +22,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/observer.h"
 #include "settings/settings_block_widget.h"
+#include "structs.h"
+
+class PhotoData;
+
+class QMimeData;
 
 namespace Ui {
 class FlatLabel;
