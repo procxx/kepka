@@ -19,6 +19,7 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include <QAction>
+#include <QApplication>
 #include "history/history_inner_widget.h"
 #include "styles/style_history.h"
 #include "core/file_utilities.h"

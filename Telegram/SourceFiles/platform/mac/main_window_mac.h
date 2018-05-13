@@ -20,11 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QMenuBar>
-
 #include "platform/platform_main_window.h"
 #include "platform/mac/specific_mac_p.h"
 #include "base/timer.h"
+
+#include <QMenuBar>
+#include <QTimer>
+#include <QSystemTrayIcon>
 
 namespace Platform {
 

@@ -26,6 +26,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwindow.h"
 #include "base/task_queue.h"
 #include "base/variant.h"
+#include "facades.h"
+#include "history/history.h"
 
 #include <thread>
 #include <Cocoa/Cocoa.h>

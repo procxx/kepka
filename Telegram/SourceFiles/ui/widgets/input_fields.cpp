@@ -33,6 +33,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QStyle>
 #include <QStack>
 #include <QCommonStyle>
+#include <QGuiApplication>
+#include <QApplication>
+#include <QClipboard>
 
 namespace Ui {
 namespace {

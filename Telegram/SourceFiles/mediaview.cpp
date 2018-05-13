@@ -47,6 +47,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QWindow>
 #include <QDesktopWidget>
 #include <QImageReader>
+#include <QClipboard>
 
 namespace {
 

@@ -35,6 +35,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QWindow>
 #include <QScreen>
 #include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QApplication>
 
 namespace Window {
 

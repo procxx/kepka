@@ -22,6 +22,7 @@ Copyright (c) 2018 pro.cxx Community
 
 #include <QObject>
 #include <QPointer>
+#include "core/utils.h" // @todo used for base::take
 
 // Smart pointer for QObject*, has move semantics, destroys object if it doesn't have a parent.
 template <typename Object>

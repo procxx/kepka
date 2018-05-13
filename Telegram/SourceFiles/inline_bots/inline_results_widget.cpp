@@ -18,7 +18,6 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QWindow>
 #include "inline_bots/inline_results_widget.h"
 #include "styles/style_chat_helpers.h"
 #include "ui/widgets/buttons.h"
@@ -38,6 +37,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/labels.h"
 #include "observer_peer.h"
+#include <QWindow>
+#include <QApplication>
 
 namespace InlineBots {
 namespace Layout {

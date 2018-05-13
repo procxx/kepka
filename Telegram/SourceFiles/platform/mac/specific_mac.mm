@@ -39,6 +39,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <SPMediaKeyTap.h>
 #include <mach-o/dyld.h>
 
+#include <QAbstractNativeEventFilter>
+#include <QDesktopWidget>
+#include <QDesktopServices>
+
 namespace {
 
 QStringList _initLogs;
