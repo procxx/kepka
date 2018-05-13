@@ -19,8 +19,9 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
-#include "ui\twidget.h"
-#include "base\observer.h"
+
+#include "ui/twidget.h"
+#include "base/observer.h"
 
 class EditColorBox;
 
