@@ -22,7 +22,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/twidget.h"
 #include "ui/animation.h"
 #include "app.h"
-#include "QPainter"
+
+#include <QPainter>
 
 namespace Ui {
 

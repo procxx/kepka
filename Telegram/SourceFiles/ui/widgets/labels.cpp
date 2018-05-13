@@ -25,7 +25,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 #include "app.h"
 #include "facades.h"
-#include "QDrag"
+
+#include <QDrag>
 
 namespace Ui {
 namespace {

@@ -20,7 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/win/windows_dlls.h"
 #include "settings.h"
-#include "QSysInfo"
+
+#include <QSysInfo>
 
 namespace Platform {
 namespace Dlls {

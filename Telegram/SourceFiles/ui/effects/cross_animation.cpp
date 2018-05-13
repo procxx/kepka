@@ -20,7 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/effects/cross_animation.h"
 #include "ui/twidget.h"
-#include "qmath.h"
+
+#include <Qmath.h>
 
 namespace Ui {
 namespace {

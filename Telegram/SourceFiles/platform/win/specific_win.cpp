@@ -42,14 +42,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <strsafe.h>
 
-#include <QDesktopWidget>
-
-#include <qpa/qplatformnativeinterface.h>
 #include <ObjIdl.h>
 #include <wrl/client.h>
-#include "QStandardPaths"
-#include "QDesktopServices"
 #include <propvarutil.h>
+
+#include <qpa/qplatformnativeinterface.h>
+#include <QStandardPaths>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+
 
 #ifndef DCX_USESTYLE
 #define DCX_USESTYLE 0x00010000

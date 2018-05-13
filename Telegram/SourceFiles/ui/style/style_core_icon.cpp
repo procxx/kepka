@@ -19,10 +19,11 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/style/style_core_icon.h"
-#include "QPainter"
 #include "settings.h"
 #include "style_core.h"
 #include "app.h"
+
+#include <QPainter>
 
 namespace style {
 namespace internal {

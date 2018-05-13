@@ -34,7 +34,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "scheme.h"
 #include "facades.h"
 #include "app.h"
-#include "QDesktopServices"
+
+#include <QDesktopServices>
 
 namespace Settings {
 

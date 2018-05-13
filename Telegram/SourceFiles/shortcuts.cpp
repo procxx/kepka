@@ -31,8 +31,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QDirIterator>
-#include "QShortcut"
-#include "QJsonArray"
+#include <QShortcut>
+#include <QJsonArray>
 
 namespace ShortcutCommands {
 
