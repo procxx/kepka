@@ -36,7 +36,6 @@ BuildRequires: range-v3-devel
 BuildRequires: openssl-devel
 BuildRequires: minizip-devel
 BuildRequires: opus-devel
-BuildRequires: gtk3-devel
 BuildRequires: zlib-devel
 BuildRequires: dee-devel
 BuildRequires: xz-devel
