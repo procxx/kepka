@@ -37,7 +37,6 @@ BuildRequires: openssl-devel
 BuildRequires: minizip-devel
 BuildRequires: opus-devel
 BuildRequires: zlib-devel
-BuildRequires: dee-devel
 BuildRequires: xz-devel
 
 # Development packages for libtgvoip...
