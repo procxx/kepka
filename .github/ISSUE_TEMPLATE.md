@@ -1,5 +1,5 @@
 <!--
-Thanks for reporting issues of Telegram Desktop!
+Thanks for reporting issues of Kepka!
 
 To make it easier for us to help you please enter detailed information below.
 --> 
@@ -17,7 +17,7 @@ Tell us what happens instead
 ### Configuration
 **Operating system:**
 
-**Version of Telegram Desktop:**
+**Version of Kepka:**
 
 **Used theme**:
 

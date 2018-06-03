@@ -324,7 +324,7 @@ void start() {
 	}
 	if (!defaultValid && defaultFile.open(QIODevice::WriteOnly)) {
 		const char *defaultHeader = "\
-// This is a list of default shortcuts for Telegram Desktop\n\
+// This is a list of default shortcuts for Kepka\n\
 // Please don't modify it, its content is not used in any way\n\
 // You can place your own shortcuts in the 'shortcuts-custom.json' file\n\n";
 		defaultFile.write(defaultHeader);
@@ -398,7 +398,7 @@ void start() {
 		}
 	} else if (customFile.open(QIODevice::WriteOnly)) {
 		const char *customContent = "\
-// This is a list of your own shortcuts for Telegram Desktop\n\
+// This is a list of your own shortcuts for Kepka\n\
 // You can see full list of commands in the 'shortcuts-default.json' file\n\
 // Place a null value instead of a command string to switch the shortcut off\n\n\
 [\n\

@@ -21,16 +21,16 @@ What you need to have installed:
 * zlib
 * opus (libopus-dev)
 
-Debian/Ubuntu:
+#### Debian/Ubuntu:
 ```console
-# apt-get install qtbase5-private-dev zlib1g-dev libopenal-dev libavcodec-dev libavresample-dev libswscale-dev libopenal-data libopenal1 libavutil-dev
+# apt-get install libssl-dev libavformat-dev libavdevice-dev libswscale-dev libavutil-dev libpulse-dev libasound2-dev libswresample-dev libavresample-dev libopus-dev qtbase5-private-dev zlib1g-dev libopenal-dev libavcodec-dev libopenal-data libopenal1
 ```
 
 You most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscale`
 
 After that, go to the [next section](#configuring-and-building).
 
-Fedora:
+#### Fedora:
 ```console
 # dnf install rpm-build rpmdevtools mock mock-rpmfusion-free
 ```
