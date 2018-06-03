@@ -24,7 +24,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <deque>
 #include <QMutex>
 #include "base/lambda.h"
-#include "core/utils.h"
+#include "base/timer.h"
 
 namespace base {
 

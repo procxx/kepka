@@ -43,7 +43,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QBuffer>
 #include <QImageReader>
 #include <QDirIterator>
-#include <Qendian.h>
+#include <qendian.h>
 
 namespace Local {
 namespace {

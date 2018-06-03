@@ -24,7 +24,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_widgets.h"
 
 #include <QPainter>
-#include <Qevent.h>
+#include <qevent.h>
 
 namespace Ui {
 

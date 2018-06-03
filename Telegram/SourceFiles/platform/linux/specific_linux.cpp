@@ -35,6 +35,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <iostream>
 
+#include <QAbstractNativeEventFilter>
+#include <QDesktopWidget>
+#include <QStandardPaths>
+
 #include <qpa/qplatformnativeinterface.h>
 
 using namespace Platform;

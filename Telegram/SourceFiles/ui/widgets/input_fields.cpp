@@ -29,7 +29,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "messenger.h"
 #include "app.h"
 
-#include <QStyle.h>
 #include <QStyle>
 #include <QStack>
 #include <QCommonStyle>

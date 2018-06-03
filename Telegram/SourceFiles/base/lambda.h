@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <memory>
+#include <cstddef> // std::max_align_t
 
 #ifndef Assert
 #define LambdaAssertDefined

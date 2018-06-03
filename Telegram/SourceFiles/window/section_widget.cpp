@@ -25,7 +25,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window_slide_animation.h"
 #include "facades.h"
 
-#include <Qevent.h>
+#include <QEvent>
+#include <QPaintEvent>
 
 namespace Window {
 
