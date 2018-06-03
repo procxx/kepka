@@ -95,7 +95,7 @@ Furthermore, the pixel shortage is over. We want to see:
 
 ### Test your changes!
 
-Before you submit a pull request, please test your changes. Verify that Telegram Desktop still works and your changes don't cause other issue or crashes.
+Before you submit a pull request, please test your changes. Verify that Kepka still works and your changes don't cause other issue or crashes.
 
 ### Write a good commit message
 

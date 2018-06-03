@@ -69,3 +69,5 @@ Session.vim
 _build_
 _conan_build_
 
+.idea/
+cmake-build-debug/
