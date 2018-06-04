@@ -1253,7 +1253,7 @@ QString EscapeForRichParsing(const QString &text) {
 
 QString SingleLine(const QString &text) {
 	auto result = text;
-	auto s = text.unicode(), ch = s, e = text.unicode() + text.size();
+	auto s = text.unicode(), e = text.unicode() + text.size();
 
 	// Trim.
 	while (s < e && chIsTrimmed(*s)) {
@@ -1315,7 +1315,6 @@ QStringList PrepareSearchWords(const QString &query, const QRegularExpression *S
 	auto result = QStringList();
 	if (!clean.isEmpty()) {
 		auto list = clean.split(SplitterOverride ? *SplitterOverride : RegExpWordSplit(), QString::SkipEmptyParts);
-		auto size = list.size();
 		result.reserve(list.size());
 		for_const (auto &word, list) {
 			auto trimmed = word.trimmed();
@@ -1401,7 +1400,7 @@ bool CutPart(TextWithEntities &sending, TextWithEntities &left, qint32 limit) {
 		}
 
 		int elen = 0;
-		if (auto e = Ui::Emoji::Find(ch, end, &elen)) {
+		if (Ui::Emoji::Find(ch, end, &elen)) {
 			for (int i = 0; i < elen; ++i, ++ch, ++s) {
 				if (ch->isHighSurrogate() && i + 1 < elen && (ch + 1)->isLowSurrogate()) {
 					++ch;
@@ -2066,7 +2065,7 @@ QString ApplyEntities(const TextWithEntities &text) {
 
 	QString result;
 	qint32 size = text.text.size();
-	const QChar *b = text.text.constData(), *already = b, *e = b + size;
+	const QChar *b = text.text.constData(), *already = b;//, *e = b + size;
 	auto entity = text.entities.cbegin(), end = text.entities.cend();
 	auto skipTillRelevantAndGetTag = [&entity, &end, size, &tags] {
 		while (entity != end) {

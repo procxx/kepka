@@ -251,13 +251,10 @@ void MainWindow::psCreateTrayIcon() {
 void MainWindow::psFirstShow() {
 	psCreateTrayIcon();
 
-
 	psUpdateMargins();
 
-	bool showShadows = true;
-
 	show();
-	//_private.enableShadow(winId());
+
 	if (cWindowPos().maximized) {
 		DEBUG_LOG(("Window Pos: First show, setting maximized."));
 		setWindowState(Qt::WindowMaximized);
@@ -270,7 +267,6 @@ void MainWindow::psFirstShow() {
 		} else {
 			show();
 		}
-		showShadows = false;
 	} else {
 		show();
 	}

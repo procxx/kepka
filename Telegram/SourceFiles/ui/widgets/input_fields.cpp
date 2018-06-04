@@ -1567,7 +1567,6 @@ void FlatInput::touchEvent(QTouchEvent *e) {
 	case QEvent::TouchEnd:
 		if (!_touchPress) return;
 		if (!_touchMove && window()) {
-			Qt::MouseButton btn(_touchRightButton ? Qt::RightButton : Qt::LeftButton);
 			QPoint mapped(mapFromGlobal(_touchStart)), winMapped(window()->mapFromGlobal(_touchStart));
 
 			if (_touchRightButton) {

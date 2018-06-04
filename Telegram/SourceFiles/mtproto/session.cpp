@@ -50,9 +50,7 @@ void SessionData::setKey(const AuthKeyPtr &key) {
 void SessionData::clear(Instance *instance) {
 	RPCCallbackClears clearCallbacks;
 	{
-		QReadLocker locker1(haveSentMutex()), locker2(toResendMutex()), locker3(haveReceivedMutex()),
-		    locker4(wereAckedMutex());
-		auto receivedResponsesEnd = _receivedResponses.cend();
+		QReadLocker locker1(haveSentMutex()), locker2(toResendMutex()), locker3(haveReceivedMutex()), locker4(wereAckedMutex());
 		clearCallbacks.reserve(_haveSent.size() + _wereAcked.size());
 		for (auto i = _haveSent.cbegin(), e = _haveSent.cend(); i != e; ++i) {
 			auto requestId = i.value()->requestId;

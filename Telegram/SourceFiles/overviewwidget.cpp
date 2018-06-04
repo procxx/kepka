@@ -784,11 +784,6 @@ bool OverviewInner::preloadLocal() {
 }
 
 TextSelection OverviewInner::itemSelectedValue(qint32 index) const {
-	qint32 selfrom = -1, selto = -1;
-	if (_dragSelFromIndex >= 0 && _dragSelToIndex >= 0) {
-		selfrom = _dragSelToIndex;
-		selto = _dragSelFromIndex;
-	}
 	if (_items.at(index)->toMediaItem()) { // draw item
 		if (index >= _dragSelToIndex && index <= _dragSelFromIndex && _dragSelToIndex >= 0) {
 			return (_dragSelecting && _items.at(index)->msgId() > 0) ? FullSelection : TextSelection{0, 0};
@@ -834,7 +829,6 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 	}
 
 	SelectedItems::const_iterator selEnd = _selected.cend();
-	bool hasSel = !_selected.isEmpty();
 
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		qint32 count = _items.size(), rowsCount = count / _photosInRow + ((count % _photosInRow) ? 1 : 0);
@@ -859,7 +853,7 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 		}
 	} else {
 		p.translate(_rowsLeft, _marginTop);
-		qint32 y = 0, w = _rowWidth;
+		qint32 y = 0;
 		for (qint32 j = 0, l = _items.size(); j < l; ++j) {
 			qint32 i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
 			qint32 nextItemTop =
@@ -897,7 +891,6 @@ void OverviewInner::onUpdateSelected() {
 	ClickHandlerHost *lnkhost = nullptr;
 	HistoryItem *item = 0;
 	qint32 index = -1;
-	qint32 newsel = 0;
 	HistoryCursorState cursorState = HistoryDefaultCursorState;
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		double w = (double(_width - st::overviewPhotoSkip) / _photosInRow);
@@ -1016,11 +1009,8 @@ void OverviewInner::onUpdateSelected() {
 		}
 		if (_dragAction == Selecting) {
 			bool canSelectMany = (_peer != 0);
-			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() &&
-			    _selected.cbegin().value() != FullSelection) {
-				bool afterSymbol = false, uponSymbol = false;
-				quint16 second = 0;
-				_selected[_dragItem] = {0, 0};
+			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() && _selected.cbegin().value() != FullSelection) {
+				_selected[_dragItem] = { 0, 0 };
 				updateDragSelection(0, -1, 0, -1, false);
 			} else if (canSelectMany) {
 				bool selectingDown =

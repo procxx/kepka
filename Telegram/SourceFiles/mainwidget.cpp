@@ -920,7 +920,6 @@ void MainWidget::showSendPathsLayer() {
 
 void MainWidget::deleteLayer(int selectedCount) {
 	if (selectedCount) {
-		auto forDelete = true;
 		auto selected = _overview ? _overview->getSelectedItems() : _history->getSelectedItems();
 		if (!selected.isEmpty()) {
 			Ui::show(Box<DeleteMessagesBox>(selected));
@@ -1307,7 +1306,7 @@ void MainWidget::checkedHistory(PeerData *peer, const MTPmessages_Messages &resu
 			if (h) Local::addSavedPeer(peer, h->lastMsgDate);
 		} else if (peer->isChannel()) {
 			if (peer->asChannel()->inviter > 0 && peer->asChannel()->amIn()) {
-				if (auto from = App::userLoaded(peer->asChannel()->inviter)) {
+				if (App::userLoaded(peer->asChannel()->inviter)) {
 					auto h = App::history(peer->id);
 					h->clear(true);
 					h->addNewerSlice(QVector<MTPMessage>());
@@ -1358,9 +1357,6 @@ void MainWidget::onCacheBackground() {
 		result.setDevicePixelRatio(cRetinaFactor());
 		{
 			QPainter p(&result);
-			auto left = 0;
-			auto top = 0;
-			auto right = _willCacheFor.width();
 			auto bottom = _willCacheFor.height();
 			auto w = bg.width() / cRetinaFactor();
 			auto h = bg.height() / cRetinaFactor();

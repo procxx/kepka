@@ -138,7 +138,7 @@ void EmptyUserpic::Impl::fillString(const QString &name) {
 	auto ch = name.constData(), end = ch + name.size();
 	while (ch != end) {
 		auto emojiLength = 0;
-		if (auto emoji = Ui::Emoji::Find(ch, end, &emojiLength)) {
+		if (Ui::Emoji::Find(ch, end, &emojiLength)) {
 			ch += emojiLength;
 		} else if (ch->isHighSurrogate()) {
 			++ch;
@@ -1771,10 +1771,8 @@ void DocumentData::performActionOnLoad() {
 	auto showImage = !isVideo() && (size < App::kImageSizeLimit);
 	auto playVoice = voice() && (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen);
 	auto playMusic = tryPlaySong() && (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen);
-	auto playAnimation = isAnimation() &&
-	                     (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen) && showImage &&
-	                     item && item->getMedia();
-	if (auto applyTheme = isTheme()) {
+	auto playAnimation = isAnimation() && (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen) && showImage && item && item->getMedia();
+	if (isTheme()) {
 		if (!loc.isEmpty() && loc.accessEnable()) {
 			Messenger::Instance().showDocument(this, item);
 			loc.accessDisable();

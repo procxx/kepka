@@ -513,7 +513,6 @@ public:
 				qint32 i = 0, l = preparsed.size();
 				source.entities.clear();
 				source.entities.reserve(l);
-				const QChar s = source.text.size();
 				for (; i < l; ++i) {
 					auto type = preparsed.at(i).type();
 					if (((type == EntityInTextMention || type == EntityInTextMentionName) && !parseMentions) ||

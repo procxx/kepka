@@ -952,12 +952,12 @@ void StickersBox::Inner::setPressed(int pressed) {
 		update(0, _itemsTop + _pressed * _rowHeight, width(), _rowHeight);
 		auto &set = _rows[_pressed];
 		auto rippleMask = Ui::RippleAnimation::rectMask(QSize(width(), _rowHeight));
-		if (!_rows[_pressed]->ripple) {
-			_rows[_pressed]->ripple = std::make_unique<Ui::RippleAnimation>(
-			    st::contactsRipple, std::move(rippleMask),
-			    [this, index = _pressed] { update(0, _itemsTop + index * _rowHeight, width(), _rowHeight); });
+		if (!set->ripple) {
+			set->ripple = std::make_unique<Ui::RippleAnimation>(st::contactsRipple, std::move(rippleMask), [this, index = _pressed] {
+				update(0, _itemsTop + index * _rowHeight, width(), _rowHeight);
+			});
 		}
-		_rows[_pressed]->ripple->add(mapFromGlobal(QCursor::pos()) - QPoint(0, _itemsTop + _pressed * _rowHeight));
+		set->ripple->add(mapFromGlobal(QCursor::pos()) - QPoint(0, _itemsTop + _pressed * _rowHeight));
 	}
 }
 

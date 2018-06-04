@@ -279,13 +279,10 @@ void CoverWidget::handleSongUpdate(const TrackState &state) {
 
 void CoverWidget::updateTimeText(const TrackState &state) {
 	QString time;
-	qint64 position = 0, length = 0, display = 0;
+	qint64 display = 0;
 	auto frequency = state.frequency;
 	if (!IsStoppedOrStopping(state.state)) {
-		display = position = state.position;
-		length = state.length;
-	} else {
-		length = state.length ? state.length : (state.id.audio()->song()->duration * frequency);
+		display = state.position;
 	}
 
 	_lastDurationMs = (state.length * 1000LL) / frequency;
