@@ -687,7 +687,7 @@ bool Generator::writeIncludesInSource() {
 	}
 
 	auto includes = QStringList();
-	std::function<bool(const Module &)> collector = [this, &collector, &includes](const Module &module) {
+	std::function<bool(const Module&)> collector = [&collector, &includes](const Module &module) {
 		module.enumIncludes(collector);
 		auto base = moduleBaseName(module);
 		if (!includes.contains(base)) {
@@ -771,7 +771,7 @@ void palette::finalize() {\n\
 	compute(0, -1, { 255, 255, 255, 0}); // special color\n";
 
 	QList<structure::FullName> names;
-	module_.enumVariables([this, &names](const Variable &variable) -> bool {
+	module_.enumVariables([&names](const Variable &variable) -> bool {
 		names.push_back(variable.name);
 		return true;
 	});

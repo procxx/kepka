@@ -347,32 +347,35 @@ void RowPainter::paint(Painter &p, const Row *row, int fullWidth, bool active, b
 			                     (st::dialogsUnreadHeight - st::dialogsUnreadFont->height) / 2;
 			    auto unreadWidth = 0;
 
-			    UnreadBadgeStyle st;
-			    st.active = active;
-			    st.muted = false;
-			    st.padding = 0;
-			    st.textTop = 0;
-			    paintUnreadCount(p, counter, unreadRight, unreadTop, st, &unreadWidth);
-			    availableWidth -= unreadWidth + st.padding + (hadOneBadge ? st::dialogsUnreadPadding : 0);
-		    }
-		    auto &color = active ? st::dialogsTextFgServiceActive :
-		                           (selected ? st::dialogsTextFgServiceOver : st::dialogsTextFgService);
-		    if (!history->paintSendAction(p, nameleft, texttop, availableWidth, fullWidth, color, ms)) {
-			    item->drawInDialog(p, QRect(nameleft, texttop, availableWidth, st::dialogsTextFont->height), active,
-			                       selected, HistoryItem::DrawInDialog::Normal, history->textCachedFor,
-			                       history->lastItemTextCache);
-		    }
-	    },
-	    [&p, fullWidth, active, selected, ms, history, unreadCount] {
-		    if (unreadCount) {
-			    auto counter = QString::number(unreadCount);
-			    if (counter.size() > 4) {
-				    counter = qsl("..") + counter.mid(counter.size() - 3);
-			    }
-			    auto mutedCounter = history->mute();
-			    auto unreadRight = st::dialogsPadding.x() + st::dialogsPhotoSize;
-			    auto unreadTop = st::dialogsPadding.y() + st::dialogsPhotoSize - st::dialogsUnreadHeight;
-			    auto unreadWidth = 0;
+			UnreadBadgeStyle st;
+			st.active = active;
+			st.muted = false;
+			st.padding = 0;
+			st.textTop = 0;
+			paintUnreadCount(p, counter, unreadRight, unreadTop, st, &unreadWidth);
+			availableWidth -= unreadWidth + st.padding + (hadOneBadge ? st::dialogsUnreadPadding : 0);
+		}
+		auto &color = active ? st::dialogsTextFgServiceActive : (selected ? st::dialogsTextFgServiceOver : st::dialogsTextFgService);
+		if (!history->paintSendAction(p, nameleft, texttop, availableWidth, fullWidth, color, ms)) {
+			item->drawInDialog(
+				p,
+				QRect(nameleft, texttop, availableWidth, st::dialogsTextFont->height),
+				active,
+				selected,
+				HistoryItem::DrawInDialog::Normal,
+				history->textCachedFor,
+				history->lastItemTextCache);
+		}
+	}, [&p, active, history, unreadCount] {
+		if (unreadCount) {
+			auto counter = QString::number(unreadCount);
+			if (counter.size() > 4) {
+				counter = qsl("..") + counter.mid(counter.size() - 3);
+			}
+			auto mutedCounter = history->mute();
+			auto unreadRight = st::dialogsPadding.x() + st::dialogsPhotoSize;
+			auto unreadTop = st::dialogsPadding.y() + st::dialogsPhotoSize - st::dialogsUnreadHeight;
+			auto unreadWidth = 0;
 
 			    UnreadBadgeStyle st;
 			    st.active = active;

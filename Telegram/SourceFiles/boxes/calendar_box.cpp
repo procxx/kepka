@@ -125,8 +125,6 @@ void CalendarBox::Context::applyMonth(const QDate &month, bool forced) {
 	_daysCount = month.daysInMonth();
 	_daysShift = daysShiftForMonth(month);
 	_rowsCount = rowsCountForMonth(month);
-	auto yearIndex = month.year();
-	auto monthIndex = month.month();
 	_highlightedIndex = month.daysTo(_highlighted);
 	_minDayIndex = _min.isNull() ? INT_MIN : month.daysTo(_min);
 	_maxDayIndex = _max.isNull() ? INT_MAX : month.daysTo(_max);

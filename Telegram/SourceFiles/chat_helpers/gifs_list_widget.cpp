@@ -730,7 +730,6 @@ bool GifsListWidget::inlineItemVisible(const InlineBots::Layout::ItemBase *layou
 	auto col = position % MatrixRowShift;
 	Assert((row < _rows.size()) && (col < _rows[row].items.size()));
 
-	auto &inlineItems = _rows[row].items;
 	auto top = 0;
 	for (auto i = 0; i != row; ++i) {
 		top += _rows[i].height;
