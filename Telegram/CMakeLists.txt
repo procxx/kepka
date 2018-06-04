@@ -184,14 +184,14 @@ configure_file(SourceFiles/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ##================================================
-## Telegram app
+## Kepka app
 ##================================================
 
 #add_subdirectory(SourceFiles/boxes)
 # ^ Unused: cotire PCH needs more rigid structure with targets defined from the same
 # cmakelists file. To do: get rid of the PCH requirement for more flexible build structure.
 
-add_executable(Telegram WIN32 MACOSX_BUNDLE
+add_executable(Kepka WIN32 MACOSX_BUNDLE
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/numbers.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lang_auto.cpp
@@ -485,7 +485,7 @@ add_executable(Telegram WIN32 MACOSX_BUNDLE
 )
 
 if (APPLE)
-    target_sources(Telegram PRIVATE
+    target_sources(Kepka PRIVATE
         SourceFiles/platform/mac/file_utilities_mac.mm
         SourceFiles/platform/mac/mac_utilities.mm
         SourceFiles/platform/mac/main_window_mac.mm
@@ -498,7 +498,7 @@ if (APPLE)
 endif()
 
 if (WIN32)
-    target_sources(Telegram PRIVATE
+    target_sources(Kepka PRIVATE
         SourceFiles/platform/win/audio_win.cpp
         SourceFiles/platform/win/file_utilities_win.cpp
         SourceFiles/platform/win/main_window_win.cpp
@@ -515,13 +515,13 @@ if (WIN32)
 endif()
 
 if (WINRT)
-    target_sources(Telegram PRIVATE
+    target_sources(Kepka PRIVATE
         SourceFiles/platform/winrt/main_window_winrt.cpp
     )
 endif()
 
 if (LINUX)
-    target_sources(Telegram PRIVATE
+    target_sources(Kepka PRIVATE
         SourceFiles/platform/linux/file_utilities_linux.cpp
         SourceFiles/platform/linux/linux_desktop_environment.cpp
         SourceFiles/platform/linux/linux_gdk_helper.cpp
@@ -542,20 +542,20 @@ list(APPEND tg_RESOURCES
 
 qt5_add_resources(tg_RESOURCES_RCC ${tg_RESOURCES})
 
-target_sources(Telegram PRIVATE
+target_sources(Kepka PRIVATE
     ${tg_RESOURCES}
     ${tg_RESOURCES_RCC}
 )
 
 if (APPLE)
-    target_sources(Telegram PRIVATE
+    target_sources(Kepka PRIVATE
         ThirdParty/SPMediaKeyTap/SPMediaKeyTap.m
         ThirdParty/SPMediaKeyTap/SPInvocationGrabbing/NSObject+SPInvocationGrabbing.m
     )
     include_directories(ThirdParty/SPMediaKeyTap)
 endif()
 
-target_sources(Telegram PRIVATE
+target_sources(Kepka PRIVATE
     ThirdParty/minizip/ioapi.c
     ThirdParty/minizip/zip.c
     ThirdParty/minizip/unzip.c
@@ -620,7 +620,7 @@ if (APPLE)
         PROPERTIES
             MACOSX_PACKAGE_LOCATION Resources)
 
-    target_sources(Telegram PRIVATE
+    target_sources(Kepka PRIVATE
         ${CMAKE_CURRENT_BINARY_DIR}/${MACOSX_BUNDLE_ICON_FILE}
     )
 
@@ -629,7 +629,7 @@ if (APPLE)
         set_source_files_properties(${LOCALIZABLE_STRINGS}
             PROPERTIES
                 MACOSX_PACKAGE_LOCATION ${LOCALIZABLE_STRINGS})
-        target_sources(Telegram PRIVATE
+        target_sources(Kepka PRIVATE
             ${LOCALIZABLE_STRINGS}
         )
     endforeach(langpack)
@@ -637,12 +637,12 @@ endif()
 
 # Disable a single annoying warning about c++17
 if(NOT WIN32)
-    set_flag_if_supported(Telegram WNCE -Wno-c++1z-extensions)
+    set_flag_if_supported(Kepka WNCE -Wno-c++1z-extensions)
 endif()
 
-target_compile_definitions(Telegram PRIVATE ${FFMPEG_DEFINITIONS})
+target_compile_definitions(Kepka PRIVATE ${FFMPEG_DEFINITIONS})
 
-target_link_libraries(Telegram
+target_link_libraries(Kepka
     Qt5::Core
     Qt5::Widgets
     Qt5::Network
@@ -659,9 +659,9 @@ target_link_libraries(Telegram
 ) # crashpad::crashpad_client)
 
 if (APPLE)
-    add_dependencies(Telegram iconset_output)
+    add_dependencies(Kepka iconset_output)
 
-    set_target_properties(Telegram
+    set_target_properties(Kepka
         PROPERTIES
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Telegram.plist
     )
@@ -689,23 +689,23 @@ if (APPLE)
         set(FW_LIB FW_LIB-NOTFOUND)
         find_library(FW_LIB ${framework})
         message(STATUS "Found framework ${FW_LIB}")
-        target_link_libraries(Telegram ${FW_LIB})
+        target_link_libraries(Kepka ${FW_LIB})
     endforeach(framework)
     set(FW_LIB FW_LIB-NOTFOUND)
 endif()
 
 if(WIN32)
-    target_link_libraries(Telegram
+    target_link_libraries(Kepka
         winmm imm32 ws2_32 kernel32 user32 gdi32 winspool comdlg32 advapi32 shell32 ole32
         oleaut32 uuid odbc32 odbccp32 Shlwapi Iphlpapi Gdiplus Strmiids
     )
 endif()
 
 if (LINUX)
-    target_link_libraries(Telegram Qt5::DBus dl ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
+    target_link_libraries(Kepka Qt5::DBus dl ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
 endif()
 
-target_link_libraries(Telegram Threads::Threads)
+target_link_libraries(Kepka Threads::Threads)
 
 ##================================================
 ## Tests
