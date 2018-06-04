@@ -20,7 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QUrl>
+#include <QApplication>
+#include <QClipboard>
 #include "core/click_handler.h"
+#include "structs.h"
 
 class TextClickHandler : public ClickHandler {
 public:

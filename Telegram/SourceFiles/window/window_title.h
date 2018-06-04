@@ -20,6 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QRect>
+#include <QPoint>
+#include "ui/twidget.h"
+
 namespace Window {
 
 enum class HitTestResult {

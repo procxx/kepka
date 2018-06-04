@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <assert.h>
 
+#include "app.h"
 #include "ui/text/text.h"
 
 #include "core/utils.h"                // makeShared

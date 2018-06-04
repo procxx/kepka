@@ -35,6 +35,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "storage/file_download.h"
 #include "auth_session.h"
 #include "platform/platform_specific.h"
+#include "app.h"
+#include "settings/settings_info_widget.h"
+#include "facades.h"
+#include "ui/animation.h"
 
 namespace Window {
 namespace Notifications {

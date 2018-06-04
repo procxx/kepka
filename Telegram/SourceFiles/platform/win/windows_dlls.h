@@ -19,7 +19,10 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
-
+#include <windows.h>  // all stuff like FAR, BOOL, STDCALL, etc
+#include <ShlObj.h>   // OPENASINFO
+#include <Shobjidl.h> // IEnumAssocHandlers
+#include <hstring.h>
 
 namespace Platform {
 namespace Dlls {

@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/assertion.h"
+#include "core/utils.h"
 #include "ui/style/style_core_color.h"
 #include <vector>
 

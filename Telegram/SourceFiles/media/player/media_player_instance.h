@@ -20,6 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/observer.h"
+#include "structs.h"
+#include "history/history.h"
+
 namespace Notify {
 struct PeerUpdate;
 } // namespace Notify

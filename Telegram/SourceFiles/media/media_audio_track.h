@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/timer.h"
+#include "ui/images.h"
 
 namespace Media {
 namespace Audio {

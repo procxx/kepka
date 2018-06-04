@@ -21,6 +21,12 @@
 #include "styles/style_widgets.h"
 #include "platform/platform_specific.h"
 
+#include <QDesktopWidget>
+#include <QApplication>
+#include <QWindow>
+
+#include "app.h"
+
 namespace Ui {
 
 Tooltip *TooltipInstance = nullptr;

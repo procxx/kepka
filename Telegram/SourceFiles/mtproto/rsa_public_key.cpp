@@ -21,6 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/rsa_public_key.h"
 
 #include "base/openssl_help.h"
+#include "mtproto/core_types.h"
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/bio.h>

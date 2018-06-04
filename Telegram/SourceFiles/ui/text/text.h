@@ -20,8 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "private/qfixed_p.h"
+#include <QPair>
+#include <QMap>
+#include <QString>
 
+#include "private/qfixed_p.h"
+#include "styles/style_basic.h"
+#include "ui/twidget.h"
 #include "core/click_handler.h"
 #include "ui/text/text_entity.h"
 #include "ui/emoji_config.h"

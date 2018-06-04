@@ -19,6 +19,7 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "storage/file_upload.h"
+#include "app.h"
 
 namespace Storage {
 namespace {

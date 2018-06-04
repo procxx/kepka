@@ -18,8 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "history/history_admin_log_item.h"
 #include "history/history_admin_log_inner.h"
-
 #include "styles/style_history.h"
 #include "history/history_media_types.h"
 #include "history/history_message.h"
@@ -37,6 +37,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/file_utilities.h"
 #include "lang/lang_keys.h"
 #include "boxes/edit_participant_box.h"
+
+#include <QAction>
+#include <QApplication>
 
 namespace AdminLog {
 namespace {

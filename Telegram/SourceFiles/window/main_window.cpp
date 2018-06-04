@@ -28,6 +28,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mediaview.h"
 #include "messenger.h"
 #include "mainwindow.h"
+#include "app.h"
+
+#include <QDrag>
+#include <QList>
+#include <QWindow>
+#include <QScreen>
+#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QApplication>
 
 namespace Window {
 

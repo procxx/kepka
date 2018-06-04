@@ -30,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/click_handler_types.h"
 #include "boxes/confirm_box.h"
 #include "messenger.h"
+#include "app.h"
 
 namespace Intro {
 

@@ -18,8 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "app.h"
 #include "dialogs/dialogs_layout.h"
-
 #include "data/data_abstract_structure.h"
 #include "data/data_drafts.h"
 #include "dialogs/dialogs_list.h"

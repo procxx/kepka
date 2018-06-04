@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QSystemTrayIcon>
+#include <QTimer>
 #include "platform/platform_main_window.h"
 #include "base/flags.h"
 #include <windows.h>

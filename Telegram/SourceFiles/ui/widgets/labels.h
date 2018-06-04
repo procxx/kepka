@@ -20,7 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QTouchEvent>
 #include "styles/style_widgets.h"
+#include "ui/twidget.h"
+#include "ui/animation.h"
+#include "ui/text/text.h"
+#include "ui/text/text_entity.h"
+#include "core/click_handler.h"
 
 namespace Ui {
 

@@ -20,6 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/observer.h"
+#include "core/basic_types.h"
+#include "ui/twidget.h"
+#include "structs.h"
+
+class HistoryItem;
+
 namespace Overview {
 namespace Layout {
 class Document;

@@ -21,6 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/timer.h"
+#include "base/lambda.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 class IconButton;

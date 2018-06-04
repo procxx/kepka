@@ -18,7 +18,6 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
 #include "platform/win/main_window_win.h"
 
 #include "styles/style_window.h"
@@ -32,6 +31,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "storage/localstorage.h"
 #include "ui/widgets/popup_menu.h"
 #include "window/themes/window_theme.h"
+#include "app.h"
 
 #include <qpa/qplatformnativeinterface.h>
 
@@ -40,6 +40,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <gdiplus.h>
 #undef min
 #undef max
+
+#include <windowsx.h>
+#include <Wtsapi32.h>
+#include <ShObjIdl.h>
+#include <wrl/client.h>
+
+#include <QWindow>
+#include <QStyleFactory>
+#include <QWidget>
+#include "facades.h"
 
 HICON qt_pixmapToWinHICON(const QPixmap &);
 

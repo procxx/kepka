@@ -29,6 +29,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_chat_helpers.h"
 #include "auth_session.h"
 #include "chat_helpers/stickers.h"
+#include "app.h"
+#include <QApplication>
 
 FieldAutocomplete::FieldAutocomplete(QWidget *parent) : TWidget(parent)
 , _scroll(this, st::mentionScroll) {

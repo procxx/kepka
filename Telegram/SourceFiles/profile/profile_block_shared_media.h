@@ -21,6 +21,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "profile/profile_block_widget.h"
+#include "history/history.h"
+
+class History;
 
 namespace Ui {
 class LeftOutlineButton;

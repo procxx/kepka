@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "boxes/abstract_box.h"
 #include "storage/localimageloader.h"
+#include "history/history_media.h"
 
 namespace Ui {
 class Checkbox;

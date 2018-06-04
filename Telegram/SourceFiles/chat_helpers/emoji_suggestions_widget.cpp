@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QTextBlock>
 #include "chat_helpers/emoji_suggestions_widget.h"
 
 #include "chat_helpers/emoji_suggestions_helper.h"
@@ -26,6 +27,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/platform_specific.h"
 #include "styles/style_chat_helpers.h"
 #include "ui/widgets/inner_dropdown.h"
+#include "ui/emoji_config.h"
+#include "app.h"
 
 namespace Ui {
 namespace Emoji {
@@ -121,7 +124,7 @@ std::vector<SuggestionsWidget::Row> SuggestionsWidget::getRowsByQuery() const {
 		suggestionsEmoji[i] = Find(QStringFromUTF16(suggestions[i].emoji()));
 	}
 	auto recents = 0;
-	auto &recent = GetRecent();
+    auto &recent = GetRecent();
 	for (auto &item : recent) {
 		auto emoji = item.first->original();
 		if (!emoji) emoji = item.first;

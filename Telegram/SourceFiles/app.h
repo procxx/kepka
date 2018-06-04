@@ -20,10 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QNetworkAccessManager>
+
+#include "ui/animation.h"
 #include "core/basic_types.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "layout.h"
+#include "media/media_clip_reader.h"
 
 class Messenger;
 class MainWindow;

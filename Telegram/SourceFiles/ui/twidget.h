@@ -20,7 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QPainter>
+#include <QFontMetrics>
+#include <QWidget>
+#include <QEvent>
+#include <QPointer>
+#include "base/lambda.h"
 #include "base/flags.h"
+#include "base/object_ptr.h"
+#include "ui/style/style_core.h"
+#include "styles/palette.h"
+#include "styles/style_basic.h"
+
 
 namespace Fonts {
 
@@ -414,108 +426,6 @@ private:
 	QAtomicInt _pending = { 0 };
 
 };
-
-// Smart pointer for QObject*, has move semantics, destroys object if it doesn't have a parent.
-template <typename Object>
-class object_ptr {
-public:
-	object_ptr(std::nullptr_t) {
-	}
-
-	// No default constructor, but constructors with at least
-	// one argument are simply make functions.
-	template <typename Parent, typename... Args>
-	explicit object_ptr(Parent &&parent, Args&&... args) : _object(new Object(std::forward<Parent>(parent), std::forward<Args>(args)...)) {
-	}
-
-	object_ptr(const object_ptr &other) = delete;
-	object_ptr &operator=(const object_ptr &other) = delete;
-	object_ptr(object_ptr &&other) : _object(base::take(other._object)) {
-	}
-	object_ptr &operator=(object_ptr &&other) {
-		auto temp = std::move(other);
-		destroy();
-		std::swap(_object, temp._object);
-		return *this;
-	}
-
-	template <typename OtherObject, typename = std::enable_if_t<std::is_base_of<Object, OtherObject>::value>>
-	object_ptr(object_ptr<OtherObject> &&other) : _object(base::take(other._object)) {
-	}
-
-	template <typename OtherObject, typename = std::enable_if_t<std::is_base_of<Object, OtherObject>::value>>
-	object_ptr &operator=(object_ptr<OtherObject> &&other) {
-		_object = base::take(other._object);
-		return *this;
-	}
-
-	object_ptr &operator=(std::nullptr_t) {
-		_object = nullptr;
-		return *this;
-	}
-
-	// So we can pass this pointer to methods like connect().
-	Object *data() const {
-		return static_cast<Object*>(_object.data());
-	}
-	operator Object*() const {
-		return data();
-	}
-
-	explicit operator bool() const {
-		return _object != nullptr;
-	}
-
-	Object *operator->() const {
-		return data();
-	}
-	Object &operator*() const {
-		return *data();
-	}
-
-	// Use that instead "= new Object(parent, ...)"
-	template <typename Parent, typename... Args>
-	void create(Parent &&parent, Args&&... args) {
-		destroy();
-		_object = new Object(std::forward<Parent>(parent), std::forward<Args>(args)...);
-	}
-	void destroy() {
-		delete base::take(_object);
-	}
-	void destroyDelayed() {
-		if (_object) {
-			if (auto widget = base::up_cast<QWidget*>(data())) {
-				widget->hide();
-			}
-			base::take(_object)->deleteLater();
-		}
-	}
-
-	~object_ptr() {
-		if (auto pointer = _object) {
-			if (!pointer->parent()) {
-				destroy();
-			}
-		}
-	}
-
-	template <typename ResultType, typename SourceType>
-	friend object_ptr<ResultType> static_object_cast(object_ptr<SourceType> source);
-
-private:
-	template <typename OtherObject>
-	friend class object_ptr;
-
-	QPointer<QObject> _object;
-
-};
-
-template <typename ResultType, typename SourceType>
-inline object_ptr<ResultType> static_object_cast(object_ptr<SourceType> source) {
-	auto result = object_ptr<ResultType>(nullptr);
-	result._object = static_cast<ResultType*>(base::take(source._object).data());
-	return std::move(result);
-}
 
 void sendSynteticMouseEvent(QWidget *widget, QEvent::Type type, Qt::MouseButton button, const QPoint &globalPoint);
 

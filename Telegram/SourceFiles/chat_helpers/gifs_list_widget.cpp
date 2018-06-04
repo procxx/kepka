@@ -31,6 +31,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 #include "mainwindow.h"
 #include "window/window_controller.h"
+#include "app.h"
+#include <QApplication>
 
 namespace ChatHelpers {
 namespace {

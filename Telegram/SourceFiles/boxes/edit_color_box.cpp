@@ -25,6 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/shadow.h"
 #include "styles/style_mediaview.h"
 #include "ui/widgets/input_fields.h"
+#include "app.h"
 
 class EditColorBox::Picker : public TWidget {
 public:

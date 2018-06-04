@@ -32,6 +32,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "storage/localstorage.h"
 #include "auth_session.h"
 #include "lang/lang_keys.h"
+#include "app.h"
 
 namespace InlineBots {
 namespace Layout {

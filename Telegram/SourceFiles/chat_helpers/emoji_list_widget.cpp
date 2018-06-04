@@ -24,6 +24,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_chat_helpers.h"
 #include "ui/widgets/shadow.h"
 #include "lang/lang_keys.h"
+#include "app.h"
 
 namespace ChatHelpers {
 namespace {

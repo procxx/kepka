@@ -20,8 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "ui/twidget.h"
 #include "styles/style_widgets.h"
 #include "ui/effects/panel_animation.h"
+#include "ui/animation.h"
 
 namespace Ui {
 

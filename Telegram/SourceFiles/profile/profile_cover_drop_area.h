@@ -20,6 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "ui/animation.h"
+#include "ui/twidget.h"
+
+class QPaintEvent;
+
 namespace Profile {
 
 class CoverDropArea : public TWidget {

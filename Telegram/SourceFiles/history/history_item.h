@@ -20,8 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "history/history.h"
+#include "ui/animation.h"
+#include "ui/text/text.h"
+#include "core/click_handler.h"
 #include "base/runtime_composer.h"
 #include "base/flags.h"
+#include "structs.h"
 
 namespace Ui {
 class RippleAnimation;
@@ -31,6 +36,8 @@ namespace style {
 struct BotKeyboardButton;
 struct RippleAnimation;
 } // namespace style
+
+class HistoryItem;
 
 class HistoryElement {
 public:

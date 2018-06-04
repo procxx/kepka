@@ -36,6 +36,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_file_parser.h"
 #include "lang/lang_cloud_manager.h"
 #include "messenger.h"
+#include "app.h"
 
 namespace Settings {
 

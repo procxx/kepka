@@ -20,6 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QSet>
+#include "base/lambda_guard.h"
+#include "core/basic_types.h"
+#include "core/utils.h"
+#include "scheme.h"
+
 class RPCError {
 public:
 	RPCError(const MTPrpcError &error) : _code(error.c_rpc_error().verror_code.v) {

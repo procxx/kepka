@@ -20,6 +20,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "settings.h"
 #include "ui/text/text.h"
 #include "emoji.h"
 

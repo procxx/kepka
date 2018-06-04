@@ -29,6 +29,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/change_phone_box.h"
 #include "observer_peer.h"
 #include "messenger.h"
+#include "app.h"
 
 namespace Settings {
 

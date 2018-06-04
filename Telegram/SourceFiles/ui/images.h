@@ -20,7 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QPixmap>
 #include "base/flags.h"
+#include "style/style_core_types.h"
+#include "scheme.h"
 
 class FileLoader;
 class mtpFileLoader;

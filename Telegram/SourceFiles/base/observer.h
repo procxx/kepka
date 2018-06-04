@@ -23,7 +23,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <vector>
 #include <deque>
 #include <QSharedPointer>
+#include "base/assertion.h"
+#include "base/lambda.h"
 #include "base/type_traits.h"
+#include "core/utils.h"
 
 namespace base {
 namespace internal {

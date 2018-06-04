@@ -21,6 +21,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "private/qfontengine_p.h"
+#include "ui/style/style_core_types.h"
+#include "settings.h"
+
+class QString;
 
 enum TextBlockType {
 	TextBlockTNewline = 0x01,

@@ -18,8 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QWindow>
 #include "history/history_widget.h"
-
 #include "styles/style_history.h"
 #include "styles/style_dialogs.h"
 #include "styles/style_window.h"
@@ -56,7 +56,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwidget.h"
 #include "mainwindow.h"
 #include "passcodewidget.h"
-#include "mainwindow.h"
 #include "storage/file_upload.h"
 #include "media/media_audio.h"
 #include "media/media_audio_capture.h"
@@ -74,7 +73,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/window_controller.h"
 #include "inline_bots/inline_results_widget.h"
 #include "chat_helpers/emoji_suggestions_widget.h"
-
+#include "facades.h"
+#include "mainwindow.h"
 // Smart pointer for QObject*, has move semantics, destroys object if it doesn't have a parent.
 template <typename Object>
 class test_ptr {
@@ -657,7 +657,7 @@ HistoryWidget::HistoryWidget(QWidget *parent, not_null<Window::Controller*> cont
 	connect(_field, SIGNAL(changed()), this, SLOT(onTextChange()));
 	connect(_field, SIGNAL(spacedReturnedPasted()), this, SLOT(onPreviewParse()));
 	connect(_field, SIGNAL(linksChanged()), this, SLOT(onPreviewCheck()));
-	connect(App::wnd()->windowHandle(), SIGNAL(visibleChanged(bool)), this, SLOT(onWindowVisibleChanged()));
+    connect(static_cast<const QWindow*>(App::wnd()->windowHandle()), SIGNAL(visibleChanged(bool)), this, SLOT(onWindowVisibleChanged()));
 	connect(&_scrollTimer, SIGNAL(timeout()), this, SLOT(onScrollTimer()));
 	connect(_tabbedSelector, SIGNAL(emojiSelected(EmojiPtr)), _field, SLOT(onEmojiInsert(EmojiPtr)));
 	connect(_tabbedSelector, SIGNAL(stickerSelected(DocumentData*)), this, SLOT(onStickerSend(DocumentData*)));

@@ -28,6 +28,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_mediaview.h"
 #include "styles/style_history.h"
 #include "styles/style_dialogs.h"
+#include "ui/emoji_config.h"
+#include "ui/text/text.h"
+#include "layout.h"
+#include "app.h"
 
 namespace Window {
 namespace Theme {

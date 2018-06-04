@@ -27,6 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 #include "styles/style_intro.h"
+#include "app.h" // for formatPhone
 
 namespace Intro {
 

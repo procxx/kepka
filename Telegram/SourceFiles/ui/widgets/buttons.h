@@ -22,7 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "ui/abstract_button.h"
 #include "styles/style_widgets.h"
-
+#include "ui/animation.h"
 #include <memory>
 
 namespace Ui {

@@ -20,6 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QList>
+#include "base/runtime_composer.h"
+#include "core/click_handler.h"
+#include "core/utils.h"
+#include "structs.h"
+#include "history/history_item.h"
+
 struct HistoryServiceDependentData {
 	MsgId msgId = 0;
 	HistoryItem *msg = nullptr;

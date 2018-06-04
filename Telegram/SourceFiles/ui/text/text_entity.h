@@ -20,6 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include <QRegularExpression>
+#include <QVector>
+
+#include "scheme.h"
+
 enum EntityInTextType {
 	EntityInTextInvalid = 0,
 

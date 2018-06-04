@@ -24,6 +24,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_history.h"
 #include "dialogs/dialogs_layout.h"
 #include "ui/effects/ripple_animation.h"
+#include "twidget.h"
+#include "structs.h"
+#include "app.h"
+
+#include <qevent.h>
 
 namespace Ui {
 namespace {

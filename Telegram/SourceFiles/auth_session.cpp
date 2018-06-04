@@ -32,6 +32,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/section_widget.h"
 #include "chat_helpers/tabbed_selector.h"
 
+#include "app.h" // App::user
+
 namespace {
 
 constexpr auto kAutoLockTimeoutLateMs = TimeMs(3000);

@@ -26,6 +26,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "lang/lang_keys.h"
 #include "boxes/sticker_set_box.h"
 #include "messenger.h"
+#include "app.h"
 
 namespace AdminLog {
 namespace {

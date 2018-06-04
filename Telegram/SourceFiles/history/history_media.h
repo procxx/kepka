@@ -20,6 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QString>
+#include "history/history.h"
+#include "history/history_item.h"
+
 enum class MediaInBubbleState {
 	None,
 	Top,

@@ -23,6 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <algorithm>
 #include "emoji_suggestions_data.h"
 
+#include <stdint.h>
+
 #ifndef Expects
 #include <cassert>
 #define Expects(condition) assert(condition)

@@ -31,6 +31,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/effects/widget_slide_wrap.h"
 #include "storage/localstorage.h"
 #include "window/themes/window_theme.h"
+#include "scheme.h"
+#include "facades.h"
+#include "app.h"
+
+#include <QDesktopServices>
 
 namespace Settings {
 

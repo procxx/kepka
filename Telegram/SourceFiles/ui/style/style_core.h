@@ -20,7 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QBrush>
+#include <QImage>
+#include <QColor>
+#include <QRect>
+#include <QRectF>
+
 #include "ui/style/style_core_types.h"
+#include "settings.h"
 
 inline QPoint rtlpoint(int x, int y, int outerw) {
 	return QPoint(rtl() ? (outerw - x) : x, y);

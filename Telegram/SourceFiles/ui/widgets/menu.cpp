@@ -20,6 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/effects/ripple_animation.h"
 #include "ui/widgets/checkbox.h"
 
+#include <qevent.h>
+#include <QAction>
+
 namespace Ui {
 
 Menu::ActionData::~ActionData() = default;

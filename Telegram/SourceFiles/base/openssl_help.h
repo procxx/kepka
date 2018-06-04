@@ -24,6 +24,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 
+#include "base/assertion.h"
+#include "core/utils.h"
 namespace openssl {
 
 class Context {

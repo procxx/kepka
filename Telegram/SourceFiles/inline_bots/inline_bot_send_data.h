@@ -23,7 +23,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/basic_types.h"
 #include "structs.h"
 #include "history/history_location_manager.h"
+#include "mtproto/type_utils.h"
 
+class History;
 namespace InlineBots {
 
 class Result;

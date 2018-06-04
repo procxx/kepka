@@ -36,6 +36,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_settings.h"
 #include "styles/style_profile.h" // for divider
 #include "platform/platform_file_utilities.h"
+#include "app.h"
+
+#include <QString>
+#include <QWidget>
 
 namespace Settings {
 

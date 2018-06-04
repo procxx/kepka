@@ -37,6 +37,8 @@ Q_DECLARE_METATYPE(ClickHandlerPtr);
 Q_DECLARE_METATYPE(Qt::MouseButton);
 Q_DECLARE_METATYPE(Ui::ShowWay);
 
+// class PeerData;
+
 namespace App {
 namespace internal {
 
@@ -259,14 +261,40 @@ void showPeerProfile(const PeerId &peer) {
 	}
 }
 
+void showPeerProfile(const PeerData *peer) {
+	showPeerProfile(peer->id);
+}
+
+void showPeerProfile(const History *history) {
+	showPeerProfile(history->peer->id);
+}
+
 void showPeerOverview(const PeerId &peer, MediaOverviewType type) {
 	if (auto m = App::main()) {
 		m->showMediaOverview(App::peer(peer), type);
 	}
 }
 
+void showPeerOverview(const PeerData *peer, MediaOverviewType type) {
+	showPeerOverview(peer->id, type);
+}
+
+void showPeerOverview(const History *history, MediaOverviewType type) {
+	showPeerOverview(history->peer->id, type);
+}
+
 void showPeerHistory(const PeerId &peer, MsgId msgId, ShowWay way) {
 	if (MainWidget *m = App::main()) m->ui_showPeerHistory(peer, msgId, way);
+}
+
+void showPeerHistory(const PeerData *peer, MsgId msgId, ShowWay way) {
+	showPeerHistory(peer->id, msgId, way);
+}
+void showPeerHistory(const History *history, MsgId msgId, ShowWay way) {
+	showPeerHistory(history->peer->id, msgId, way);
+}
+void showPeerHistoryAtItem(const HistoryItem *item, ShowWay way) {
+	showPeerHistory(item->history()->peer->id, item->id, way);
 }
 
 void showPeerHistoryAsync(const PeerId &peer, MsgId msgId, ShowWay way) {
@@ -275,6 +303,14 @@ void showPeerHistoryAsync(const PeerId &peer, MsgId msgId, ShowWay way) {
 		QMetaObject::invokeMethod(m, "ui_showPeerHistoryAsync", Qt::QueuedConnection, Q_ARG(quint64, peer), Q_ARG(qint32, msgId), Q_ARG(Ui::ShowWay, way));
 	}
 }
+
+void showChatsList() {
+	showPeerHistory(PeerId(0), 0, ShowWay::ClearStack);
+}
+void showChatsListAsync() {
+	showPeerHistoryAsync(PeerId(0), 0, ShowWay::ClearStack);
+}
+
 
 PeerData *getPeerForMouseAction() {
 	return Messenger::Instance().ui_getPeerForMouseAction();

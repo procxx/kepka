@@ -12,6 +12,9 @@ if (PACKAGED_BUILD)
     add_definitions(-DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION)
 endif()
 
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H")
+
 ##================================================
 ## Codegen Tools
 ##================================================
@@ -189,8 +192,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # cmakelists file. To do: get rid of the PCH requirement for more flexible build structure.
 
 add_executable(Telegram WIN32 MACOSX_BUNDLE
-    SourceFiles/stdafx.cpp
-
     ${CMAKE_CURRENT_BINARY_DIR}/styles/palette.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/numbers.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/lang_auto.cpp
@@ -568,7 +569,7 @@ include_directories(ThirdParty) # For minizip/ but we use fully-qualified
 include_directories(ThirdParty/GSL/include ThirdParty/variant/include
     ThirdParty/emoji_suggestions ThirdParty/libtgvoip)
 
-include_directories(SourceFiles SourceFiles/core)
+include_directories(SourceFiles)
 
 include_directories(${OPENAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
     ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS} ${PULSEAUDIO_INCLUDE_DIR})
@@ -581,9 +582,9 @@ endif()
 
 if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_USING_V110_SDK71_
-        -DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE 
+        -DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE
         -DWINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP
-        -DHAVE_STDINT_H)
+        -DHAVE_STDINT_H -DNOMINMAX)
 endif()
 
 add_definitions(-DAL_LIBTYPE_STATIC)
@@ -705,17 +706,6 @@ if (LINUX)
 endif()
 
 target_link_libraries(Telegram Threads::Threads)
-
-set_target_properties(Telegram
-    PROPERTIES
-        COTIRE_CXX_PREFIX_HEADER_INIT SourceFiles/stdafx.h
-        COTIRE_ADD_UNITY_BUILD FALSE
-)
-cotire(Telegram)
-
-# See https://github.com/sakra/cotire/blob/master/MANUAL.md#objective-c
-# ObjC and ObjC++ files cannot be cotired, so they have to include appropriate Qt and Tg
-# headers themselves, this applies to macOS platform sources.
 
 ##================================================
 ## Tests

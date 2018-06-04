@@ -18,7 +18,6 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
 #include "platform/mac/window_title_mac.h"
 
 #include "mainwindow.h"
@@ -26,6 +25,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_window.h"
 #include "styles/style_mediaview.h"
 #include "platform/platform_main_window.h"
+#include "facades.h"
+#include "app.h"
 
 #include <Cocoa/Cocoa.h>
 #include <CoreFoundation/CFURL.h>

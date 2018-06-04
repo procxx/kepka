@@ -18,6 +18,7 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QDesktopWidget>
 #include "calls/calls_panel.h"
 
 #include "calls/calls_emoji_fingerprint.h"
@@ -37,6 +38,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/platform_specific.h"
 #include "base/task_queue.h"
 #include "window/main_window.h"
+#include "app.h"
+#include <QApplication>
 
 namespace Calls {
 namespace {

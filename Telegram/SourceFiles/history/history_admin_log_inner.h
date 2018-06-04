@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QClipboard>
+#include <gsl/gsl>
 #include "history/history_admin_log_item.h"
 #include "history/history_admin_log_section.h"
 #include "ui/widgets/tooltip.h"

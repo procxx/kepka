@@ -20,10 +20,22 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "core/basic_types.h"
-#include <QtCore/QTimer>
-#include <QtGui/QColor>
+#define _USE_MATH_DEFINES // for M_PI in MSVC (GCC and Clang has it as extension)
+
+#include <QTimer>
+#include <QColor>
+#include <QPen>
+#include <QBrush>
+#include <QColor>
+#include <QPainterPath>
 #include <cstdint>
+#include <cmath>
+
+#include "core/basic_types.h"
+#include "core/utils.h"
+#include "base/lambda.h"
+#include "style/style_core_types.h"
+#include "mtproto/facade.h"
 
 namespace Media {
 namespace Clip {
@@ -421,7 +433,7 @@ QPainterPath path(QPointF (&from)[N]) {
 bool Disabled();
 void SetDisabled(bool disabled);
 
-};
+} // anim namespace
 
 class BasicAnimation;
 

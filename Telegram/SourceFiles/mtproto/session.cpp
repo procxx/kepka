@@ -19,10 +19,13 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/session.h"
+#include "mtproto/mtp_instance.h"
 
 #include "mtproto/connection.h"
 #include "mtproto/dcenter.h"
 #include "mtproto/auth_key.h"
+#include "scheme.h"
+#include "facade.h"
 
 namespace MTP {
 namespace internal {

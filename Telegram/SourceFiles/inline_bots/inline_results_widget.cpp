@@ -19,7 +19,6 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "inline_bots/inline_results_widget.h"
-
 #include "styles/style_chat_helpers.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/shadow.h"
@@ -38,6 +37,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/labels.h"
 #include "observer_peer.h"
+#include <QWindow>
+#include <QApplication>
 
 namespace InlineBots {
 namespace Layout {

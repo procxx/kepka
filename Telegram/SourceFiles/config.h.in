@@ -20,8 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QtGlobal>
+#ifdef Q_OS_WIN
+#	include <guiddef.h>
+#endif
 #include "core/version.h"
 #include "settings.h"
+#include "core/utils.h"
 
 constexpr str_const AppName = "${KEPKA_APPNAME}";
 
@@ -142,6 +147,7 @@ inline bool isServiceUser(quint64 id) {
 }
 
 #ifdef Q_OS_WIN
+#include <guiddef.h>
 inline const GUID &cGUID() {
 #ifndef OS_MAC_STORE
 	static const GUID gGuid = { 0x87a94ab0, 0xe370, 0x4cde, { 0x98, 0xd3, 0xac, 0xc1, 0x10, 0xc5, 0x96, 0x7d } };

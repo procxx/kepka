@@ -22,6 +22,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "window/section_widget.h"
 #include "ui/widgets/scroll_area.h"
+#include "structs.h"
+#include "dialogs/dialogs_common.h"
 
 class DialogsInner;
 
@@ -54,6 +56,8 @@ enum DialogsSearchRequestType {
 	DialogsSearchMigratedFromStart,
 	DialogsSearchMigratedFromOffset,
 };
+
+class History;
 
 class DialogsWidget : public Window::AbstractSectionWidget, public RPCSender {
 	Q_OBJECT

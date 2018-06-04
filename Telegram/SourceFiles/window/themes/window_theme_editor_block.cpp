@@ -24,6 +24,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/effects/ripple_animation.h"
 #include "boxes/edit_color_box.h"
 #include "lang/lang_keys.h"
+#include "facades.h"
+
+#include <QColor>
+#include <QString>
 
 namespace Window {
 namespace Theme {

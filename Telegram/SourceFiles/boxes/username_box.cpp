@@ -29,6 +29,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/toast/toast.h"
 #include "styles/style_boxes.h"
 #include "messenger.h"
+#include <QApplication>
+#include <QClipboard>
 
 UsernameBox::UsernameBox(QWidget*)
 : _username(this, st::defaultInputField, [] { return qsl("@username"); }, App::self()->username, false)

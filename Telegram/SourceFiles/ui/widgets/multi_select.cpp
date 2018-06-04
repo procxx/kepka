@@ -26,6 +26,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/scroll_area.h"
 #include "ui/effects/cross_animation.h"
 #include "lang/lang_keys.h"
+#include "ui/twidget.h"
+#include "layout.h"
+#include "app.h"
 
 namespace Ui {
 namespace {

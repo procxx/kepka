@@ -24,6 +24,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/shadow.h"
 #include "ui/effects/panel_animation.h"
+#include "app.h"
+
+#include <QWindow>
 
 namespace {
 

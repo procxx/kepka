@@ -20,7 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QThread>
+#include <QTimer>
+#include "base/observer.h"
 #include "storage/localimageloader.h"
+#include "ui/animation.h"
 
 struct VideoSoundData;
 struct VideoSoundPart;

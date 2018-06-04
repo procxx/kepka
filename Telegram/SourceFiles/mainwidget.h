@@ -24,6 +24,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "history/history_common.h"
 #include "core/single_timer.h"
 #include "base/weak_unique_ptr.h"
+#include "history/history.h"
+#include "app.h"
+#include "facades.h"
 
 namespace Notify {
 struct PeerUpdate;

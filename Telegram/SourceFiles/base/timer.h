@@ -23,6 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/lambda.h"
 #include "base/observer.h"
 
+using TimeMs = qint64;
+
 namespace base {
 
 class Timer final : private QObject {

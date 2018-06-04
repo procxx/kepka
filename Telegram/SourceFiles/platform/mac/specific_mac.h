@@ -18,6 +18,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "platform/mac/specific_mac_p.h"
+#include "core/utils.h" // TimeMs
+#include "core/basic_types.h" // qsl()
+#include <QFile>
+
+class QAbstractNativeEventFilter;
+class LocationCoords;
 
 namespace Platform {
 

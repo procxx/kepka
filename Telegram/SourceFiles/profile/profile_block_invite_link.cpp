@@ -28,6 +28,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mainwindow.h"
 #include "lang/lang_keys.h"
 
+#include <QApplication>
+#include <QClipboard>
+
 namespace Profile {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;

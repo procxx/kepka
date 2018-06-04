@@ -19,8 +19,11 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/linux_desktop_environment.h"
+#include "logs.h"
 
 #include <QDBusInterface>
+
+#define qstr QString // to avoid #include bloat utils.h
 
 namespace Platform {
 namespace DesktopEnvironment {
@@ -42,7 +45,7 @@ Type Compute() {
 		if (list.contains("unity")) {
 			// gnome-fallback sessions set XDG_CURRENT_DESKTOP to Unity
 			// DESKTOP_SESSION can be gnome-fallback or gnome-fallback-compiz
-			if (desktopSession.indexOf(qstr("gnome-fallback")) >= 0) {
+            if (desktopSession.indexOf(QString("gnome-fallback")) >= 0) {
 				return Type::Gnome;
 			}
 			return Type::Unity;
@@ -53,7 +56,7 @@ Type Compute() {
 		} else if (list.contains("gnome")) {
 			return Type::Gnome;
 		} else if (list.contains("kde")) {
-			if (kdeSession == qstr("5")) {
+            if (kdeSession == QString("5")) {
 				return Type::KDE5;
 			}
 			return Type::KDE4;

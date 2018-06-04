@@ -20,9 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QThread>
+#include "mtproto/core_types.h"
 #include "mtproto/auth_key.h"
 #include "mtproto/dc_options.h"
 #include "core/single_timer.h"
+#include "scheme.h"
 
 namespace MTP {
 
@@ -199,7 +202,7 @@ private:
 	DcType _dcType = DcType::Regular;
 
 	mutable QReadWriteLock stateConnMutex;
-	qint32 _state = DisconnectedState;
+    qint32 _state = 0;
 
 	bool _needSessionReset = false;
 	void resetSession();

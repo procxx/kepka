@@ -18,12 +18,12 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
-
 #include "platform/win/audio_win.h"
 
 #include "platform/win/windows_dlls.h"
 #include "media/media_audio.h"
+#include <mmdeviceapi.h>
+#include <wrl/client.h>   // Microsoft::WRL::ComPtr<T>
 
 using namespace Microsoft::WRL;
 

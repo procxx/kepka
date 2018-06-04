@@ -47,6 +47,8 @@ public:
 	}
 };
 
+class ItemBase;
+
 class Context {
 public:
 	virtual void inlineItemLayoutChanged(const ItemBase *layout) = 0;

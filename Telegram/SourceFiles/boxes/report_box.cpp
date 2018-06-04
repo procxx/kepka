@@ -28,6 +28,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/input_fields.h"
 #include "mainwindow.h"
+#include "facades.h"
 
 ReportBox::ReportBox(QWidget*, PeerData *peer) : _peer(peer)
 , _reasonGroup(std::make_shared<Ui::RadioenumGroup<Reason>>(Reason::Spam))

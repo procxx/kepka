@@ -22,6 +22,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "ui/widgets/dropdown_menu.h"
 #include "ui/effects/radial_animation.h"
+#include "core/click_handler.h"
+#include "ui/images.h"
+#include "structs.h"
+#include "history/history.h"
+
+class PeerData;
+class PhotoData;
+class HistoryItem;
+class AudioMsgId;
 
 namespace Media {
 namespace Player {

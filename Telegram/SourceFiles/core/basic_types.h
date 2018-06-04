@@ -24,15 +24,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <exception>
 #include <memory>
 #include <ctime>
-
+#include <cstdint>
+#include <gsl/gsl>
+#include <QLatin1String>
+#include <QString>
 #include "base/build_config.h"
+#include "base/ordered_set.h"
 
 template <typename Type>
 using not_null = gsl::not_null<Type>;
-
-#include "base/ordered_set.h"
-
-#include <cstdint>
 
 #define qsl(s) QStringLiteral(s)
 #define qstr(s) QLatin1String(s, static_cast<int>(sizeof(s)-1))

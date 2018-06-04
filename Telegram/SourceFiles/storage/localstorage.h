@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/basic_types.h"
 #include "storage/file_download.h"
 #include "auth_session.h"
+#include "history/history.h"
 
 namespace Window {
 namespace Theme {

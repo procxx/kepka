@@ -40,6 +40,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <openssl/evp.h>
 
+#include <QBuffer>
+#include <QImageReader>
+#include <QDirIterator>
+#include <qendian.h>
+
 namespace Local {
 namespace {
 

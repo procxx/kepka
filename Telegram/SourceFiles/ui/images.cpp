@@ -25,6 +25,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/platform_specific.h"
 #include "auth_session.h"
 
+#include <QBuffer>
+#include <QImageReader>
+
 namespace Images {
 namespace {
 

@@ -318,6 +318,7 @@ bool Generator::writeImages() {
 bool Generator::writeSource() {
 	source_ = std::make_unique<common::CppFile>(outputPath_ + ".cpp", project_);
 
+    source_->include("ui/emoji_config.h").newline();
 	source_->include("emoji_suggestions_data.h").newline();
 	source_->pushNamespace("Ui").pushNamespace("Emoji").pushNamespace();
 	source_->stream() << "\
@@ -379,6 +380,9 @@ void Init() {\n\
 
 bool Generator::writeHeader() {
 	auto header = std::make_unique<common::CppFile>(outputPath_ + ".h", project_);
+
+    header->include("QChar", true);
+    header->include("settings.h");
 	header->pushNamespace("Ui").pushNamespace("Emoji").pushNamespace("internal");
 	header->stream() << "\
 \n\

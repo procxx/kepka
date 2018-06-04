@@ -22,6 +22,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "platform/platform_main_window.h"
 
+#include <QTimer>
+
+class QSystemTrayIcon;
+class QMenu;
+
 namespace Platform {
 
 class MainWindow : public Window::MainWindow {

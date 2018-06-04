@@ -18,6 +18,9 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QMutex>
+#include <QThread>
+#include <QMimeDatabase>
 #include "core/utils.h"
 
 #include <openssl/crypto.h>
@@ -27,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <openssl/engine.h>
 #include <openssl/conf.h>
 #include <openssl/ssl.h>
+#include <QSslSocket>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -46,6 +50,8 @@ quint64 _SharedMemoryLocation[4] = { 0x00, 0x01, 0x02, 0x03 };
 #endif
 
 #include <openssl/rand.h>
+
+#include "mtproto/core_types.h"
 
 // Base types compile-time check
 static_assert(sizeof(char) == 1, "Basic types size check failed");

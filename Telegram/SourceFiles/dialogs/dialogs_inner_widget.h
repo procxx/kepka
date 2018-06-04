@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "dialogs/dialogs_widget.h"
 #include "base/flags.h"
+#include "facades.h"
 
 namespace Dialogs {
 class Row;

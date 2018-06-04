@@ -21,7 +21,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <cstdint>
-// #include "core/utils.h"
+#include "utils.h"
 
 #define BETA_VERSION_MACRO (0ULL)
 

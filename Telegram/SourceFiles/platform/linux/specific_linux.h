@@ -17,8 +17,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/timer.h" // TimeMs
+
 #include <execinfo.h>
 #include <signal.h>
+
+#include <QFile>
+#include <QString>
+
+class QWidget;
+class QPainter;
+class QPaintEvent;
+class QAbstractNativeEventFilter;
+class LocationCoords;
 
 namespace Platform {
 
@@ -42,7 +53,7 @@ QString CurrentExecutablePath(int argc, char *argv[]);
 } // namespace Platform
 
 inline QString psServerPrefix() {
-    return qsl("/tmp/");
+    return QStringLiteral("/tmp/");
 }
 inline void psCheckLocalSocket(const QString &serverName) {
     QFile address(serverName);

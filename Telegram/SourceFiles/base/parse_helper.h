@@ -20,6 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QByteArray>
+#include <QLatin1String>
+#include "base/assertion.h"
+
+
 namespace base {
 namespace parse {
 

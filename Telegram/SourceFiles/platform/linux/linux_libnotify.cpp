@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/linux_libnotify.h"
 
+#include "logs.h"
+
 #include "platform/linux/linux_libs.h"
 
 namespace Platform {

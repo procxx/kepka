@@ -24,6 +24,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/mtp_instance.h"
 #include "mtproto/special_config_request.h"
 
+#include "facades.h"
+
 namespace MTP {
 namespace internal {
 namespace {

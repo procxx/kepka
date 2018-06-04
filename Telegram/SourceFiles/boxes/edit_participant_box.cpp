@@ -27,6 +27,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "styles/style_boxes.h"
 #include "ui/special_buttons.h"
 #include "boxes/calendar_box.h"
+#include "facades.h"
+#include "app.h" // For App::peerName
 
 namespace {
 

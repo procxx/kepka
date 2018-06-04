@@ -22,6 +22,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/observer.h"
 #include "mtproto/rsa_public_key.h"
+#include "scheme.h"
 #include <string>
 #include <vector>
 #include <map>

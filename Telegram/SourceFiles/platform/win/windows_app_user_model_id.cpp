@@ -18,12 +18,17 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
+#include "settings.h"
 #include "platform/win/windows_app_user_model_id.h"
 
 #include "platform/win/windows_dlls.h"
 #include <propvarutil.h>
 #include <propkey.h>
+
+#include <wrl/client.h>
+
+#include <QString>
+#include <QDir>
 
 using namespace Microsoft::WRL;
 

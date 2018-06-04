@@ -21,6 +21,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/runtime_composer.h"
+#include "ui/text/text.h"
+#include "history/history.h"
+#include "history/history_item.h"
+#include "ui/style/style_core_types.h"
 
 constexpr auto FullSelection = TextSelection { 0xFFFF, 0xFFFF };
 

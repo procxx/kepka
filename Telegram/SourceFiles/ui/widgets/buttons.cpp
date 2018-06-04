@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/effects/ripple_animation.h"
 #include "ui/effects/cross_animation.h"
 #include "lang/lang_instance.h"
+#include "app.h"
 
 namespace Ui {
 

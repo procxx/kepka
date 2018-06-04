@@ -18,7 +18,6 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
 #include "platform/win/specific_win.h"
 
 #include "platform/win/main_window_win.h"
@@ -43,7 +42,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <strsafe.h>
 
+#include <ObjIdl.h>
+#include <wrl/client.h>
+#include <propvarutil.h>
+
 #include <qpa/qplatformnativeinterface.h>
+#include <QStandardPaths>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+
 
 #ifndef DCX_USESTYLE
 #define DCX_USESTYLE 0x00010000
@@ -56,8 +63,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #endif
 
 using namespace Microsoft::WRL;
-using namespace ABI::Windows::UI::Notifications;
-using namespace ABI::Windows::Data::Xml::Dom;
 using namespace Windows::Foundation;
 using namespace Platform;
 

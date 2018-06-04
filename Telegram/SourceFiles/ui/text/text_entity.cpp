@@ -22,6 +22,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "auth_session.h"
 #include "lang/lang_tag.h"
+#include "app.h"
+
+#include <QStack>
 
 namespace TextUtilities {
 

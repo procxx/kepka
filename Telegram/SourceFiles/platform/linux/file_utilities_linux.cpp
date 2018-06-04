@@ -20,12 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/file_utilities_linux.h"
 
-#include <private/qguiapplication_p.h>
+// #include <private/qguiapplication_p.h>
 #include "platform/linux/linux_libs.h"
 #include "platform/linux/linux_gdk_helper.h"
 #include "messenger.h"
 #include "mainwindow.h"
 #include "storage/localstorage.h"
+#include "facades.h"
+
+#include <QProcess>
 
 QStringList qt_make_filter_list(const QString &filter);
 

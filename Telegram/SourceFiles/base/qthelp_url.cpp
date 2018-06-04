@@ -18,6 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <QStringList>
+#include "core/utils.h"
 #include "base/qthelp_url.h"
 
 namespace qthelp {
@@ -32,7 +34,7 @@ QMap<QString, QString> url_parse_params(const QString &params, UrlParamNameTrans
 		return name;
 	};
 
-	auto paramsList = params.split('&');
+    auto paramsList = params.split('&');
 	for_const (auto &param, paramsList) {
 		// Skip params without a name (starting with '=').
 		if (auto separatorPosition = param.indexOf('=')) {

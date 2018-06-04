@@ -989,6 +989,7 @@ GNU General Public License for more details.\n\
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE\n\
 Copyright (c) 2014 John Preston, https://desktop.telegram.org\n\
 */\n\
+#include "base/assertion.h"\n\
 #include "scheme.h"\n\
 \n\
 // Creator proxy class definition\n\

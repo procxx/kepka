@@ -15,7 +15,6 @@ GNU General Public License for more details.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "stdafx.h"
 #include "platform/mac/specific_mac.h"
 
 #include <cstdlib>
@@ -39,6 +38,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <IOKit/hidsystem/ev_keymap.h>
 #include <SPMediaKeyTap.h>
 #include <mach-o/dyld.h>
+
+#include <QAbstractNativeEventFilter>
+#include <QDesktopWidget>
+#include <QDesktopServices>
 
 namespace {
 
