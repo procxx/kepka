@@ -20,6 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "history/history_item.h"
+#include "ui/twidget.h"
 namespace Ui {
 class ScrollArea;
 class Shadow;

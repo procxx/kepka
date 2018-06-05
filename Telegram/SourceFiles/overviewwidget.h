@@ -20,6 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "history/history_item.h"
+#include "history/history.h"
+#include "ui/widgets/scroll_area.h"
+#include "ui/widgets/tooltip.h"
 #include "window/section_widget.h"
 #include "window/top_bar_widget.h"
 #include "ui/widgets/tooltip.h"

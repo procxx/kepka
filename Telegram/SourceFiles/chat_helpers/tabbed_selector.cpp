@@ -186,8 +186,8 @@ void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, double dt, double o
 	}
 
 	// Draw corners
-	//paintCorner(_topLeft, _innerLeft, _innerTop);
-	//paintCorner(_topRight, _innerRight - _topRight.width, _innerTop);
+	// paintCorner(_topLeft, _innerLeft, _innerTop);
+	// paintCorner(_topRight, _innerRight - _topRight.width, _innerTop);
 	paintCorner(_bottomLeft, _innerLeft, _innerBottom - _bottomLeft.height);
 	paintCorner(_bottomRight, _innerRight - _bottomRight.width, _innerBottom - _bottomRight.height);
 
@@ -250,17 +250,18 @@ void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, double dt, double o
 	}
 
 	// Debug
-	//frameInts = _frameInts;
-	//auto pattern = anim::shifted((static_cast<quint32>(0xFF) << 24) | (static_cast<quint32>(0xFF) << 16) | (static_cast<quint32>(0xFF) << 8) | static_cast<quint32>(0xFF));
-	//for (auto y = 0; y != _finalHeight; ++y) {
-	//	for (auto x = 0; x != _finalWidth; ++x) {
-	//		auto source = *frameInts;
-	//		auto sourceAlpha = (source >> 24);
-	//		*frameInts = anim::unshifted(anim::shifted(source) * 256 + pattern * (256 - sourceAlpha));
-	//		++frameInts;
+	//	frameInts = _frameInts;
+	//	auto pattern = anim::shifted((static_cast<quint32>(0xFF) << 24) | (static_cast<quint32>(0xFF) << 16) |
+	//	                             (static_cast<quint32>(0xFF) << 8) | static_cast<quint32>(0xFF));
+	//	for (auto y = 0; y != _finalHeight; ++y) {
+	//		for (auto x = 0; x != _finalWidth; ++x) {
+	//			auto source = *frameInts;
+	//			auto sourceAlpha = (source >> 24);
+	//			*frameInts = anim::unshifted(anim::shifted(source) * 256 + pattern * (256 - sourceAlpha));
+	//			++frameInts;
+	//		}
+	//		frameInts += _frameIntsPerLineAdded;
 	//	}
-	//	frameInts += _frameIntsPerLineAdded;
-	//}
 
 	p.drawImage(outerLeft / cIntRetinaFactor(), outerTop / cIntRetinaFactor(), _frame, outerLeft, outerTop, outerRight - outerLeft, outerBottom - outerTop);
 }

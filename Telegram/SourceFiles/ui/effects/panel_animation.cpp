@@ -494,17 +494,18 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, doubl
 	}
 
 	// Debug
-	//frameInts = _frameInts;
-	//auto pattern = anim::shifted((static_cast<quint32>(0xFF) << 24) | (static_cast<quint32>(0xFF) << 16) | (static_cast<quint32>(0xFF) << 8) | static_cast<quint32>(0xFF));
-	//for (auto y = 0; y != _finalHeight; ++y) {
-	//	for (auto x = 0; x != _finalWidth; ++x) {
-	//		auto source = *frameInts;
-	//		auto sourceAlpha = (source >> 24);
-	//		*frameInts = anim::unshifted(anim::shifted(source) * 256 + pattern * (256 - sourceAlpha));
-	//		++frameInts;
+	//	frameInts = _frameInts;
+	//	auto pattern = anim::shifted((static_cast<quint32>(0xFF) << 24) | (static_cast<quint32>(0xFF) << 16) |
+	//	                             (static_cast<quint32>(0xFF) << 8) | static_cast<quint32>(0xFF));
+	//	for (auto y = 0; y != _finalHeight; ++y) {
+	//		for (auto x = 0; x != _finalWidth; ++x) {
+	//			auto source = *frameInts;
+	//			auto sourceAlpha = (source >> 24);
+	//			*frameInts = anim::unshifted(anim::shifted(source) * 256 + pattern * (256 - sourceAlpha));
+	//			++frameInts;
+	//		}
+	//		frameInts += _frameIntsPerLineAdded;
 	//	}
-	//	frameInts += _frameIntsPerLineAdded;
-	//}
 
 	p.drawImage(rtlpoint(x + (outerLeft / cIntRetinaFactor()), y + (outerTop / cIntRetinaFactor()), outerWidth), _frame, QRect(outerLeft, outerTop, outerRight - outerLeft, outerBottom - outerTop));
 }

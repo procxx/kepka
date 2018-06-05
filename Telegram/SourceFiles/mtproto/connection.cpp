@@ -1084,12 +1084,14 @@ void ConnectionPrivate::restart() {
 		if (!sessionData->isCheckedKey()) {
 			// No destroying in case of an error.
 			//
-			//if (mayBeBadKey) {
-			//	clearMessages();
-			//	keyId = kRecreateKeyId;
-//				retryTimeout = 1; // no ddos please
-			//	LOG(("MTP Info: key may be bad and was not checked - but won't be destroyed, no log outs because of bad server right now..."));
-			//}
+			// if (mayBeBadKey) {
+			// 	clearMessages();
+			// 	keyId = kRecreateKeyId;
+			// 	retryTimeout = 1; // no ddos please
+			// 	LOG(
+			// 	    ("MTP Info: key may be bad and was not checked - but won't be destroyed, no log outs because of "
+			// 	     "bad server right now..."));
+			// }
 		} else {
 			sessionData->setCheckedKey(false);
 		}

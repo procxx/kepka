@@ -276,13 +276,17 @@ void Instance::Inner::onStart() {
 
 	// Alloc source samples
 
-	d->srcSamples = (d->codecContext->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) ? 10000 : d->codecContext->frame_size;
-	//if ((res = av_samples_alloc_array_and_samples(&d->srcSamplesData, 0, d->codecContext->channels, d->srcSamples, d->codecContext->sample_fmt, 0)) < 0) {
-	//	LOG(("Audio Error: Unable to av_samples_alloc_array_and_samples for capture, error %1, %2").arg(res).arg(av_make_error_string(err, sizeof(err), res)));
-	//	onStop(false);
-	//	emit error();
-	//	return;
-	//}
+	d->srcSamples =
+	    (d->codecContext->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) ? 10000 : d->codecContext->frame_size;
+	// if ((res = av_samples_alloc_array_and_samples(&d->srcSamplesData, 0, d->codecContext->channels, d->srcSamples,
+	//                                               d->codecContext->sample_fmt, 0)) < 0) {
+	// 	LOG(("Audio Error: Unable to av_samples_alloc_array_and_samples for capture, error %1, %2")
+	// 	        .arg(res)
+	// 	        .arg(av_make_error_string(err, sizeof(err), res)));
+	// 	onStop(false);
+	// 	emit error();
+	// 	return;
+	// }
 	// Using _captured directly
 
 	// Prepare resampling
