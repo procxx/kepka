@@ -8,4 +8,3 @@ add_executable(codegen_style
     structure_types.cpp
 )
 target_link_libraries(codegen_style codegen_common Qt5::Core Qt5::Gui)
-qt5_use_modules(codegen_style Core Gui)
