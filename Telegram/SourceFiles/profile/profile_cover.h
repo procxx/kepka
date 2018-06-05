@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/observer.h"
 #include "base/object_ptr.h"
-#include "ui/twidget.h"
+#include "base/observer.h"
 #include "structs.h"
+#include "ui/twidget.h"
 
 class PhotoData;
 class PeerData;
@@ -120,7 +120,8 @@ private:
 	void setChannelButtons();
 
 	void clearButtons();
-	void addButton(base::lambda<QString()> textFactory, const char *slot, const style::RoundButton *replacementStyle = nullptr);
+	void addButton(base::lambda<QString()> textFactory, const char *slot,
+	               const style::RoundButton *replacementStyle = nullptr);
 
 	void paintDivider(Painter &p);
 
@@ -137,10 +138,10 @@ private:
 	ChannelData *_peerMegagroup;
 
 	object_ptr<UserpicButton> _userpicButton;
-	object_ptr<CoverDropArea> _dropArea = { nullptr };
+	object_ptr<CoverDropArea> _dropArea = {nullptr};
 
 	object_ptr<Ui::FlatLabel> _name;
-	object_ptr<Ui::LinkButton> _cancelPhotoUpload = { nullptr };
+	object_ptr<Ui::LinkButton> _cancelPhotoUpload = {nullptr};
 
 	QPoint _statusPosition;
 	QString _statusText;
@@ -156,7 +157,6 @@ private:
 	int _dividerTop = 0;
 
 	int _onlineCount = 0;
-
 };
 
 } // namespace Profile

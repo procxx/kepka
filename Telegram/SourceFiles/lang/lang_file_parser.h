@@ -60,7 +60,6 @@ private:
 	const base::lambda<void(QLatin1String key, const QByteArray &value)> _callback;
 
 	Result _result;
-
 };
 
 } // namespace Lang

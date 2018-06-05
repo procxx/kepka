@@ -30,10 +30,10 @@ class RegularExpressionMatch {
 public:
 	RegularExpressionMatch(const QRegularExpressionMatch &other) = delete;
 	RegularExpressionMatch(const RegularExpressionMatch &other) = delete;
-	RegularExpressionMatch(QRegularExpressionMatch &&match) : data_(std::move(match)) {
-	}
-	RegularExpressionMatch(RegularExpressionMatch &&other) : data_(std::move(other.data_)) {
-	}
+	RegularExpressionMatch(QRegularExpressionMatch &&match)
+	    : data_(std::move(match)) {}
+	RegularExpressionMatch(RegularExpressionMatch &&other)
+	    : data_(std::move(other.data_)) {}
 	RegularExpressionMatch &operator=(const QRegularExpressionMatch &match) = delete;
 	RegularExpressionMatch &operator=(const RegularExpressionMatch &other) = delete;
 	RegularExpressionMatch &operator=(QRegularExpressionMatch &&match) {
@@ -56,7 +56,6 @@ public:
 
 private:
 	QRegularExpressionMatch data_;
-
 };
 
 enum class RegExOption {
@@ -74,14 +73,17 @@ enum class RegExOption {
 #endif // OS_MAC_OLD
 };
 using RegExOptions = base::flags<RegExOption>;
-inline constexpr auto is_flag_type(RegExOption) { return true; };
+inline constexpr auto is_flag_type(RegExOption) {
+	return true;
+};
 
 inline RegularExpressionMatch regex_match(const QString &string, const QString &subject, RegExOptions options = 0) {
 	auto qtOptions = QRegularExpression::PatternOptions(static_cast<int>(options));
 	return RegularExpressionMatch(QRegularExpression(string, qtOptions).match(subject));
 }
 
-inline RegularExpressionMatch regex_match(const QString &string, const QStringRef &subjectRef, RegExOptions options = 0) {
+inline RegularExpressionMatch regex_match(const QString &string, const QStringRef &subjectRef,
+                                          RegExOptions options = 0) {
 	auto qtOptions = QRegularExpression::PatternOptions(static_cast<int>(options));
 #ifndef OS_MAC_OLD
 	return RegularExpressionMatch(QRegularExpression(string, qtOptions).match(subjectRef));

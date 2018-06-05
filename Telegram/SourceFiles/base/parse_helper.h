@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/assertion.h"
 #include <QByteArray>
 #include <QLatin1String>
-#include "base/assertion.h"
 
 
 namespace base {
@@ -33,11 +33,7 @@ QByteArray stripComments(const QByteArray &content);
 
 inline bool skipWhitespaces(const char *&from, const char *end) {
 	Assert(from <= end);
-	while (from != end && (
-		(*from == ' ') ||
-		(*from == '\n') ||
-		(*from == '\t') ||
-		(*from == '\r'))) {
+	while (from != end && ((*from == ' ') || (*from == '\n') || (*from == '\t') || (*from == '\r'))) {
 		++from;
 	}
 	return (from != end);
@@ -46,11 +42,8 @@ inline bool skipWhitespaces(const char *&from, const char *end) {
 inline QLatin1String readName(const char *&from, const char *end) {
 	Assert(from <= end);
 	auto start = from;
-	while (from != end && (
-		(*from >= 'a' && *from <= 'z') ||
-		(*from >= 'A' && *from <= 'Z') ||
-		(*from >= '0' && *from <= '9') ||
-		(*from == '_'))) {
+	while (from != end && ((*from >= 'a' && *from <= 'z') || (*from >= 'A' && *from <= 'Z') ||
+	                       (*from >= '0' && *from <= '9') || (*from == '_'))) {
 		++from;
 	}
 	return QLatin1String(start, from - start);

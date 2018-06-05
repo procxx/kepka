@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <vector>
-#include <deque>
-#include <QSharedPointer>
 #include "base/assertion.h"
 #include "base/lambda.h"
 #include "base/type_traits.h"
 #include "core/utils.h"
+#include <QSharedPointer>
+#include <deque>
+#include <vector>
 
 namespace base {
 namespace internal {
@@ -36,28 +36,20 @@ void RegisterPendingObservable(ObservableCallHandlers *handlers);
 void UnregisterActiveObservable(ObservableCallHandlers *handlers);
 void UnregisterObservable(ObservableCallHandlers *handlers);
 
-template <typename EventType>
-struct SubscriptionHandlerHelper {
+template <typename EventType> struct SubscriptionHandlerHelper {
 	using type = base::lambda<void(parameter_type<EventType>)>;
 };
 
-template <>
-struct SubscriptionHandlerHelper<void> {
-	using type = base::lambda<void()>;
-};
+template <> struct SubscriptionHandlerHelper<void> { using type = base::lambda<void()>; };
 
-template <typename EventType>
-using SubscriptionHandler = typename SubscriptionHandlerHelper<EventType>::type;
+template <typename EventType> using SubscriptionHandler = typename SubscriptionHandlerHelper<EventType>::type;
 
 // Required because QShared/WeakPointer can't point to void.
-class BaseObservableData {
-};
+class BaseObservableData {};
 
-template <typename EventType, typename Handler>
-class CommonObservableData;
+template <typename EventType, typename Handler> class CommonObservableData;
 
-template <typename EventType, typename Handler>
-class ObservableData;
+template <typename EventType, typename Handler> class ObservableData;
 
 } // namespace internal
 
@@ -66,8 +58,9 @@ public:
 	Subscription() = default;
 	Subscription(const Subscription &) = delete;
 	Subscription &operator=(const Subscription &) = delete;
-	Subscription(Subscription &&other) : _node(base::take(other._node)), _removeAndDestroyMethod(other._removeAndDestroyMethod) {
-	}
+	Subscription(Subscription &&other)
+	    : _node(base::take(other._node))
+	    , _removeAndDestroyMethod(other._removeAndDestroyMethod) {}
 	Subscription &operator=(Subscription &&other) {
 		qSwap(_node, other._node);
 		qSwap(_removeAndDestroyMethod, other._removeAndDestroyMethod);
@@ -87,34 +80,30 @@ public:
 
 private:
 	struct Node {
-		Node(const QSharedPointer<internal::BaseObservableData> &observable) : observable(observable) {
-		}
+		Node(const QSharedPointer<internal::BaseObservableData> &observable)
+		    : observable(observable) {}
 		Node *next = nullptr;
 		Node *prev = nullptr;
 		QWeakPointer<internal::BaseObservableData> observable;
 	};
-	using RemoveAndDestroyMethod = void(*)(Node*);
-	Subscription(Node *node, RemoveAndDestroyMethod removeAndDestroyMethod) : _node(node), _removeAndDestroyMethod(removeAndDestroyMethod) {
-	}
+	using RemoveAndDestroyMethod = void (*)(Node *);
+	Subscription(Node *node, RemoveAndDestroyMethod removeAndDestroyMethod)
+	    : _node(node)
+	    , _removeAndDestroyMethod(removeAndDestroyMethod) {}
 
 	Node *_node = nullptr;
 	RemoveAndDestroyMethod _removeAndDestroyMethod;
 
-	template <typename EventType, typename Handler>
-	friend class internal::CommonObservableData;
+	template <typename EventType, typename Handler> friend class internal::CommonObservableData;
 
-	template <typename EventType, typename Handler>
-	friend class internal::ObservableData;
-
+	template <typename EventType, typename Handler> friend class internal::ObservableData;
 };
 
 namespace internal {
 
-template <typename EventType, typename Handler, bool EventTypeIsSimple>
-class BaseObservable;
+template <typename EventType, typename Handler, bool EventTypeIsSimple> class BaseObservable;
 
-template <typename EventType, typename Handler>
-class CommonObservable {
+template <typename EventType, typename Handler> class CommonObservable {
 public:
 	Subscription add_subscription(Handler &&handler) {
 		if (!_data) {
@@ -128,7 +117,6 @@ private:
 
 	friend class CommonObservableData<EventType, Handler>;
 	friend class BaseObservable<EventType, Handler, base::type_traits<EventType>::is_fast_copy_type::value>;
-
 };
 
 template <typename EventType, typename Handler>
@@ -139,7 +127,6 @@ public:
 			this->_data->notify(std::move(event), sync);
 		}
 	}
-
 };
 
 template <typename EventType, typename Handler>
@@ -156,18 +143,16 @@ public:
 			this->_data->notify(std::move(event_copy), sync);
 		}
 	}
-
 };
 
 } // namespace internal
 
 namespace internal {
 
-template <typename EventType, typename Handler>
-class CommonObservableData : public BaseObservableData {
+template <typename EventType, typename Handler> class CommonObservableData : public BaseObservableData {
 public:
-	CommonObservableData(CommonObservable<EventType, Handler> *observable) : _observable(observable) {
-	}
+	CommonObservableData(CommonObservable<EventType, Handler> *observable)
+	    : _observable(observable) {}
 
 	Subscription append(Handler &&handler) {
 		auto node = new Node(_observable->_data, std::move(handler));
@@ -178,7 +163,7 @@ public:
 		} else {
 			_begin = _end = node;
 		}
-		return { _end, &CommonObservableData::removeAndDestroyNode };
+		return {_end, &CommonObservableData::removeAndDestroyNode};
 	}
 
 	bool empty() const {
@@ -187,8 +172,9 @@ public:
 
 private:
 	struct Node : public Subscription::Node {
-		Node(const QSharedPointer<BaseObservableData> &observer, Handler &&handler) : Subscription::Node(observer), handler(std::move(handler)) {
-		}
+		Node(const QSharedPointer<BaseObservableData> &observer, Handler &&handler)
+		    : Subscription::Node(observer)
+		    , handler(std::move(handler)) {}
 		Handler handler;
 	};
 
@@ -200,13 +186,13 @@ private:
 			node->next->prev = node->prev;
 		}
 		if (_begin == node) {
-			_begin = static_cast<Node*>(node->next);
+			_begin = static_cast<Node *>(node->next);
 		}
 		if (_end == node) {
-			_end = static_cast<Node*>(node->prev);
+			_end = static_cast<Node *>(node->prev);
 		}
 		if (_current == node) {
-			_current = static_cast<Node*>(node->prev);
+			_current = static_cast<Node *>(node->prev);
 		} else if (!_begin) {
 			_observable->_data.reset();
 		}
@@ -214,18 +200,17 @@ private:
 
 	static void removeAndDestroyNode(Subscription::Node *node) {
 		if (auto that = node->observable.toStrongRef()) {
-			static_cast<CommonObservableData*>(that.data())->remove(node);
+			static_cast<CommonObservableData *>(that.data())->remove(node);
 		}
-		delete static_cast<Node*>(node);
+		delete static_cast<Node *>(node);
 	}
 
-	template <typename CallCurrent>
-	void notifyEnumerate(CallCurrent callCurrent) {
+	template <typename CallCurrent> void notifyEnumerate(CallCurrent callCurrent) {
 		_current = _begin;
 		do {
 			callCurrent();
 			if (_current) {
-				_current = static_cast<Node*>(_current->next);
+				_current = static_cast<Node *>(_current->next);
 			} else if (_begin) {
 				_current = _begin;
 			} else {
@@ -249,11 +234,9 @@ private:
 	ObservableCallHandlers _callHandlers;
 
 	friend class ObservableData<EventType, Handler>;
-
 };
 
-template <typename EventType, typename Handler>
-class ObservableData : public CommonObservableData<EventType, Handler> {
+template <typename EventType, typename Handler> class ObservableData : public CommonObservableData<EventType, Handler> {
 public:
 	using CommonObservableData<EventType, Handler>::CommonObservableData;
 
@@ -266,9 +249,7 @@ public:
 			callHandlers();
 		} else {
 			if (!this->_callHandlers) {
-				this->_callHandlers = [this]() {
-					callHandlers();
-				};
+				this->_callHandlers = [this]() { callHandlers(); };
 			}
 			if (_events.empty()) {
 				RegisterPendingObservable(&this->_callHandlers);
@@ -286,9 +267,7 @@ private:
 		_handling = true;
 		auto events = base::take(_events);
 		for (auto &event : events) {
-			this->notifyEnumerate([this, &event]() {
-				this->_current->handler(event);
-			});
+			this->notifyEnumerate([this, &event]() { this->_current->handler(event); });
 			if (this->destroyMeIfEmpty()) {
 				return;
 			}
@@ -299,11 +278,9 @@ private:
 
 	std::deque<EventType> _events;
 	bool _handling = false;
-
 };
 
-template <class Handler>
-class ObservableData<void, Handler> : public CommonObservableData<void, Handler> {
+template <class Handler> class ObservableData<void, Handler> : public CommonObservableData<void, Handler> {
 public:
 	using CommonObservableData<void, Handler>::CommonObservableData;
 
@@ -316,9 +293,7 @@ public:
 			callHandlers();
 		} else {
 			if (!this->_callHandlers) {
-				this->_callHandlers = [this]() {
-					callHandlers();
-				};
+				this->_callHandlers = [this]() { callHandlers(); };
 			}
 			if (!_eventsCount) {
 				RegisterPendingObservable(&this->_callHandlers);
@@ -336,9 +311,7 @@ private:
 		_handling = true;
 		auto eventsCount = base::take(_eventsCount);
 		for (int i = 0; i != eventsCount; ++i) {
-			this->notifyEnumerate([this]() {
-				this->_current->handler();
-			});
+			this->notifyEnumerate([this]() { this->_current->handler(); });
 			if (this->destroyMeIfEmpty()) {
 				return;
 			}
@@ -349,38 +322,36 @@ private:
 
 	int _eventsCount = 0;
 	bool _handling = false;
-
 };
 
 template <typename Handler>
-class BaseObservable<void, Handler, base::type_traits<void>::is_fast_copy_type::value> : public internal::CommonObservable<void, Handler> {
+class BaseObservable<void, Handler, base::type_traits<void>::is_fast_copy_type::value>
+    : public internal::CommonObservable<void, Handler> {
 public:
 	void notify(bool sync = false) {
 		if (this->_data) {
 			this->_data->notify(sync);
 		}
 	}
-
 };
 
 } // namespace internal
 
 template <typename EventType, typename Handler = internal::SubscriptionHandler<EventType>>
-class Observable : public internal::BaseObservable<EventType, Handler, base::type_traits<EventType>::is_fast_copy_type::value> {
+class Observable
+    : public internal::BaseObservable<EventType, Handler, base::type_traits<EventType>::is_fast_copy_type::value> {
 public:
 	Observable() = default;
 	Observable(const Observable &other) = delete;
 	Observable(Observable &&other) = delete;
 	Observable &operator=(const Observable &other) = delete;
 	Observable &operator=(Observable &&other) = delete;
-
 };
 
-template <typename Type>
-class Variable {
+template <typename Type> class Variable {
 public:
-	Variable(parameter_type<Type> startValue = Type()) : _value(startValue) {
-	}
+	Variable(parameter_type<Type> startValue = Type())
+	    : _value(startValue) {}
 	Variable(Variable &&other) = default;
 	Variable &operator=(Variable &&other) = default;
 
@@ -399,8 +370,7 @@ public:
 		}
 	}
 
-	template <typename Callback>
-	void process(Callback callback, bool sync = false) {
+	template <typename Callback> void process(Callback callback, bool sync = false) {
 		callback(_value);
 		changed().notify(_value, sync);
 	}
@@ -412,7 +382,6 @@ public:
 private:
 	Type _value;
 	mutable Observable<Type> _changed;
-
 };
 
 class Subscriber {
@@ -428,13 +397,11 @@ protected:
 		return subscribe(*observable, std::forward<Lambda>(handler));
 	}
 
-	template <typename Type, typename Lambda>
-	size_t subscribe(const base::Variable<Type> &variable, Lambda &&handler) {
+	template <typename Type, typename Lambda> size_t subscribe(const base::Variable<Type> &variable, Lambda &&handler) {
 		return subscribe(variable.changed(), std::forward<Lambda>(handler));
 	}
 
-	template <typename Type, typename Lambda>
-	size_t subscribe(const base::Variable<Type> *variable, Lambda &&handler) {
+	template <typename Type, typename Lambda> size_t subscribe(const base::Variable<Type> *variable, Lambda &&handler) {
 		return subscribe(variable->changed(), std::forward<Lambda>(handler));
 	}
 
@@ -459,7 +426,6 @@ protected:
 
 private:
 	std::vector<base::Subscription> _subscriptions;
-
 };
 
 void HandleObservables();

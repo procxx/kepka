@@ -21,10 +21,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "media/media_audio_loader.h"
 
 AudioPlayerLoader::AudioPlayerLoader(const FileLocation &file, const QByteArray &data, base::byte_vector &&bytes)
-: _file(file)
-, _data(data)
-, _bytes(std::move(bytes)) {
-}
+    : _file(file)
+    , _data(data)
+    , _bytes(std::move(bytes)) {}
 
 AudioPlayerLoader::~AudioPlayerLoader() {
 	if (_access) {
@@ -64,14 +63,22 @@ bool AudioPlayerLoader::openFile() {
 		if (_f.isOpen()) _f.close();
 		if (!_access) {
 			if (!_file.accessEnable()) {
-				LOG(("Audio Error: could not open file access '%1', data size '%2', error %3, %4").arg(_file.name()).arg(_data.size()).arg(_f.error()).arg(_f.errorString()));
+				LOG(("Audio Error: could not open file access '%1', data size '%2', error %3, %4")
+				        .arg(_file.name())
+				        .arg(_data.size())
+				        .arg(_f.error())
+				        .arg(_f.errorString()));
 				return false;
 			}
 			_access = true;
 		}
 		_f.setFileName(_file.name());
 		if (!_f.open(QIODevice::ReadOnly)) {
-			LOG(("Audio Error: could not open file '%1', data size '%2', error %3, %4").arg(_file.name()).arg(_data.size()).arg(_f.error()).arg(_f.errorString()));
+			LOG(("Audio Error: could not open file '%1', data size '%2', error %3, %4")
+			        .arg(_file.name())
+			        .arg(_data.size())
+			        .arg(_f.error())
+			        .arg(_f.errorString()));
 			return false;
 		}
 	}

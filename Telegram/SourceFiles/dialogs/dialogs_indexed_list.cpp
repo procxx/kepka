@@ -18,15 +18,14 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "history/history.h"
 #include "dialogs/dialogs_indexed_list.h"
+#include "history/history.h"
 
 namespace Dialogs {
 
 IndexedList::IndexedList(SortMode sortMode)
-: _sortMode(sortMode)
-, _list(sortMode) {
-}
+    : _sortMode(sortMode)
+    , _list(sortMode) {}
 
 RowsByLetter IndexedList::addToEnd(History *history) {
 	RowsByLetter result;
@@ -100,7 +99,8 @@ void IndexedList::movePinned(Row *row, int deltaSign) {
 	history2->setPinnedIndex(index1);
 }
 
-void IndexedList::peerNameChanged(PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars) {
+void IndexedList::peerNameChanged(PeerData *peer, const PeerData::Names &oldNames,
+                                  const PeerData::NameFirstChars &oldChars) {
 	Assert(_sortMode != SortMode::Date);
 	if (_sortMode == SortMode::Name) {
 		adjustByName(peer, oldNames, oldChars);
@@ -109,12 +109,14 @@ void IndexedList::peerNameChanged(PeerData *peer, const PeerData::Names &oldName
 	}
 }
 
-void IndexedList::peerNameChanged(Mode list, PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars) {
+void IndexedList::peerNameChanged(Mode list, PeerData *peer, const PeerData::Names &oldNames,
+                                  const PeerData::NameFirstChars &oldChars) {
 	Assert(_sortMode == SortMode::Date);
 	adjustNames(list, peer, oldNames, oldChars);
 }
 
-void IndexedList::adjustByName(PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars) {
+void IndexedList::adjustByName(PeerData *peer, const PeerData::Names &oldNames,
+                               const PeerData::NameFirstChars &oldChars) {
 	Row *mainRow = _list.adjustByName(peer);
 	if (!mainRow) return;
 
@@ -148,7 +150,8 @@ void IndexedList::adjustByName(PeerData *peer, const PeerData::Names &oldNames, 
 	}
 }
 
-void IndexedList::adjustNames(Mode list, PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars) {
+void IndexedList::adjustNames(Mode list, PeerData *peer, const PeerData::Names &oldNames,
+                              const PeerData::NameFirstChars &oldChars) {
 	auto mainRow = _list.getRow(peer->id);
 	if (!mainRow) return;
 
@@ -194,9 +197,7 @@ void IndexedList::del(const PeerData *peer, Row *replacedBy) {
 }
 
 void IndexedList::clear() {
-	for_const (auto &list, _index) {
-		delete list;
-	}
+	for_const (auto &list, _index) { delete list; }
 }
 
 IndexedList::~IndexedList() {

@@ -20,24 +20,24 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/win/notifications_manager_win.h"
 
-#include "window/notifications_utilities.h"
-#include "platform/win/windows_app_user_model_id.h"
-#include "platform/win/windows_event_filter.h"
-#include "platform/win/windows_dlls.h"
-#include "mainwindow.h"
 #include "base/task_queue.h"
+#include "mainwindow.h"
+#include "platform/win/windows_app_user_model_id.h"
+#include "platform/win/windows_dlls.h"
+#include "platform/win/windows_event_filter.h"
+#include "window/notifications_utilities.h"
 
-#include <strsafe.h>
 #include <intsafe.h>
+#include <strsafe.h>
 
-#include <wrl/client.h>
-#include <windows.ui.notifications.h>
 #include <windows.foundation.collections.h>
+#include <windows.ui.notifications.h>
+#include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "history/history.h"
 #include "app.h"
 #include "facades.h"
+#include "history/history.h"
 
 HICON qt_pixmapToWinHICON(const QPixmap &);
 
@@ -63,8 +63,7 @@ public:
 		Dlls::WindowsDeleteString(_hstring);
 	}
 
-	template <size_t N>
-	StringReferenceWrapper(_In_reads_(N) wchar_t const (&stringRef)[N]) throw() {
+	template <size_t N> StringReferenceWrapper(_In_reads_(N) wchar_t const (&stringRef)[N]) throw() {
 		UINT32 length = N - 1;
 		HRESULT hr = Dlls::WindowsCreateStringReference(stringRef, length, &_header, &_hstring);
 		if (!SUCCEEDED(hr)) {
@@ -72,8 +71,7 @@ public:
 		}
 	}
 
-	template <size_t _>
-	StringReferenceWrapper(_In_reads_(_) wchar_t(&stringRef)[_]) throw() {
+	template <size_t _> StringReferenceWrapper(_In_reads_(_) wchar_t (&stringRef)[_]) throw() {
 		UINT32 length;
 		HRESULT hr = SizeTToUInt32(wcslen(stringRef), &length);
 		if (!SUCCEEDED(hr)) {
@@ -90,16 +88,16 @@ public:
 private:
 	HSTRING _hstring;
 	HSTRING_HEADER _header;
-
 };
 
-template<class T>
-_Check_return_ __inline HRESULT _1_GetActivationFactory(_In_ HSTRING activatableClassId, _COM_Outptr_ T** factory) {
+template <class T>
+_Check_return_ __inline HRESULT _1_GetActivationFactory(_In_ HSTRING activatableClassId, _COM_Outptr_ T **factory) {
 	return Dlls::RoGetActivationFactory(activatableClassId, IID_INS_ARGS(factory));
 }
 
-template<typename T>
-inline HRESULT wrap_GetActivationFactory(_In_ HSTRING activatableClassId, _Inout_ Details::ComPtrRef<T> factory) throw() {
+template <typename T>
+inline HRESULT wrap_GetActivationFactory(_In_ HSTRING activatableClassId,
+                                         _Inout_ Details::ComPtrRef<T> factory) throw() {
 	return _1_GetActivationFactory(activatableClassId, factory.ReleaseAndGetAddressOf());
 }
 
@@ -107,11 +105,9 @@ bool init() {
 	if (QSysInfo::windowsVersion() < QSysInfo::WV_WINDOWS8) {
 		return false;
 	}
-	if ((Dlls::SetCurrentProcessExplicitAppUserModelID == nullptr)
-		|| (Dlls::PropVariantToString == nullptr)
-		|| (Dlls::RoGetActivationFactory == nullptr)
-		|| (Dlls::WindowsCreateStringReference == nullptr)
-		|| (Dlls::WindowsDeleteString == nullptr)) {
+	if ((Dlls::SetCurrentProcessExplicitAppUserModelID == nullptr) || (Dlls::PropVariantToString == nullptr) ||
+	    (Dlls::RoGetActivationFactory == nullptr) || (Dlls::WindowsCreateStringReference == nullptr) ||
+	    (Dlls::WindowsDeleteString == nullptr)) {
 		return false;
 	}
 
@@ -206,18 +202,21 @@ HRESULT SetImageSrc(_In_z_ const wchar_t *imagePath, _In_ IXmlDocument *toastXml
 	return SetNodeValueString(StringReferenceWrapper(imageSrc).Get(), srcAttribute.Get(), toastXml);
 }
 
-typedef ABI::Windows::Foundation::ITypedEventHandler<ToastNotification*, ::IInspectable *> DesktopToastActivatedEventHandler;
-typedef ABI::Windows::Foundation::ITypedEventHandler<ToastNotification*, ToastDismissedEventArgs*> DesktopToastDismissedEventHandler;
-typedef ABI::Windows::Foundation::ITypedEventHandler<ToastNotification*, ToastFailedEventArgs*> DesktopToastFailedEventHandler;
+typedef ABI::Windows::Foundation::ITypedEventHandler<ToastNotification *, ::IInspectable *>
+    DesktopToastActivatedEventHandler;
+typedef ABI::Windows::Foundation::ITypedEventHandler<ToastNotification *, ToastDismissedEventArgs *>
+    DesktopToastDismissedEventHandler;
+typedef ABI::Windows::Foundation::ITypedEventHandler<ToastNotification *, ToastFailedEventArgs *>
+    DesktopToastFailedEventHandler;
 
-class ToastEventHandler : public Implements<DesktopToastActivatedEventHandler, DesktopToastDismissedEventHandler, DesktopToastFailedEventHandler> {
+class ToastEventHandler : public Implements<DesktopToastActivatedEventHandler, DesktopToastDismissedEventHandler,
+                                            DesktopToastFailedEventHandler> {
 public:
 	// We keep a weak pointer to a member field of native notifications manager.
-	ToastEventHandler::ToastEventHandler(const std::shared_ptr<Manager*> &guarded, const PeerId &peer, MsgId msg)
-	: _peerId(peer)
-	, _msgId(msg)
-	, _weak(guarded) {
-	}
+	ToastEventHandler::ToastEventHandler(const std::shared_ptr<Manager *> &guarded, const PeerId &peer, MsgId msg)
+	    : _peerId(peer)
+	    , _msgId(msg)
+	    , _weak(guarded) {}
 	~ToastEventHandler() = default;
 
 	void performOnMainQueue(base::lambda_once<void(Manager *manager)> task) {
@@ -229,10 +228,9 @@ public:
 	}
 
 	// DesktopToastActivatedEventHandler
-	IFACEMETHODIMP Invoke(_In_ IToastNotification *sender, _In_ IInspectable* args) {
-		performOnMainQueue([peerId = _peerId, msgId = _msgId](Manager *manager) {
-			manager->notificationActivated(peerId, msgId);
-		});
+	IFACEMETHODIMP Invoke(_In_ IToastNotification *sender, _In_ IInspectable *args) {
+		performOnMainQueue(
+		    [peerId = _peerId, msgId = _msgId](Manager *manager) { manager->notificationActivated(peerId, msgId); });
 		return S_OK;
 	}
 
@@ -241,15 +239,14 @@ public:
 		ToastDismissalReason tdr;
 		if (SUCCEEDED(e->get_Reason(&tdr))) {
 			switch (tdr) {
-			case ToastDismissalReason_ApplicationHidden:
-			break;
+			case ToastDismissalReason_ApplicationHidden: break;
 			case ToastDismissalReason_UserCanceled:
 			case ToastDismissalReason_TimedOut:
 			default:
 				performOnMainQueue([peerId = _peerId, msgId = _msgId](Manager *manager) {
 					manager->clearNotification(peerId, msgId);
 				});
-			break;
+				break;
 			}
 		}
 		return S_OK;
@@ -257,9 +254,8 @@ public:
 
 	// DesktopToastFailedEventHandler
 	IFACEMETHODIMP Invoke(_In_ IToastNotification *sender, _In_ IToastFailedEventArgs *e) {
-		performOnMainQueue([peerId = _peerId, msgId = _msgId](Manager *manager) {
-			manager->clearNotification(peerId, msgId);
-		});
+		performOnMainQueue(
+		    [peerId = _peerId, msgId = _msgId](Manager *manager) { manager->clearNotification(peerId, msgId); });
 		return S_OK;
 	}
 
@@ -278,17 +274,18 @@ public:
 
 	IFACEMETHODIMP QueryInterface(_In_ REFIID riid, _COM_Outptr_ void **ppv) {
 		if (IsEqualIID(riid, IID_IUnknown))
-			*ppv = static_cast<IUnknown*>(static_cast<DesktopToastActivatedEventHandler*>(this));
+			*ppv = static_cast<IUnknown *>(static_cast<DesktopToastActivatedEventHandler *>(this));
 		else if (IsEqualIID(riid, __uuidof(DesktopToastActivatedEventHandler)))
-			*ppv = static_cast<DesktopToastActivatedEventHandler*>(this);
+			*ppv = static_cast<DesktopToastActivatedEventHandler *>(this);
 		else if (IsEqualIID(riid, __uuidof(DesktopToastDismissedEventHandler)))
-			*ppv = static_cast<DesktopToastDismissedEventHandler*>(this);
+			*ppv = static_cast<DesktopToastDismissedEventHandler *>(this);
 		else if (IsEqualIID(riid, __uuidof(DesktopToastFailedEventHandler)))
-			*ppv = static_cast<DesktopToastFailedEventHandler*>(this);
-		else *ppv = nullptr;
+			*ppv = static_cast<DesktopToastFailedEventHandler *>(this);
+		else
+			*ppv = nullptr;
 
 		if (*ppv) {
-			reinterpret_cast<IUnknown*>(*ppv)->AddRef();
+			reinterpret_cast<IUnknown *>(*ppv)->AddRef();
 			return S_OK;
 		}
 
@@ -299,8 +296,7 @@ private:
 	ULONG _refCount = 0;
 	PeerId _peerId = 0;
 	MsgId _msgId = 0;
-	std::weak_ptr<Manager*> _weak;
-
+	std::weak_ptr<Manager *> _weak;
 };
 
 auto Checked = false;
@@ -352,7 +348,8 @@ public:
 	explicit Private(Manager *instance, Type type);
 	bool init();
 
-	bool showNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle, const QString &msg, bool hideNameAndPhoto, bool hideReplyButton);
+	bool showNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle,
+	                      const QString &msg, bool hideNameAndPhoto, bool hideReplyButton);
 	void clearAll();
 	void clearFromHistory(History *history);
 	void beforeNotificationActivated(PeerId peerId, MsgId msgId);
@@ -364,40 +361,42 @@ public:
 private:
 	Window::Notifications::CachedUserpics _cachedUserpics;
 
-	std::shared_ptr<Manager*> _guarded;
+	std::shared_ptr<Manager *> _guarded;
 
 	ComPtr<IToastNotificationManagerStatics> _notificationManager;
 	ComPtr<IToastNotifier> _notifier;
 	ComPtr<IToastNotificationFactory> _notificationFactory;
 
 	struct NotificationPtr {
-		NotificationPtr() {
-		}
-		NotificationPtr(const ComPtr<IToastNotification> &ptr) : p(ptr) {
-		}
+		NotificationPtr() {}
+		NotificationPtr(const ComPtr<IToastNotification> &ptr)
+		    : p(ptr) {}
 
 		ComPtr<IToastNotification> p;
 	};
 	QMap<PeerId, QMap<MsgId, NotificationPtr>> _notifications;
-
 };
 
 Manager::Private::Private(Manager *instance, Type type)
-: _guarded(std::make_shared<Manager*>(instance))
-, _cachedUserpics(type) {
-}
+    : _guarded(std::make_shared<Manager *>(instance))
+    , _cachedUserpics(type) {}
 
 bool Manager::Private::init() {
-	if (!SUCCEEDED(wrap_GetActivationFactory(StringReferenceWrapper(RuntimeClass_Windows_UI_Notifications_ToastNotificationManager).Get(), &_notificationManager))) {
+	if (!SUCCEEDED(wrap_GetActivationFactory(
+	        StringReferenceWrapper(RuntimeClass_Windows_UI_Notifications_ToastNotificationManager).Get(),
+	        &_notificationManager))) {
 		return false;
 	}
 
 	auto appUserModelId = AppUserModelId::getId();
-	if (!SUCCEEDED(_notificationManager->CreateToastNotifierWithId(StringReferenceWrapper(appUserModelId, wcslen(appUserModelId)).Get(), &_notifier))) {
+	if (!SUCCEEDED(_notificationManager->CreateToastNotifierWithId(
+	        StringReferenceWrapper(appUserModelId, wcslen(appUserModelId)).Get(), &_notifier))) {
 		return false;
 	}
 
-	if (!SUCCEEDED(wrap_GetActivationFactory(StringReferenceWrapper(RuntimeClass_Windows_UI_Notifications_ToastNotification).Get(), &_notificationFactory))) {
+	if (!SUCCEEDED(wrap_GetActivationFactory(
+	        StringReferenceWrapper(RuntimeClass_Windows_UI_Notifications_ToastNotification).Get(),
+	        &_notificationFactory))) {
 		return false;
 	}
 	return true;
@@ -417,9 +416,7 @@ void Manager::Private::clearAll() {
 
 	auto temp = base::take(_notifications);
 	for_const (auto &notifications, temp) {
-		for_const (auto &notification, notifications) {
-			_notifier->Hide(notification.p.Get());
-		}
+		for_const (auto &notification, notifications) { _notifier->Hide(notification.p.Get()); }
 	}
 }
 
@@ -431,9 +428,7 @@ void Manager::Private::clearFromHistory(History *history) {
 		auto temp = base::take(i.value());
 		_notifications.erase(i);
 
-		for_const (auto &notification, temp) {
-			_notifier->Hide(notification.p.Get());
-		}
+		for_const (auto &notification, temp) { _notifier->Hide(notification.p.Get()); }
 	}
 }
 
@@ -457,13 +452,15 @@ void Manager::Private::clearNotification(PeerId peerId, MsgId msgId) {
 	}
 }
 
-bool Manager::Private::showNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle, const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) {
+bool Manager::Private::showNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle,
+                                        const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) {
 	if (!_notificationManager || !_notifier || !_notificationFactory) return false;
 
 	ComPtr<IXmlDocument> toastXml;
 	bool withSubtitle = !subtitle.isEmpty();
 
-	HRESULT hr = _notificationManager->GetTemplateContent(withSubtitle ? ToastTemplateType_ToastImageAndText04 : ToastTemplateType_ToastImageAndText02, &toastXml);
+	HRESULT hr = _notificationManager->GetTemplateContent(
+	    withSubtitle ? ToastTemplateType_ToastImageAndText04 : ToastTemplateType_ToastImageAndText02, &toastXml);
 	if (!SUCCEEDED(hr)) return false;
 
 	hr = SetAudioSilent(toastXml.Get());
@@ -497,7 +494,8 @@ bool Manager::Private::showNotification(PeerData *peer, MsgId msgId, const QStri
 		if (!SUCCEEDED(hr)) return false;
 
 		std::wstring wtitle = title.toStdWString();
-		hr = SetNodeValueString(StringReferenceWrapper(wtitle.data(), wtitle.size()).Get(), textNode.Get(), toastXml.Get());
+		hr = SetNodeValueString(StringReferenceWrapper(wtitle.data(), wtitle.size()).Get(), textNode.Get(),
+		                        toastXml.Get());
 		if (!SUCCEEDED(hr)) return false;
 	}
 	if (withSubtitle) {
@@ -506,7 +504,8 @@ bool Manager::Private::showNotification(PeerData *peer, MsgId msgId, const QStri
 		if (!SUCCEEDED(hr)) return false;
 
 		std::wstring wsubtitle = subtitle.toStdWString();
-		hr = SetNodeValueString(StringReferenceWrapper(wsubtitle.data(), wsubtitle.size()).Get(), textNode.Get(), toastXml.Get());
+		hr = SetNodeValueString(StringReferenceWrapper(wsubtitle.data(), wsubtitle.size()).Get(), textNode.Get(),
+		                        toastXml.Get());
 		if (!SUCCEEDED(hr)) return false;
 	}
 	{
@@ -559,9 +558,9 @@ bool Manager::Private::showNotification(PeerData *peer, MsgId msgId, const QStri
 	return true;
 }
 
-Manager::Manager(Window::Notifications::System *system) : NativeManager(system)
-, _private(std::make_unique<Private>(this, Private::Type::Rounded)) {
-}
+Manager::Manager(Window::Notifications::System *system)
+    : NativeManager(system)
+    , _private(std::make_unique<Private>(this, Private::Type::Rounded)) {}
 
 bool Manager::init() {
 	return _private->init();
@@ -573,7 +572,8 @@ void Manager::clearNotification(PeerId peerId, MsgId msgId) {
 
 Manager::~Manager() = default;
 
-void Manager::doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle, const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) {
+void Manager::doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle,
+                                       const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) {
 	_private->showNotification(peer, msgId, title, subtitle, msg, hideNameAndPhoto, hideReplyButton);
 }
 
@@ -675,7 +675,8 @@ bool SkipAudio() {
 bool SkipToast() {
 	querySystemNotificationSettings();
 
-	if (UserNotificationState == QUNS_PRESENTATION_MODE || UserNotificationState == QUNS_RUNNING_D3D_FULL_SCREEN/* || UserNotificationState == QUNS_BUSY*/) {
+	if (UserNotificationState == QUNS_PRESENTATION_MODE ||
+	    UserNotificationState == QUNS_RUNNING_D3D_FULL_SCREEN /* || UserNotificationState == QUNS_BUSY*/) {
 		return true;
 	}
 	if (QuietHoursEnabled) {

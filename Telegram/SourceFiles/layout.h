@@ -21,12 +21,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/runtime_composer.h"
-#include "ui/text/text.h"
 #include "history/history.h"
 #include "history/history_item.h"
 #include "ui/style/style_core_types.h"
+#include "ui/text/text.h"
 
-constexpr auto FullSelection = TextSelection { 0xFFFF, 0xFFFF };
+constexpr auto FullSelection = TextSelection{0xFFFF, 0xFFFF};
 
 extern TextParseOptions _textNameOptions, _textDlgOptions;
 extern TextParseOptions _historyTextOptions, _historyBotOptions, _historyTextNoMonoOptions, _historyBotNoMonoOptions;
@@ -95,17 +95,16 @@ bool documentIsExecutableName(const QString &filename);
 
 class PaintContextBase {
 public:
-	PaintContextBase(TimeMs ms, bool selecting) : ms(ms), selecting(selecting) {
-	}
+	PaintContextBase(TimeMs ms, bool selecting)
+	    : ms(ms)
+	    , selecting(selecting) {}
 	TimeMs ms;
 	bool selecting;
-
 };
 
 class LayoutItemBase : public RuntimeComposer, public ClickHandlerHost {
 public:
-	LayoutItemBase() {
-	}
+	LayoutItemBase() {}
 
 	LayoutItemBase(const LayoutItemBase &other) = delete;
 	LayoutItemBase &operator=(const LayoutItemBase &other) = delete;
@@ -144,13 +143,11 @@ public:
 		return QRect(0, 0, width(), height()).contains(point);
 	}
 
-	virtual ~LayoutItemBase() {
-	}
+	virtual ~LayoutItemBase() {}
 
 protected:
 	int _width = 0;
 	int _height = 0;
 	int _maxw = 0;
 	int _minh = 0;
-
 };

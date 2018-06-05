@@ -20,15 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/widgets/discrete_sliders.h"
 
-#include "ui/effects/ripple_animation.h"
 #include "styles/style_widgets.h"
+#include "ui/effects/ripple_animation.h"
 
 #include <QPainter>
 #include <qevent.h>
 
 namespace Ui {
 
-DiscreteSlider::DiscreteSlider(QWidget *parent) : TWidget(parent) {
+DiscreteSlider::DiscreteSlider(QWidget *parent)
+    : TWidget(parent) {
 	setCursor(style::cur_pointer);
 }
 
@@ -82,9 +83,7 @@ void DiscreteSlider::setSections(const QStringList &labels) {
 	Assert(!labels.isEmpty());
 
 	_sections.clear();
-	for_const (auto &label, labels) {
-		_sections.push_back(Section(label, getLabelFont()));
-	}
+	for_const (auto &label, labels) { _sections.push_back(Section(label, getLabelFont())); }
 	stopAnimation();
 	if (_activeIndex >= _sections.size()) {
 		_activeIndex = 0;
@@ -99,8 +98,7 @@ int DiscreteSlider::getCurrentActiveLeft(TimeMs ms) {
 	return _a_left.current(ms, _sections.isEmpty() ? 0 : _sections[_selected].left);
 }
 
-template <typename Lambda>
-void DiscreteSlider::enumerateSections(Lambda callback) {
+template <typename Lambda> void DiscreteSlider::enumerateSections(Lambda callback) {
 	for (auto &section : _sections) {
 		if (!callback(section)) {
 			return;
@@ -163,12 +161,12 @@ int DiscreteSlider::getIndexFromPosition(QPoint pos) {
 }
 
 DiscreteSlider::Section::Section(const QString &label, const style::font &font)
-: label(label)
-, labelWidth(font->width(label)) {
-}
+    : label(label)
+    , labelWidth(font->width(label)) {}
 
-SettingsSlider::SettingsSlider(QWidget *parent, const style::SettingsSlider &st) : DiscreteSlider(parent)
-, _st(st) {
+SettingsSlider::SettingsSlider(QWidget *parent, const style::SettingsSlider &st)
+    : DiscreteSlider(parent)
+    , _st(st) {
 	setSelectOnPress(_st.ripple.showDuration == 0);
 }
 
@@ -276,7 +274,8 @@ void SettingsSlider::paintEvent(QPaintEvent *e) {
 		}
 		if (myrtlrect(section.left, _st.labelTop, section.width, _st.labelFont->height).intersects(clip)) {
 			p.setPen(anim::pen(_st.labelFg, _st.labelFgActive, active));
-			p.drawTextLeft(section.left + (section.width - section.labelWidth) / 2, _st.labelTop, width(), section.label, section.labelWidth);
+			p.drawTextLeft(section.left + (section.width - section.labelWidth) / 2, _st.labelTop, width(),
+			               section.label, section.labelWidth);
 		}
 		return true;
 	});

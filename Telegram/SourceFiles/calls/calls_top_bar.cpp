@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "calls/calls_top_bar.h"
 
+#include "app.h"
+#include "base/timer.h"
+#include "boxes/abstract_box.h"
+#include "calls/calls_call.h"
+#include "calls/calls_instance.h"
+#include "lang/lang_keys.h"
+#include "observer_peer.h"
+#include "styles/style_boxes.h"
 #include "styles/style_calls.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
-#include "lang/lang_keys.h"
-#include "calls/calls_call.h"
-#include "calls/calls_instance.h"
-#include "styles/style_boxes.h"
-#include "observer_peer.h"
-#include "boxes/abstract_box.h"
-#include "base/timer.h"
-#include "app.h"
 
 namespace Calls {
 namespace {
@@ -39,7 +39,7 @@ constexpr auto kUpdateDebugTimeoutMs = TimeMs(500);
 
 class DebugInfoBox : public BoxContent {
 public:
-	DebugInfoBox(QWidget*, base::weak_unique_ptr<Call> call);
+	DebugInfoBox(QWidget *, base::weak_unique_ptr<Call> call);
 
 protected:
 	void prepare() override;
@@ -50,11 +50,10 @@ private:
 	base::weak_unique_ptr<Call> _call;
 	QPointer<Ui::FlatLabel> _text;
 	base::Timer _updateTextTimer;
-
 };
 
-DebugInfoBox::DebugInfoBox(QWidget*, base::weak_unique_ptr<Call> call) : _call(call) {
-}
+DebugInfoBox::DebugInfoBox(QWidget *, base::weak_unique_ptr<Call> call)
+    : _call(call) {}
 
 void DebugInfoBox::prepare() {
 	setTitle([] { return QString("Call Debug"); });
@@ -76,15 +75,16 @@ void DebugInfoBox::updateText() {
 
 } // namespace
 
-TopBar::TopBar(QWidget *parent, const base::weak_unique_ptr<Call> &call) : TWidget(parent)
-, _call(call)
-, _durationLabel(this, st::callBarLabel)
-, _fullInfoLabel(this, st::callBarInfoLabel)
-, _shortInfoLabel(this, st::callBarInfoLabel)
-, _hangupLabel(this, st::callBarLabel, lang(lng_call_bar_hangup).toUpper())
-, _mute(this, st::callBarMuteToggle)
-, _info(this)
-, _hangup(this, st::callBarHangup) {
+TopBar::TopBar(QWidget *parent, const base::weak_unique_ptr<Call> &call)
+    : TWidget(parent)
+    , _call(call)
+    , _durationLabel(this, st::callBarLabel)
+    , _fullInfoLabel(this, st::callBarInfoLabel)
+    , _shortInfoLabel(this, st::callBarInfoLabel)
+    , _hangupLabel(this, st::callBarLabel, lang(lng_call_bar_hangup).toUpper())
+    , _mute(this, st::callBarMuteToggle)
+    , _info(this)
+    , _hangup(this, st::callBarHangup) {
 	initControls();
 	resize(width(), st::callBarHeight);
 }
@@ -100,13 +100,14 @@ void TopBar::initControls() {
 		setMuted(mute);
 		update();
 	});
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::NameChanged, [this](const Notify::PeerUpdate &update) {
-		if (auto call = _call.get()) {
-			if (update.peer == call->user()) {
-				updateInfoLabels();
-			}
-		}
-	}));
+	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::NameChanged,
+	                                                            [this](const Notify::PeerUpdate &update) {
+		                                                            if (auto call = _call.get()) {
+			                                                            if (update.peer == call->user()) {
+				                                                            updateInfoLabels();
+			                                                            }
+		                                                            }
+	                                                            }));
 	setInfoLabels();
 	_info->setClickedCallback([this] {
 		if (auto call = _call.get()) {
@@ -173,11 +174,14 @@ void TopBar::resizeEvent(QResizeEvent *e) {
 
 void TopBar::updateControlsGeometry() {
 	auto left = 0;
-	_mute->moveToLeft(left, 0); left += _mute->width();
-	_durationLabel->moveToLeft(left, st::callBarLabelTop); left += _durationLabel->width() + st::callBarSkip;
+	_mute->moveToLeft(left, 0);
+	left += _mute->width();
+	_durationLabel->moveToLeft(left, st::callBarLabelTop);
+	left += _durationLabel->width() + st::callBarSkip;
 
 	auto right = st::callBarRightSkip;
-	_hangupLabel->moveToRight(right, st::callBarLabelTop); right += _hangupLabel->width();
+	_hangupLabel->moveToRight(right, st::callBarLabelTop);
+	right += _hangupLabel->width();
 	right += st::callBarHangup.width;
 	_hangup->setGeometryToRight(0, 0, right, height());
 	_info->setGeometryToLeft(_mute->width(), 0, width() - _mute->width() - _hangup->width(), height());

@@ -19,28 +19,28 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
-#include <cstddef>
 #include <QAtomicInt>
+#include <cstddef>
 
 #include "base/assertion.h"
 #include "core/utils.h"
 
 class RuntimeComposer;
-typedef void(*RuntimeComponentConstruct)(void *location, RuntimeComposer *composer);
-typedef void(*RuntimeComponentDestruct)(void *location);
-typedef void(*RuntimeComponentMove)(void *location, void *waslocation);
+typedef void (*RuntimeComponentConstruct)(void *location, RuntimeComposer *composer);
+typedef void (*RuntimeComponentDestruct)(void *location);
+typedef void (*RuntimeComponentMove)(void *location, void *waslocation);
 
 struct RuntimeComponentWrapStruct {
 	// Don't init any fields, because it is only created in
 	// global scope, so it will be filled by zeros from the start.
 	RuntimeComponentWrapStruct() = default;
-	RuntimeComponentWrapStruct(std::size_t size, std::size_t align, RuntimeComponentConstruct construct, RuntimeComponentDestruct destruct, RuntimeComponentMove move)
-		: Size(size)
-		, Align(align)
-		, Construct(construct)
-		, Destruct(destruct)
-		, Move(move) {
-	}
+	RuntimeComponentWrapStruct(std::size_t size, std::size_t align, RuntimeComponentConstruct construct,
+	                           RuntimeComponentDestruct destruct, RuntimeComponentMove move)
+	    : Size(size)
+	    , Align(align)
+	    , Construct(construct)
+	    , Destruct(destruct)
+	    , Move(move) {}
 	std::size_t Size;
 	std::size_t Align;
 	RuntimeComponentConstruct Construct;
@@ -48,16 +48,14 @@ struct RuntimeComponentWrapStruct {
 	RuntimeComponentMove Move;
 };
 
-template <int Value, int Denominator>
-struct CeilDivideMinimumOne {
+template <int Value, int Denominator> struct CeilDivideMinimumOne {
 	static constexpr int Result = ((Value / Denominator) + ((!Value || (Value % Denominator)) ? 1 : 0));
 };
 
 extern RuntimeComponentWrapStruct RuntimeComponentWraps[64];
 extern QAtomicInt RuntimeComponentIndexLast;
 
-template <typename Type>
-struct RuntimeComponent {
+template <typename Type> struct RuntimeComponent {
 	RuntimeComponent() {
 		// While there is no std::aligned_alloc().
 		static_assert(alignof(Type) <= alignof(std::max_align_t), "Components should align to std::max_align_t!");
@@ -77,12 +75,9 @@ struct RuntimeComponent {
 			if (RuntimeComponentIndexLast.testAndSetOrdered(last, last + 1)) {
 				Assert(last < 64);
 				if (MyIndex.testAndSetOrdered(0, last + 1)) {
-					RuntimeComponentWraps[last] = RuntimeComponentWrapStruct(
-						sizeof(Type),
-						alignof(Type),
-						Type::RuntimeComponentConstruct,
-						Type::RuntimeComponentDestruct,
-						Type::RuntimeComponentMove);
+					RuntimeComponentWraps[last] =
+					    RuntimeComponentWrapStruct(sizeof(Type), alignof(Type), Type::RuntimeComponentConstruct,
+					                               Type::RuntimeComponentDestruct, Type::RuntimeComponentMove);
 				}
 				break;
 			}
@@ -98,17 +93,17 @@ protected:
 		new (location) Type();
 	}
 	static void RuntimeComponentDestruct(void *location) {
-		((Type*)location)->~Type();
+		((Type *)location)->~Type();
 	}
 	static void RuntimeComponentMove(void *location, void *waslocation) {
-		*(Type*)location = std::move(*(Type*)waslocation);
+		*(Type *)location = std::move(*(Type *)waslocation);
 	}
-
 };
 
 class RuntimeComposerMetadata {
 public:
-	RuntimeComposerMetadata(quint64 mask) : _mask(mask) {
+	RuntimeComposerMetadata(quint64 mask)
+	    : _mask(mask) {
 		for (int i = 0; i != 64; ++i) {
 			auto componentBit = (1ULL << i);
 			if (_mask & componentBit) {
@@ -130,9 +125,9 @@ public:
 	}
 
 	// Meta pointer in the start.
-	std::size_t size = sizeof(const RuntimeComposerMetadata*);
-	std::size_t align = alignof(const RuntimeComposerMetadata*);
-	std::size_t offsets[64] = { 0 };
+	std::size_t size = sizeof(const RuntimeComposerMetadata *);
+	std::size_t align = alignof(const RuntimeComposerMetadata *);
+	std::size_t offsets[64] = {0};
 	int last = 64;
 
 	bool equals(quint64 mask) const {
@@ -147,14 +142,14 @@ public:
 
 private:
 	quint64 _mask;
-
 };
 
 const RuntimeComposerMetadata *GetRuntimeComposerMetadata(quint64 mask);
 
 class RuntimeComposer {
 public:
-	RuntimeComposer(quint64 mask = 0) : _data(zerodata()) {
+	RuntimeComposer(quint64 mask = 0)
+	    : _data(zerodata()) {
 		if (mask) {
 			auto meta = GetRuntimeComposerMetadata(mask);
 
@@ -202,18 +197,15 @@ public:
 		}
 	}
 
-	template <typename Type>
-	bool Has() const {
+	template <typename Type> bool Has() const {
 		return (_meta()->offsets[Type::Index()] >= sizeof(_meta()));
 	}
 
-	template <typename Type>
-	Type *Get() {
-		return static_cast<Type*>(_dataptr(_meta()->offsets[Type::Index()]));
+	template <typename Type> Type *Get() {
+		return static_cast<Type *>(_dataptr(_meta()->offsets[Type::Index()]));
 	}
-	template <typename Type>
-	const Type *Get() const {
-		return static_cast<const Type*>(_dataptr(_meta()->offsets[Type::Index()]));
+	template <typename Type> const Type *Get() const {
+		return static_cast<const Type *>(_dataptr(_meta()->offsets[Type::Index()]));
 	}
 
 protected:
@@ -247,18 +239,17 @@ private:
 	}
 
 	void *_dataptrunsafe(size_t skip) const {
-		return (char*)_data + skip;
+		return (char *)_data + skip;
 	}
 	void *_dataptr(size_t skip) const {
 		return (skip >= sizeof(_meta())) ? _dataptrunsafe(skip) : nullptr;
 	}
 	const RuntimeComposerMetadata *&_meta() const {
-		return *static_cast<const RuntimeComposerMetadata**>(_data);
+		return *static_cast<const RuntimeComposerMetadata **>(_data);
 	}
 	void *_data = nullptr;
 
 	void swap(RuntimeComposer &other) {
 		std::swap(_data, other._data);
 	}
-
 };

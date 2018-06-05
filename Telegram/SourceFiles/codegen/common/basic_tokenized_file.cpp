@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/common/basic_tokenized_file.h"
 
-#include "codegen/common/logging.h"
-#include "codegen/common/clean_file_reader.h"
 #include "codegen/common/checked_utf8_string.h"
+#include "codegen/common/clean_file_reader.h"
+#include "codegen/common/logging.h"
 
 using Token = codegen::common::BasicTokenizedFile::Token;
 using Type = Token::Type;
@@ -32,9 +32,9 @@ namespace common {
 namespace {
 
 constexpr int kErrorUnterminatedStringLiteral = 201;
-constexpr int kErrorIncorrectUtf8String       = 202;
-constexpr int kErrorIncorrectToken            = 203;
-constexpr int kErrorUnexpectedToken           = 204;
+constexpr int kErrorIncorrectUtf8String = 202;
+constexpr int kErrorIncorrectToken = 203;
+constexpr int kErrorUnexpectedToken = 204;
 
 bool isDigitChar(char ch) {
 	return (ch >= '0') && (ch <= '9');
@@ -49,16 +49,16 @@ bool isWhitespaceChar(char ch) {
 }
 
 Token invalidToken() {
-	return { Type::Invalid, QString(), ConstUtf8String(nullptr, 0), false };
+	return {Type::Invalid, QString(), ConstUtf8String(nullptr, 0), false};
 }
 
 } // namespace
 
-BasicTokenizedFile::BasicTokenizedFile(const QString &filepath) : reader_(filepath) {
-}
+BasicTokenizedFile::BasicTokenizedFile(const QString &filepath)
+    : reader_(filepath) {}
 
-BasicTokenizedFile::BasicTokenizedFile(const QByteArray &content, const QString &filepath) : reader_(content, filepath) {
-}
+BasicTokenizedFile::BasicTokenizedFile(const QByteArray &content, const QString &filepath)
+    : reader_(content, filepath) {}
 
 bool BasicTokenizedFile::putBack() {
 	if (currentToken_ > 0) {
@@ -103,7 +103,7 @@ Type BasicTokenizedFile::readToken() {
 		}
 	} else if (result == Type::Dot) {
 		if (readOneToken(StartWithWhitespace::Deny) == Type::Int) {
-			//We got dot and int, so it is double.
+			// We got dot and int, so it is double.
 			result = uniteLastTokens(Type::Double);
 		}
 	}
@@ -129,8 +129,8 @@ Type BasicTokenizedFile::readOneToken(StartWithWhitespace condition) {
 }
 
 Type BasicTokenizedFile::saveToken(Type type, const QString &value) {
-	ConstUtf8String original = { tokenStart_, reader_.currentPtr() };
-	tokens_.push_back({ type, value, original, tokenStartWhitespace_ });
+	ConstUtf8String original = {tokenStart_, reader_.currentPtr()};
+	tokens_.push_back({type, value, original, tokenStartWhitespace_});
 	return type;
 }
 
@@ -144,7 +144,7 @@ Type BasicTokenizedFile::uniteLastTokens(Type type) {
 	auto originalFrom = token.original.data();
 	auto originalTill = tokens_.back().original.end();
 	token.type = type;
-	token.original = { originalFrom, originalTill };
+	token.original = {originalFrom, originalTill};
 	token.value += tokens_.back().value;
 	tokens_.pop_back();
 	return type;
@@ -152,7 +152,8 @@ Type BasicTokenizedFile::uniteLastTokens(Type type) {
 
 QString BasicTokenizedFile::getCurrentLineComment() {
 	if (lineNumber_ > singleLineComments_.size()) {
-		reader_.logError(kErrorInternal, lineNumber_) << "internal tokenizer error (line number larger than comments list size).";
+		reader_.logError(kErrorInternal, lineNumber_)
+		    << "internal tokenizer error (line number larger than comments list size).";
 		failed_ = true;
 		return QString();
 	}

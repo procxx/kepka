@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "lang/lang_instance.h"
 
-#include "messenger.h"
-#include "storage/serialize_common.h"
-#include "storage/localstorage.h"
-#include "platform/platform_specific.h"
+#include "base/qthelp_regex.h"
 #include "boxes/confirm_box.h"
 #include "lang/lang_file_parser.h"
-#include "base/qthelp_regex.h"
+#include "messenger.h"
+#include "platform/platform_specific.h"
+#include "storage/localstorage.h"
+#include "storage/serialize_common.h"
 
 namespace Lang {
 namespace {
@@ -65,17 +65,15 @@ private:
 
 	QString _result;
 	OrderedSet<ushort> _tagsUsed;
-
 };
 
 ValueParser::ValueParser(const QByteArray &key, LangKey keyIndex, const QByteArray &value)
-: _key(key)
-, _keyIndex(keyIndex)
-, _currentTag("")
-, _begin(value.constData())
-, _ch(_begin)
-, _end(_begin + value.size()) {
-}
+    : _key(key)
+    , _keyIndex(keyIndex)
+    , _currentTag("")
+    , _begin(value.constData())
+    , _ch(_begin)
+    , _end(_begin + value.size()) {}
 
 void ValueParser::appendToResult(const char *nextBegin) {
 	if (_ch > _begin) _result.append(QString::fromUtf8(_begin, _ch - _begin));
@@ -332,7 +330,8 @@ void Instance::loadFromContent(const QByteArray &content) {
 	}
 }
 
-void Instance::loadFromCustomContent(const QString &absolutePath, const QString &relativePath, const QByteArray &content) {
+void Instance::loadFromCustomContent(const QString &absolutePath, const QString &relativePath,
+                                     const QByteArray &content) {
 	_id = qsl("custom");
 	_version = 0;
 	_customFilePathAbsolute = absolutePath;
@@ -360,7 +359,7 @@ void Instance::fillFromLegacy(int legacyId, const QString &legacyPath) {
 		//
 		// The old available languages (de/it/nl/ko/es/pt_BR) won't be
 		// suggested anyway, because everyone saw the suggestion in intro.
-		_id = QString();// str_const_toString(kLegacyLanguages[legacyId]);
+		_id = QString(); // str_const_toString(kLegacyLanguages[legacyId]);
 	} else if (legacyId == kLegacyCustomLanguage) {
 		auto absolutePath = QFileInfo(legacyPath).absoluteFilePath();
 		auto relativePath = QDir().relativeFilePath(absolutePath);
@@ -407,7 +406,7 @@ void Instance::HandleString(const MTPLangPackString &mtpString, SetCallback setC
 		auto &string = mtpString.c_langPackStringDeleted();
 		auto key = qba(string.vkey);
 		resetCallback(key);
-		for (auto plural : { "#zero", "#one", "#two", "#few", "#many", "#other" }) {
+		for (auto plural : {"#zero", "#one", "#two", "#few", "#many", "#other"}) {
 			resetCallback(key + plural);
 		}
 	} break;
@@ -424,11 +423,8 @@ void Instance::applyDifference(const MTPDlangPackDifference &difference) {
 
 	_version = difference.vversion.v;
 	for_const (auto &mtpString, difference.vstrings.v) {
-		HandleString(mtpString, [this](auto &&key, auto &&value) {
-			applyValue(key, value);
-		}, [this](auto &&key) {
-			resetValue(key);
-		});
+		HandleString(mtpString, [this](auto &&key, auto &&value) { applyValue(key, value); },
+		             [this](auto &&key) { resetValue(key); });
 	}
 	_updated.notify();
 }
@@ -436,14 +432,13 @@ void Instance::applyDifference(const MTPDlangPackDifference &difference) {
 std::map<LangKey, QString> Instance::ParseStrings(const MTPVector<MTPLangPackString> &strings) {
 	auto result = std::map<LangKey, QString>();
 	for (auto &mtpString : strings.v) {
-		HandleString(mtpString, [&result](auto &&key, auto &&value) {
-			ParseKeyValue(key, value, result);
-		}, [&result](auto &&key) {
-			auto keyIndex = GetKeyIndex(QLatin1String(key));
-			if (keyIndex != kLangKeysCount) {
-				result.erase(keyIndex);
-			}
-		});
+		HandleString(mtpString, [&result](auto &&key, auto &&value) { ParseKeyValue(key, value, result); },
+		             [&result](auto &&key) {
+			             auto keyIndex = GetKeyIndex(QLatin1String(key));
+			             if (keyIndex != kLangKeysCount) {
+				             result.erase(keyIndex);
+			             }
+		             });
 	}
 	return result;
 }

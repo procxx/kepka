@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
-#include "ui/effects/panel_animation.h"
-#include "mtproto/sender.h"
 #include "auth_session.h"
+#include "mtproto/sender.h"
+#include "ui/effects/panel_animation.h"
+#include "ui/twidget.h"
 
 namespace InlineBots {
 class Result;
@@ -34,7 +34,7 @@ class PlainShadow;
 class ScrollArea;
 class SettingsSlider;
 class FlatLabel;
-} // namesapce Ui
+} // namespace Ui
 
 namespace Window {
 class Controller;
@@ -56,7 +56,7 @@ class TabbedSelector : public TWidget, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	TabbedSelector(QWidget *parent, not_null<Window::Controller*> controller);
+	TabbedSelector(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void setRoundRadius(int radius);
 	void refreshStickers();
@@ -123,10 +123,10 @@ private:
 		SelectorTab type() const {
 			return _type;
 		}
-		not_null<Inner*> widget() const {
+		not_null<Inner *> widget() const {
 			return _weak;
 		}
-		not_null<InnerFooter*> footer() const {
+		not_null<InnerFooter *> footer() const {
 			return _footer;
 		}
 
@@ -140,11 +140,10 @@ private:
 
 	private:
 		SelectorTab _type = SelectorTab::Emoji;
-		object_ptr<Inner> _widget = { nullptr };
+		object_ptr<Inner> _widget = {nullptr};
 		QPointer<Inner> _weak;
 		object_ptr<InnerFooter> _footer;
 		int _scrollTop = 0;
-
 	};
 
 	void paintSlideFrame(Painter &p, TimeMs ms);
@@ -164,21 +163,21 @@ private:
 	void setWidgetToScrollArea();
 	void createTabsSlider();
 	void switchTab();
-	not_null<Tab*> getTab(SelectorTab type) {
+	not_null<Tab *> getTab(SelectorTab type) {
 		return &_tabs[static_cast<int>(type)];
 	}
-	not_null<const Tab*> getTab(SelectorTab type) const {
+	not_null<const Tab *> getTab(SelectorTab type) const {
 		return &_tabs[static_cast<int>(type)];
 	}
-	not_null<Tab*> currentTab() {
+	not_null<Tab *> currentTab() {
 		return getTab(_currentTabType);
 	}
-	not_null<const Tab*> currentTab() const {
+	not_null<const Tab *> currentTab() const {
 		return getTab(_currentTabType);
 	}
-	not_null<EmojiListWidget*> emoji() const;
-	not_null<StickersListWidget*> stickers() const;
-	not_null<GifsListWidget*> gifs() const;
+	not_null<EmojiListWidget *> emoji() const;
+	not_null<StickersListWidget *> stickers() const;
+	not_null<GifsListWidget *> gifs() const;
 
 	int _roundRadius = 0;
 	int _footerTop = 0;
@@ -188,24 +187,23 @@ private:
 	std::unique_ptr<SlideAnimation> _slideAnimation;
 	Animation _a_slide;
 
-	object_ptr<Ui::SettingsSlider> _tabsSlider = { nullptr };
+	object_ptr<Ui::SettingsSlider> _tabsSlider = {nullptr};
 	object_ptr<Ui::PlainShadow> _topShadow;
 	object_ptr<Ui::PlainShadow> _bottomShadow;
 	object_ptr<Ui::ScrollArea> _scroll;
-	object_ptr<Ui::FlatLabel> _restrictedLabel = { nullptr };
+	object_ptr<Ui::FlatLabel> _restrictedLabel = {nullptr};
 	std::array<Tab, Tab::kCount> _tabs;
 	SelectorTab _currentTabType = SelectorTab::Emoji;
 
 	base::lambda<void(SelectorTab)> _afterShownCallback;
 	base::lambda<void(SelectorTab)> _beforeHidingCallback;
-
 };
 
 class TabbedSelector::Inner : public TWidget {
 	Q_OBJECT
 
 public:
-	Inner(QWidget *parent, not_null<Window::Controller*> controller);
+	Inner(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void setVisibleTopBottom(int visibleTop, int visibleBottom) override;
 
@@ -217,16 +215,13 @@ public:
 	}
 
 	virtual void refreshRecent() = 0;
-	virtual void preloadImages() {
-	}
+	virtual void preloadImages() {}
 	void hideFinished();
 	void panelHideFinished();
 	virtual void clearSelection() = 0;
 
-	virtual void afterShown() {
-	}
-	virtual void beforeHiding() {
-	}
+	virtual void afterShown() {}
+	virtual void beforeHiding() {}
 
 	virtual object_ptr<InnerFooter> createFooter() = 0;
 
@@ -235,23 +230,20 @@ signals:
 	void disableScroll(bool disabled);
 
 protected:
-	not_null<Window::Controller*> controller() const {
+	not_null<Window::Controller *> controller() const {
 		return _controller;
 	}
 
 	virtual int countHeight() = 0;
 	virtual InnerFooter *getFooter() const = 0;
-	virtual void processHideFinished() {
-	}
-	virtual void processPanelHideFinished() {
-	}
+	virtual void processHideFinished() {}
+	virtual void processPanelHideFinished() {}
 
 private:
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 
 	int _visibleTop = 0;
 	int _visibleBottom = 0;
-
 };
 
 class TabbedSelector::InnerFooter : public TWidget {
@@ -259,12 +251,9 @@ public:
 	InnerFooter(QWidget *parent);
 
 protected:
-	virtual void processHideFinished() {
-	}
-	virtual void processPanelHideFinished() {
-	}
+	virtual void processHideFinished() {}
+	virtual void processPanelHideFinished() {}
 	friend class Inner;
-
 };
 
 } // namespace ChatHelpers

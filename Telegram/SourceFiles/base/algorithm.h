@@ -20,22 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <iterator>
 #include <algorithm>
+#include <iterator>
 
 namespace base {
 
 // @todo use ranges-v3 here
-template <typename Range, typename Method>
-decltype(auto) for_each(Range &&range, Method &&method) {
-	return std::for_each(
-		std::begin(std::forward<Range>(range)),
-		std::end(std::forward<Range>(range)),
-		std::forward<Method>(method));
+template <typename Range, typename Method> decltype(auto) for_each(Range &&range, Method &&method) {
+	return std::for_each(std::begin(std::forward<Range>(range)), std::end(std::forward<Range>(range)),
+	                     std::forward<Method>(method));
 }
 
-template <typename Method>
-decltype(auto) for_each_apply(Method &&method) {
+template <typename Method> decltype(auto) for_each_apply(Method &&method) {
 	return [&method](auto &&range) {
 		return for_each(std::forward<decltype(range)>(range), std::forward<Method>(method));
 	};

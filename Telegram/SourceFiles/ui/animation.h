@@ -22,20 +22,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #define _USE_MATH_DEFINES // for M_PI in MSVC (GCC and Clang has it as extension)
 
-#include <QTimer>
-#include <QColor>
-#include <QPen>
 #include <QBrush>
 #include <QColor>
 #include <QPainterPath>
-#include <cstdint>
+#include <QPen>
+#include <QTimer>
 #include <cmath>
+#include <cstdint>
 
+#include "base/lambda.h"
 #include "core/basic_types.h"
 #include "core/utils.h"
-#include "base/lambda.h"
-#include "style/style_core_types.h"
 #include "mtproto/facade.h"
+#include "style/style_core_types.h"
 
 namespace Media {
 namespace Clip {
@@ -43,14 +42,13 @@ namespace Clip {
 class Reader;
 class ReaderPointer {
 public:
-	ReaderPointer(std::nullptr_t = nullptr) {
-	}
-	explicit ReaderPointer(Reader *pointer) : _pointer(pointer) {
-	}
+	ReaderPointer(std::nullptr_t = nullptr) {}
+	explicit ReaderPointer(Reader *pointer)
+	    : _pointer(pointer) {}
 	ReaderPointer(const ReaderPointer &other) = delete;
 	ReaderPointer &operator=(const ReaderPointer &other) = delete;
-	ReaderPointer(ReaderPointer &&other) : _pointer(base::take(other._pointer)) {
-	}
+	ReaderPointer(ReaderPointer &&other)
+	    : _pointer(base::take(other._pointer)) {}
 	ReaderPointer &operator=(ReaderPointer &&other) {
 		swap(other);
 		return *this;
@@ -91,7 +89,6 @@ public:
 private:
 	Reader *_pointer = nullptr;
 	static Reader *const BadPointer;
-
 };
 
 class Manager;
@@ -122,9 +119,7 @@ extern transition easeOutQuint;
 inline transition bumpy(double bump) {
 	auto dt0 = (bump - sqrt(bump * (bump - 1.)));
 	auto k = (1 / (2 * dt0 - 1));
-	return [bump, dt0, k](double delta, double dt) {
-		return delta * (bump - k * (dt - dt0) * (dt - dt0));
-	};
+	return [bump, dt0, k](double delta, double dt) { return delta * (bump - k * (dt - dt0) * (dt - dt0)); };
 }
 
 // Basic animated value.
@@ -133,10 +128,13 @@ public:
 	using ValueType = double;
 
 	value() = default;
-	value(double from) : _cur(from), _from(from) {
-	}
-	value(double from, double to) : _cur(from), _from(from), _delta(to - from) {
-	}
+	value(double from)
+	    : _cur(from)
+	    , _from(from) {}
+	value(double from, double to)
+	    : _cur(from)
+	    , _from(from)
+	    , _delta(to - from) {}
 	void start(double to) {
 		_from = _cur;
 		_delta = to - _from;
@@ -173,7 +171,6 @@ private:
 	double _cur = 0.;
 	double _from = 0.;
 	double _delta = 0.;
-
 };
 
 void startManager();
@@ -194,8 +191,9 @@ using ShiftedMultiplier = quint32;
 
 struct Shifted {
 	Shifted() = default;
-	Shifted(quint32 low, quint32 high) : low(low), high(high) {
-	}
+	Shifted(quint32 low, quint32 high)
+	    : low(low)
+	    , high(high) {}
 	quint32 low = 0;
 	quint32 high = 0;
 };
@@ -213,16 +211,13 @@ FORCE_INLINE Shifted operator*(ShiftedMultiplier multiplier, Shifted shifted) {
 }
 
 FORCE_INLINE Shifted shifted(quint32 components) {
-	return Shifted(
-		(components & 0x000000FFU) | ((components & 0x0000FF00U) << 8),
-		((components & 0x00FF0000U) >> 16) | ((components & 0xFF000000U) >> 8));
+	return Shifted((components & 0x000000FFU) | ((components & 0x0000FF00U) << 8),
+	               ((components & 0x00FF0000U) >> 16) | ((components & 0xFF000000U) >> 8));
 }
 
 FORCE_INLINE quint32 unshifted(Shifted components) {
-	return ((components.low & 0x0000FF00U) >> 8)
-		| ((components.low & 0xFF000000U) >> 16)
-		| ((components.high & 0x0000FF00U) << 8)
-		| (components.high & 0xFF000000U);
+	return ((components.low & 0x0000FF00U) >> 8) | ((components.low & 0xFF000000U) >> 16) |
+	       ((components.high & 0x0000FF00U) << 8) | (components.high & 0xFF000000U);
 }
 
 FORCE_INLINE Shifted reshifted(Shifted components) {
@@ -232,16 +227,18 @@ FORCE_INLINE Shifted reshifted(Shifted components) {
 FORCE_INLINE Shifted shifted(QColor color) {
 	// Make it premultiplied.
 	auto alpha = static_cast<quint32>((color.alpha() & 0xFF) + 1);
-	auto components = Shifted(static_cast<quint32>(color.blue() & 0xFF) | (static_cast<quint32>(color.green() & 0xFF) << 16),
-		static_cast<quint32>(color.red() & 0xFF) | (static_cast<quint32>(255) << 16));
+	auto components =
+	    Shifted(static_cast<quint32>(color.blue() & 0xFF) | (static_cast<quint32>(color.green() & 0xFF) << 16),
+	            static_cast<quint32>(color.red() & 0xFF) | (static_cast<quint32>(255) << 16));
 	return reshifted(components * alpha);
 }
 
 FORCE_INLINE quint32 getPremultiplied(QColor color) {
 	// Make it premultiplied.
 	auto alpha = static_cast<quint32>((color.alpha() & 0xFF) + 1);
-	auto components = Shifted(static_cast<quint32>(color.blue() & 0xFF) | (static_cast<quint32>(color.green() & 0xFF) << 16),
-		static_cast<quint32>(color.red() & 0xFF) | (static_cast<quint32>(255) << 16));
+	auto components =
+	    Shifted(static_cast<quint32>(color.blue() & 0xFF) | (static_cast<quint32>(color.green() & 0xFF) << 16),
+	            static_cast<quint32>(color.red() & 0xFF) | (static_cast<quint32>(255) << 16));
 	return unshifted(components * alpha);
 }
 
@@ -251,7 +248,7 @@ FORCE_INLINE quint32 getAlpha(Shifted components) {
 
 FORCE_INLINE Shifted non_premultiplied(QColor color) {
 	return Shifted(static_cast<quint32>(color.blue() & 0xFF) | (static_cast<quint32>(color.green() & 0xFF) << 16),
-		static_cast<quint32>(color.red() & 0xFF) | (static_cast<quint32>(color.alpha() & 0xFF) << 16));
+	               static_cast<quint32>(color.red() & 0xFF) | (static_cast<quint32>(color.alpha() & 0xFF) << 16));
 }
 
 FORCE_INLINE QColor color(QColor a, QColor b, double b_ratio) {
@@ -259,10 +256,10 @@ FORCE_INLINE QColor color(QColor a, QColor b, double b_ratio) {
 	auto aOpacity = (256 - bOpacity);
 	auto components = (non_premultiplied(a) * aOpacity + non_premultiplied(b) * bOpacity);
 	return {
-		static_cast<int>((components.high >> 8) & 0xFF),
-		static_cast<int>((components.low >> 24) & 0xFF),
-		static_cast<int>((components.low >> 8) & 0xFF),
-		static_cast<int>((components.high >> 24) & 0xFF),
+	    static_cast<int>((components.high >> 8) & 0xFF),
+	    static_cast<int>((components.low >> 24) & 0xFF),
+	    static_cast<int>((components.low >> 8) & 0xFF),
+	    static_cast<int>((components.high >> 24) & 0xFF),
 	};
 }
 
@@ -272,10 +269,10 @@ using ShiftedMultiplier = quint64;
 
 struct Shifted {
 	Shifted() = default;
-	Shifted(quint32 value) : value(value) {
-	}
-	Shifted(quint64 value) : value(value) {
-	}
+	Shifted(quint32 value)
+	    : value(value) {}
+	Shifted(quint64 value)
+	    : value(value) {}
 	quint64 value = 0;
 };
 
@@ -293,17 +290,15 @@ FORCE_INLINE Shifted operator*(ShiftedMultiplier multiplier, Shifted shifted) {
 
 FORCE_INLINE Shifted shifted(quint32 components) {
 	auto wide = static_cast<quint64>(components);
-	return (wide & Q_UINT64_C(0x00000000000000FF))
-		| ((wide & Q_UINT64_C(0x000000000000FF00)) << 8)
-		| ((wide & Q_UINT64_C(0x0000000000FF0000)) << 16)
-		| ((wide & Q_UINT64_C(0x00000000FF000000)) << 24);
+	return (wide & Q_UINT64_C(0x00000000000000FF)) | ((wide & Q_UINT64_C(0x000000000000FF00)) << 8) |
+	       ((wide & Q_UINT64_C(0x0000000000FF0000)) << 16) | ((wide & Q_UINT64_C(0x00000000FF000000)) << 24);
 }
 
 FORCE_INLINE quint32 unshifted(Shifted components) {
-	return static_cast<quint32>((components.value & Q_UINT64_C(0x000000000000FF00)) >> 8)
-		 | static_cast<quint32>((components.value & Q_UINT64_C(0x00000000FF000000)) >> 16)
-		 | static_cast<quint32>((components.value & Q_UINT64_C(0x0000FF0000000000)) >> 24)
-		 | static_cast<quint32>((components.value & Q_UINT64_C(0xFF00000000000000)) >> 32);
+	return static_cast<quint32>((components.value & Q_UINT64_C(0x000000000000FF00)) >> 8) |
+	       static_cast<quint32>((components.value & Q_UINT64_C(0x00000000FF000000)) >> 16) |
+	       static_cast<quint32>((components.value & Q_UINT64_C(0x0000FF0000000000)) >> 24) |
+	       static_cast<quint32>((components.value & Q_UINT64_C(0xFF00000000000000)) >> 32);
 }
 
 FORCE_INLINE Shifted reshifted(Shifted components) {
@@ -313,20 +308,16 @@ FORCE_INLINE Shifted reshifted(Shifted components) {
 FORCE_INLINE Shifted shifted(QColor color) {
 	// Make it premultiplied.
 	auto alpha = static_cast<quint64>((color.alpha() & 0xFF) + 1);
-	auto components = static_cast<quint64>(color.blue() & 0xFF)
-		| (static_cast<quint64>(color.green() & 0xFF) << 16)
-		| (static_cast<quint64>(color.red() & 0xFF) << 32)
-		| (static_cast<quint64>(255) << 48);
+	auto components = static_cast<quint64>(color.blue() & 0xFF) | (static_cast<quint64>(color.green() & 0xFF) << 16) |
+	                  (static_cast<quint64>(color.red() & 0xFF) << 32) | (static_cast<quint64>(255) << 48);
 	return reshifted(components * alpha);
 }
 
 FORCE_INLINE quint32 getPremultiplied(QColor color) {
 	// Make it premultiplied.
 	auto alpha = static_cast<quint64>((color.alpha() & 0xFF) + 1);
-	auto components = static_cast<quint64>(color.blue() & 0xFF)
-		| (static_cast<quint64>(color.green() & 0xFF) << 16)
-		| (static_cast<quint64>(color.red() & 0xFF) << 32)
-		| (static_cast<quint64>(255) << 48);
+	auto components = static_cast<quint64>(color.blue() & 0xFF) | (static_cast<quint64>(color.green() & 0xFF) << 16) |
+	                  (static_cast<quint64>(color.red() & 0xFF) << 32) | (static_cast<quint64>(255) << 48);
 	return unshifted(components * alpha);
 }
 
@@ -335,10 +326,8 @@ FORCE_INLINE quint32 getAlpha(Shifted components) {
 }
 
 FORCE_INLINE Shifted non_premultiplied(QColor color) {
-	return static_cast<quint64>(color.blue() & 0xFF)
-		| (static_cast<quint64>(color.green() & 0xFF) << 16)
-		| (static_cast<quint64>(color.red() & 0xFF) << 32)
-		| (static_cast<quint64>(color.alpha() & 0xFF) << 48);
+	return static_cast<quint64>(color.blue() & 0xFF) | (static_cast<quint64>(color.green() & 0xFF) << 16) |
+	       (static_cast<quint64>(color.red() & 0xFF) << 32) | (static_cast<quint64>(color.alpha() & 0xFF) << 48);
 }
 
 FORCE_INLINE QColor color(QColor a, QColor b, double b_ratio) {
@@ -346,10 +335,10 @@ FORCE_INLINE QColor color(QColor a, QColor b, double b_ratio) {
 	auto aOpacity = (256 - bOpacity);
 	auto components = (non_premultiplied(a) * aOpacity + non_premultiplied(b) * bOpacity);
 	return {
-		static_cast<int>((components.value >> 40) & 0xFF),
-		static_cast<int>((components.value >> 24) & 0xFF),
-		static_cast<int>((components.value >>  8) & 0xFF),
-		static_cast<int>((components.value >> 56) & 0xFF),
+	    static_cast<int>((components.value >> 40) & 0xFF),
+	    static_cast<int>((components.value >> 24) & 0xFF),
+	    static_cast<int>((components.value >> 8) & 0xFF),
+	    static_cast<int>((components.value >> 56) & 0xFF),
 	};
 }
 
@@ -399,8 +388,7 @@ FORCE_INLINE QBrush brush(style::color a, style::color b, double b_ratio) {
 	return (b_ratio > 0) ? ((b_ratio < 1) ? brush(a->c, b->c, b_ratio) : b) : a;
 }
 
-template <int N>
-QPainterPath interpolate(QPointF (&from)[N], QPointF (&to)[N], double k) {
+template <int N> QPainterPath interpolate(QPointF (&from)[N], QPointF (&to)[N], double k) {
 	static_assert(N > 1, "Wrong points count in path!");
 
 	auto from_coef = 1. - k, to_coef = k;
@@ -415,8 +403,7 @@ QPainterPath interpolate(QPointF (&from)[N], QPointF (&to)[N], double k) {
 	return result;
 }
 
-template <int N>
-QPainterPath path(QPointF (&from)[N]) {
+template <int N> QPainterPath path(QPointF (&from)[N]) {
 	static_assert(N > 1, "Wrong points count in path!");
 
 	QPainterPath result;
@@ -433,7 +420,7 @@ QPainterPath path(QPointF (&from)[N]) {
 bool Disabled();
 void SetDisabled(bool disabled);
 
-} // anim namespace
+} // namespace anim
 
 class BasicAnimation;
 
@@ -442,15 +429,16 @@ public:
 	virtual void start() {}
 	virtual void step(BasicAnimation *a, TimeMs ms, bool timer) = 0;
 	virtual ~AnimationImplementation() {}
-
 };
 
 class AnimationCallbacks {
 public:
-	AnimationCallbacks(AnimationImplementation *implementation) : _implementation(implementation) {}
+	AnimationCallbacks(AnimationImplementation *implementation)
+	    : _implementation(implementation) {}
 	AnimationCallbacks(const AnimationCallbacks &other) = delete;
 	AnimationCallbacks &operator=(const AnimationCallbacks &other) = delete;
-	AnimationCallbacks(AnimationCallbacks &&other) : _implementation(other._implementation) {
+	AnimationCallbacks(AnimationCallbacks &&other)
+	    : _implementation(other._implementation) {
 		other._implementation = nullptr;
 	}
 	AnimationCallbacks &operator=(AnimationCallbacks &&other) {
@@ -458,21 +446,25 @@ public:
 		return *this;
 	}
 
-	void start() { _implementation->start();  }
-	void step(BasicAnimation *a, TimeMs ms, bool timer) { _implementation->step(a, ms, timer); }
-	~AnimationCallbacks() { delete base::take(_implementation); }
+	void start() {
+		_implementation->start();
+	}
+	void step(BasicAnimation *a, TimeMs ms, bool timer) {
+		_implementation->step(a, ms, timer);
+	}
+	~AnimationCallbacks() {
+		delete base::take(_implementation);
+	}
 
 private:
 	AnimationImplementation *_implementation;
-
 };
 
 class BasicAnimation {
 public:
 	BasicAnimation(AnimationCallbacks &&callbacks)
-		: _callbacks(std::move(callbacks))
-		, _animating(false) {
-	}
+	    : _callbacks(std::move(callbacks))
+	    , _animating(false) {}
 
 	void start();
 	void stop();
@@ -496,16 +488,15 @@ public:
 private:
 	AnimationCallbacks _callbacks;
 	bool _animating;
-
 };
 
-template <typename Type>
-class AnimationCallbacksRelative : public AnimationImplementation {
+template <typename Type> class AnimationCallbacksRelative : public AnimationImplementation {
 public:
 	typedef void (Type::*Method)(double, bool);
 
-	AnimationCallbacksRelative(Type *obj, Method method) : _obj(obj), _method(method) {
-	}
+	AnimationCallbacksRelative(Type *obj, Method method)
+	    : _obj(obj)
+	    , _method(method) {}
 
 	void start() {
 		_started = getms();
@@ -519,7 +510,6 @@ private:
 	TimeMs _started = 0;
 	Type *_obj = nullptr;
 	Method _method = nullptr;
-
 };
 
 template <typename Type>
@@ -527,13 +517,13 @@ AnimationCallbacks animation(Type *obj, typename AnimationCallbacksRelative<Type
 	return AnimationCallbacks(new AnimationCallbacksRelative<Type>(obj, method));
 }
 
-template <typename Type>
-class AnimationCallbacksAbsolute : public AnimationImplementation {
+template <typename Type> class AnimationCallbacksAbsolute : public AnimationImplementation {
 public:
 	typedef void (Type::*Method)(TimeMs, bool);
 
-	AnimationCallbacksAbsolute(Type *obj, Method method) : _obj(obj), _method(method) {
-	}
+	AnimationCallbacksAbsolute(Type *obj, Method method)
+	    : _obj(obj)
+	    , _method(method) {}
 
 	void step(BasicAnimation *a, TimeMs ms, bool timer) {
 		(_obj->*_method)(ms, timer);
@@ -542,7 +532,6 @@ public:
 private:
 	Type *_obj = nullptr;
 	Method _method = nullptr;
-
 };
 
 template <typename Type>
@@ -550,13 +539,14 @@ AnimationCallbacks animation(Type *obj, typename AnimationCallbacksAbsolute<Type
 	return AnimationCallbacks(new AnimationCallbacksAbsolute<Type>(obj, method));
 }
 
-template <typename Type, typename Param>
-class AnimationCallbacksRelativeWithParam : public AnimationImplementation {
+template <typename Type, typename Param> class AnimationCallbacksRelativeWithParam : public AnimationImplementation {
 public:
 	typedef void (Type::*Method)(Param, double, bool);
 
-	AnimationCallbacksRelativeWithParam(Param param, Type *obj, Method method) : _param(param), _obj(obj), _method(method) {
-	}
+	AnimationCallbacksRelativeWithParam(Param param, Type *obj, Method method)
+	    : _param(param)
+	    , _obj(obj)
+	    , _method(method) {}
 
 	void start() {
 		_started = getms();
@@ -571,21 +561,22 @@ private:
 	Param _param;
 	Type *_obj = nullptr;
 	Method _method = nullptr;
-
 };
 
 template <typename Type, typename Param>
-AnimationCallbacks animation(Param param, Type *obj, typename AnimationCallbacksRelativeWithParam<Type, Param>::Method method) {
+AnimationCallbacks animation(Param param, Type *obj,
+                             typename AnimationCallbacksRelativeWithParam<Type, Param>::Method method) {
 	return AnimationCallbacks(new AnimationCallbacksRelativeWithParam<Type, Param>(param, obj, method));
 }
 
-template <typename Type, typename Param>
-class AnimationCallbacksAbsoluteWithParam : public AnimationImplementation {
+template <typename Type, typename Param> class AnimationCallbacksAbsoluteWithParam : public AnimationImplementation {
 public:
 	typedef void (Type::*Method)(Param, TimeMs, bool);
 
-	AnimationCallbacksAbsoluteWithParam(Param param, Type *obj, Method method) : _param(param), _obj(obj), _method(method) {
-	}
+	AnimationCallbacksAbsoluteWithParam(Param param, Type *obj, Method method)
+	    : _param(param)
+	    , _obj(obj)
+	    , _method(method) {}
 
 	void step(BasicAnimation *a, TimeMs ms, bool timer) {
 		(_obj->*_method)(_param, ms, timer);
@@ -595,11 +586,11 @@ private:
 	Param _param;
 	Type *_obj = nullptr;
 	Method _method = nullptr;
-
 };
 
 template <typename Type, typename Param>
-AnimationCallbacks animation(Param param, Type *obj, typename AnimationCallbacksAbsoluteWithParam<Type, Param>::Method method) {
+AnimationCallbacks animation(Param param, Type *obj,
+                             typename AnimationCallbacksAbsoluteWithParam<Type, Param>::Method method) {
 	return AnimationCallbacks(new AnimationCallbacksAbsoluteWithParam<Type, Param>(param, obj, method));
 }
 
@@ -642,7 +633,8 @@ public:
 	static constexpr auto kLongAnimationDuration = 1000;
 
 	template <typename Lambda>
-	void start(Lambda &&updateCallback, double from, double to, double duration, anim::transition transition = anim::linear) {
+	void start(Lambda &&updateCallback, double from, double to, double duration,
+	           anim::transition transition = anim::linear) {
 		auto isLong = (duration >= kLongAnimationDuration);
 		if (_data) {
 			if (!isLong) {
@@ -668,8 +660,7 @@ public:
 		}
 	}
 
-	template <typename Lambda>
-	void setUpdateCallback(Lambda &&updateCallback) {
+	template <typename Lambda> void setUpdateCallback(Lambda &&updateCallback) {
 		if (_data) {
 			_data->updateCallback = std::forward<Lambda>(updateCallback);
 		}
@@ -679,10 +670,9 @@ private:
 	struct Data {
 		template <typename Lambda>
 		Data(double from, Lambda updateCallback)
-			: value(from, from)
-			, a_animation(animation(this, &Data::step))
-			, updateCallback(std::move(updateCallback)) {
-		}
+		    : value(from, from)
+		    , a_animation(animation(this, &Data::step))
+		    , updateCallback(std::move(updateCallback)) {}
 		void step(double ms, bool timer) {
 			auto dt = (ms >= duration || anim::Disabled()) ? 1. : (ms / duration);
 			if (dt >= 1) {
@@ -703,7 +693,6 @@ private:
 		MTP::PauseHolder pause;
 	};
 	mutable std::unique_ptr<Data> _data;
-
 };
 
 class AnimationManager : public QObject {
@@ -721,9 +710,8 @@ public slots:
 	void clipCallback(Media::Clip::Reader *reader, qint32 threadIndex, qint32 notification);
 
 private:
-	using AnimatingObjects = OrderedSet<BasicAnimation*>;
+	using AnimatingObjects = OrderedSet<BasicAnimation *>;
 	AnimatingObjects _objects, _starting, _stopping;
 	QTimer _timer;
 	bool _iterating;
-
 };

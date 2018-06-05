@@ -19,9 +19,9 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/effects/panel_animation.h"
-#include "ui/twidget.h"
-#include "ui/animation.h"
 #include "app.h"
+#include "ui/animation.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 
@@ -32,7 +32,7 @@ void RoundShadowAnimation::start(int frameWidth, int frameHeight, double deviceP
 	_frame = QImage(_frameWidth, _frameHeight, QImage::Format_ARGB32_Premultiplied);
 	_frame.setDevicePixelRatio(devicePixelRatio);
 	_frameIntsPerLine = (_frame.bytesPerLine() >> 2);
-	_frameInts = reinterpret_cast<quint32*>(_frame.bits());
+	_frameInts = reinterpret_cast<quint32 *>(_frame.bits());
 	_frameIntsPerLineAdded = _frameIntsPerLine - _frameWidth;
 	Assert(_frame.depth() == static_cast<int>(sizeof(quint32) << 3));
 	Assert(_frame.bytesPerLine() == (_frameIntsPerLine << 2));
@@ -50,25 +50,17 @@ void RoundShadowAnimation::setShadow(const style::Shadow &st) {
 		_shadow.bottomRight = cloneImage(st.bottomRight);
 		_shadow.bottom = cloneImage(st.bottom);
 		_shadow.bottomLeft = cloneImage(st.bottomLeft);
-		Assert(!_shadow.topLeft.isNull()
-			&& !_shadow.top.isNull()
-			&& !_shadow.topRight.isNull()
-			&& !_shadow.right.isNull()
-			&& !_shadow.bottomRight.isNull()
-			&& !_shadow.bottom.isNull()
-			&& !_shadow.bottomLeft.isNull());
+		Assert(!_shadow.topLeft.isNull() && !_shadow.top.isNull() && !_shadow.topRight.isNull() &&
+		       !_shadow.right.isNull() && !_shadow.bottomRight.isNull() && !_shadow.bottom.isNull() &&
+		       !_shadow.bottomLeft.isNull());
 	} else {
-		_shadow.topLeft =
-			_shadow.top =
-			_shadow.topRight =
-			_shadow.right =
-			_shadow.bottomRight =
-			_shadow.bottom =
-			_shadow.bottomLeft = QImage();
+		_shadow.topLeft = _shadow.top = _shadow.topRight = _shadow.right = _shadow.bottomRight = _shadow.bottom =
+		    _shadow.bottomLeft = QImage();
 	}
 }
 
-void RoundShadowAnimation::setCornerMasks(const QImage &topLeft, const QImage &topRight, const QImage &bottomLeft, const QImage &bottomRight) {
+void RoundShadowAnimation::setCornerMasks(const QImage &topLeft, const QImage &topRight, const QImage &bottomLeft,
+                                          const QImage &bottomRight) {
 	setCornerMask(_topLeft, topLeft);
 	setCornerMask(_topRight, topRight);
 	setCornerMask(_bottomLeft, bottomLeft);
@@ -128,15 +120,17 @@ void RoundShadowAnimation::paintShadow(int left, int top, int right, int bottom)
 	paintShadowCorner(right - _shadow.bottomRight.width(), bottom - _shadow.bottomRight.height(), _shadow.bottomRight);
 	paintShadowCorner(left, bottom - _shadow.bottomLeft.height(), _shadow.bottomLeft);
 	paintShadowVertical(left, top + _shadow.topLeft.height(), bottom - _shadow.bottomLeft.height(), _shadow.left);
-	paintShadowVertical(right - _shadow.right.width(), top + _shadow.topRight.height(), bottom - _shadow.bottomRight.height(), _shadow.right);
+	paintShadowVertical(right - _shadow.right.width(), top + _shadow.topRight.height(),
+	                    bottom - _shadow.bottomRight.height(), _shadow.right);
 	paintShadowHorizontal(left + _shadow.topLeft.width(), right - _shadow.topRight.width(), top, _shadow.top);
-	paintShadowHorizontal(left + _shadow.bottomLeft.width(), right - _shadow.bottomRight.width(), bottom - _shadow.bottom.height(), _shadow.bottom);
+	paintShadowHorizontal(left + _shadow.bottomLeft.width(), right - _shadow.bottomRight.width(),
+	                      bottom - _shadow.bottom.height(), _shadow.bottom);
 }
 
 void RoundShadowAnimation::paintShadowCorner(int left, int top, const QImage &image) {
 	auto imageWidth = image.width();
 	auto imageHeight = image.height();
-	auto imageInts = reinterpret_cast<const quint32*>(image.constBits());
+	auto imageInts = reinterpret_cast<const quint32 *>(image.constBits());
 	auto imageIntsPerLine = (image.bytesPerLine() >> 2);
 	auto imageIntsPerLineAdded = imageIntsPerLine - imageWidth;
 	if (left < 0) {
@@ -174,7 +168,7 @@ void RoundShadowAnimation::paintShadowCorner(int left, int top, const QImage &im
 
 void RoundShadowAnimation::paintShadowVertical(int left, int top, int bottom, const QImage &image) {
 	auto imageWidth = image.width();
-	auto imageInts = reinterpret_cast<const quint32*>(image.constBits());
+	auto imageInts = reinterpret_cast<const quint32 *>(image.constBits());
 	if (left < 0) {
 		auto shift = -base::take(left);
 		imageWidth -= shift;
@@ -202,7 +196,7 @@ void RoundShadowAnimation::paintShadowVertical(int left, int top, int bottom, co
 
 void RoundShadowAnimation::paintShadowHorizontal(int left, int right, int top, const QImage &image) {
 	auto imageHeight = image.height();
-	auto imageInts = reinterpret_cast<const quint32*>(image.constBits());
+	auto imageInts = reinterpret_cast<const quint32 *>(image.constBits());
 	auto imageIntsPerLine = (image.bytesPerLine() >> 2);
 	if (top < 0) {
 		auto shift = -base::take(top);
@@ -231,7 +225,8 @@ void RoundShadowAnimation::paintShadowHorizontal(int left, int right, int top, c
 
 void PanelAnimation::setFinalImage(QImage &&finalImage, QRect inner) {
 	Assert(!started());
-	_finalImage = App::pixmapFromImageInPlace(std::move(finalImage).convertToFormat(QImage::Format_ARGB32_Premultiplied));
+	_finalImage =
+	    App::pixmapFromImageInPlace(std::move(finalImage).convertToFormat(QImage::Format_ARGB32_Premultiplied));
 
 	Assert(!_finalImage.isNull());
 	_finalWidth = _finalImage.width();
@@ -264,8 +259,7 @@ void PanelAnimation::setFinalImage(QImage &&finalImage, QRect inner) {
 
 	auto checkCorner = [this, inner](Corner &corner) {
 		if (!corner.valid()) return;
-		if ((_startWidth >= 0 && _startWidth < _finalWidth)
-			|| (_startHeight >= 0 && _startHeight < _finalHeight)) {
+		if ((_startWidth >= 0 && _startWidth < _finalWidth) || (_startHeight >= 0 && _startHeight < _finalHeight)) {
 			Assert(corner.width <= inner.width());
 			Assert(corner.height <= inner.height());
 		}
@@ -303,14 +297,16 @@ void PanelAnimation::createFadeMask() {
 	int finalAlpha = std::round(_st.fadeOpacity * 255);
 	Assert(finalAlpha >= 0 && finalAlpha < 256);
 	auto result = QImage(cIntRetinaFactor(), resultHeight, QImage::Format_ARGB32_Premultiplied);
-	auto ints = reinterpret_cast<quint32*>(result.bits());
+	auto ints = reinterpret_cast<quint32 *>(result.bits());
 	auto intsPerLineAdded = (result.bytesPerLine() >> 2) - cIntRetinaFactor();
 	auto up = (_origin == PanelAnimation::Origin::BottomLeft || _origin == PanelAnimation::Origin::BottomRight);
 	auto from = up ? resultHeight : 0, to = resultHeight - from, delta = up ? -1 : 1;
 	auto fadeFirstAlpha = up ? (finalAlpha + 1) : 1;
 	auto fadeLastAlpha = up ? 1 : (finalAlpha + 1);
-	_fadeFirst = QBrush(QColor(_st.fadeBg->c.red(), _st.fadeBg->c.green(), _st.fadeBg->c.blue(), (_st.fadeBg->c.alpha() * fadeFirstAlpha) >> 8));
-	_fadeLast = QBrush(QColor(_st.fadeBg->c.red(), _st.fadeBg->c.green(), _st.fadeBg->c.blue(), (_st.fadeBg->c.alpha() * fadeLastAlpha) >> 8));
+	_fadeFirst = QBrush(QColor(_st.fadeBg->c.red(), _st.fadeBg->c.green(), _st.fadeBg->c.blue(),
+	                           (_st.fadeBg->c.alpha() * fadeFirstAlpha) >> 8));
+	_fadeLast = QBrush(QColor(_st.fadeBg->c.red(), _st.fadeBg->c.green(), _st.fadeBg->c.blue(),
+	                          (_st.fadeBg->c.alpha() * fadeLastAlpha) >> 8));
 	for (auto y = from; y != to; y += delta) {
 		auto alpha = static_cast<quint32>(finalAlpha * y) / resultHeight;
 		auto value = (0xFFU << 24) | (alpha << 16) | (alpha << 8) | alpha;
@@ -372,20 +368,28 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, doubl
 	if (dt < _alphaDuration) opacity *= transition(1., dt / _alphaDuration);
 	_frameAlpha = anim::interpolate(1, 256, opacity);
 
-	auto frameWidth = (_startWidth < 0 || dt >= _widthDuration) ? _finalInnerWidth : anim::interpolate(_startWidth, _finalInnerWidth, transition(1., dt / _widthDuration));
-	auto frameHeight = (_startHeight < 0 || dt >= _heightDuration) ? _finalInnerHeight : anim::interpolate(_startHeight, _finalInnerHeight, transition(1., dt / _heightDuration));
+	auto frameWidth = (_startWidth < 0 || dt >= _widthDuration) ?
+	                      _finalInnerWidth :
+	                      anim::interpolate(_startWidth, _finalInnerWidth, transition(1., dt / _widthDuration));
+	auto frameHeight = (_startHeight < 0 || dt >= _heightDuration) ?
+	                       _finalInnerHeight :
+	                       anim::interpolate(_startHeight, _finalInnerHeight, transition(1., dt / _heightDuration));
 	if (auto decrease = (frameWidth % cIntRetinaFactor())) {
 		frameWidth -= decrease;
 	}
 	if (auto decrease = (frameHeight % cIntRetinaFactor())) {
 		frameHeight -= decrease;
 	}
-	auto frameLeft = (_origin == Origin::TopLeft || _origin == Origin::BottomLeft) ? _finalInnerLeft : (_finalInnerRight - frameWidth);
-	auto frameTop = (_origin == Origin::TopLeft || _origin == Origin::TopRight) ? _finalInnerTop : (_finalInnerBottom - frameHeight);
+	auto frameLeft = (_origin == Origin::TopLeft || _origin == Origin::BottomLeft) ? _finalInnerLeft :
+	                                                                                 (_finalInnerRight - frameWidth);
+	auto frameTop = (_origin == Origin::TopLeft || _origin == Origin::TopRight) ? _finalInnerTop :
+	                                                                              (_finalInnerBottom - frameHeight);
 	auto frameRight = frameLeft + frameWidth;
 	auto frameBottom = frameTop + frameHeight;
 
-	auto fadeTop = (_fadeHeight > 0) ? snap(anim::interpolate(_startFadeTop, _finalInnerHeight, transition(1., dt)), 0, frameHeight) : frameHeight;
+	auto fadeTop = (_fadeHeight > 0) ?
+	                   snap(anim::interpolate(_startFadeTop, _finalInnerHeight, transition(1., dt)), 0, frameHeight) :
+	                   frameHeight;
 	if (auto decrease = (fadeTop % cIntRetinaFactor())) {
 		fadeTop -= decrease;
 	}
@@ -418,7 +422,8 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, doubl
 				auto painterFadeTop = fadeTop / cIntRetinaFactor();
 				auto painterFrameWidth = frameWidth / cIntRetinaFactor();
 				auto painterFrameHeight = frameHeight / cIntRetinaFactor();
-				p.drawPixmap(painterFrameLeft, painterFadeTop, painterFrameWidth, painterFadeBottom - painterFadeTop, _fadeMask, 0, fadeSkipLines, cIntRetinaFactor(), fadeBottom - fadeTop);
+				p.drawPixmap(painterFrameLeft, painterFadeTop, painterFrameWidth, painterFadeBottom - painterFadeTop,
+				             _fadeMask, 0, fadeSkipLines, cIntRetinaFactor(), fadeBottom - fadeTop);
 			}
 			if (fadeBottom != frameBottom) {
 				p.fillRect(painterFrameLeft, painterFadeBottom, frameWidth, frameBottom - fadeBottom, _fadeLast);
@@ -507,7 +512,8 @@ void PanelAnimation::paintFrame(QPainter &p, int x, int y, int outerWidth, doubl
 	//		frameInts += _frameIntsPerLineAdded;
 	//	}
 
-	p.drawImage(rtlpoint(x + (outerLeft / cIntRetinaFactor()), y + (outerTop / cIntRetinaFactor()), outerWidth), _frame, QRect(outerLeft, outerTop, outerRight - outerLeft, outerBottom - outerTop));
+	p.drawImage(rtlpoint(x + (outerLeft / cIntRetinaFactor()), y + (outerTop / cIntRetinaFactor()), outerWidth), _frame,
+	            QRect(outerLeft, outerTop, outerRight - outerLeft, outerBottom - outerTop));
 }
 
 } // namespace Ui

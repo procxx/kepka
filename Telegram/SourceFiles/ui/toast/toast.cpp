@@ -20,18 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/toast/toast.h"
 
+#include "mainwindow.h"
 #include "ui/toast/toast_manager.h"
 #include "ui/toast/toast_widget.h"
-#include "mainwindow.h"
 
-#include <QWidget>
 #include "app.h"
+#include <QWidget>
 
 namespace Ui {
 namespace Toast {
 
 Instance::Instance(const Config &config, QWidget *widgetParent, const Private &)
-: _hideAtMs(getms(true) + config.durationMs) {
+    : _hideAtMs(getms(true) + config.durationMs) {
 	_widget = std::make_unique<internal::Widget>(widgetParent, config);
 	_a_opacity.start([this] { opacityAnimationCallback(); }, 0., 1., st::toastFadeInDuration);
 }

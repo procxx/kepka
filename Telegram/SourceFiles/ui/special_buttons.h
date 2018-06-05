@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/widgets/buttons.h"
-#include "styles/style_window.h"
 #include "styles/style_widgets.h"
+#include "styles/style_window.h"
+#include "ui/widgets/buttons.h"
 
 class PeerData;
 
@@ -47,7 +47,6 @@ private:
 	const style::TwoIconButton &_st;
 
 	int _unreadCount = 0;
-
 };
 
 class EmojiButton : public RippleButton {
@@ -55,7 +54,8 @@ public:
 	EmojiButton(QWidget *parent, const style::IconButton &st);
 
 	void setLoading(bool loading);
-	void setColorOverrides(const style::icon *iconOverride, const style::color *colorOverride, const style::color *rippleOverride);
+	void setColorOverrides(const style::icon *iconOverride, const style::color *colorOverride,
+	                       const style::color *rippleOverride);
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
@@ -80,7 +80,6 @@ private:
 	const style::icon *_iconOverride = nullptr;
 	const style::color *_colorOverride = nullptr;
 	const style::color *_rippleOverride = nullptr;
-
 };
 
 class SendButton : public RippleButton {
@@ -141,12 +140,11 @@ private:
 	base::lambda<void(bool active)> _recordStopCallback;
 	base::lambda<void(QPoint globalPos)> _recordUpdateCallback;
 	base::lambda<void()> _recordAnimationCallback;
-
 };
 
 class PeerAvatarButton : public AbstractButton {
 public:
-	PeerAvatarButton(QWidget *parent,PeerData *peer, const style::PeerAvatarButton &st);
+	PeerAvatarButton(QWidget *parent, PeerData *peer, const style::PeerAvatarButton &st);
 
 	void setPeer(PeerData *peer) {
 		_peer = peer;
@@ -159,7 +157,6 @@ protected:
 private:
 	PeerData *_peer = nullptr;
 	const style::PeerAvatarButton &_st;
-
 };
 
 class NewAvatarButton : public RippleButton {
@@ -176,7 +173,6 @@ protected:
 private:
 	QPixmap _image;
 	QPoint _position;
-
 };
 
 } // namespace Ui

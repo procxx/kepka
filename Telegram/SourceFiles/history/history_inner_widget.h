@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QClipboard>
-#include "ui/widgets/tooltip.h"
-#include "ui/widgets/scroll_area.h"
-#include "window/top_bar_widget.h"
 #include "history/history.h"
 #include "history/history_item.h"
+#include "ui/widgets/scroll_area.h"
+#include "ui/widgets/tooltip.h"
+#include "window/top_bar_widget.h"
+#include <QClipboard>
 
 namespace Window {
 class Controller;
@@ -40,7 +40,8 @@ class HistoryInner : public TWidget, public Ui::AbstractTooltipShower, private b
 	Q_OBJECT
 
 public:
-	HistoryInner(HistoryWidget *historyWidget, not_null<Window::Controller*> controller, Ui::ScrollArea *scroll, History *history);
+	HistoryInner(HistoryWidget *historyWidget, not_null<Window::Controller *> controller, Ui::ScrollArea *scroll,
+	             History *history);
 
 	void messagesReceived(PeerData *peer, const QVector<MTPMessage> &messages);
 	void messagesReceivedDown(PeerData *peer, const QVector<MTPMessage> &messages);
@@ -169,7 +170,7 @@ private:
 	void scrollDateHide();
 	void keepScrollDateForNow();
 
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 
 	PeerData *_peer = nullptr;
 	History *_migrated = nullptr;
@@ -183,8 +184,9 @@ private:
 
 	class BotAbout : public ClickHandlerHost {
 	public:
-		BotAbout(HistoryInner *parent, BotInfo *info) : info(info), _parent(parent) {
-		}
+		BotAbout(HistoryInner *parent, BotInfo *info)
+		    : info(info)
+		    , _parent(parent) {}
 		BotInfo *info = nullptr;
 		int width = 0;
 		int height = 0;
@@ -196,7 +198,6 @@ private:
 
 	private:
 		HistoryInner *_parent;
-
 	};
 	std::unique_ptr<BotAbout> _botAbout;
 
@@ -209,11 +210,12 @@ private:
 	bool _firstLoading = false;
 
 	style::cursor _cursor = style::cur_default;
-	using SelectedItems = QMap<HistoryItem*, TextSelection>;
+	using SelectedItems = QMap<HistoryItem *, TextSelection>;
 	SelectedItems _selected;
 	void applyDragSelection();
 	void applyDragSelection(SelectedItems *toItems) const;
-	void addSelectionRange(SelectedItems *toItems, qint32 fromblock, qint32 fromitem, qint32 toblock, qint32 toitem, History *h) const;
+	void addSelectionRange(SelectedItems *toItems, qint32 fromblock, qint32 fromitem, qint32 toblock, qint32 toitem,
+	                       History *h) const;
 
 	// Does any of the shown histories has this flag set.
 	bool hasPendingResizedItems() const {
@@ -282,8 +284,7 @@ private:
 	template <bool TopToBottom, typename Method>
 	void enumerateItemsInHistory(History *history, int historytop, Method method);
 
-	template <EnumItemsDirection direction, typename Method>
-	void enumerateItems(Method method) {
+	template <EnumItemsDirection direction, typename Method> void enumerateItems(Method method) {
 		constexpr auto TopToBottom = (direction == EnumItemsDirection::TopToBottom);
 		if (TopToBottom && _migrated) {
 			enumerateItemsInHistory<TopToBottom>(_migrated, migratedTop(), method);
@@ -299,15 +300,12 @@ private:
 	//
 	// Method has "bool (*Method)(not_null<HistoryMessage*> message, int userpicTop)" signature
 	// if it returns false the enumeration stops immidiately.
-	template <typename Method>
-	void enumerateUserpics(Method method);
+	template <typename Method> void enumerateUserpics(Method method);
 
 	// This function finds all date elements that are displayed and calls template method
 	// for each found date element (from the bottom to the top) using enumerateItems() method.
 	//
 	// Method has "bool (*Method)(not_null<HistoryItem*> item, int itemtop, int dateTop)" signature
 	// if it returns false the enumeration stops immidiately.
-	template <typename Method>
-	void enumerateDates(Method method);
-
+	template <typename Method> void enumerateDates(Method method);
 };

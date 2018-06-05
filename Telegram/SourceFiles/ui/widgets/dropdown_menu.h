@@ -32,8 +32,10 @@ class DropdownMenu : public InnerDropdown {
 public:
 	DropdownMenu(QWidget *parent, const style::DropdownMenu &st = st::defaultDropdownMenu);
 
-	QAction *addAction(const QString &text, const QObject *receiver, const char* member, const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
-	QAction *addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
+	QAction *addAction(const QString &text, const QObject *receiver, const char *member,
+	                   const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
+	QAction *addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon = nullptr,
+	                   const style::icon *iconOver = nullptr);
 	QAction *addSeparator();
 	void clearActions();
 
@@ -106,8 +108,8 @@ private:
 	QPointer<Ui::Menu> _menu;
 
 	// Not ready with submenus yet.
-	//using Submenus = QMap<QAction*, SubmenuPointer>;
-	//Submenus _submenus;
+	// using Submenus = QMap<QAction*, SubmenuPointer>;
+	// Submenus _submenus;
 
 	DropdownMenu *_parent = nullptr;
 
@@ -116,7 +118,6 @@ private:
 	bool _deleteOnHide = false;
 	bool _triggering = false;
 	bool _deleteLater = false;
-
 };
 
 } // namespace Ui

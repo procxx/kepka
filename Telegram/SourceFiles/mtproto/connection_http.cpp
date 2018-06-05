@@ -52,16 +52,28 @@ qint32 HTTPConnection::handleError(QNetworkReply *reply) { // returnes "maybe ba
 	}
 
 	switch (reply->error()) {
-	case QNetworkReply::ConnectionRefusedError: LOG(("HTTP Error: connection refused - %1").arg(reply->errorString())); break;
-	case QNetworkReply::RemoteHostClosedError: LOG(("HTTP Error: remote host closed - %1").arg(reply->errorString())); break;
-	case QNetworkReply::HostNotFoundError: LOG(("HTTP Error: host not found - %2").arg(reply->error()).arg(reply->errorString())); break;
-	case QNetworkReply::TimeoutError: LOG(("HTTP Error: timeout - %2").arg(reply->error()).arg(reply->errorString())); break;
-	case QNetworkReply::OperationCanceledError: LOG(("HTTP Error: cancelled - %2").arg(reply->error()).arg(reply->errorString())); break;
+	case QNetworkReply::ConnectionRefusedError:
+		LOG(("HTTP Error: connection refused - %1").arg(reply->errorString()));
+		break;
+	case QNetworkReply::RemoteHostClosedError:
+		LOG(("HTTP Error: remote host closed - %1").arg(reply->errorString()));
+		break;
+	case QNetworkReply::HostNotFoundError:
+		LOG(("HTTP Error: host not found - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
+	case QNetworkReply::TimeoutError:
+		LOG(("HTTP Error: timeout - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
+	case QNetworkReply::OperationCanceledError:
+		LOG(("HTTP Error: cancelled - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
 	case QNetworkReply::SslHandshakeFailedError:
 	case QNetworkReply::TemporaryNetworkFailureError:
 	case QNetworkReply::NetworkSessionFailedError:
 	case QNetworkReply::BackgroundRequestNotAllowedError:
-	case QNetworkReply::UnknownNetworkError: LOG(("HTTP Error: network error %1 - %2").arg(reply->error()).arg(reply->errorString())); break;
+	case QNetworkReply::UnknownNetworkError:
+		LOG(("HTTP Error: network error %1 - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
 
 	// proxy errors (101-199):
 	case QNetworkReply::ProxyConnectionRefusedError:
@@ -69,7 +81,9 @@ qint32 HTTPConnection::handleError(QNetworkReply *reply) { // returnes "maybe ba
 	case QNetworkReply::ProxyNotFoundError:
 	case QNetworkReply::ProxyTimeoutError:
 	case QNetworkReply::ProxyAuthenticationRequiredError:
-	case QNetworkReply::UnknownProxyError:LOG(("HTTP Error: proxy error %1 - %2").arg(reply->error()).arg(reply->errorString())); break;
+	case QNetworkReply::UnknownProxyError:
+		LOG(("HTTP Error: proxy error %1 - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
 
 	// content errors (201-299):
 	case QNetworkReply::ContentAccessDenied:
@@ -77,22 +91,27 @@ qint32 HTTPConnection::handleError(QNetworkReply *reply) { // returnes "maybe ba
 	case QNetworkReply::ContentNotFoundError:
 	case QNetworkReply::AuthenticationRequiredError:
 	case QNetworkReply::ContentReSendError:
-	case QNetworkReply::UnknownContentError: LOG(("HTTP Error: content error %1 - %2").arg(reply->error()).arg(reply->errorString())); break;
+	case QNetworkReply::UnknownContentError:
+		LOG(("HTTP Error: content error %1 - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
 
 	// protocol errors
 	case QNetworkReply::ProtocolUnknownError:
 	case QNetworkReply::ProtocolInvalidOperationError:
-	case QNetworkReply::ProtocolFailure: LOG(("HTTP Error: protocol error %1 - %2").arg(reply->error()).arg(reply->errorString())); break;
+	case QNetworkReply::ProtocolFailure:
+		LOG(("HTTP Error: protocol error %1 - %2").arg(reply->error()).arg(reply->errorString()));
+		break;
 	};
 	TCP_LOG(("HTTP Error %1, restarting! - %2").arg(reply->error()).arg(reply->errorString()));
 
 	return result;
 }
 
-HTTPConnection::HTTPConnection(QThread *thread) : AbstractConnection(thread)
-, status(WaitingHttp)
-, httpNonce(rand_value<MTPint128>())
-, _flags(0) {
+HTTPConnection::HTTPConnection(QThread *thread)
+    : AbstractConnection(thread)
+    , status(WaitingHttp)
+    , httpNonce(rand_value<MTPint128>())
+    , _flags(0) {
 	manager.moveToThread(thread);
 	App::setProxySettings(manager);
 }
@@ -114,7 +133,7 @@ void HTTPConnection::sendData(mtpBuffer &buffer) {
 	request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(qsl("application/x-www-form-urlencoded")));
 
 	TCP_LOG(("HTTP Info: sending %1 len request %2").arg(requestSize).arg(Logs::mb(&buffer[2], requestSize).str()));
-	requests.insert(manager.post(request, QByteArray((const char*)(&buffer[2]), requestSize)));
+	requests.insert(manager.post(request, QByteArray((const char *)(&buffer[2]), requestSize)));
 }
 
 void HTTPConnection::disconnectFromServer() {
@@ -128,7 +147,7 @@ void HTTPConnection::disconnectFromServer() {
 		(*i)->deleteLater();
 	}
 
-	disconnect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(requestFinished(QNetworkReply*)));
+	disconnect(&manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 
 	address = QUrl();
 }
@@ -138,13 +157,16 @@ void HTTPConnection::connectHttp(const DcOptions::Endpoint &endpoint) {
 	auto addr = QString::fromStdString(endpoint.ip);
 
 	// not endpoint.port - always 80 port for http transport
-	address = QUrl(((_flags & MTPDdcOption::Flag::f_ipv6) ? qsl("http://[%1]:%2/api") : qsl("http://%1:%2/api")).arg(addr).arg(80));
+	address = QUrl(((_flags & MTPDdcOption::Flag::f_ipv6) ? qsl("http://[%1]:%2/api") : qsl("http://%1:%2/api"))
+	                   .arg(addr)
+	                   .arg(80));
 	TCP_LOG(("HTTP Info: address is %1").arg(address.toDisplayString()));
-	connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(requestFinished(QNetworkReply*)));
+	connect(&manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 
 	mtpBuffer buffer(preparePQFake(httpNonce));
 
-	DEBUG_LOG(("Connection Info: sending fake req_pq through HTTP/%1 transport").arg((_flags & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+	DEBUG_LOG(("Connection Info: sending fake req_pq through HTTP/%1 transport")
+	              .arg((_flags & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 
 	sendData(buffer);
 }
@@ -172,7 +194,8 @@ void HTTPConnection::requestFinished(QNetworkReply *reply) {
 					auto res_pq = readPQFakeReply(data);
 					const auto &res_pq_data(res_pq.c_resPQ());
 					if (res_pq_data.vnonce == httpNonce) {
-						DEBUG_LOG(("Connection Info: HTTP/%1-transport connected by pq-response").arg((_flags & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+						DEBUG_LOG(("Connection Info: HTTP/%1-transport connected by pq-response")
+						              .arg((_flags & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 						status = UsingHttp;
 						emit connected();
 					}

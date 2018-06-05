@@ -31,7 +31,7 @@ class UsernameBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	UsernameBox(QWidget*);
+	UsernameBox(QWidget *);
 
 protected:
 	void prepare() override;
@@ -67,5 +67,4 @@ private:
 
 	Text _about;
 	object_ptr<QTimer> _checkTimer;
-
 };

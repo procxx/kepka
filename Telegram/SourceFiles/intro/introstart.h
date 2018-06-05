@@ -36,7 +36,6 @@ public:
 
 	void submit() override;
 	QString nextButtonText() const override;
-
 };
 
 } // namespace Intro

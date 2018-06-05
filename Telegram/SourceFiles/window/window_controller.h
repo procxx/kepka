@@ -29,15 +29,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Window {
 
 enum class GifPauseReason {
-	Any           = 0,
+	Any = 0,
 	InlineResults = (1 << 0),
-	SavedGifs     = (1 << 1),
-	Layer         = (1 << 2),
-	RoundPlaying  = (1 << 3),
-	MediaPreview  = (1 << 4),
+	SavedGifs = (1 << 1),
+	Layer = (1 << 2),
+	RoundPlaying = (1 << 3),
+	MediaPreview = (1 << 4),
 };
 using GifPauseReasons = base::flags<GifPauseReason>;
-inline constexpr bool is_flag_type(GifPauseReason) { return true; };
+inline constexpr bool is_flag_type(GifPauseReason) {
+	return true;
+};
 
 class MainWindow;
 
@@ -45,23 +47,23 @@ class Controller {
 public:
 	static constexpr auto kDefaultDialogsWidthRatio = 5. / 14;
 
-	Controller(not_null<MainWindow*> window) : _window(window) {
-	}
+	Controller(not_null<MainWindow *> window)
+	    : _window(window) {}
 
-	not_null<MainWindow*> window() const {
+	not_null<MainWindow *> window() const {
 		return _window;
 	}
 
 	// This is needed for History TopBar updating when searchInPeer
 	// is changed in the DialogsWidget of the current window.
-	base::Observable<PeerData*> &searchInPeerChanged() {
+	base::Observable<PeerData *> &searchInPeerChanged() {
 		return _searchInPeerChanged;
 	}
 
 	// This is needed while we have one HistoryWidget and one TopBarWidget
 	// for all histories we show in a window. Once each history is shown
 	// in its own HistoryWidget with its own TopBarWidget this can be removed.
-	base::Observable<PeerData*> &historyPeerChanged() {
+	base::Observable<PeerData *> &historyPeerChanged() {
 		return _historyPeerChanged;
 	}
 
@@ -86,7 +88,7 @@ public:
 	bool canProvideChatWidth(int requestedWidth) const;
 	void provideChatWidth(int requestedWidth);
 
-	void showJumpToDate(not_null<PeerData*> peer, QDate requestedDate);
+	void showJumpToDate(not_null<PeerData *> peer, QDate requestedDate);
 
 	base::Variable<double> &dialogsWidthRatio() {
 		return _dialogsWidthRatio;
@@ -108,19 +110,18 @@ public:
 	}
 
 private:
-	not_null<MainWindow*> _window;
+	not_null<MainWindow *> _window;
 
-	base::Observable<PeerData*> _searchInPeerChanged;
-	base::Observable<PeerData*> _historyPeerChanged;
+	base::Observable<PeerData *> _searchInPeerChanged;
+	base::Observable<PeerData *> _historyPeerChanged;
 
 	GifPauseReasons _gifPauseReasons = 0;
 	base::Observable<void> _gifPauseLevelChanged;
 	base::Observable<void> _floatPlayerAreaUpdated;
 
-	base::Variable<double> _dialogsWidthRatio = { kDefaultDialogsWidthRatio };
-	base::Variable<bool> _dialogsListFocused = { false };
-	base::Variable<bool> _dialogsListDisplayForced = { false };
-
+	base::Variable<double> _dialogsWidthRatio = {kDefaultDialogsWidthRatio};
+	base::Variable<bool> _dialogsListFocused = {false};
+	base::Variable<bool> _dialogsListDisplayForced = {false};
 };
 
 } // namespace Window

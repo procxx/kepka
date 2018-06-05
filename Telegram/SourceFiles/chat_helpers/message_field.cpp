@@ -23,12 +23,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "chat_helpers/message_field.h"
 
-#include "history/history_widget.h"
+#include "auth_session.h"
 #include "base/qthelp_regex.h"
+#include "history/history_widget.h"
+#include "mainwindow.h"
 #include "styles/style_history.h"
 #include "window/window_controller.h"
-#include "mainwindow.h"
-#include "auth_session.h"
 
 namespace {
 
@@ -49,7 +49,6 @@ public:
 		}
 		return mimeTag;
 	}
-
 };
 
 } // namespace
@@ -90,7 +89,7 @@ TextWithTags::Tags ConvertEntitiesToTextTags(const EntitiesInText &entities) {
 		if (entity.type() == EntityInTextMentionName) {
 			auto match = QRegularExpression("^(\\d+\\.\\d+)$").match(entity.data());
 			if (match.hasMatch()) {
-				result.push_back({ entity.offset(), entity.length(), qstr("mention://user.") + entity.data() });
+				result.push_back({entity.offset(), entity.length(), qstr("mention://user.") + entity.data()});
 			}
 		}
 	}
@@ -114,8 +113,10 @@ std::unique_ptr<QMimeData> MimeDataFromTextWithEntities(const TextWithEntities &
 	return result;
 }
 
-MessageField::MessageField(QWidget *parent, not_null<Window::Controller*> controller, const style::FlatTextarea &st, base::lambda<QString()> placeholderFactory, const QString &val) : Ui::FlatTextarea(parent, st, std::move(placeholderFactory), val)
-, _controller(controller) {
+MessageField::MessageField(QWidget *parent, not_null<Window::Controller *> controller, const style::FlatTextarea &st,
+                           base::lambda<QString()> placeholderFactory, const QString &val)
+    : Ui::FlatTextarea(parent, st, std::move(placeholderFactory), val)
+    , _controller(controller) {
 	setMinHeight(st::historySendSize.height() - 2 * st::historySendPadding);
 	setMaxHeight(st::historyComposeFieldMaxHeight);
 

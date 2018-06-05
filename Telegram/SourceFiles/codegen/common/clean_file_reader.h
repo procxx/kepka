@@ -30,10 +30,10 @@ namespace common {
 // Wrapper allows you to read forward the CleanFile without overflow checks.
 class CleanFileReader {
 public:
-	explicit CleanFileReader(const QString &filepath) : file_(filepath) {
-	}
-	explicit CleanFileReader(const QByteArray &content, const QString &filepath = QString()) : file_(content, filepath) {
-	}
+	explicit CleanFileReader(const QString &filepath)
+	    : file_(filepath) {}
+	explicit CleanFileReader(const QByteArray &content, const QString &filepath = QString())
+	    : file_(content, filepath) {}
 
 	bool read() {
 		if (!file_.read()) {
@@ -77,7 +77,6 @@ private:
 	CleanFile file_;
 	const char *pos_ = nullptr;
 	const char *end_ = nullptr;
-
 };
 
 } // namespace common

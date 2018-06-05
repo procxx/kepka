@@ -67,7 +67,6 @@ private:
 
 	bool _maximizedState = false;
 	bool _activeState = false;
-
 };
 
 inline object_ptr<Window::TitleWidget> CreateTitleWidget(QWidget *parent) {

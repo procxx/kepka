@@ -20,24 +20,24 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "boxes/peer_list_box.h"
 #include "base/flat_set.h"
 #include "base/weak_unique_ptr.h"
+#include "boxes/peer_list_box.h"
 #include "history/history.h"
 
 // Not used for now.
 //
-//class MembersAddButton : public Ui::RippleButton {
-//public:
+// class MembersAddButton : public Ui::RippleButton {
+// public:
 //	MembersAddButton(QWidget *parent, const style::TwoIconButton &st);
 //
-//protected:
+// protected:
 //	void paintEvent(QPaintEvent *e) override;
 //
 //	QImage prepareRippleMask() const override;
 //	QPoint prepareRippleStartPosition() const override;
 //
-//private:
+// private:
 //	const style::TwoIconButton &_st;
 //
 //};
@@ -58,7 +58,6 @@ private:
 
 	QString _action;
 	int _actionWidth = 0;
-
 };
 
 class PeerListGlobalSearchController : public PeerListSearchController, private MTP::Sender {
@@ -81,151 +80,138 @@ private:
 	mtpRequestId _requestId = 0;
 	std::map<QString, MTPcontacts_Found> _cache;
 	std::map<mtpRequestId, QString> _queries;
-
 };
 
 class ChatsListBoxController : public PeerListController, protected base::Subscriber {
 public:
-	ChatsListBoxController(std::unique_ptr<PeerListSearchController> searchController = std::make_unique<PeerListGlobalSearchController>());
+	ChatsListBoxController(std::unique_ptr<PeerListSearchController> searchController =
+	                           std::make_unique<PeerListGlobalSearchController>());
 
 	void prepare() override final;
-	std::unique_ptr<PeerListRow> createSearchRow(not_null<PeerData*> peer) override final;
+	std::unique_ptr<PeerListRow> createSearchRow(not_null<PeerData *> peer) override final;
 
 protected:
 	class Row : public PeerListRow {
 	public:
-		Row(not_null<History*> history) : PeerListRow(history->peer), _history(history) {
-		}
-		not_null<History*> history() const {
+		Row(not_null<History *> history)
+		    : PeerListRow(history->peer)
+		    , _history(history) {}
+		not_null<History *> history() const {
 			return _history;
 		}
 
 	private:
-		not_null<History*> _history;
-
+		not_null<History *> _history;
 	};
-	virtual std::unique_ptr<Row> createRow(not_null<History*> history) = 0;
+	virtual std::unique_ptr<Row> createRow(not_null<History *> history) = 0;
 	virtual void prepareViewHook() = 0;
-	virtual void updateRowHook(not_null<Row*> row) {
-	}
+	virtual void updateRowHook(not_null<Row *> row) {}
 	virtual QString emptyBoxText() const;
 
 private:
 	void rebuildRows();
 	void checkForEmptyRows();
-	bool appendRow(not_null<History*> history);
-
+	bool appendRow(not_null<History *> history);
 };
 
 class ContactsBoxController : public PeerListController, protected base::Subscriber {
 public:
-	ContactsBoxController(std::unique_ptr<PeerListSearchController> searchController = std::make_unique<PeerListGlobalSearchController>());
+	ContactsBoxController(std::unique_ptr<PeerListSearchController> searchController =
+	                          std::make_unique<PeerListGlobalSearchController>());
 
 	void prepare() override final;
-	std::unique_ptr<PeerListRow> createSearchRow(not_null<PeerData*> peer) override final;
-	void rowClicked(not_null<PeerListRow*> row) override;
+	std::unique_ptr<PeerListRow> createSearchRow(not_null<PeerData *> peer) override final;
+	void rowClicked(not_null<PeerListRow *> row) override;
 
 protected:
-	virtual std::unique_ptr<PeerListRow> createRow(not_null<UserData*> user);
-	virtual void prepareViewHook() {
-	}
-	virtual void updateRowHook(not_null<PeerListRow*> row) {
-	}
+	virtual std::unique_ptr<PeerListRow> createRow(not_null<UserData *> user);
+	virtual void prepareViewHook() {}
+	virtual void updateRowHook(not_null<PeerListRow *> row) {}
 
 private:
 	void rebuildRows();
 	void checkForEmptyRows();
-	bool appendRow(not_null<UserData*> user);
-
+	bool appendRow(not_null<UserData *> user);
 };
 
 class EditChatAdminsBoxController : public PeerListController, private base::Subscriber {
 public:
-	static void Start(not_null<ChatData*> chat);
+	static void Start(not_null<ChatData *> chat);
 
-	EditChatAdminsBoxController(not_null<ChatData*> chat);
+	EditChatAdminsBoxController(not_null<ChatData *> chat);
 
 	bool allAreAdmins() const;
 
 	void prepare() override;
-	void rowClicked(not_null<PeerListRow*> row) override;
+	void rowClicked(not_null<PeerListRow *> row) override;
 
 private:
 	void createAllAdminsCheckbox();
 	void rebuildRows();
-	std::unique_ptr<PeerListRow> createRow(not_null<UserData*> user);
+	std::unique_ptr<PeerListRow> createRow(not_null<UserData *> user);
 
-	not_null<ChatData*> _chat;
+	not_null<ChatData *> _chat;
 	int _adminsUpdatedSubscription = 0;
 
 	class LabeledCheckbox;
 	QPointer<LabeledCheckbox> _allAdmins;
-
 };
 
 class AddParticipantsBoxController : public ContactsBoxController {
 public:
-	static void Start(not_null<ChatData*> chat);
-	static void Start(not_null<ChannelData*> channel);
-	static void Start(
-		not_null<ChannelData*> channel,
-		base::flat_set<not_null<UserData*>> &&alreadyIn);
+	static void Start(not_null<ChatData *> chat);
+	static void Start(not_null<ChannelData *> channel);
+	static void Start(not_null<ChannelData *> channel, base::flat_set<not_null<UserData *>> &&alreadyIn);
 
 	AddParticipantsBoxController(PeerData *peer);
-	AddParticipantsBoxController(
-		not_null<ChannelData*> channel,
-		base::flat_set<not_null<UserData*>> &&alreadyIn);
+	AddParticipantsBoxController(not_null<ChannelData *> channel, base::flat_set<not_null<UserData *>> &&alreadyIn);
 
 	using ContactsBoxController::ContactsBoxController;
 
-	void rowClicked(not_null<PeerListRow*> row) override;
-	void itemDeselectedHook(not_null<PeerData*> peer) override;
+	void rowClicked(not_null<PeerListRow *> row) override;
+	void itemDeselectedHook(not_null<PeerData *> peer) override;
 
 protected:
 	void prepareViewHook() override;
-	std::unique_ptr<PeerListRow> createRow(not_null<UserData*> user) override;
+	std::unique_ptr<PeerListRow> createRow(not_null<UserData *> user) override;
 
 private:
-	static void Start(
-		not_null<ChannelData*> channel,
-		base::flat_set<not_null<UserData*>> &&alreadyIn,
-		bool justCreated);
+	static void Start(not_null<ChannelData *> channel, base::flat_set<not_null<UserData *>> &&alreadyIn,
+	                  bool justCreated);
 
 	int alreadyInCount() const;
-	bool isAlreadyIn(not_null<UserData*> user) const;
+	bool isAlreadyIn(not_null<UserData *> user) const;
 	int fullCount() const;
 	void updateTitle();
 
 	PeerData *_peer = nullptr;
-	base::flat_set<not_null<UserData*>> _alreadyIn;
-
+	base::flat_set<not_null<UserData *>> _alreadyIn;
 };
 
 class AddBotToGroupBoxController : public ChatsListBoxController, public base::enable_weak_from_this {
 public:
-	static void Start(not_null<UserData*> bot);
+	static void Start(not_null<UserData *> bot);
 
-	AddBotToGroupBoxController(not_null<UserData*> bot);
+	AddBotToGroupBoxController(not_null<UserData *> bot);
 
-	void rowClicked(not_null<PeerListRow*> row) override;
+	void rowClicked(not_null<PeerListRow *> row) override;
 
 protected:
-	std::unique_ptr<Row> createRow(not_null<History*> history) override;
+	std::unique_ptr<Row> createRow(not_null<History *> history) override;
 	void prepareViewHook() override;
 	QString emptyBoxText() const override;
 
 private:
-	static bool SharingBotGame(not_null<UserData*> bot);
+	static bool SharingBotGame(not_null<UserData *> bot);
 
-	bool needToCreateRow(not_null<PeerData*> peer) const;
+	bool needToCreateRow(not_null<PeerData *> peer) const;
 	bool sharingBotGame() const;
 	QString noResultsText() const;
 	QString descriptionText() const;
 	void updateLabels();
 
-	void shareBotGame(not_null<PeerData*> chat);
-	void addBotToGroup(not_null<PeerData*> chat);
+	void shareBotGame(not_null<PeerData *> chat);
+	void addBotToGroup(not_null<PeerData *> chat);
 
-	not_null<UserData*> _bot;
-
+	not_null<UserData *> _bot;
 };

@@ -20,22 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <deque>
 #include <algorithm>
+#include <deque>
 
 namespace base {
 
-template <typename Type>
-class flat_set;
+template <typename Type> class flat_set;
 
-template <typename Type>
-class flat_multi_set;
+template <typename Type> class flat_multi_set;
 
-template <typename Type, typename iterator_impl>
-class flat_multi_set_iterator_base_impl;
+template <typename Type, typename iterator_impl> class flat_multi_set_iterator_base_impl;
 
-template <typename Type, typename iterator_impl>
-class flat_multi_set_iterator_base_impl {
+template <typename Type, typename iterator_impl> class flat_multi_set_iterator_base_impl {
 public:
 	using iterator_category = typename iterator_impl::iterator_category;
 
@@ -44,8 +40,8 @@ public:
 	using pointer = typename flat_multi_set<Type>::pointer;
 	using reference = typename flat_multi_set<Type>::reference;
 
-	flat_multi_set_iterator_base_impl(iterator_impl impl = iterator_impl()) : _impl(impl) {
-	}
+	flat_multi_set_iterator_base_impl(iterator_impl impl = iterator_impl())
+	    : _impl(impl) {}
 
 	reference operator*() const {
 		return *_impl;
@@ -101,35 +97,32 @@ public:
 private:
 	iterator_impl _impl;
 	friend class flat_multi_set<Type>;
-
 };
 
-template <typename Type>
-class flat_multi_set {
+template <typename Type> class flat_multi_set {
 	using self = flat_multi_set<Type>;
 	class const_wrap {
 	public:
-		const_wrap(const Type &value) : _value(value) {
-		}
-		const_wrap(Type &&value) : _value(std::move(value)) {
-		}
-		inline operator const Type&() const {
+		const_wrap(const Type &value)
+		    : _value(value) {}
+		const_wrap(Type &&value)
+		    : _value(std::move(value)) {}
+		inline operator const Type &() const {
 			return _value;
 		}
 
 		friend inline bool operator<(const Type &a, const const_wrap &b) {
-			return a < ((const Type&)b);
+			return a < ((const Type &)b);
 		}
 		friend inline bool operator<(const const_wrap &a, const Type &b) {
-			return ((const Type&)a) < b;
+			return ((const Type &)a) < b;
 		}
 		friend inline bool operator<(const const_wrap &a, const const_wrap &b) {
-			return ((const Type&)a) < ((const Type&)b);
+			return ((const Type &)a) < ((const Type &)b);
 		}
 
 	private:
 		Type _value;
-
 	};
 
 	using impl = std::deque<const_wrap>;
@@ -143,50 +136,47 @@ public:
 	using value_type = Type;
 	using size_type = typename impl::size_type;
 	using difference_type = typename impl::difference_type;
-	using pointer = const Type*;
-	using reference = const Type&;
+	using pointer = const Type *;
+	using reference = const Type &;
 
 	class const_iterator;
 	class iterator : public iterator_base {
 	public:
 		using iterator_base::iterator_base;
-		iterator(const iterator_base &other) : iterator_base(other) {
-		}
+		iterator(const iterator_base &other)
+		    : iterator_base(other) {}
 		friend class const_iterator;
-
 	};
 	class const_iterator : public const_iterator_base {
 	public:
 		using const_iterator_base::const_iterator_base;
-		const_iterator(const_iterator_base other) : const_iterator_base(other) {
-		}
-		const_iterator(const iterator &other) : const_iterator_base(other._impl) {
-		}
-
+		const_iterator(const_iterator_base other)
+		    : const_iterator_base(other) {}
+		const_iterator(const iterator &other)
+		    : const_iterator_base(other._impl) {}
 	};
 	class const_reverse_iterator;
 	class reverse_iterator : public reverse_iterator_base {
 	public:
 		using reverse_iterator_base::reverse_iterator_base;
-		reverse_iterator(reverse_iterator_base other) : reverse_iterator_base(other) {
-		}
+		reverse_iterator(reverse_iterator_base other)
+		    : reverse_iterator_base(other) {}
 		friend class const_reverse_iterator;
-
 	};
 	class const_reverse_iterator : public const_reverse_iterator_base {
 	public:
 		using const_reverse_iterator_base::const_reverse_iterator_base;
-		const_reverse_iterator(const_reverse_iterator_base other) : const_reverse_iterator_base(other) {
-		}
-		const_reverse_iterator(const reverse_iterator &other) : const_reverse_iterator_base(other._impl) {
-		}
-
+		const_reverse_iterator(const_reverse_iterator_base other)
+		    : const_reverse_iterator_base(other) {}
+		const_reverse_iterator(const reverse_iterator &other)
+		    : const_reverse_iterator_base(other._impl) {}
 	};
 
 	flat_multi_set() = default;
 
 	template <typename Iterator, typename = typename std::iterator_traits<Iterator>::iterator_category>
-	flat_multi_set(Iterator first, Iterator last) : _impl(first, last) {
+	flat_multi_set(Iterator first, Iterator last)
+	    : _impl(first, last) {
 		std::sort(_impl.begin(), _impl.end());
 	}
 
@@ -266,8 +256,7 @@ public:
 		auto where = getUpperBound(value);
 		return _impl.insert(where, std::move(value));
 	}
-	template <typename... Args>
-	iterator emplace(Args&&... args) {
+	template <typename... Args> iterator emplace(Args &&... args) {
 		return insert(Type(std::forward<Args>(args)...));
 	}
 
@@ -350,11 +339,9 @@ private:
 	std::pair<typename impl::const_iterator, typename impl::const_iterator> getEqualRange(const Type &value) const {
 		return std::equal_range(_impl.begin(), _impl.end(), value);
 	}
-
 };
 
-template <typename Type>
-class flat_set : public flat_multi_set<Type> {
+template <typename Type> class flat_set : public flat_multi_set<Type> {
 	using parent = flat_multi_set<Type>;
 
 public:
@@ -365,10 +352,11 @@ public:
 	flat_set() = default;
 
 	template <typename Iterator, typename = typename std::iterator_traits<Iterator>::iterator_category>
-	flat_set(Iterator first, Iterator last) : parent(first, last) {
-		this->_impl.erase(std::unique(this->_impl.begin(), this->_impl.end(), [](auto &&a, auto &&b) {
-			return !(a < b);
-		}), this->_impl.end());
+	flat_set(Iterator first, Iterator last)
+	    : parent(first, last) {
+		this->_impl.erase(
+		    std::unique(this->_impl.begin(), this->_impl.end(), [](auto &&a, auto &&b) { return !(a < b); }),
+		    this->_impl.end());
 	}
 
 	iterator insert(const Type &value) {
@@ -399,8 +387,7 @@ public:
 		}
 		return this->end();
 	}
-	template <typename... Args>
-	iterator emplace(Args&&... args) {
+	template <typename... Args> iterator emplace(Args &&... args) {
 		return this->insert(Type(std::forward<Args>(args)...));
 	}
 
@@ -414,7 +401,6 @@ public:
 	const_iterator find(const Type &value) const {
 		return this->findFirst(value);
 	}
-
 };
 
 } // namespace base

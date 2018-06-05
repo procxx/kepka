@@ -25,10 +25,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Profile {
 
-BlockWidget::BlockWidget(QWidget *parent, PeerData *peer, const QString &title) : TWidget(parent)
-, _peer(peer)
-, _title(title) {
-}
+BlockWidget::BlockWidget(QWidget *parent, PeerData *peer, const QString &title)
+    : TWidget(parent)
+    , _peer(peer)
+    , _title(title) {}
 
 int BlockWidget::contentTop() const {
 	return emptyTitle() ? 0 : (st::profileBlockMarginTop + st::profileBlockTitleHeight);

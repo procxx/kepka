@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <QtCore/QString>
 #include "codegen/style/options.h"
+#include <QtCore/QString>
+#include <memory>
 
 namespace codegen {
 namespace style {
@@ -49,7 +49,6 @@ private:
 
 	std::unique_ptr<ParsedFile> parser_;
 	const Options &options_;
-
 };
 
 } // namespace style

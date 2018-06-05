@@ -20,34 +20,38 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_general_widget.h"
 
-#include "styles/style_settings.h"
-#include "lang/lang_keys.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/buttons.h"
-#include "storage/localstorage.h"
-#include "platform/platform_specific.h"
-#include "mainwindow.h"
-#include "application.h"
-#include "boxes/language_box.h"
-#include "boxes/confirm_box.h"
-#include "boxes/about_box.h"
-#include "core/file_utilities.h"
-#include "lang/lang_file_parser.h"
-#include "lang/lang_cloud_manager.h"
-#include "messenger.h"
 #include "app.h"
+#include "application.h"
+#include "boxes/about_box.h"
+#include "boxes/confirm_box.h"
+#include "boxes/language_box.h"
+#include "core/file_utilities.h"
+#include "lang/lang_cloud_manager.h"
+#include "lang/lang_file_parser.h"
+#include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "messenger.h"
+#include "platform/platform_specific.h"
+#include "storage/localstorage.h"
+#include "styles/style_settings.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 
 namespace Settings {
 
-GeneralWidget::GeneralWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_general))
-, _changeLanguage(this, lang(lng_settings_change_lang), st::boxLinkButton) {
+GeneralWidget::GeneralWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_general))
+    , _changeLanguage(this, lang(lng_settings_change_lang), st::boxLinkButton) {
 	connect(_changeLanguage, SIGNAL(clicked()), this, SLOT(onChangeLanguage()));
 	refreshControls();
 }
 
 int GeneralWidget::resizeGetHeight(int newWidth) {
-	_changeLanguage->moveToRight(contentLeft(), st::settingsBlockMarginTop + st::settingsBlockTitleTop + st::settingsBlockTitleFont->ascent - st::defaultLinkButton.font->ascent, newWidth);
+	_changeLanguage->moveToRight(contentLeft(),
+	                             st::settingsBlockMarginTop + st::settingsBlockTitleTop +
+	                                 st::settingsBlockTitleFont->ascent - st::defaultLinkButton.font->ascent,
+	                             newWidth);
 	return BlockWidget::resizeGetHeight(newWidth);
 }
 
@@ -59,27 +63,34 @@ void GeneralWidget::refreshControls() {
 
 	if (cPlatform() == dbipWindows || cSupportTray()) {
 		auto workMode = Global::WorkMode().value();
-		addChildRow(_enableTrayIcon, marginSmall, lang(lng_settings_workmode_tray), [this](bool) { onEnableTrayIcon(); }, (workMode == dbiwmTrayOnly || workMode == dbiwmWindowAndTray));
+		addChildRow(_enableTrayIcon, marginSmall, lang(lng_settings_workmode_tray),
+		            [this](bool) { onEnableTrayIcon(); },
+		            (workMode == dbiwmTrayOnly || workMode == dbiwmWindowAndTray));
 		if (cPlatform() == dbipWindows) {
-			addChildRow(_enableTaskbarIcon, marginLarge, lang(lng_settings_workmode_window), [this](bool) { onEnableTaskbarIcon(); }, (workMode == dbiwmWindowOnly || workMode == dbiwmWindowAndTray));
+			addChildRow(_enableTaskbarIcon, marginLarge, lang(lng_settings_workmode_window),
+			            [this](bool) { onEnableTaskbarIcon(); },
+			            (workMode == dbiwmWindowOnly || workMode == dbiwmWindowAndTray));
 
 #ifndef OS_WIN_STORE
-			addChildRow(_autoStart, marginSmall, lang(lng_settings_auto_start), [this](bool) { onAutoStart(); }, cAutoStart());
-			addChildRow(_startMinimized, marginLarge, slidedPadding, lang(lng_settings_start_min), [this](bool) { onStartMinimized(); }, (cStartMinimized() && !Global::LocalPasscode()));
-			subscribe(Global::RefLocalPasscodeChanged(), [this] {
-				_startMinimized->entity()->setChecked(cStartMinimized() && !Global::LocalPasscode());
-			});
+			addChildRow(_autoStart, marginSmall, lang(lng_settings_auto_start), [this](bool) { onAutoStart(); },
+			            cAutoStart());
+			addChildRow(_startMinimized, marginLarge, slidedPadding, lang(lng_settings_start_min),
+			            [this](bool) { onStartMinimized(); }, (cStartMinimized() && !Global::LocalPasscode()));
+			subscribe(Global::RefLocalPasscodeChanged(),
+			          [this] { _startMinimized->entity()->setChecked(cStartMinimized() && !Global::LocalPasscode()); });
 			if (!cAutoStart()) {
 				_startMinimized->hideFast();
 			}
-			addChildRow(_addInSendTo, marginSmall, lang(lng_settings_add_sendto), [this](bool) { onAddInSendTo(); }, cSendToMenu());
+			addChildRow(_addInSendTo, marginSmall, lang(lng_settings_add_sendto), [this](bool) { onAddInSendTo(); },
+			            cSendToMenu());
 #endif // OS_WIN_STORE
 		}
 	}
 }
 
 void GeneralWidget::onChangeLanguage() {
-	if ((_changeLanguage->clickModifiers() & Qt::ShiftModifier) && (_changeLanguage->clickModifiers() & Qt::AltModifier)) {
+	if ((_changeLanguage->clickModifiers() & Qt::ShiftModifier) &&
+	    (_changeLanguage->clickModifiers() & Qt::AltModifier)) {
 		Lang::CurrentCloudManager().switchToLanguage(qsl("custom"));
 		return;
 	}
@@ -101,7 +112,8 @@ void GeneralWidget::onRestart() {
 }
 
 void GeneralWidget::onEnableTrayIcon() {
-	if ((!_enableTrayIcon->checked() || cPlatform() != dbipWindows) && _enableTaskbarIcon && !_enableTaskbarIcon->checked()) {
+	if ((!_enableTrayIcon->checked() || cPlatform() != dbipWindows) && _enableTaskbarIcon &&
+	    !_enableTaskbarIcon->checked()) {
 		_enableTaskbarIcon->setChecked(true);
 	} else {
 		updateWorkmode();
@@ -117,7 +129,9 @@ void GeneralWidget::onEnableTaskbarIcon() {
 }
 
 void GeneralWidget::updateWorkmode() {
-	auto newMode = (_enableTrayIcon->checked() && (!_enableTaskbarIcon || _enableTaskbarIcon->checked())) ? dbiwmWindowAndTray : (_enableTrayIcon->checked() ? dbiwmTrayOnly : dbiwmWindowOnly);
+	auto newMode = (_enableTrayIcon->checked() && (!_enableTaskbarIcon || _enableTaskbarIcon->checked())) ?
+	                   dbiwmWindowAndTray :
+	                   (_enableTrayIcon->checked() ? dbiwmTrayOnly : dbiwmWindowOnly);
 	if (Global::WorkMode().value() != newMode && (newMode == dbiwmWindowAndTray || newMode == dbiwmTrayOnly)) {
 		cSetSeenTrayTooltip(false);
 	}

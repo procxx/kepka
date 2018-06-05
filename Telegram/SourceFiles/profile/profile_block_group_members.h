@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "profile/profile_block_peer_list.h"
-#include "core/click_handler.h"
 #include "QTimer"
+#include "core/click_handler.h"
+#include "profile/profile_block_peer_list.h"
 #include "structs.h"
 
 class UserData;
@@ -48,7 +48,8 @@ public:
 		Visible,
 		Hidden,
 	};
-	GroupMembersWidget(QWidget *parent, PeerData *peer, TitleVisibility titleVisibility = TitleVisibility::Visible, const style::ProfilePeerListItem &st = st::profileMemberItem);
+	GroupMembersWidget(QWidget *parent, PeerData *peer, TitleVisibility titleVisibility = TitleVisibility::Visible,
+	                   const style::ProfilePeerListItem &st = st::profileMemberItem);
 
 	int onlineCount() const {
 		return _onlineCount;
@@ -74,8 +75,8 @@ private:
 	// Observed notifications.
 	void notifyPeerUpdated(const Notify::PeerUpdate &update);
 
-	void editAdmin(not_null<UserData*> user);
-	void restrictUser(not_null<UserData*> user);
+	void editAdmin(not_null<UserData *> user);
+	void restrictUser(not_null<UserData *> user);
 	void removePeer(PeerData *selectedPeer);
 	void refreshMembers();
 	void fillChatMembers(ChatData *chat);
@@ -94,17 +95,17 @@ private:
 	int getListTop() const override;
 
 	struct Member : public Item {
-		explicit Member(UserData *user) : Item(user) {
-		}
+		explicit Member(UserData *user)
+		    : Item(user) {}
 		UserData *user() const {
-			return static_cast<UserData*>(peer);
+			return static_cast<UserData *>(peer);
 		}
 		TimeId onlineTextTill = 0;
 		TimeId onlineTill = 0;
 		TimeId onlineForSort = 0;
 	};
 	Member *getMember(Item *item) {
-		return static_cast<Member*>(item);
+		return static_cast<Member *>(item);
 	}
 
 	void updateItemStatusText(Item *item);
@@ -115,16 +116,15 @@ private:
 	void setItemFlags(Item *item, ChannelData *megagroup);
 	bool addUsersToEnd(ChannelData *megagroup);
 
-	object_ptr<Ui::FlatLabel> _limitReachedInfo = { nullptr };
+	object_ptr<Ui::FlatLabel> _limitReachedInfo = {nullptr};
 
-	QMap<UserData*, Member*> _membersByUser;
+	QMap<UserData *, Member *> _membersByUser;
 	bool _sortByOnline = false;
 	TimeId _now = 0;
 
 	int _onlineCount = 0;
 	TimeId _updateOnlineAt = 0;
 	QTimer _updateOnlineTimer;
-
 };
 
 } // namespace Profile

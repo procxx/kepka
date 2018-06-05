@@ -45,7 +45,7 @@ Type Compute() {
 		if (list.contains("unity")) {
 			// gnome-fallback sessions set XDG_CURRENT_DESKTOP to Unity
 			// DESKTOP_SESSION can be gnome-fallback or gnome-fallback-compiz
-            if (desktopSession.indexOf(QString("gnome-fallback")) >= 0) {
+			if (desktopSession.indexOf(QString("gnome-fallback")) >= 0) {
 				return Type::Gnome;
 			}
 			return Type::Unity;
@@ -56,7 +56,7 @@ Type Compute() {
 		} else if (list.contains("gnome")) {
 			return Type::Gnome;
 		} else if (list.contains("kde")) {
-            if (kdeSession == QString("5")) {
+			if (kdeSession == QString("5")) {
 				return Type::KDE5;
 			}
 			return Type::KDE4;
@@ -125,8 +125,7 @@ bool TryQtTrayIcon() {
 }
 
 bool PreferAppIndicatorTrayIcon() {
-	return IsXFCE() || IsUnity() ||
-	       (IsGnome() && QDBusInterface("org.kde.StatusNotifierWatcher", "/").isValid());
+	return IsXFCE() || IsUnity() || (IsGnome() && QDBusInterface("org.kde.StatusNotifierWatcher", "/").isValid());
 }
 
 bool TryUnityCounter() {

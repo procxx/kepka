@@ -20,19 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <string>
-#include <exception>
-#include <memory>
-#include <ctime>
-#include <cstdint>
-#include <gsl/gsl>
-#include <QLatin1String>
-#include <QString>
 #include "base/build_config.h"
 #include "base/ordered_set.h"
+#include <QLatin1String>
+#include <QString>
+#include <cstdint>
+#include <ctime>
+#include <exception>
+#include <gsl/gsl>
+#include <memory>
+#include <string>
 
-template <typename Type>
-using not_null = gsl::not_null<Type>;
+template <typename Type> using not_null = gsl::not_null<Type>;
 
 #define qsl(s) QStringLiteral(s)
-#define qstr(s) QLatin1String(s, static_cast<int>(sizeof(s)-1))
+#define qstr(s) QLatin1String(s, static_cast<int>(sizeof(s) - 1))

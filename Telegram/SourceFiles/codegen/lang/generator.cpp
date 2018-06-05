@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/lang/generator.h"
 
-#include <memory>
-#include <functional>
 #include <QtCore/QDir>
 #include <QtCore/QSet>
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
+#include <functional>
+#include <memory>
 
 namespace codegen {
 namespace lang {
@@ -41,11 +41,11 @@ char hexChar(uchar ch) {
 }
 
 char hexSecondChar(char ch) {
-	return hexChar((*reinterpret_cast<uchar*>(&ch)) & 0x0F);
+	return hexChar((*reinterpret_cast<uchar *>(&ch)) & 0x0F);
 }
 
 char hexFirstChar(char ch) {
-	return hexChar((*reinterpret_cast<uchar*>(&ch)) >> 4);
+	return hexChar((*reinterpret_cast<uchar *>(&ch)) >> 4);
 }
 
 QString stringToEncodedString(const QString &str) {
@@ -107,18 +107,17 @@ QString stringToBinaryArray(const std::string &str) {
 } // namespace
 
 Generator::Generator(const LangPack &langpack, const QString &destBasePath, const common::ProjectInfo &project)
-: langpack_(langpack)
-, basePath_(destBasePath)
-, baseName_(QFileInfo(basePath_).baseName())
-, project_(project) {
-}
+    : langpack_(langpack)
+    , basePath_(destBasePath)
+    , baseName_(QFileInfo(basePath_).baseName())
+    , project_(project) {}
 
 bool Generator::writeHeader() {
 	header_ = std::make_unique<common::CppFile>(basePath_ + ".h", project_);
 
-    header_->include("utility", true);
-    header_->include("QString", true);
-    header_->include("QLatin1String", true);
+	header_->include("utility", true);
+	header_->include("QString", true);
+	header_->include("QLatin1String", true);
 
 	header_->include("lang/lang_tag.h").newline().pushNamespace("Lang").stream() << "\
 \n\
@@ -155,27 +154,33 @@ QString lang(LangKey key);\n\
 		for (auto &tagData : entry.tags) {
 			auto &tag = tagData.tag;
 			auto isPluralTag = isPlural && (tag == kPluralTag);
-			genericParams.push_back("lngtag_" + tag + ", " + (isPluralTag ? "double " : "const ResultString &") + tag + "__val");
+			genericParams.push_back("lngtag_" + tag + ", " + (isPluralTag ? "double " : "const ResultString &") + tag +
+			                        "__val");
 			params.push_back("lngtag_" + tag + ", " + (isPluralTag ? "double " : "const QString &") + tag + "__val");
 			if (isPluralTag) {
 				plural = "\tauto plural = Lang::Plural(" + key + ", " + kPluralTag + "__val);\n";
-				applyTags.push_back("\tresult = Lang::ReplaceTag<ResultString>::Call(std::move(result), lt_" + tag + ", Lang::StartReplacements<ResultString>::Call(std::move(plural.replacement)));\n");
+				applyTags.push_back("\tresult = Lang::ReplaceTag<ResultString>::Call(std::move(result), lt_" + tag +
+				                    ", Lang::StartReplacements<ResultString>::Call(std::move(plural.replacement)));\n");
 			} else {
 				nonPluralTagFound = true;
-				applyTags.push_back("\tresult = Lang::ReplaceTag<ResultString>::Call(std::move(result), lt_" + tag + ", " + tag + "__val);\n");
+				applyTags.push_back("\tresult = Lang::ReplaceTag<ResultString>::Call(std::move(result), lt_" + tag +
+				                    ", " + tag + "__val);\n");
 			}
 		}
 		if (!entry.tags.empty() && (!isPlural || key == ComputePluralKey(entry.keyBase, 0))) {
 			auto initialString = isPlural ? ("std::move(plural.string)") : ("lang(" + getFullKey(entry) + ")");
 			header_->stream() << "\
 template <typename ResultString>\n\
-inline ResultString " << (isPlural ? entry.keyBase : key) << "__generic(" << genericParams.join(QString(", ")) << ") {\n\
+inline ResultString " << (isPlural ? entry.keyBase : key)
+			                  << "__generic(" << genericParams.join(QString(", ")) << ") {\n\
 " << plural << "\
-	auto result = Lang::StartReplacements<ResultString>::Call(" << initialString << ");\n\
+	auto result = Lang::StartReplacements<ResultString>::Call("
+			                  << initialString << ");\n\
 " << applyTags.join(QString()) << "\
 	return result;\n\
 }\n\
-constexpr auto " << (isPlural ? entry.keyBase : key) << " = &" << (isPlural ? entry.keyBase : key) << "__generic<QString>;\n\
+constexpr auto " << (isPlural ? entry.keyBase : key)
+			                  << " = &" << (isPlural ? entry.keyBase : key) << "__generic<QString>;\n\
 \n";
 		}
 	}
@@ -261,9 +266,7 @@ ushort GetTagIndex(QLatin1String tag) {\n\
 		tagsSet.insert(tag.tag);
 	}
 
-	writeSetSearch(tagsSet, [](const QString &tag) {
-		return "lt_" + tag;
-	}, "kTagsCount");
+	writeSetSearch(tagsSet, [](const QString &tag) { return "lt_" + tag; }, "kTagsCount");
 
 	source_->stream() << "\
 }\n\
@@ -290,10 +293,12 @@ LangKey GetKeyIndex(QLatin1String key) {\n\
 		}
 	}
 
-	writeSetSearch(keysSet, [&taggedKeys](const QString &key) {
-		auto it = taggedKeys.find(key);
-		return (it != taggedKeys.end()) ? it->second : key;
-	}, "kLangKeysCount");
+	writeSetSearch(keysSet,
+	               [&taggedKeys](const QString &key) {
+		               auto it = taggedKeys.find(key);
+		               return (it != taggedKeys.end()) ? it->second : key;
+	               },
+	               "kLangKeysCount");
 
 	source_->stream() << "\
 }\n\
@@ -313,11 +318,13 @@ bool IsTagReplaced(LangKey key, ushort tag) {\n\
 			lastWrittenPluralEntry = entry.keyBase;
 			for (auto i = 0; i != kPluralPartCount; ++i) {
 				source_->stream() << "\
-	case " << ComputePluralKey(entry.keyBase, i) << ":" << ((i + 1 == kPluralPartCount) ? " {" : "") << "\n";
+	case " << ComputePluralKey(entry.keyBase, i)
+				                  << ":" << ((i + 1 == kPluralPartCount) ? " {" : "") << "\n";
 			}
 		} else {
 			source_->stream() << "\
-	case " << getFullKey(entry) << ": {\n";
+	case " << getFullKey(entry)
+			                  << ": {\n";
 		}
 		source_->stream() << "\
 		switch (tag) {\n";
@@ -348,10 +355,9 @@ QString GetOriginalValue(LangKey key) {\n\
 }
 
 template <typename ComputeResult>
-void Generator::writeSetSearch(const std::set<QString, std::greater<QString>> &set, ComputeResult computeResult, const QString &invalidResult) {
-	auto tabs = [](int size) {
-		return QString(size, '\t');
-	};
+void Generator::writeSetSearch(const std::set<QString, std::greater<QString>> &set, ComputeResult computeResult,
+                               const QString &invalidResult) {
+	auto tabs = [](int size) { return QString(size, '\t'); };
 
 	enum class UsedCheckType {
 		Switch,
@@ -434,8 +440,8 @@ void Generator::writeSetSearch(const std::set<QString, std::greater<QString>> &s
 			auto usedIfForCheckCount = 0;
 			auto minimalLengthCheck = countMinimalLength(i, e, checking);
 			for (; checking + usedIfForCheckCount != name.size(); ++usedIfForCheckCount) {
-				if (!canUseIfForCheck(i, e, checking + usedIfForCheckCount)
-					|| countMinimalLength(i, e, checking + usedIfForCheckCount) != minimalLengthCheck) {
+				if (!canUseIfForCheck(i, e, checking + usedIfForCheckCount) ||
+				    countMinimalLength(i, e, checking + usedIfForCheckCount) != minimalLengthCheck) {
 					break;
 				}
 			}
@@ -444,15 +450,22 @@ void Generator::writeSetSearch(const std::set<QString, std::greater<QString>> &s
 			if (weContinueOldSwitch) {
 				weContinueOldSwitch = false;
 			} else {
-				checkLengthCondition = (minimalLengthCheck > checkLengthHistory.back()) ? ("size >= " + QString::number(minimalLengthCheck)) : QString();
+				checkLengthCondition = (minimalLengthCheck > checkLengthHistory.back()) ?
+				                           ("size >= " + QString::number(minimalLengthCheck)) :
+				                           QString();
 				if (!usedIfForCheck) {
-					source_->stream() << tabs(tabsUsed) << (checkLengthCondition.isEmpty() ? QString() : ("if (" + checkLengthCondition + ") ")) << "switch (data[" << checking << "]) {\n";
+					source_->stream() << tabs(tabsUsed)
+					                  << (checkLengthCondition.isEmpty() ? QString() :
+					                                                       ("if (" + checkLengthCondition + ") "))
+					                  << "switch (data[" << checking << "]) {\n";
 				}
 			}
 			if (usedIfForCheck) {
 				auto conditions = QStringList();
 				if (usedIfForCheckCount > 1) {
-					conditions.push_back("!memcmp(data + " + QString::number(checking) + ", \"" + name.mid(checking, usedIfForCheckCount) + "\", " + QString::number(usedIfForCheckCount) + ")");
+					conditions.push_back("!memcmp(data + " + QString::number(checking) + ", \"" +
+					                     name.mid(checking, usedIfForCheckCount) + "\", " +
+					                     QString::number(usedIfForCheckCount) + ")");
 				} else {
 					conditions.push_back("data[" + QString::number(checking) + "] == '" + keyChar + "'");
 				}
@@ -475,13 +488,15 @@ void Generator::writeSetSearch(const std::set<QString, std::greater<QString>> &s
 			chars.push_back(keyChar);
 			checkLengthHistory.push_back(std::max(minimalLengthCheck, checkLengthHistory.back()));
 		}
-		source_->stream() << tabs(tabsUsed) << "return (size == " << chars.size() << ") ? " << computeResult(name) << " : " << invalidResult << ";\n";
+		source_->stream() << tabs(tabsUsed) << "return (size == " << chars.size() << ") ? " << computeResult(name)
+		                  << " : " << invalidResult << ";\n";
 	}
 	finishChecksTillKey(QString());
 
 	source_->stream() << "\
 \n\
-	return " << invalidResult << ";\n";
+	return " << invalidResult
+	                  << ";\n";
 }
 
 QString Generator::getFullKey(const LangPack::Entry &entry) {

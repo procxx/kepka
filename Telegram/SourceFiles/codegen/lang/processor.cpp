@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/lang/processor.h"
 
+#include "codegen/common/cpp_file.h"
+#include "codegen/lang/generator.h"
+#include "codegen/lang/parsed_file.h"
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include "codegen/common/cpp_file.h"
-#include "codegen/lang/parsed_file.h"
-#include "codegen/lang/generator.h"
 
 namespace codegen {
 namespace lang {
@@ -35,9 +35,8 @@ constexpr int kErrorCantWritePath = 821;
 } // namespace
 
 Processor::Processor(const Options &options)
-: parser_(std::make_unique<ParsedFile>(options))
-, options_(options) {
-}
+    : parser_(std::make_unique<ParsedFile>(options))
+    , options_(options) {}
 
 int Processor::launch() {
 	if (!parser_->read()) {
@@ -55,18 +54,15 @@ bool Processor::write(const LangPack &langpack) const {
 	bool forceReGenerate = false;
 	QDir dir(options_.outputPath);
 	if (!dir.mkpath(".")) {
-		common::logError(kErrorCantWritePath, "Command Line") << "can not open path for writing: " << dir.absolutePath().toStdString();
+		common::logError(kErrorCantWritePath, "Command Line")
+		    << "can not open path for writing: " << dir.absolutePath().toStdString();
 		return false;
 	}
 
 	QFileInfo srcFile(options_.inputPath);
 	QString dstFilePath = dir.absolutePath() + "/lang_auto";
 
-	common::ProjectInfo project = {
-		"codegen_style",
-		srcFile.fileName(),
-		forceReGenerate
-	};
+	common::ProjectInfo project = {"codegen_style", srcFile.fileName(), forceReGenerate};
 
 	Generator generator(langpack, dstFilePath, project);
 	if (!generator.writeHeader()) {

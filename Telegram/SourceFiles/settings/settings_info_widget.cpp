@@ -20,26 +20,27 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_info_widget.h"
 
-#include "styles/style_settings.h"
-#include "lang/lang_keys.h"
-#include "ui/widgets/labels.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "boxes/username_box.h"
+#include "app.h"
 #include "boxes/add_contact_box.h"
 #include "boxes/change_phone_box.h"
-#include "observer_peer.h"
+#include "boxes/username_box.h"
+#include "lang/lang_keys.h"
 #include "messenger.h"
-#include "app.h"
+#include "observer_peer.h"
+#include "styles/style_settings.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/widgets/labels.h"
 
 namespace Settings {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
 
-InfoWidget::InfoWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_info)) {
+InfoWidget::InfoWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_info)) {
 	auto observeEvents = UpdateFlag::UsernameChanged | UpdateFlag::UserPhoneChanged | UpdateFlag::AboutChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	createControls();
 }
@@ -68,12 +69,11 @@ void InfoWidget::refreshMobileNumber() {
 			phoneText.text = App::phoneFromSharedContact(peerToUser(user->id));
 		}
 	}
-	setLabeledText(_mobileNumber, lang(lng_profile_mobile_number), phoneText, TextWithEntities(), lang(lng_profile_copy_phone));
+	setLabeledText(_mobileNumber, lang(lng_profile_mobile_number), phoneText, TextWithEntities(),
+	               lang(lng_profile_copy_phone));
 	if (auto text = _mobileNumber->entity()->textLabel()) {
 		text->setRichText(textcmdLink(1, phoneText.text));
-		text->setLink(1, MakeShared<LambdaClickHandler>([] {
-			Ui::show(Box<ChangePhoneBox>());
-		}));
+		text->setLink(1, MakeShared<LambdaClickHandler>([] { Ui::show(Box<ChangePhoneBox>()); }));
 	}
 }
 
@@ -86,7 +86,8 @@ void InfoWidget::refreshUsername() {
 		usernameText.text = '@' + self()->username;
 		copyText = lang(lng_context_copy_mention);
 	}
-	usernameText.entities.push_back(EntityInText(EntityInTextCustomUrl, 0, usernameText.text.size(), Messenger::Instance().createInternalLinkFull(self()->username)));
+	usernameText.entities.push_back(EntityInText(EntityInTextCustomUrl, 0, usernameText.text.size(),
+	                                             Messenger::Instance().createInternalLinkFull(self()->username)));
 	setLabeledText(_username, lang(lng_profile_username), usernameText, TextWithEntities(), copyText);
 	if (auto text = _username->entity()->textLabel()) {
 		text->setClickHandlerHook([](const ClickHandlerPtr &handler, Qt::MouseButton button) {
@@ -114,7 +115,9 @@ void InfoWidget::refreshBio() {
 	}
 }
 
-void InfoWidget::setLabeledText(object_ptr<LabeledWrap> &row, const QString &label, const TextWithEntities &textWithEntities, const TextWithEntities &shortTextWithEntities, const QString &copyText) {
+void InfoWidget::setLabeledText(object_ptr<LabeledWrap> &row, const QString &label,
+                                const TextWithEntities &textWithEntities, const TextWithEntities &shortTextWithEntities,
+                                const QString &copyText) {
 	auto nonEmptyText = !textWithEntities.text.isEmpty();
 	if (nonEmptyText) {
 		row->entity()->setLabeledText(label, textWithEntities, shortTextWithEntities, copyText);
@@ -122,11 +125,12 @@ void InfoWidget::setLabeledText(object_ptr<LabeledWrap> &row, const QString &lab
 	row->toggleAnimated(nonEmptyText);
 }
 
-InfoWidget::LabeledWidget::LabeledWidget(QWidget *parent, const style::FlatLabel &valueSt) : TWidget(parent)
-, _valueSt(valueSt) {
-}
+InfoWidget::LabeledWidget::LabeledWidget(QWidget *parent, const style::FlatLabel &valueSt)
+    : TWidget(parent)
+    , _valueSt(valueSt) {}
 
-void InfoWidget::LabeledWidget::setLabeledText(const QString &label, const TextWithEntities &textWithEntities, const TextWithEntities &shortTextWithEntities, const QString &copyText) {
+void InfoWidget::LabeledWidget::setLabeledText(const QString &label, const TextWithEntities &textWithEntities,
+                                               const TextWithEntities &shortTextWithEntities, const QString &copyText) {
 	_label.destroy();
 	_text.destroy();
 	_shortText.destroy();
@@ -147,7 +151,8 @@ Ui::FlatLabel *InfoWidget::LabeledWidget::shortTextLabel() const {
 	return _shortText;
 }
 
-void InfoWidget::LabeledWidget::setLabelText(object_ptr<Ui::FlatLabel> &text, const TextWithEntities &textWithEntities, const QString &copyText) {
+void InfoWidget::LabeledWidget::setLabelText(object_ptr<Ui::FlatLabel> &text, const TextWithEntities &textWithEntities,
+                                             const QString &copyText) {
 	text.destroy();
 	if (textWithEntities.text.isEmpty()) return;
 
@@ -216,7 +221,10 @@ int InfoWidget::LabeledWidget::resizeGetHeight(int newWidth) {
 			_text->show();
 		}
 	}
-	return st::settingsBlockOneLineTextPart.margin.top() + std::max(_label->height(), _text->height() - st::settingsBlockOneLineTextPart.margin.top() - st::settingsBlockOneLineTextPart.margin.bottom()) + st::settingsBlockOneLineTextPart.margin.bottom();
+	return st::settingsBlockOneLineTextPart.margin.top() +
+	       std::max(_label->height(), _text->height() - st::settingsBlockOneLineTextPart.margin.top() -
+	                                      st::settingsBlockOneLineTextPart.margin.bottom()) +
+	       st::settingsBlockOneLineTextPart.margin.bottom();
 }
 
 } // namespace Settings

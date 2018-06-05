@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <type_traits>
 #include "base/observer.h"
-#include "structs.h"
 #include "core/single_timer.h"
+#include "structs.h"
+#include <type_traits>
 
 class AuthSession;
 class History;
@@ -59,9 +59,7 @@ enum class ChangeType {
 
 namespace base {
 
-template <>
-struct custom_is_fast_copy_type<Window::Notifications::ChangeType> : public std::true_type {
-};
+template <> struct custom_is_fast_copy_type<Window::Notifications::ChangeType> : public std::true_type {};
 
 } // namespace base
 
@@ -100,37 +98,35 @@ private:
 
 	AuthSession *_authSession = nullptr;
 
-	QMap<History*, QMap<MsgId, TimeMs>> _whenMaps;
+	QMap<History *, QMap<MsgId, TimeMs>> _whenMaps;
 
 	struct Waiter {
 		Waiter(MsgId msg, TimeMs when, PeerData *notifyByFrom)
-			: msg(msg)
-			, when(when)
-			, notifyByFrom(notifyByFrom) {
-		}
+		    : msg(msg)
+		    , when(when)
+		    , notifyByFrom(notifyByFrom) {}
 		MsgId msg;
 		TimeMs when;
 		PeerData *notifyByFrom;
 	};
-	using Waiters = QMap<History*, Waiter>;
+	using Waiters = QMap<History *, Waiter>;
 	Waiters _waiters;
 	Waiters _settingWaiters;
 	SingleTimer _waitTimer;
 
-	QMap<History*, QMap<TimeMs, PeerData*>> _whenAlerts;
+	QMap<History *, QMap<TimeMs, PeerData *>> _whenAlerts;
 
 	std::unique_ptr<Manager> _manager;
 
 	base::Observable<ChangeType> _settingsChanged;
 
 	std::unique_ptr<Media::Audio::Track> _soundTrack;
-
 };
 
 class Manager {
 public:
-	Manager(System *system) : _system(system) {
-	}
+	Manager(System *system)
+	    : _system(system) {}
 
 	void showNotification(HistoryItem *item, int forwardedCount) {
 		doShowNotification(item, forwardedCount);
@@ -174,14 +170,11 @@ protected:
 	virtual void doClearAllFast() = 0;
 	virtual void doClearFromItem(HistoryItem *item) = 0;
 	virtual void doClearFromHistory(History *history) = 0;
-	virtual void onBeforeNotificationActivated(PeerId peerId, MsgId msgId) {
-	}
-	virtual void onAfterNotificationActivated(PeerId peerId, MsgId msgId) {
-	}
+	virtual void onBeforeNotificationActivated(PeerId peerId, MsgId msgId) {}
+	virtual void onAfterNotificationActivated(PeerId peerId, MsgId msgId) {}
 
 private:
 	System *_system = nullptr;
-
 };
 
 class NativeManager : public Manager {
@@ -194,12 +187,11 @@ protected:
 	void doClearAll() override {
 		doClearAllFast();
 	}
-	void doClearFromItem(HistoryItem *item) override {
-	}
+	void doClearFromItem(HistoryItem *item) override {}
 	void doShowNotification(HistoryItem *item, int forwardedCount) override;
 
-	virtual void doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle, const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) = 0;
-
+	virtual void doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle,
+	                                      const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) = 0;
 };
 
 } // namespace Notifications

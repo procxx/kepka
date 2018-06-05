@@ -49,12 +49,8 @@ constexpr auto kPointCount = 12;
 //
 
 void transformLoadingCross(double loading, std::array<QPointF, kPointCount> &points, int &paintPointsCount) {
-	auto moveTo = [](QPointF &point, QPointF &to, double ratio) {
-		point = point * (1. - ratio) + to * ratio;
-	};
-	auto moveFrom = [](QPointF &point, QPointF &from, double ratio) {
-		point = from * (1. - ratio) + point * ratio;
-	};
+	auto moveTo = [](QPointF &point, QPointF &to, double ratio) { point = point * (1. - ratio) + to * ratio; };
+	auto moveFrom = [](QPointF &point, QPointF &from, double ratio) { point = from * (1. - ratio) + point * ratio; };
 	auto paintPoints = [&points, &paintPointsCount](std::initializer_list<int> &&indices) {
 		auto index = 0;
 		for (auto paintIndex : indices) {
@@ -71,32 +67,32 @@ void transformLoadingCross(double loading, std::array<QPointF, kPointCount> &poi
 		auto ratio = (loading - 0.125) / 0.125;
 		moveTo(points[9], points[8], ratio);
 		moveTo(points[10], points[11], ratio);
-		paintPoints({ 0, 1, 2, 3, 4, 9, 10, 11 });
+		paintPoints({0, 1, 2, 3, 4, 9, 10, 11});
 	} else if (loading < 0.375) {
 		auto ratio = (loading - 0.25) / 0.125;
 		moveTo(points[0], points[11], ratio);
 		moveTo(points[1], points[2], ratio);
-		paintPoints({ 0, 1, 2, 3, 4, 8 });
+		paintPoints({0, 1, 2, 3, 4, 8});
 	} else if (loading < 0.5) {
 		auto ratio = (loading - 0.375) / 0.125;
 		moveTo(points[8], points[4], ratio);
 		moveTo(points[11], points[3], ratio);
-		paintPoints({ 3, 4, 8, 11 });
+		paintPoints({3, 4, 8, 11});
 	} else if (loading < 0.625) {
 		auto ratio = (loading - 0.5) / 0.125;
 		moveFrom(points[8], points[4], ratio);
 		moveFrom(points[11], points[3], ratio);
-		paintPoints({ 3, 4, 8, 11 });
+		paintPoints({3, 4, 8, 11});
 	} else if (loading < 0.75) {
 		auto ratio = (loading - 0.625) / 0.125;
 		moveFrom(points[6], points[5], ratio);
 		moveFrom(points[7], points[8], ratio);
-		paintPoints({ 3, 4, 5, 6, 7, 11 });
+		paintPoints({3, 4, 5, 6, 7, 11});
 	} else if (loading < 0.875) {
 		auto ratio = (loading - 0.75) / 0.125;
 		moveFrom(points[9], points[8], ratio);
 		moveFrom(points[10], points[11], ratio);
-		paintPoints({ 3, 4, 5, 6, 7, 8, 9, 10 });
+		paintPoints({3, 4, 5, 6, 7, 8, 9, 10});
 	} else {
 		auto ratio = (loading - 0.875) / 0.125;
 		moveFrom(points[0], points[11], ratio);
@@ -106,7 +102,8 @@ void transformLoadingCross(double loading, std::array<QPointF, kPointCount> &poi
 
 } // namespace
 
-void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::color color, int x, int y, int outerWidth, double shown, double loading) {
+void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::color color, int x, int y,
+                           int outerWidth, double shown, double loading) {
 	PainterHighQualityEnabler hq(p);
 
 	auto sqrt2 = sqrt(2.);
@@ -117,20 +114,20 @@ void CrossAnimation::paint(Painter &p, const style::CrossAnimation &st, style::c
 	auto deleteWidth = st.size - 2 * deleteSkip;
 	auto deleteHeight = st.size - 2 * deleteSkip;
 	auto deleteStroke = st.stroke / sqrt2;
-	std::array<QPointF, kPointCount> pathDelete = { {
-		{ deleteLeft, deleteTop + deleteStroke },
-		{ deleteLeft + deleteStroke, deleteTop },
-		{ deleteLeft + (deleteWidth / 2.), deleteTop + (deleteHeight / 2.) - deleteStroke },
-		{ deleteLeft + deleteWidth - deleteStroke, deleteTop },
-		{ deleteLeft + deleteWidth, deleteTop + deleteStroke },
-		{ deleteLeft + (deleteWidth / 2.) + deleteStroke, deleteTop + (deleteHeight / 2.) },
-		{ deleteLeft + deleteWidth, deleteTop + deleteHeight - deleteStroke },
-		{ deleteLeft + deleteWidth - deleteStroke, deleteTop + deleteHeight },
-		{ deleteLeft + (deleteWidth / 2.), deleteTop + (deleteHeight / 2.) + deleteStroke },
-		{ deleteLeft + deleteStroke, deleteTop + deleteHeight },
-		{ deleteLeft, deleteTop + deleteHeight - deleteStroke },
-		{ deleteLeft + (deleteWidth / 2.) - deleteStroke, deleteTop + (deleteHeight / 2.) },
-	} };
+	std::array<QPointF, kPointCount> pathDelete = {{
+	    {deleteLeft, deleteTop + deleteStroke},
+	    {deleteLeft + deleteStroke, deleteTop},
+	    {deleteLeft + (deleteWidth / 2.), deleteTop + (deleteHeight / 2.) - deleteStroke},
+	    {deleteLeft + deleteWidth - deleteStroke, deleteTop},
+	    {deleteLeft + deleteWidth, deleteTop + deleteStroke},
+	    {deleteLeft + (deleteWidth / 2.) + deleteStroke, deleteTop + (deleteHeight / 2.)},
+	    {deleteLeft + deleteWidth, deleteTop + deleteHeight - deleteStroke},
+	    {deleteLeft + deleteWidth - deleteStroke, deleteTop + deleteHeight},
+	    {deleteLeft + (deleteWidth / 2.), deleteTop + (deleteHeight / 2.) + deleteStroke},
+	    {deleteLeft + deleteStroke, deleteTop + deleteHeight},
+	    {deleteLeft, deleteTop + deleteHeight - deleteStroke},
+	    {deleteLeft + (deleteWidth / 2.) - deleteStroke, deleteTop + (deleteHeight / 2.)},
+	}};
 	auto pathDeleteSize = kPointCount;
 
 	auto loadingArcLength = 0;

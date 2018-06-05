@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <cstdint>
 #include "utils.h"
+#include <cstdint>
 
 #define BETA_VERSION_MACRO (0ULL)
 

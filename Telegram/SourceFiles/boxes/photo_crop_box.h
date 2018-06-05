@@ -26,8 +26,8 @@ class PhotoCropBox : public BoxContent {
 	Q_OBJECT
 
 public:
-	PhotoCropBox(QWidget*, const QImage &img, const PeerId &peer);
-	PhotoCropBox(QWidget*, const QImage &img, PeerData *peer);
+	PhotoCropBox(QWidget *, const QImage &img, const PeerId &peer);
+	PhotoCropBox(QWidget *, const QImage &img, PeerData *peer);
 
 	qint32 mouseState(QPoint p);
 
@@ -59,5 +59,4 @@ private:
 	QPixmap _thumb;
 	QImage _mask, _fade;
 	PeerId _peerId;
-
 };

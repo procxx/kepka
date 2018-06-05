@@ -31,7 +31,7 @@ struct ObservableListWrap {
 	~ObservableListWrap() {
 		CantUseObservables = true;
 	}
-	OrderedSet<ObservableCallHandlers*> list;
+	OrderedSet<ObservableCallHandlers *> list;
 };
 
 ObservableListWrap &PendingObservables() {

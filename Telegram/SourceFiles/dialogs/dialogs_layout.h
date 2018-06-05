@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
 #include "dialogs/dialogs_common.h"
+#include "ui/twidget.h"
 
 namespace Dialogs {
 
@@ -34,10 +34,11 @@ const style::icon *ChatTypeIcon(PeerData *peer, bool active, bool selected);
 
 class RowPainter {
 public:
-	static void paint(Painter &p, const Row *row, int fullWidth, bool active, bool selected, bool onlyBackground, TimeMs ms);
-	static void paint(Painter &p, const FakeRow *row, int fullWidth, bool active, bool selected, bool onlyBackground, TimeMs ms);
+	static void paint(Painter &p, const Row *row, int fullWidth, bool active, bool selected, bool onlyBackground,
+	                  TimeMs ms);
+	static void paint(Painter &p, const FakeRow *row, int fullWidth, bool active, bool selected, bool onlyBackground,
+	                  TimeMs ms);
 	static QRect sendActionAnimationRect(int animationWidth, int animationHeight, int fullWidth, bool textUpdated);
-
 };
 
 void paintImportantSwitch(Painter &p, Mode current, int fullWidth, bool selected, bool onlyBackground);
@@ -63,7 +64,8 @@ struct UnreadBadgeStyle {
 	UnreadBadgeSize sizeId;
 	style::font font;
 };
-void paintUnreadCount(Painter &p, const QString &text, int x, int y, const UnreadBadgeStyle &st, int *outUnreadWidth = nullptr);
+void paintUnreadCount(Painter &p, const QString &text, int x, int y, const UnreadBadgeStyle &st,
+                      int *outUnreadWidth = nullptr);
 
 void clearUnreadBadgesCache();
 

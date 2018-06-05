@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/themes/window_theme_editor_block.h"
 
+#include "boxes/edit_color_box.h"
+#include "facades.h"
+#include "lang/lang_keys.h"
 #include "styles/style_window.h"
 #include "ui/effects/ripple_animation.h"
-#include "boxes/edit_color_box.h"
-#include "lang/lang_keys.h"
-#include "facades.h"
 
 #include <QColor>
 #include <QString>
@@ -118,7 +118,7 @@ private:
 	QString _copyOf;
 	QColor _value;
 	QString _valueString;
-	Text _description = { st::windowMinWidth / 2 };
+	Text _description = {st::windowMinWidth / 2};
 
 	OrderedSet<QString> _searchWords;
 	OrderedSet<QChar> _searchStartChars;
@@ -127,12 +127,11 @@ private:
 	int _height = 0;
 
 	mutable std::unique_ptr<Ui::RippleAnimation> _ripple;
-
 };
 
 EditorBlock::Row::Row(const QString &name, const QString &copyOf, QColor value)
-: _name(name)
-, _copyOf(copyOf) {
+    : _name(name)
+    , _copyOf(copyOf) {
 	setValue(value);
 }
 
@@ -168,7 +167,8 @@ void EditorBlock::Row::fillValueString() {
 void EditorBlock::Row::fillSearchIndex() {
 	_searchWords.clear();
 	_searchStartChars.clear();
-	auto toIndex = _name + ' ' + _copyOf + ' ' + TextUtilities::RemoveAccents(_description.originalText()) + ' ' + _valueString;
+	auto toIndex =
+	    _name + ' ' + _copyOf + ' ' + TextUtilities::RemoveAccents(_description.originalText()) + ' ' + _valueString;
 	auto words = toIndex.toLower().split(SearchSplitter, QString::SkipEmptyParts);
 	for_const (auto &word, words) {
 		_searchWords.insert(word);
@@ -176,10 +176,11 @@ void EditorBlock::Row::fillSearchIndex() {
 	}
 }
 
-EditorBlock::EditorBlock(QWidget *parent, Type type, Context *context) : TWidget(parent)
-, _type(type)
-, _context(context)
-, _transparent(style::transparentPlaceholderBrush()) {
+EditorBlock::EditorBlock(QWidget *parent, Type type, Context *context)
+    : TWidget(parent)
+    , _type(type)
+    , _context(context)
+    , _transparent(style::transparentPlaceholderBrush()) {
 	setMouseTracking(true);
 	subscribe(_context->updated, [this] {
 		if (_mouseSelection) {
@@ -203,14 +204,13 @@ EditorBlock::EditorBlock(QWidget *parent, Type type, Context *context) : TWidget
 			row->setCopyOf(copyOf);
 			addToSearch(*row);
 
-			_context->changed.notify({ QStringList(name), value }, true);
+			_context->changed.notify({QStringList(name), value}, true);
 			_context->resized.notify();
-			_context->pending.notify({ name, copyOf, value }, true);
+			_context->pending.notify({name, copyOf, value}, true);
 		});
 	} else {
-		subscribe(_context->changed, [this](const Context::ChangeData &data) {
-			checkCopiesChanged(0, data.names, data.value);
-		});
+		subscribe(_context->changed,
+		          [this](const Context::ChangeData &data) { checkCopiesChanged(0, data.names, data.value); });
 	}
 }
 
@@ -235,7 +235,10 @@ bool EditorBlock::feedCopy(const QString &name, const QString &copyOf) {
 		}
 		addRow(name, copyOf, row->value());
 	} else {
-		LOG(("Theme Warning: Skipping value '%1: %2' (expected a color value in #rrggbb or #rrggbbaa or a previously defined key in the color scheme)").arg(name).arg(copyOf));
+		LOG(("Theme Warning: Skipping value '%1: %2' (expected a color value in #rrggbb or #rrggbbaa or a previously "
+		     "defined key in the color scheme)")
+		        .arg(name)
+		        .arg(copyOf));
 	}
 	return true;
 }
@@ -265,9 +268,7 @@ void EditorBlock::addToSearch(const Row &row) {
 	if (!query.isEmpty()) resetSearch();
 
 	auto index = findRowIndex(&row);
-	for_const (auto ch, row.searchStartChars()) {
-		_searchIndex[ch].insert(index);
-	}
+	for_const (auto ch, row.searchStartChars()) { _searchIndex[ch].insert(index); }
 
 	if (!query.isEmpty()) searchByQuery(query);
 }
@@ -310,12 +311,8 @@ void EditorBlock::activateRow(const Row &row) {
 	} else {
 		_editing = findRowIndex(&row);
 		if (auto box = Ui::show(Box<EditColorBox>(row.name(), row.value()))) {
-			box->setSaveCallback(base::lambda_guarded(this, [this](QColor value) {
-				saveEditing(value);
-			}));
-			box->setCancelCallback(base::lambda_guarded(this, [this] {
-				cancelEditing();
-			}));
+			box->setSaveCallback(base::lambda_guarded(this, [this](QColor value) { saveEditing(value); }));
+			box->setCancelCallback(base::lambda_guarded(this, [this] { cancelEditing(); }));
 			_context->box = box;
 			_context->name = row.name();
 			_context->updated.notify();
@@ -408,8 +405,7 @@ bool EditorBlock::feedDescription(const QString &name, const QString &descriptio
 	return false;
 }
 
-template <typename Callback>
-void EditorBlock::enumerateRows(Callback callback) {
+template <typename Callback> void EditorBlock::enumerateRows(Callback callback) {
 	if (isSearch()) {
 		for_const (auto index, _searchResults) {
 			if (!callback(_data[index])) {
@@ -425,8 +421,7 @@ void EditorBlock::enumerateRows(Callback callback) {
 	}
 }
 
-template <typename Callback>
-void EditorBlock::enumerateRows(Callback callback) const {
+template <typename Callback> void EditorBlock::enumerateRows(Callback callback) const {
 	if (isSearch()) {
 		for_const (auto index, _searchResults) {
 			if (!callback(_data[index])) {
@@ -442,8 +437,7 @@ void EditorBlock::enumerateRows(Callback callback) const {
 	}
 }
 
-template <typename Callback>
-void EditorBlock::enumerateRowsFrom(int top, Callback callback) {
+template <typename Callback> void EditorBlock::enumerateRowsFrom(int top, Callback callback) {
 	auto started = false;
 	auto index = 0;
 	enumerateRows([top, callback, &started, &index](Row &row) {
@@ -458,8 +452,7 @@ void EditorBlock::enumerateRowsFrom(int top, Callback callback) {
 	});
 }
 
-template <typename Callback>
-void EditorBlock::enumerateRowsFrom(int top, Callback callback) const {
+template <typename Callback> void EditorBlock::enumerateRowsFrom(int top, Callback callback) const {
 	auto started = false;
 	enumerateRows([top, callback, &started](const Row &row) {
 		if (!started) {
@@ -512,11 +505,12 @@ void EditorBlock::mouseReleaseEvent(QMouseEvent *e) {
 		if (_context->box) {
 			chooseRow();
 		} else if (_selected >= 0) {
-			App::CallDelayed(st::defaultRippleAnimation.hideDuration, this, [this, index = findRowIndex(&rowAtIndex(_selected))] {
-				if (index >= 0 && index < _data.size()) {
-					activateRow(_data[index]);
-				}
-			});
+			App::CallDelayed(st::defaultRippleAnimation.hideDuration, this,
+			                 [this, index = findRowIndex(&rowAtIndex(_selected))] {
+				                 if (index >= 0 && index < _data.size()) {
+					                 activateRow(_data[index]);
+				                 }
+			                 });
 		}
 	}
 }
@@ -538,7 +532,7 @@ void EditorBlock::saveEditing(QColor value) {
 
 		removeRow(name, false);
 
-		_context->appended.notify({ name, possibleCopyOf, color, description }, true);
+		_context->appended.notify({name, possibleCopyOf, color, description}, true);
 	} else if (_type == Type::Existing) {
 		removeFromSearch(row);
 
@@ -558,7 +552,7 @@ void EditorBlock::saveEditing(QColor value) {
 
 		if (valueChanged || copyOfChanged) {
 			checkCopiesChanged(_editing + 1, QStringList(name), value);
-			_context->pending.notify({ name, copyOf, value }, true);
+			_context->pending.notify({name, copyOf, value}, true);
 		}
 	}
 	cancelEditing();
@@ -575,7 +569,7 @@ void EditorBlock::checkCopiesChanged(int startIndex, QStringList names, QColor v
 		}
 	}
 	if (_type == Type::Existing) {
-		_context->changed.notify({ names, value }, true);
+		_context->changed.notify({names, value}, true);
 	}
 }
 
@@ -596,9 +590,8 @@ void EditorBlock::cancelEditing() {
 
 bool EditorBlock::checkCopyOf(int index, const QString &possibleCopyOf) {
 	auto copyOfIndex = findRowIndex(possibleCopyOf);
-	return (copyOfIndex >= 0
-		&& index > copyOfIndex
-		&& _data[copyOfIndex].value().toRgb() == _data[index].value().toRgb());
+	return (copyOfIndex >= 0 && index > copyOfIndex &&
+	        _data[copyOfIndex].value().toRgb() == _data[index].value().toRgb());
 }
 
 void EditorBlock::mouseMoveEvent(QMouseEvent *e) {
@@ -663,7 +656,8 @@ void EditorBlock::paintRow(Painter &p, int index, const Row &row, TimeMs ms) {
 		}
 	}
 
-	auto sample = QRect(width() - st::themeEditorMargin.right() - st::themeEditorSampleSize.width(), rowTop, st::themeEditorSampleSize.width(), st::themeEditorSampleSize.height());
+	auto sample = QRect(width() - st::themeEditorMargin.right() - st::themeEditorSampleSize.width(), rowTop,
+	                    st::themeEditorSampleSize.width(), st::themeEditorSampleSize.height());
 	Ui::Shadow::paint(p, sample, width(), st::defaultRoundShadow);
 	if (row.value().alpha() != 255) {
 		p.fillRect(myrtlrect(sample), _transparent);
@@ -675,12 +669,14 @@ void EditorBlock::paintRow(Painter &p, int index, const Row &row, TimeMs ms) {
 
 	p.setFont(st::themeEditorNameFont);
 	p.setPen(active ? st::dialogsNameFgActive : selected ? st::dialogsNameFgOver : st::dialogsNameFg);
-	p.drawTextLeft(st::themeEditorMargin.left(), rowTop, width(), st::themeEditorNameFont->elided(row.name(), nameWidth));
+	p.drawTextLeft(st::themeEditorMargin.left(), rowTop, width(),
+	               st::themeEditorNameFont->elided(row.name(), nameWidth));
 
 	if (!row.copyOf().isEmpty()) {
 		auto copyTop = rowTop + st::themeEditorNameFont->height;
 		p.setFont(st::themeEditorCopyNameFont);
-		p.drawTextLeft(st::themeEditorMargin.left(), copyTop, width(), st::themeEditorCopyNameFont->elided("= " + row.copyOf(), nameWidth));
+		p.drawTextLeft(st::themeEditorMargin.left(), copyTop, width(),
+		               st::themeEditorCopyNameFont->elided("= " + row.copyOf(), nameWidth));
 	}
 
 	if (!row.descriptionText().isEmpty()) {
@@ -729,9 +725,9 @@ void EditorBlock::addRowRipple(int index) {
 	auto ripple = row.ripple();
 	if (!ripple) {
 		auto mask = Ui::RippleAnimation::rectMask(QSize(width(), row.height()));
-		ripple = row.setRipple(std::make_unique<Ui::RippleAnimation>(st::defaultRippleAnimation, std::move(mask), [this, index = findRowIndex(&row)] {
-			updateRow(_data[index]);
-		}));
+		ripple = row.setRipple(
+		    std::make_unique<Ui::RippleAnimation>(st::defaultRippleAnimation, std::move(mask),
+		                                          [this, index = findRowIndex(&row)] { updateRow(_data[index]); }));
 	}
 	auto origin = mapFromGlobal(QCursor::pos()) - QPoint(0, row.top());
 	ripple->add(origin);
@@ -749,7 +745,7 @@ void EditorBlock::updateRow(const Row &row) {
 }
 
 void EditorBlock::addRow(const QString &name, const QString &copyOf, QColor value) {
-	_data.push_back({ name, copyOf, value });
+	_data.push_back({name, copyOf, value});
 	_indices.insert(name, _data.size() - 1);
 	addToSearch(_data.back());
 }
@@ -762,7 +758,8 @@ EditorBlock::Row &EditorBlock::rowAtIndex(int index) {
 }
 
 int EditorBlock::findRowIndex(const QString &name) const {
-	return _indices.value(name, -1);;
+	return _indices.value(name, -1);
+	;
 }
 
 EditorBlock::Row *EditorBlock::findRow(const QString &name) {

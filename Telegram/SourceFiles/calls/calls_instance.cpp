@@ -19,24 +19,24 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 
-#include <QJsonDocument>
+#include "calls/calls_instance.h"
 #include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
-#include "calls/calls_instance.h"
 
-#include "mtproto/connection.h"
-#include "messenger.h"
-#include "auth_session.h"
 #include "apiwrap.h"
-#include "lang/lang_keys.h"
+#include "auth_session.h"
 #include "boxes/confirm_box.h"
 #include "calls/calls_call.h"
 #include "calls/calls_panel.h"
+#include "lang/lang_keys.h"
 #include "media/media_audio_track.h"
+#include "messenger.h"
+#include "mtproto/connection.h"
 
-#include "boxes/rate_call_box.h"
 #include "app.h"
+#include "boxes/rate_call_box.h"
 
 namespace Calls {
 namespace {
@@ -47,7 +47,7 @@ constexpr auto kServerConfigUpdateTimeoutMs = 24 * 3600 * TimeMs(1000);
 
 Instance::Instance() = default;
 
-void Instance::startOutgoingCall(not_null<UserData*> user) {
+void Instance::startOutgoingCall(not_null<UserData *> user) {
 	if (alreadyInCall()) { // Already in a call.
 		_currentCallPanel->showAndActivate();
 		return;
@@ -61,15 +61,15 @@ void Instance::startOutgoingCall(not_null<UserData*> user) {
 	createCall(user, Call::Type::Outgoing);
 }
 
-void Instance::callFinished(not_null<Call*> call) {
+void Instance::callFinished(not_null<Call *> call) {
 	destroyCall(call);
 }
 
-void Instance::callFailed(not_null<Call*> call) {
+void Instance::callFailed(not_null<Call *> call) {
 	destroyCall(call);
 }
 
-void Instance::callRedial(not_null<Call*> call) {
+void Instance::callRedial(not_null<Call *> call) {
 	if (_currentCall.get() == call) {
 		refreshDhConfig();
 	}
@@ -103,7 +103,7 @@ void Instance::playSound(Sound sound) {
 	}
 }
 
-void Instance::destroyCall(not_null<Call*> call) {
+void Instance::destroyCall(not_null<Call *> call) {
 	if (_currentCall.get() == call) {
 		destroyCurrentPanel();
 		_currentCall.reset();
@@ -117,15 +117,16 @@ void Instance::destroyCall(not_null<Call*> call) {
 }
 
 void Instance::destroyCurrentPanel() {
-	_pendingPanels.erase(std::remove_if(_pendingPanels.begin(), _pendingPanels.end(), [](auto &&panel) {
-		return !panel;
-	}), _pendingPanels.end());
+	_pendingPanels.erase(
+	    std::remove_if(_pendingPanels.begin(), _pendingPanels.end(), [](auto &&panel) { return !panel; }),
+	    _pendingPanels.end());
 	_pendingPanels.push_back(_currentCallPanel.release());
 	_pendingPanels.back()->hideAndDestroy(); // Always queues the destruction.
 }
 
-void Instance::createCall(not_null<UserData*> user, Call::Type type) {
-	auto call = std::make_unique<Call>(getCallDelegate(), user, type);;
+void Instance::createCall(not_null<UserData *> user, Call::Type type) {
+	auto call = std::make_unique<Call>(getCallDelegate(), user, type);
+	;
 	if (_currentCall) {
 		_currentCallPanel->replaceCall(call.get());
 		std::swap(_currentCall, call);
@@ -141,49 +142,52 @@ void Instance::createCall(not_null<UserData*> user, Call::Type type) {
 
 void Instance::refreshDhConfig() {
 	Expects(_currentCall != nullptr);
-	request(MTPmessages_GetDhConfig(MTP_int(_dhConfig.version), MTP_int(Call::kRandomPowerSize))).done([this, call = base::make_weak_unique(_currentCall)](const MTPmessages_DhConfig &result) {
-		auto random = base::const_byte_span();
-		switch (result.type()) {
-		case mtpc_messages_dhConfig: {
-			auto &config = result.c_messages_dhConfig();
-			if (!MTP::IsPrimeAndGood(bytesFromMTP(config.vp), config.vg.v)) {
-				LOG(("API Error: bad p/g received in dhConfig."));
-				callFailed(call.get());
-				return;
-			}
-			_dhConfig.g = config.vg.v;
-			_dhConfig.p = byteVectorFromMTP(config.vp);
-			random = bytesFromMTP(config.vrandom);
-		} break;
+	request(MTPmessages_GetDhConfig(MTP_int(_dhConfig.version), MTP_int(Call::kRandomPowerSize)))
+	    .done([this, call = base::make_weak_unique(_currentCall)](const MTPmessages_DhConfig &result) {
+		    auto random = base::const_byte_span();
+		    switch (result.type()) {
+		    case mtpc_messages_dhConfig: {
+			    auto &config = result.c_messages_dhConfig();
+			    if (!MTP::IsPrimeAndGood(bytesFromMTP(config.vp), config.vg.v)) {
+				    LOG(("API Error: bad p/g received in dhConfig."));
+				    callFailed(call.get());
+				    return;
+			    }
+			    _dhConfig.g = config.vg.v;
+			    _dhConfig.p = byteVectorFromMTP(config.vp);
+			    random = bytesFromMTP(config.vrandom);
+		    } break;
 
-		case mtpc_messages_dhConfigNotModified: {
-			auto &config = result.c_messages_dhConfigNotModified();
-			random = bytesFromMTP(config.vrandom);
-			if (!_dhConfig.g || _dhConfig.p.empty()) {
-				LOG(("API Error: dhConfigNotModified on zero version."));
-				callFailed(call.get());
-				return;
-			}
-		} break;
+		    case mtpc_messages_dhConfigNotModified: {
+			    auto &config = result.c_messages_dhConfigNotModified();
+			    random = bytesFromMTP(config.vrandom);
+			    if (!_dhConfig.g || _dhConfig.p.empty()) {
+				    LOG(("API Error: dhConfigNotModified on zero version."));
+				    callFailed(call.get());
+				    return;
+			    }
+		    } break;
 
-		default: Unexpected("Type in messages.getDhConfig");
-		}
+		    default: Unexpected("Type in messages.getDhConfig");
+		    }
 
-		if (random.size() != Call::kRandomPowerSize) {
-			LOG(("API Error: dhConfig random bytes wrong size: %1").arg(random.size()));
-			callFailed(call.get());
-			return;
-		}
-		if (call) {
-			call->start(random);
-		}
-	}).fail([this, call = base::make_weak_unique(_currentCall)](const RPCError &error) {
-		if (!call) {
-			DEBUG_LOG(("API Warning: call was destroyed before got dhConfig."));
-			return;
-		}
-		callFailed(call.get());
-	}).send();
+		    if (random.size() != Call::kRandomPowerSize) {
+			    LOG(("API Error: dhConfig random bytes wrong size: %1").arg(random.size()));
+			    callFailed(call.get());
+			    return;
+		    }
+		    if (call) {
+			    call->start(random);
+		    }
+	    })
+	    .fail([this, call = base::make_weak_unique(_currentCall)](const RPCError &error) {
+		    if (!call) {
+			    DEBUG_LOG(("API Warning: call was destroyed before got dhConfig."));
+			    return;
+		    }
+		    callFailed(call.get());
+	    })
+	    .send();
 }
 
 void Instance::refreshServerConfig() {
@@ -193,67 +197,72 @@ void Instance::refreshServerConfig() {
 	if (_lastServerConfigUpdateTime && (getms(true) - _lastServerConfigUpdateTime) < kServerConfigUpdateTimeoutMs) {
 		return;
 	}
-	_serverConfigRequestId = request(MTPphone_GetCallConfig()).done([this](const MTPDataJSON &result) {
-		_serverConfigRequestId = 0;
-		_lastServerConfigUpdateTime = getms(true);
+	_serverConfigRequestId =
+	    request(MTPphone_GetCallConfig())
+	        .done([this](const MTPDataJSON &result) {
+		        _serverConfigRequestId = 0;
+		        _lastServerConfigUpdateTime = getms(true);
 
-		auto configUpdate = std::map<std::string, std::string>();
-		auto bytes = bytesFromMTP(result.c_dataJSON().vdata);
-		auto error = QJsonParseError { 0, QJsonParseError::NoError };
-		auto document = QJsonDocument::fromJson(QByteArray::fromRawData(reinterpret_cast<const char*>(bytes.data()), bytes.size()), &error);
-		if (error.error != QJsonParseError::NoError) {
-			LOG(("API Error: Failed to parse call config JSON, error: %1").arg(error.errorString()));
-			return;
-		} else if (!document.isObject()) {
-			LOG(("API Error: Not an object received in call config JSON."));
-			return;
-		}
+		        auto configUpdate = std::map<std::string, std::string>();
+		        auto bytes = bytesFromMTP(result.c_dataJSON().vdata);
+		        auto error = QJsonParseError{0, QJsonParseError::NoError};
+		        auto document = QJsonDocument::fromJson(
+		            QByteArray::fromRawData(reinterpret_cast<const char *>(bytes.data()), bytes.size()), &error);
+		        if (error.error != QJsonParseError::NoError) {
+			        LOG(("API Error: Failed to parse call config JSON, error: %1").arg(error.errorString()));
+			        return;
+		        } else if (!document.isObject()) {
+			        LOG(("API Error: Not an object received in call config JSON."));
+			        return;
+		        }
 
-		auto parseValue = [](QJsonValueRef data) -> std::string {
-			switch (data.type()) {
-			case QJsonValue::String: return data.toString().toStdString();
-			case QJsonValue::Double: return QString::number(data.toDouble(), 'f').toStdString();
-			case QJsonValue::Bool: return data.toBool() ? "true" : "false";
-			case QJsonValue::Null: {
-				LOG(("API Warning: null field in call config JSON."));
-			} return "null";
-			case QJsonValue::Undefined: {
-				LOG(("API Warning: undefined field in call config JSON."));
-			} return "undefined";
-			case QJsonValue::Object:
-			case QJsonValue::Array: {
-				LOG(("API Warning: complex field in call config JSON."));
-				QJsonDocument serializer;
-				if (data.isArray()) {
-					serializer.setArray(data.toArray());
-				} else {
-					serializer.setObject(data.toObject());
-				}
-				auto byteArray = serializer.toJson(QJsonDocument::Compact);
-				return std::string(byteArray.constData(), byteArray.size());
-			} break;
-			}
-			Unexpected("Type in Json parse.");
-		};
+		        auto parseValue = [](QJsonValueRef data) -> std::string {
+			        switch (data.type()) {
+			        case QJsonValue::String: return data.toString().toStdString();
+			        case QJsonValue::Double: return QString::number(data.toDouble(), 'f').toStdString();
+			        case QJsonValue::Bool: return data.toBool() ? "true" : "false";
+			        case QJsonValue::Null: {
+				        LOG(("API Warning: null field in call config JSON."));
+			        }
+				        return "null";
+			        case QJsonValue::Undefined: {
+				        LOG(("API Warning: undefined field in call config JSON."));
+			        }
+				        return "undefined";
+			        case QJsonValue::Object:
+			        case QJsonValue::Array: {
+				        LOG(("API Warning: complex field in call config JSON."));
+				        QJsonDocument serializer;
+				        if (data.isArray()) {
+					        serializer.setArray(data.toArray());
+				        } else {
+					        serializer.setObject(data.toObject());
+				        }
+				        auto byteArray = serializer.toJson(QJsonDocument::Compact);
+				        return std::string(byteArray.constData(), byteArray.size());
+			        } break;
+			        }
+			        Unexpected("Type in Json parse.");
+		        };
 
-		auto object = document.object();
-		for (auto i = object.begin(), e = object.end(); i != e; ++i) {
-			auto key = i.key().toStdString();
-			auto value = parseValue(i.value());
-			configUpdate[key] = value;
-		}
+		        auto object = document.object();
+		        for (auto i = object.begin(), e = object.end(); i != e; ++i) {
+			        auto key = i.key().toStdString();
+			        auto value = parseValue(i.value());
+			        configUpdate[key] = value;
+		        }
 
-		UpdateConfig(configUpdate);
-	}).fail([this](const RPCError &error) {
-		_serverConfigRequestId = 0;
-	}).send();
+		        UpdateConfig(configUpdate);
+	        })
+	        .fail([this](const RPCError &error) { _serverConfigRequestId = 0; })
+	        .send();
 }
 
-void Instance::handleUpdate(const MTPDupdatePhoneCall& update) {
+void Instance::handleUpdate(const MTPDupdatePhoneCall &update) {
 	handleCallUpdate(update.vphone_call);
 }
 
-void Instance::showInfoPanel(not_null<Call*> call) {
+void Instance::showInfoPanel(not_null<Call *> call) {
 	if (_currentCall.get() == call) {
 		_currentCallPanel->showAndActivate();
 	}
@@ -281,7 +290,9 @@ void Instance::handleCallUpdate(const MTPPhoneCall &call) {
 			LOG(("API Error: Self found in phoneCallRequested."));
 		}
 		if (alreadyInCall() || !user || user->isSelf()) {
-			request(MTPphone_DiscardCall(MTP_inputPhoneCall(phoneCall.vid, phoneCall.vaccess_hash), MTP_int(0), MTP_phoneCallDiscardReasonBusy(), MTP_long(0))).send();
+			request(MTPphone_DiscardCall(MTP_inputPhoneCall(phoneCall.vid, phoneCall.vaccess_hash), MTP_int(0),
+			                             MTP_phoneCallDiscardReasonBusy(), MTP_long(0)))
+			    .send();
 		} else if (phoneCall.vdate.v + (Global::CallRingTimeoutMs() / 1000) < unixtime()) {
 			LOG(("Ignoring too old call."));
 		} else {

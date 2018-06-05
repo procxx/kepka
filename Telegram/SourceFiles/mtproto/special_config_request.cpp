@@ -20,21 +20,22 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/special_config_request.h"
 
-#include "mtproto/rsa_public_key.h"
-#include "mtproto/dc_options.h"
-#include "mtproto/auth_key.h"
-#include "base/openssl_help.h"
-#include <openssl/aes.h>
 #include "app.h"
+#include "base/openssl_help.h"
+#include "mtproto/auth_key.h"
+#include "mtproto/dc_options.h"
+#include "mtproto/rsa_public_key.h"
+#include <openssl/aes.h>
 
 #include <QJsonArray>
-#include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonObject>
 
 namespace MTP {
 namespace {
 
-constexpr auto kPublicKey = str_const("\
+constexpr auto kPublicKey = str_const(
+    "\
 -----BEGIN RSA PUBLIC KEY-----\n\
 MIIBCgKCAQEAyr+18Rex2ohtVy8sroGPBwXD3DOoKCSpjDqYoXgCqB7ioln4eDCF\n\
 fOBUlfXUEvM/fnKCpF46VkAftlb4VuPDeQSS/ZxZYEGqHaywlroVnXHIjgqoxiAd\n\
@@ -47,7 +48,8 @@ Y1hZCxdv6cs5UnW9+PWvS+WIbkh+GaWYxwIDAQAB\n\
 
 } // namespace
 
-SpecialConfigRequest::SpecialConfigRequest(base::lambda<void(DcId dcId, const std::string &ip, int port)> callback) : _callback(std::move(callback)) {
+SpecialConfigRequest::SpecialConfigRequest(base::lambda<void(DcId dcId, const std::string &ip, int port)> callback)
+    : _callback(std::move(callback)) {
 	App::setProxySettings(_manager);
 
 	performAppRequest();
@@ -98,7 +100,7 @@ void SpecialConfigRequest::dnsFinished() {
 	// Read and store to "entries" map all the data bytes from this response:
 	// { .., "Answer": [ { .., "data": "bytes1", .. }, { .., "data": "bytes2", .. } ], .. }
 	auto entries = QMap<int, QString>();
-	auto error = QJsonParseError { 0, QJsonParseError::NoError };
+	auto error = QJsonParseError{0, QJsonParseError::NoError};
 	auto document = QJsonDocument::fromJson(result, &error);
 	if (error.error != QJsonParseError::NoError) {
 		LOG(("Config Error: Failed to parse dns response JSON, error: %1").arg(error.errorString()));
@@ -137,10 +139,8 @@ void SpecialConfigRequest::dnsFinished() {
 bool SpecialConfigRequest::decryptSimpleConfig(const QByteArray &bytes) {
 	auto cleanBytes = bytes;
 	auto removeFrom = std::remove_if(cleanBytes.begin(), cleanBytes.end(), [](char ch) {
-		auto isGoodBase64 = (ch == '+') || (ch == '=') || (ch == '/')
-			|| (ch >= 'a' && ch <= 'z')
-			|| (ch >= 'A' && ch <= 'Z')
-			|| (ch >= '0' && ch <= '9');
+		auto isGoodBase64 = (ch == '+') || (ch == '=') || (ch == '/') || (ch >= 'a' && ch <= 'z') ||
+		                    (ch >= 'A' && ch <= 'Z') || (ch >= '0' && ch <= '9');
 		return !isGoodBase64;
 	});
 	if (removeFrom != cleanBytes.end()) {
@@ -169,8 +169,11 @@ bool SpecialConfigRequest::decryptSimpleConfig(const QByteArray &bytes) {
 	base::byte_array<kAesIvecSize> aesivec;
 	base::copy_bytes(aesivec, decryptedBytes.subspan(CTRState::KeySize - CTRState::IvecSize, CTRState::IvecSize));
 	AES_KEY aeskey;
-	AES_set_decrypt_key(reinterpret_cast<const unsigned char*>(decryptedBytes.data()), kAesKeySize * CHAR_BIT, &aeskey);
-	AES_cbc_encrypt(reinterpret_cast<const unsigned char*>(aesEncryptedBytes.data()), reinterpret_cast<unsigned char*>(aesEncryptedBytes.data()), aesEncryptedBytes.size(), &aeskey, reinterpret_cast<unsigned char*>(aesivec.data()), AES_DECRYPT);
+	AES_set_decrypt_key(reinterpret_cast<const unsigned char *>(decryptedBytes.data()), kAesKeySize * CHAR_BIT,
+	                    &aeskey);
+	AES_cbc_encrypt(reinterpret_cast<const unsigned char *>(aesEncryptedBytes.data()),
+	                reinterpret_cast<unsigned char *>(aesEncryptedBytes.data()), aesEncryptedBytes.size(), &aeskey,
+	                reinterpret_cast<unsigned char *>(aesivec.data()), AES_DECRYPT);
 
 	constexpr auto kDigestSize = 16;
 	auto dataSize = aesEncryptedBytes.size() - kDigestSize;
@@ -199,7 +202,9 @@ bool SpecialConfigRequest::decryptSimpleConfig(const QByteArray &bytes) {
 		return false;
 	}
 	if ((end - from) * sizeof(mtpPrime) != (dataSize - realLength)) {
-		LOG(("Config Error: Bad read length %1, should be %2.").arg((end - from) * sizeof(mtpPrime)).arg(dataSize - realLength));
+		LOG(("Config Error: Bad read length %1, should be %2.")
+		        .arg((end - from) * sizeof(mtpPrime))
+		        .arg(dataSize - realLength));
 		return false;
 	}
 	return true;
@@ -213,7 +218,10 @@ void SpecialConfigRequest::handleResponse(const QByteArray &bytes) {
 	auto &config = _simpleConfig.c_help_configSimple();
 	auto now = unixtime();
 	if (now < config.vdate.v || now > config.vexpires.v) {
-		LOG(("Config Error: Bad date frame for simple config: %1-%2, our time is %3.").arg(config.vdate.v).arg(config.vexpires.v).arg(now));
+		LOG(("Config Error: Bad date frame for simple config: %1-%2, our time is %3.")
+		        .arg(config.vdate.v)
+		        .arg(config.vexpires.v)
+		        .arg(now));
 		return;
 	}
 	if (config.vip_port_list.v.empty()) {
@@ -223,8 +231,9 @@ void SpecialConfigRequest::handleResponse(const QByteArray &bytes) {
 	for (auto &entry : config.vip_port_list.v) {
 		Assert(entry.type() == mtpc_ipPort);
 		auto &ipPort = entry.c_ipPort();
-		auto ip = *reinterpret_cast<const quint32*>(&ipPort.vipv4.v);
-		auto ipString = qsl("%1.%2.%3.%4").arg((ip >> 24) & 0xFF).arg((ip >> 16) & 0xFF).arg((ip >> 8) & 0xFF).arg(ip & 0xFF);
+		auto ip = *reinterpret_cast<const quint32 *>(&ipPort.vipv4.v);
+		auto ipString =
+		    qsl("%1.%2.%3.%4").arg((ip >> 24) & 0xFF).arg((ip >> 16) & 0xFF).arg((ip >> 8) & 0xFF).arg(ip & 0xFF);
 		_callback(config.vdc_id.v, ipString.toStdString(), ipPort.vport.v);
 	}
 }

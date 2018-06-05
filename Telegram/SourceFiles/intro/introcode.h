@@ -47,7 +47,6 @@ protected:
 
 private:
 	int _digitsCountMax = 5;
-
 };
 
 class CodeWidget : public Widget::Step {
@@ -107,7 +106,6 @@ private:
 	object_ptr<Ui::FlatLabel> _callLabel;
 
 	object_ptr<QTimer> _checkRequest;
-
 };
 
 } // namespace Intro

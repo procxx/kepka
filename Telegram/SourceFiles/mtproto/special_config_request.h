@@ -22,9 +22,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/lambda.h"
 
+#include "mtproto/mtp_instance.h"
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include "mtproto/mtp_instance.h"
 
 namespace MTP {
 
@@ -51,7 +51,6 @@ private:
 
 	std::unique_ptr<DcOptions> _localOptions;
 	std::unique_ptr<Instance> _localInstance;
-
 };
 
 } // namespace MTP

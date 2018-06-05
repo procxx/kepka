@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/abstract_button.h"
 #include "base/observer.h"
+#include "ui/abstract_button.h"
 #include "ui/animation.h"
 
 namespace Notify {
@@ -56,7 +56,6 @@ private:
 	bool _waiting = false;
 	QPixmap _userpic, _oldUserpic;
 	Animation _a_appearance;
-
 };
 
 } // namespace Profile

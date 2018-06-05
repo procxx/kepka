@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/weak_unique_ptr.h"
 #include "base/timer.h"
+#include "base/weak_unique_ptr.h"
 #include "ui/twidget.h"
 
 namespace Ui {
@@ -66,7 +66,6 @@ private:
 	object_ptr<Ui::IconButton> _hangup;
 
 	base::Timer _updateDurationTimer;
-
 };
 
 } // namespace Calls

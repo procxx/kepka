@@ -21,16 +21,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "auth_session.h"
 
 #include "apiwrap.h"
+#include "calls/calls_instance.h"
+#include "chat_helpers/tabbed_selector.h"
 #include "messenger.h"
+#include "platform/platform_specific.h"
 #include "storage/file_download.h"
 #include "storage/file_upload.h"
 #include "storage/localstorage.h"
 #include "storage/serialize_common.h"
 #include "window/notifications_manager.h"
-#include "platform/platform_specific.h"
-#include "calls/calls_instance.h"
 #include "window/section_widget.h"
-#include "chat_helpers/tabbed_selector.h"
 
 #include "app.h" // App::user
 
@@ -41,10 +41,9 @@ constexpr auto kAutoLockTimeoutLateMs = TimeMs(3000);
 } // namespace
 
 AuthSessionData::Variables::Variables()
-: selectorTab(ChatHelpers::SelectorTab::Emoji)
-, floatPlayerColumn(Window::Column::Second)
-, floatPlayerCorner(RectPart::TopRight) {
-}
+    : selectorTab(ChatHelpers::SelectorTab::Emoji)
+    , floatPlayerColumn(Window::Column::Second)
+    , floatPlayerCorner(RectPart::TopRight) {}
 
 QByteArray AuthSessionData::serialize() const {
 	auto size = sizeof(qint32) * 8;
@@ -170,17 +169,15 @@ AuthSession &Auth() {
 }
 
 AuthSession::AuthSession(UserId userId)
-: _userId(userId)
-, _autoLockTimer([this] { checkAutoLock(); })
-, _api(std::make_unique<ApiWrap>(this))
-, _calls(std::make_unique<Calls::Instance>())
-, _downloader(std::make_unique<Storage::Downloader>())
-, _uploader(std::make_unique<Storage::Uploader>())
-, _notifications(std::make_unique<Window::Notifications::System>(this)) {
+    : _userId(userId)
+    , _autoLockTimer([this] { checkAutoLock(); })
+    , _api(std::make_unique<ApiWrap>(this))
+    , _calls(std::make_unique<Calls::Instance>())
+    , _downloader(std::make_unique<Storage::Downloader>())
+    , _uploader(std::make_unique<Storage::Uploader>())
+    , _notifications(std::make_unique<Window::Notifications::System>(this)) {
 	Expects(_userId != 0);
-	_saveDataTimer.setCallback([this] {
-		Local::writeUserSettings();
-	});
+	_saveDataTimer.setCallback([this] { Local::writeUserSettings(); });
 	subscribe(Messenger::Instance().passcodedChanged(), [this] {
 		_shouldLockAt = 0;
 		notifications().updateAll();

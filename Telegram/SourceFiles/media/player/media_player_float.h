@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/observer.h"
-#include "ui/twidget.h"
 #include "media/media_clip_reader.h"
+#include "ui/twidget.h"
 
 class HistoryItem;
 
@@ -35,7 +35,8 @@ namespace Player {
 
 class Float : public TWidget, private base::Subscriber {
 public:
-	Float(QWidget *parent, HistoryItem *item, base::lambda<void(bool visible)> toggleCallback, base::lambda<void(bool closed)> draggedCallback);
+	Float(QWidget *parent, HistoryItem *item, base::lambda<void(bool visible)> toggleCallback,
+	      base::lambda<void(bool closed)> draggedCallback);
 
 	HistoryItem *item() const {
 		return _item;
@@ -65,7 +66,7 @@ public:
 			finishDrag(false);
 		}
 	}
-	void ui_repaintHistoryItem(not_null<const HistoryItem*> item) {
+	void ui_repaintHistoryItem(not_null<const HistoryItem *> item) {
 		if (item == _item) {
 			repaintItem();
 		}
@@ -104,7 +105,6 @@ private:
 	base::lambda<void(bool closed)> _draggedCallback;
 
 	std::unique_ptr<Clip::Playback> _roundPlayback;
-
 };
 
 } // namespace Player

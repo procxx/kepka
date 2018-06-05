@@ -81,14 +81,13 @@ private:
 	Animation _a_opacity;
 
 	QTimer _hideTimer;
-
 };
 
 class EmojiListWidget : public TabbedSelector::Inner {
 	Q_OBJECT
 
 public:
-	EmojiListWidget(QWidget *parent, not_null<Window::Controller*> controller);
+	EmojiListWidget(QWidget *parent, not_null<Window::Controller *> controller);
 
 	using Section = Ui::Emoji::Section;
 
@@ -136,8 +135,7 @@ private:
 		int rowsTop = 0;
 		int rowsBottom = 0;
 	};
-	template <typename Callback>
-	bool enumerateSections(Callback callback) const;
+	template <typename Callback> bool enumerateSections(Callback callback) const;
 	SectionInfo sectionInfo(int section) const;
 	SectionInfo sectionInfoByOffset(int yOffset) const;
 
@@ -164,7 +162,6 @@ private:
 
 	object_ptr<EmojiColorPicker> _picker;
 	QTimer _showPickerTimer;
-
 };
 
 } // namespace ChatHelpers

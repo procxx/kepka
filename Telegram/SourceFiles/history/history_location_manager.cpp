@@ -18,15 +18,15 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "history/history_location_manager.h"
+#include <QBuffer>
 #include <QDesktopServices>
+#include <QImageReader>
 #include <QJsonDocument>
 #include <QJsonParseError>
-#include <QBuffer>
-#include <QImageReader>
-#include "history/history_location_manager.h"
 
-#include "mainwidget.h"
 #include "lang/lang_keys.h"
+#include "mainwidget.h"
 #include "platform/platform_specific.h"
 
 namespace {
@@ -81,11 +81,13 @@ void LocationManager::init() {
 	manager = new QNetworkAccessManager();
 	App::setProxySettings(*manager);
 
-	connect(manager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator*)), this, SLOT(onFailed(QNetworkReply*)));
+	connect(manager, SIGNAL(authenticationRequired(QNetworkReply *, QAuthenticator *)), this,
+	        SLOT(onFailed(QNetworkReply *)));
 #ifndef OS_MAC_OLD
-	connect(manager, SIGNAL(sslErrors(QNetworkReply*, const QList<QSslError>&)), this, SLOT(onFailed(QNetworkReply*)));
+	connect(manager, SIGNAL(sslErrors(QNetworkReply *, const QList<QSslError> &)), this,
+	        SLOT(onFailed(QNetworkReply *)));
 #endif // OS_MAC_OLD
-	connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
+	connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(onFinished(QNetworkReply *)));
 
 	if (notLoadedPlaceholder) {
 		delete notLoadedPlaceholder->v();
@@ -130,7 +132,13 @@ void LocationManager::getData(LocationData *data) {
 		h = convertScale(h);
 	}
 	auto coords = data->coords.latAsString() + ',' + data->coords.lonAsString();
-	QString url = qsl("https://maps.googleapis.com/maps/api/staticmap?center=") + coords + qsl("&zoom=%1&size=%2x%3&maptype=roadmap&scale=%4&markers=color:red|size:big|").arg(zoom).arg(w).arg(h).arg(scale) + coords + qsl("&sensor=false");
+	QString url = qsl("https://maps.googleapis.com/maps/api/staticmap?center=") + coords +
+	              qsl("&zoom=%1&size=%2x%3&maptype=roadmap&scale=%4&markers=color:red|size:big|")
+	                  .arg(zoom)
+	                  .arg(w)
+	                  .arg(h)
+	                  .arg(scale) +
+	              coords + qsl("&sensor=false");
 	QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
 	imageLoadings[reply] = data;
 }
@@ -145,13 +153,14 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 		if (status == 301 || status == 302) {
 			QString loc = reply->header(QNetworkRequest::LocationHeader).toString();
 			if (!loc.isEmpty()) {
-				QMap<QNetworkReply*, LocationData*>::iterator i = dataLoadings.find(reply);
+				QMap<QNetworkReply *, LocationData *>::iterator i = dataLoadings.find(reply);
 				if (i != dataLoadings.cend()) {
 					LocationData *d = i.value();
 					if (serverRedirects.constFind(d) == serverRedirects.cend()) {
 						serverRedirects.insert(d, 1);
 					} else if (++serverRedirects[d] > kMaxHttpRedirects) {
-						DEBUG_LOG(("Network Error: Too many HTTP redirects in onFinished() for image link: %1").arg(loc));
+						DEBUG_LOG(
+						    ("Network Error: Too many HTTP redirects in onFinished() for image link: %1").arg(loc));
 						return onFailed(reply);
 					}
 					dataLoadings.erase(i);
@@ -162,7 +171,8 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 					if (serverRedirects.constFind(d) == serverRedirects.cend()) {
 						serverRedirects.insert(d, 1);
 					} else if (++serverRedirects[d] > kMaxHttpRedirects) {
-						DEBUG_LOG(("Network Error: Too many HTTP redirects in onFinished() for image link: %1").arg(loc));
+						DEBUG_LOG(
+						    ("Network Error: Too many HTTP redirects in onFinished() for image link: %1").arg(loc));
 						return onFailed(reply);
 					}
 					imageLoadings.erase(i);
@@ -178,7 +188,7 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 	}
 
 	LocationData *d = 0;
-	QMap<QNetworkReply*, LocationData*>::iterator i = dataLoadings.find(reply);
+	QMap<QNetworkReply *, LocationData *>::iterator i = dataLoadings.find(reply);
 	if (i != dataLoadings.cend()) {
 		d = i.value();
 		dataLoadings.erase(i);
@@ -224,7 +234,7 @@ void LocationManager::onFailed(QNetworkReply *reply) {
 	if (!manager) return;
 
 	LocationData *d = 0;
-	QMap<QNetworkReply*, LocationData*>::iterator i = dataLoadings.find(reply);
+	QMap<QNetworkReply *, LocationData *>::iterator i = dataLoadings.find(reply);
 	if (i != dataLoadings.cend()) {
 		d = i.value();
 		dataLoadings.erase(i);
@@ -235,7 +245,10 @@ void LocationManager::onFailed(QNetworkReply *reply) {
 			imageLoadings.erase(i);
 		}
 	}
-	DEBUG_LOG(("Network Error: failed to get data for image link %1,%2 error %3").arg(d ? d->coords.latAsString() : QString()).arg(d ? d->coords.lonAsString() : QString()).arg(reply->errorString()));
+	DEBUG_LOG(("Network Error: failed to get data for image link %1,%2 error %3")
+	              .arg(d ? d->coords.latAsString() : QString())
+	              .arg(d ? d->coords.lonAsString() : QString())
+	              .arg(reply->errorString()));
 	if (d) {
 		failed(d);
 	}

@@ -20,20 +20,20 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "layout.h"
 #include "core/click_handler_types.h"
-#include "ui/effects/radial_animation.h"
+#include "layout.h"
 #include "styles/style_overview.h"
+#include "ui/effects/radial_animation.h"
 
 namespace Overview {
 namespace Layout {
 
 class PaintContext : public PaintContextBase {
 public:
-	PaintContext(TimeMs ms, bool selecting) : PaintContextBase(ms, selecting), isAfterDate(false) {
-	}
+	PaintContext(TimeMs ms, bool selecting)
+	    : PaintContextBase(ms, selecting)
+	    , isAfterDate(false) {}
 	bool isAfterDate;
-
 };
 
 class ItemBase;
@@ -59,15 +59,13 @@ public:
 		return item ? item->id : 0;
 	}
 
-	virtual void invalidateCache() {
-	}
-
+	virtual void invalidateCache() {}
 };
 
 class ItemBase : public AbstractItem {
 public:
-	ItemBase(HistoryItem *parent) : _parent(parent) {
-	}
+	ItemBase(HistoryItem *parent)
+	    : _parent(parent) {}
 
 	ItemBase *toMediaItem() override {
 		return this;
@@ -84,13 +82,12 @@ public:
 
 protected:
 	HistoryItem *_parent;
-
 };
 
 class RadialProgressItem : public ItemBase {
 public:
-	RadialProgressItem(HistoryItem *parent) : ItemBase(parent) {
-	}
+	RadialProgressItem(HistoryItem *parent)
+	    : ItemBase(parent) {}
 	RadialProgressItem(const RadialProgressItem &other) = delete;
 
 	void clickHandlerActiveChanged(const ClickHandlerPtr &action, bool active) override;
@@ -107,7 +104,8 @@ protected:
 		} else {
 			save.reset(new DocumentSaveClickHandler(document));
 		}
-		setLinks(MakeShared<DocumentOpenClickHandler>(document), std::move(save), MakeShared<DocumentCancelClickHandler>(document));
+		setLinks(MakeShared<DocumentOpenClickHandler>(document), std::move(save),
+		         MakeShared<DocumentCancelClickHandler>(document));
 	}
 
 	void step_radial(TimeMs ms, bool timer);
@@ -131,7 +129,6 @@ protected:
 
 	std::unique_ptr<Ui::RadialAnimation> _radial;
 	Animation _a_iconOver;
-
 };
 
 class StatusText {
@@ -155,7 +152,6 @@ private:
 	// 0x7FFFFFF2 will contain status for failed to download / upload file
 	int _size = 0;
 	QString _text;
-
 };
 
 struct Info : public RuntimeComponent<Info> {
@@ -172,7 +168,6 @@ public:
 private:
 	QDate _date;
 	QString _text;
-
 };
 
 class PhotoVideoCheckbox;
@@ -201,7 +196,6 @@ private:
 
 	QPixmap _pix;
 	bool _goodLoaded = false;
-
 };
 
 class Video : public RadialProgressItem {
@@ -245,7 +239,6 @@ private:
 	bool _thumbLoaded = false;
 
 	void updateStatusText();
-
 };
 
 class Voice : public RadialProgressItem {
@@ -282,7 +275,6 @@ private:
 
 	void updateName();
 	bool updateStatusText();
-
 };
 
 class Document : public RadialProgressItem {
@@ -327,10 +319,10 @@ private:
 	qint32 _thumbw, _colorIndex;
 
 	bool withThumb() const {
-		return !_data->song() && !_data->thumb->isNull() && _data->thumb->width() && _data->thumb->height() && !documentIsExecutableName(_data->name);
+		return !_data->song() && !_data->thumb->isNull() && _data->thumb->width() && _data->thumb->height() &&
+		       !documentIsExecutableName(_data->name);
 	}
 	bool updateStatusText();
-
 };
 
 class Link : public ItemBase {
@@ -350,18 +342,17 @@ private:
 	WebPageData *_page = nullptr;
 	int _pixw = 0;
 	int _pixh = 0;
-	Text _text = { int(st::msgMinWidth) };
+	Text _text = {int(st::msgMinWidth)};
 
 	struct LinkEntry {
-		LinkEntry() : width(0) {
-		}
+		LinkEntry()
+		    : width(0) {}
 		LinkEntry(const QString &url, const QString &text);
 		QString text;
 		qint32 width;
 		TextClickHandlerPtr lnk;
 	};
 	QVector<LinkEntry> _links;
-
 };
 
 } // namespace Layout

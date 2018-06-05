@@ -30,7 +30,7 @@ class LocalStorageBox : public BoxContent {
 	Q_OBJECT
 
 public:
-	LocalStorageBox(QWidget*);
+	LocalStorageBox(QWidget *);
 
 private slots:
 	void onTempDirCleared(int task);
@@ -58,5 +58,4 @@ private:
 
 	int _imagesCount = -1;
 	int _audiosCount = -1;
-
 };

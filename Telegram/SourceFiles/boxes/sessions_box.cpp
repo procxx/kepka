@@ -20,19 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/sessions_box.h"
 
+#include "boxes/confirm_box.h"
+#include "countries.h"
 #include "lang/lang_keys.h"
-#include "storage/localstorage.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
-#include "countries.h"
-#include "boxes/confirm_box.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/scroll_area.h"
-#include "styles/style_boxes.h"
 
-SessionsBox::SessionsBox(QWidget*)
-: _shortPollTimer(this) {
-}
+SessionsBox::SessionsBox(QWidget *)
+    : _shortPollTimer(this) {}
 
 void SessionsBox::prepare() {
 	setTitle(langFactory(lng_sessions_other_header));
@@ -85,7 +84,8 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 	setLoading(false);
 
 	auto availCurrent = st::boxWideWidth - st::sessionPadding.left() - st::sessionTerminateSkip;
-	auto availOther = availCurrent - st::sessionTerminate.iconPosition.x();// -st::sessionTerminate.width - st::sessionTerminateSkip;
+	auto availOther =
+	    availCurrent - st::sessionTerminate.iconPosition.x(); // -st::sessionTerminate.width - st::sessionTerminateSkip;
 
 	_list.clear();
 	if (result.type() != mtpc_account_authorizations) {
@@ -104,24 +104,26 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 		Data data;
 		data.hash = d.vhash.v;
 
-		QString appName, appVer = qs(d.vapp_version), systemVer = qs(d.vsystem_version), deviceModel = qs(d.vdevice_model);
+		QString appName, appVer = qs(d.vapp_version), systemVer = qs(d.vsystem_version),
+		                 deviceModel = qs(d.vdevice_model);
 		if (d.vapi_id.v == 2040 || d.vapi_id.v == 17349) {
 			appName = str_const_toString(AppName);
-		//	if (systemVer == qstr("windows")) {
-		//		deviceModel = qsl("Windows");
-		//	} else if (systemVer == qstr("os x")) {
-		//		deviceModel = qsl("OS X");
-		//	} else if (systemVer == qstr("linux")) {
-		//		deviceModel = qsl("Linux");
-		//	}
+			//	if (systemVer == qstr("windows")) {
+			//		deviceModel = qsl("Windows");
+			//	} else if (systemVer == qstr("os x")) {
+			//		deviceModel = qsl("OS X");
+			//	} else if (systemVer == qstr("linux")) {
+			//		deviceModel = qsl("Linux");
+			//	}
 			if (appVer == QString::number(appVer.toInt())) {
 				qint32 ver = appVer.toInt();
-				appVer = QString("%1.%2").arg(ver / 1000000).arg((ver % 1000000) / 1000) + ((ver % 1000) ? ('.' + QString::number(ver % 1000)) : QString());
-			//} else {
-			//	appVer = QString();
+				appVer = QString("%1.%2").arg(ver / 1000000).arg((ver % 1000000) / 1000) +
+				         ((ver % 1000) ? ('.' + QString::number(ver % 1000)) : QString());
+				//} else {
+				//	appVer = QString();
 			}
 		} else {
-			appName = qs(d.vapp_name);// +qsl(" for ") + qs(d.vplatform);
+			appName = qs(d.vapp_name); // +qsl(" for ") + qs(d.vplatform);
 			if (appVer.indexOf('(') >= 0) appVer = appVer.mid(appVer.indexOf('('));
 		}
 		data.name = appName;
@@ -129,13 +131,14 @@ void SessionsBox::gotAuthorizations(const MTPaccount_Authorizations &result) {
 		data.nameWidth = st::sessionNameFont->width(data.name);
 
 		QString country = qs(d.vcountry), platform = qs(d.vplatform);
-		//CountriesByISO2::const_iterator j = countries.constFind(country);
-		//if (j != countries.cend()) country = QString::fromUtf8(j.value()->name);
+		// CountriesByISO2::const_iterator j = countries.constFind(country);
+		// if (j != countries.cend()) country = QString::fromUtf8(j.value()->name);
 
 		MTPint active = d.vdate_active.v ? d.vdate_active : d.vdate_created;
 		data.activeTime = active.v;
 
-		data.info = qs(d.vdevice_model) + qstr(", ") + (platform.isEmpty() ? QString() : platform + ' ') + qs(d.vsystem_version);
+		data.info = qs(d.vdevice_model) + qstr(", ") + (platform.isEmpty() ? QString() : platform + ' ') +
+		            qs(d.vsystem_version);
 		data.ip = qs(d.vip) + (country.isEmpty() ? QString() : QString::fromUtf8(" \xe2\x80\x93 ") + country);
 		if (!data.hash || (d.vflags.v & 1)) {
 			data.active = lang(lng_sessions_header);
@@ -213,7 +216,7 @@ void SessionsBox::onShortPollAuthorizations() {
 
 void SessionsBox::onCheckNewAuthorization() {
 	onShortPollAuthorizations();
-//	_shortPollTimer.start(1000);
+	//	_shortPollTimer.start(1000);
 }
 
 void SessionsBox::onAllTerminated() {
@@ -228,10 +231,11 @@ void SessionsBox::onTerminateAll() {
 	setLoading(true);
 }
 
-SessionsBox::Inner::Inner(QWidget *parent, SessionsBox::List *list, SessionsBox::Data *current) : TWidget(parent)
-, _list(list)
-, _current(current)
-, _terminateAll(this, lang(lng_sessions_terminate_all), st::sessionTerminateAllButton) {
+SessionsBox::Inner::Inner(QWidget *parent, SessionsBox::List *list, SessionsBox::Data *current)
+    : TWidget(parent)
+    , _list(list)
+    , _current(current)
+    , _terminateAll(this, lang(lng_sessions_terminate_all), st::sessionTerminateAllButton) {
 	connect(_terminateAll, SIGNAL(clicked()), this, SLOT(onTerminateAll()));
 	_terminateAll->hide();
 	setAttribute(Qt::WA_OpaquePaintEvent);
@@ -242,7 +246,10 @@ void SessionsBox::Inner::paintEvent(QPaintEvent *e) {
 	Painter p(this);
 
 	p.fillRect(r, st::boxBg);
-	qint32 x = st::sessionPadding.left(), xact = st::sessionTerminateSkip + st::sessionTerminate.iconPosition.x();// st::sessionTerminateSkip + st::sessionTerminate.width + st::sessionTerminateSkip;
+	qint32 x = st::sessionPadding.left(),
+	       xact = st::sessionTerminateSkip +
+	              st::sessionTerminate.iconPosition
+	                  .x(); // st::sessionTerminateSkip + st::sessionTerminate.width + st::sessionTerminateSkip;
 	qint32 w = width();
 
 	if (_current->active.isEmpty() && _list->isEmpty()) {
@@ -264,15 +271,19 @@ void SessionsBox::Inner::paintEvent(QPaintEvent *e) {
 
 		p.setFont(st::sessionInfoFont);
 		p.setPen(st::boxTextFg);
-		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height, w, _current->info, _current->infoWidth);
+		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height, w, _current->info,
+		               _current->infoWidth);
 		p.setPen(st::sessionInfoFg);
-		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height + st::sessionInfoFont->height, w, _current->ip, _current->ipWidth);
+		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height + st::sessionInfoFont->height, w,
+		               _current->ip, _current->ipWidth);
 	}
 	p.translate(0, st::sessionCurrentHeight - st::sessionCurrentPadding.top());
 	if (_list->isEmpty()) {
 		p.setFont(st::sessionInfoFont);
 		p.setPen(st::sessionInfoFg);
-		p.drawText(QRect(st::sessionPadding.left(), 0, width() - st::sessionPadding.left() - st::sessionPadding.right(), st::noContactsHeight), lang(lng_sessions_other_desc), style::al_topleft);
+		p.drawText(QRect(st::sessionPadding.left(), 0, width() - st::sessionPadding.left() - st::sessionPadding.right(),
+		                 st::noContactsHeight),
+		           lang(lng_sessions_other_desc), style::al_topleft);
 		return;
 	}
 
@@ -296,7 +307,8 @@ void SessionsBox::Inner::paintEvent(QPaintEvent *e) {
 		p.setPen(st::boxTextFg);
 		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height, w, auth.info, auth.infoWidth);
 		p.setPen(st::sessionInfoFg);
-		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height + st::sessionInfoFont->height, w, auth.ip, auth.ipWidth);
+		p.drawTextLeft(x, st::sessionPadding.top() + st::sessionNameFont->height + st::sessionInfoFont->height, w,
+		               auth.ip, auth.ipWidth);
 
 		p.translate(0, st::sessionHeight);
 	}
@@ -306,32 +318,45 @@ void SessionsBox::Inner::onTerminate() {
 	for (auto i = _terminateButtons.begin(), e = _terminateButtons.end(); i != e; ++i) {
 		if (i.value()->isOver()) {
 			if (_terminateBox) _terminateBox->deleteLater();
-			_terminateBox = Ui::show(Box<ConfirmBox>(lang(lng_settings_reset_one_sure), lang(lng_settings_reset_button), st::attentionBoxButton, base::lambda_guarded(this, [this, terminating = i.key()] {
-				if (_terminateBox) {
-					_terminateBox->closeBox();
-					_terminateBox = nullptr;
-				}
-				MTP::send(MTPaccount_ResetAuthorization(MTP_long(terminating)), rpcDone(&Inner::terminateDone, terminating), rpcFail(&Inner::terminateFail, terminating));
-				auto i = _terminateButtons.find(terminating);
-				if (i != _terminateButtons.cend()) {
-					i.value()->clearState();
-					i.value()->hide();
-				}
-			})), KeepOtherLayers);
+			_terminateBox =
+			    Ui::show(Box<ConfirmBox>(
+			                 lang(lng_settings_reset_one_sure), lang(lng_settings_reset_button), st::attentionBoxButton,
+			                 base::lambda_guarded(this,
+			                                      [this, terminating = i.key()] {
+				                                      if (_terminateBox) {
+					                                      _terminateBox->closeBox();
+					                                      _terminateBox = nullptr;
+				                                      }
+				                                      MTP::send(MTPaccount_ResetAuthorization(MTP_long(terminating)),
+				                                                rpcDone(&Inner::terminateDone, terminating),
+				                                                rpcFail(&Inner::terminateFail, terminating));
+				                                      auto i = _terminateButtons.find(terminating);
+				                                      if (i != _terminateButtons.cend()) {
+					                                      i.value()->clearState();
+					                                      i.value()->hide();
+				                                      }
+			                                      })),
+			             KeepOtherLayers);
 		}
 	}
 }
 
 void SessionsBox::Inner::onTerminateAll() {
 	if (_terminateBox) _terminateBox->deleteLater();
-	_terminateBox = Ui::show(Box<ConfirmBox>(lang(lng_settings_reset_sure), lang(lng_settings_reset_button), st::attentionBoxButton, base::lambda_guarded(this, [this] {
-		if (_terminateBox) {
-			_terminateBox->closeBox();
-			_terminateBox = nullptr;
-		}
-		MTP::send(MTPauth_ResetAuthorizations(), rpcDone(&Inner::terminateAllDone), rpcFail(&Inner::terminateAllFail));
-		emit terminateAll();
-	})), KeepOtherLayers);
+	_terminateBox =
+	    Ui::show(Box<ConfirmBox>(lang(lng_settings_reset_sure), lang(lng_settings_reset_button), st::attentionBoxButton,
+	                             base::lambda_guarded(this,
+	                                                  [this] {
+		                                                  if (_terminateBox) {
+			                                                  _terminateBox->closeBox();
+			                                                  _terminateBox = nullptr;
+		                                                  }
+		                                                  MTP::send(MTPauth_ResetAuthorizations(),
+		                                                            rpcDone(&Inner::terminateAllDone),
+		                                                            rpcFail(&Inner::terminateAllFail));
+		                                                  emit terminateAll();
+	                                                  })),
+	             KeepOtherLayers);
 }
 
 void SessionsBox::Inner::terminateDone(quint64 hash, const MTPBool &result) {
@@ -367,7 +392,8 @@ bool SessionsBox::Inner::terminateAllFail(const RPCError &error) {
 }
 
 void SessionsBox::Inner::resizeEvent(QResizeEvent *e) {
-	_terminateAll->moveToLeft(st::sessionPadding.left(), st::sessionCurrentPadding.top() + st::sessionHeight + st::sessionCurrentPadding.bottom());
+	_terminateAll->moveToLeft(st::sessionPadding.left(),
+	                          st::sessionCurrentPadding.top() + st::sessionHeight + st::sessionCurrentPadding.bottom());
 }
 
 void SessionsBox::Inner::listUpdated() {
@@ -385,7 +411,8 @@ void SessionsBox::Inner::listUpdated() {
 			j = _terminateButtons.insert(_list->at(i).hash, new Ui::IconButton(this, st::sessionTerminate));
 			connect(j.value(), SIGNAL(clicked()), this, SLOT(onTerminate()));
 		}
-		j.value()->moveToRight(st::sessionTerminateSkip, st::sessionCurrentHeight + i * st::sessionHeight + st::sessionTerminateTop, width());
+		j.value()->moveToRight(st::sessionTerminateSkip,
+		                       st::sessionCurrentHeight + i * st::sessionHeight + st::sessionTerminateTop, width());
 		j.value()->show();
 	}
 	for (TerminateButtons::iterator i = _terminateButtons.begin(); i != _terminateButtons.cend();) {
@@ -396,6 +423,7 @@ void SessionsBox::Inner::listUpdated() {
 			i = _terminateButtons.erase(i);
 		}
 	}
-	resize(width(), _list->isEmpty() ? (st::sessionCurrentHeight + st::noContactsHeight) : (st::sessionCurrentHeight + _list->size() * st::sessionHeight));
+	resize(width(), _list->isEmpty() ? (st::sessionCurrentHeight + st::noContactsHeight) :
+	                                   (st::sessionCurrentHeight + _list->size() * st::sessionHeight));
 	update();
 }

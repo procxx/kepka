@@ -49,7 +49,6 @@ private:
 	friend ReplacementWords operator+(const ReplacementWords &a, const ReplacementWords &b);
 
 	QMap<QString, int> wordsWithCounts_;
-
 };
 
 ReplacementWords::ReplacementWords(const QString &string) {
@@ -102,7 +101,7 @@ bool AddReplacement(Replaces &result, const Id &id, const QString &replacement, 
 	auto replace = Replace();
 	replace.id = id;
 	replace.replacement = replacement;
-	replace.words = (ReplacementWords(replacement)).result();// + ReplacementWords(name)).result();
+	replace.words = (ReplacementWords(replacement)).result(); // + ReplacementWords(name)).result();
 	if (replace.words.isEmpty()) {
 		logReplacesError(result.filename) << "Child '" << replacement.toStdString() << "' has no words.";
 		return false;
@@ -122,9 +121,7 @@ QString ComposeString(const std::initializer_list<QChar> &chars) {
 
 const auto NotSupported = ([] {
 	auto result = QSet<QString>();
-	auto insert = [&result](auto... args) {
-		result.insert(ComposeString({ args... }));
-	};
+	auto insert = [&result](auto... args) { result.insert(ComposeString({args...})); };
 	insert(0x0023, 0xFE0F); // :pound_symbol:
 	insert(0x002A, 0xFE0F); // :asterisk_symbol:
 	for (auto i = 0; i != 10; ++i) {
@@ -138,9 +135,12 @@ const auto NotSupported = ([] {
 	}
 	insert(0xD83C, 0xDDFA, 0xD83C, 0xDDF3); // :united_nations:
 
-	insert(0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC65, 0xDB40, 0xDC6E, 0xDB40, 0xDC67, 0xDB40, 0xDC7F); // :england:
-	insert(0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC73, 0xDB40, 0xDC63, 0xDB40, 0xDC74, 0xDB40, 0xDC7F); // :scotland:
-	insert(0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC77, 0xDB40, 0xDC6C, 0xDB40, 0xDC73, 0xDB40, 0xDC7F); // :wales:
+	insert(0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC65, 0xDB40, 0xDC6E, 0xDB40, 0xDC67, 0xDB40,
+	       0xDC7F); // :england:
+	insert(0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC73, 0xDB40, 0xDC63, 0xDB40, 0xDC74, 0xDB40,
+	       0xDC7F); // :scotland:
+	insert(0xD83C, 0xDFF4, 0xDB40, 0xDC67, 0xDB40, 0xDC62, 0xDB40, 0xDC77, 0xDB40, 0xDC6C, 0xDB40, 0xDC73, 0xDB40,
+	       0xDC7F); // :wales:
 
 	insert(0xD83D, 0xDEF7); // :sled:
 	insert(0xD83D, 0xDEF8); // :flying_saucer:
@@ -237,27 +237,28 @@ const auto ConvertMap = ([] {
 		auto code = ComposeString(from);
 		result.insert(code, code + added);
 	};
-	auto maleModifier = ComposeString({ 0x200D, 0x2642, 0xFE0F });
-	auto femaleModifier = ComposeString({ 0x200D, 0x2640, 0xFE0F });
-	insertWithAdd({ 0xD83E, 0xDD26 }, maleModifier);
-	insertWithAdd({ 0xD83E, 0xDD37 }, femaleModifier);
-	insertWithAdd({ 0xD83E, 0xDD38 }, maleModifier);
-	insertWithAdd({ 0xD83E, 0xDD39 }, maleModifier);
-	insertWithAdd({ 0xD83E, 0xDD3C }, maleModifier);
-	insertWithAdd({ 0xD83E, 0xDD3D }, maleModifier);
-	insertWithAdd({ 0xD83E, 0xDD3E }, femaleModifier);
+	auto maleModifier = ComposeString({0x200D, 0x2642, 0xFE0F});
+	auto femaleModifier = ComposeString({0x200D, 0x2640, 0xFE0F});
+	insertWithAdd({0xD83E, 0xDD26}, maleModifier);
+	insertWithAdd({0xD83E, 0xDD37}, femaleModifier);
+	insertWithAdd({0xD83E, 0xDD38}, maleModifier);
+	insertWithAdd({0xD83E, 0xDD39}, maleModifier);
+	insertWithAdd({0xD83E, 0xDD3C}, maleModifier);
+	insertWithAdd({0xD83E, 0xDD3D}, maleModifier);
+	insertWithAdd({0xD83E, 0xDD3E}, femaleModifier);
 
 	// :kiss_woman_man:
-	insert({ 0xD83D, 0xDC69, 0x200D, 0x2764, 0xFE0F, 0x200D, 0xD83D, 0xDC8B, 0x200D, 0xD83D, 0xDC68 }, { 0xD83D, 0xDC8F });
+	insert({0xD83D, 0xDC69, 0x200D, 0x2764, 0xFE0F, 0x200D, 0xD83D, 0xDC8B, 0x200D, 0xD83D, 0xDC68}, {0xD83D, 0xDC8F});
 
 	// :family_man_woman_boy:
-	insert({ 0xD83D, 0xDC68, 0x200D, 0xD83D, 0xDC69, 0x200D, 0xD83D, 0xDC66 }, { 0xD83D, 0xDC6A });
+	insert({0xD83D, 0xDC68, 0x200D, 0xD83D, 0xDC69, 0x200D, 0xD83D, 0xDC66}, {0xD83D, 0xDC6A});
 
 	// :couple_with_heart_woman_man:
-	insert({ 0xD83D, 0xDC69, 0x200D, 0x2764, 0xFE0F, 0x200D, 0xD83D, 0xDC68 }, { 0xD83D, 0xDC91 });
+	insert({0xD83D, 0xDC69, 0x200D, 0x2764, 0xFE0F, 0x200D, 0xD83D, 0xDC68}, {0xD83D, 0xDC91});
 
 	auto insertFlag = [insert](char ch1, char ch2, char ch3, char ch4) {
-		insert({ 0xD83C, 0xDDE6 + (ch1 - 'a'), 0xD83C, 0xDDe6 + (ch2 - 'a') }, { 0xD83C, 0xDDE6 + (ch3 - 'a'), 0xD83C, 0xDDe6 + (ch4 - 'a') });
+		insert({0xD83C, 0xDDE6 + (ch1 - 'a'), 0xD83C, 0xDDe6 + (ch2 - 'a')},
+		       {0xD83C, 0xDDE6 + (ch3 - 'a'), 0xD83C, 0xDDe6 + (ch4 - 'a')});
 	};
 	insertFlag('a', 'c', 's', 'h');
 	insertFlag('b', 'v', 'n', 'o');
@@ -299,7 +300,8 @@ Replaces PrepareReplaces(const QString &filename) {
 	auto error = QJsonParseError();
 	auto document = QJsonDocument::fromJson(content, &error);
 	if (error.error != QJsonParseError::NoError) {
-		logReplacesError(filename) << "Could not parse data (" << int(error.error) << "): " << error.errorString().toStdString();
+		logReplacesError(filename) << "Could not parse data (" << int(error.error)
+		                           << "): " << error.errorString().toStdString();
 		return result;
 	}
 	if (!document.isObject()) {
@@ -318,7 +320,8 @@ Replaces PrepareReplaces(const QString &filename) {
 		auto getString = [filename, childKey, &child, &failed](const QString &key) {
 			auto it = child.constFind(key);
 			if (it == child.constEnd() || !(*it).isString()) {
-				logReplacesError(filename) << "Child '" << childKey.toStdString() << "' field not found: " << key.toStdString();
+				logReplacesError(filename)
+				    << "Child '" << childKey.toStdString() << "' field not found: " << key.toStdString();
 				failed = true;
 				return QString();
 			}
@@ -335,12 +338,14 @@ Replaces PrepareReplaces(const QString &filename) {
 			return Replaces(filename);
 		}
 		if (!RegExpCode.match(replacement).hasMatch()) {
-			logReplacesError(filename) << "Child '" << childKey.toStdString() << "' alpha_code invalid: " << replacement.toStdString();
+			logReplacesError(filename) << "Child '" << childKey.toStdString()
+			                           << "' alpha_code invalid: " << replacement.toStdString();
 			return Replaces(filename);
 		}
 		for (auto &alias : aliases) {
 			if (!RegExpCode.match(alias).hasMatch()) {
-				logReplacesError(filename) << "Child '" << childKey.toStdString() << "' alias invalid: " << alias.toStdString();
+				logReplacesError(filename)
+				    << "Child '" << childKey.toStdString() << "' alias invalid: " << alias.toStdString();
 				return Replaces(filename);
 			}
 		}
@@ -349,13 +354,15 @@ Replaces PrepareReplaces(const QString &filename) {
 			auto ok = true;
 			auto utf32 = idPart.toInt(&ok, 0x10);
 			if (!ok || !RegExpHex.match(idPart).hasMatch()) {
-				logReplacesError(filename) << "Child '" << childKey.toStdString() << "' output part invalid: " << idPart.toStdString();
+				logReplacesError(filename)
+				    << "Child '" << childKey.toStdString() << "' output part invalid: " << idPart.toStdString();
 				return Replaces(filename);
 			}
 			if (utf32 >= 0 && utf32 < 0x10000) {
 				auto ch = QChar(ushort(utf32));
 				if (ch.isLowSurrogate() || ch.isHighSurrogate()) {
-					logReplacesError(filename) << "Child '" << childKey.toStdString() << "' output part invalid: " << idPart.toStdString();
+					logReplacesError(filename)
+					    << "Child '" << childKey.toStdString() << "' output part invalid: " << idPart.toStdString();
 					return Replaces(filename);
 				}
 				id.append(ch);
@@ -365,7 +372,8 @@ Replaces PrepareReplaces(const QString &filename) {
 				id.append(QChar(ushort(hi)));
 				id.append(QChar(ushort(lo)));
 			} else {
-				logReplacesError(filename) << "Child '" << childKey.toStdString() << "' output part invalid: " << idPart.toStdString();
+				logReplacesError(filename)
+				    << "Child '" << childKey.toStdString() << "' output part invalid: " << idPart.toStdString();
 				return Replaces(filename);
 			}
 		}
@@ -382,13 +390,13 @@ Replaces PrepareReplaces(const QString &filename) {
 			}
 		}
 	}
-	if (!AddReplacement(result, ComposeString({ 0xD83D, 0xDC4D }), ":like:", "thumbs up")) {
+	if (!AddReplacement(result, ComposeString({0xD83D, 0xDC4D}), ":like:", "thumbs up")) {
 		return Replaces(filename);
 	}
-	if (!AddReplacement(result, ComposeString({ 0xD83D, 0xDC4E }), ":dislike:", "thumbs down")) {
+	if (!AddReplacement(result, ComposeString({0xD83D, 0xDC4E}), ":dislike:", "thumbs down")) {
 		return Replaces(filename);
 	}
-	if (!AddReplacement(result, ComposeString({ 0xD83E, 0xDD14 }), ":hmm:", "thinking")) {
+	if (!AddReplacement(result, ComposeString({0xD83E, 0xDD14}), ":hmm:", "thinking")) {
 		return Replaces(filename);
 	}
 	return result;
@@ -397,9 +405,7 @@ Replaces PrepareReplaces(const QString &filename) {
 bool CheckAndConvertReplaces(Replaces &replaces, const Data &data) {
 	auto result = Replaces(replaces.filename);
 	auto sorted = QMap<Id, Replace>();
-	auto findId = [&data](const Id &id) {
-		return data.map.find(id) != data.map.cend();
-	};
+	auto findId = [&data](const Id &id) { return data.map.find(id) != data.map.cend(); };
 	auto findAndSort = [findId, &data, &sorted](Id id, const Replace &replace) {
 		if (!findId(id)) {
 			id.replace(QChar(0xFE0F), QString());
@@ -419,8 +425,8 @@ bool CheckAndConvertReplaces(Replaces &replaces, const Data &data) {
 
 	// Find all replaces in data.map, adjust id if necessary.
 	// Store all replaces in sorted map to find them fast afterwards.
-	auto maleModifier = ComposeString({ 0x200D, 0x2642, 0xFE0F });
-	auto femaleModifier = ComposeString({ 0x200D, 0x2640, 0xFE0F });
+	auto maleModifier = ComposeString({0x200D, 0x2642, 0xFE0F});
+	auto femaleModifier = ComposeString({0x200D, 0x2640, 0xFE0F});
 	for (auto &replace : replaces.list) {
 		if (findAndSort(replace.id, replace)) {
 			continue;
@@ -437,7 +443,8 @@ bool CheckAndConvertReplaces(Replaces &replaces, const Data &data) {
 			}
 		} else if (findId(replace.id + maleModifier)) {
 			if (findId(replace.id + femaleModifier)) {
-				logReplacesError(replaces.filename) << "Replace '" << replace.replacement.toStdString() << "' ambiguous.";
+				logReplacesError(replaces.filename)
+				    << "Replace '" << replace.replacement.toStdString() << "' ambiguous.";
 				return false;
 			} else {
 				findAndSort(replace.id + maleModifier, replace);

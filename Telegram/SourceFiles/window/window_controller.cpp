@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/window_controller.h"
 
-#include "window/main_window.h"
-#include "mainwidget.h"
-#include "styles/style_window.h"
-#include "styles/style_dialogs.h"
-#include "boxes/calendar_box.h"
-#include "auth_session.h"
 #include "apiwrap.h"
+#include "auth_session.h"
+#include "boxes/calendar_box.h"
+#include "mainwidget.h"
+#include "styles/style_dialogs.h"
+#include "styles/style_window.h"
+#include "window/main_window.h"
 
 namespace Window {
 
@@ -111,7 +111,7 @@ Controller::ColumnLayout Controller::computeColumnLayout() const {
 		accumulate_max(dialogsWidth, st::dialogsWidthMin);
 		chatWidth = bodyWidth - dialogsWidth;
 	}
-	return { bodyWidth, dialogsWidth, chatWidth, layout };
+	return {bodyWidth, dialogsWidth, chatWidth, layout};
 }
 
 bool Controller::canProvideChatWidth(int requestedWidth) const {
@@ -136,7 +136,7 @@ void Controller::provideChatWidth(int requestedWidth) {
 	}
 }
 
-void Controller::showJumpToDate(not_null<PeerData*> peer, QDate requestedDate) {
+void Controller::showJumpToDate(not_null<PeerData *> peer, QDate requestedDate) {
 	Expects(peer != nullptr);
 	auto currentPeerDate = [peer] {
 		if (auto history = App::historyLoaded(peer)) {
@@ -177,7 +177,8 @@ void Controller::showJumpToDate(not_null<PeerData*> peer, QDate requestedDate) {
 	};
 	auto highlighted = requestedDate.isNull() ? currentPeerDate() : requestedDate;
 	auto month = highlighted;
-	auto box = Box<CalendarBox>(month, highlighted, [this, peer](const QDate &date) { Auth().api().jumpToDate(peer, date); });
+	auto box =
+	    Box<CalendarBox>(month, highlighted, [this, peer](const QDate &date) { Auth().api().jumpToDate(peer, date); });
 	box->setMinDate(minPeerDate());
 	box->setMaxDate(maxPeerDate());
 	Ui::show(std::move(box));

@@ -26,20 +26,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace codegen {
 namespace numbers {
-namespace {
-
-} // namespace
+namespace {} // namespace
 
 Generator::Generator(const Rules &rules, const QString &destBasePath, const common::ProjectInfo &project)
-: rules_(rules)
-, basePath_(destBasePath)
-, project_(project) {
-}
+    : rules_(rules)
+    , basePath_(destBasePath)
+    , project_(project) {}
 
 bool Generator::writeHeader() {
 	header_ = std::make_unique<common::CppFile>(basePath_ + ".h", project_);
 
-    header_->include("QString", true);
+	header_->include("QString", true);
 	header_->stream() << "QVector<int> phoneNumberParse(const QString &number);\n";
 
 	return header_->finalize();
@@ -48,7 +45,7 @@ bool Generator::writeHeader() {
 bool Generator::writeSource() {
 	source_ = std::make_unique<common::CppFile>(basePath_ + ".cpp", project_);
 
-    source_->include("QVector", true);
+	source_->include("QVector", true);
 	source_->stream() << "\
 QVector<int> phoneNumberParse(const QString &number) {\n\
 	QVector<int> result;\n\
@@ -74,19 +71,26 @@ QVector<int> phoneNumberParse(const QString &number) {\n\
 		} else {
 			bool onlyFirstCheck = true;
 			while (already.size() < k.size()) {
-				if (!onlyFirstCheck) source_->stream() << QString("\t").repeated(1 + already.size()) << "if (len > " << already.size() << ") switch (number.at(" << already.size() << ").unicode()) {\n";
-				source_->stream() << QString("\t").repeated(1 + already.size()) << "case '" << k.at(already.size()).toLatin1() << "':\n";
+				if (!onlyFirstCheck)
+					source_->stream() << QString("\t").repeated(1 + already.size()) << "if (len > " << already.size()
+					                  << ") switch (number.at(" << already.size() << ").unicode()) {\n";
+				source_->stream() << QString("\t").repeated(1 + already.size()) << "case '"
+				                  << k.at(already.size()).toLatin1() << "':\n";
 				already.push_back(k.at(already.size()));
 				onlyFirstCheck = false;
 			}
 		}
 		if (i.value().isEmpty()) {
-			source_->stream() << QString("\t").repeated(1 + already.size()) << "return QVector<int>(1, " << k.size() << ");\n";
+			source_->stream() << QString("\t").repeated(1 + already.size()) << "return QVector<int>(1, " << k.size()
+			                  << ");\n";
 		} else {
-			source_->stream() << QString("\t").repeated(1 + already.size()) << "result.reserve(" << (i.value().size() + 1) << ");\n";
-			source_->stream() << QString("\t").repeated(1 + already.size()) << "result.push_back(" << k.size() << ");\n";
+			source_->stream() << QString("\t").repeated(1 + already.size()) << "result.reserve("
+			                  << (i.value().size() + 1) << ");\n";
+			source_->stream() << QString("\t").repeated(1 + already.size()) << "result.push_back(" << k.size()
+			                  << ");\n";
 			for (int j = 0, l = i.value().size(); j < l; ++j) {
-				source_->stream() << QString("\t").repeated(1 + already.size()) << "result.push_back(" << i.value().at(j) << ");\n";
+				source_->stream() << QString("\t").repeated(1 + already.size()) << "result.push_back("
+				                  << i.value().at(j) << ");\n";
 			}
 			source_->stream() << QString("\t").repeated(1 + already.size()) << "return result;\n";
 		}

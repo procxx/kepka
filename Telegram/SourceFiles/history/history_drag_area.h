@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QMimeData>
 #include "base/lambda.h"
-#include "ui/twidget.h"
 #include "ui/animation.h"
+#include "ui/twidget.h"
+#include <QMimeData>
 
 class DragArea : public TWidget {
 	Q_OBJECT
@@ -62,12 +62,9 @@ private:
 	void setIn(bool in);
 	void opacityAnimationCallback();
 	QRect innerRect() const {
-		return QRect(
-			st::dragPadding.left(),
-			st::dragPadding.top(),
-			width() - st::dragPadding.left() - st::dragPadding.right(),
-			height() - st::dragPadding.top() - st::dragPadding.bottom()
-		);
+		return QRect(st::dragPadding.left(), st::dragPadding.top(),
+		             width() - st::dragPadding.left() - st::dragPadding.right(),
+		             height() - st::dragPadding.top() - st::dragPadding.bottom());
 	}
 
 	bool _hiding = false;
@@ -79,5 +76,4 @@ private:
 	Animation _a_in;
 
 	QString _text, _subtext;
-
 };

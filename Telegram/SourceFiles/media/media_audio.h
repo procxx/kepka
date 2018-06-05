@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QThread>
-#include <QTimer>
 #include "base/observer.h"
 #include "storage/localimageloader.h"
 #include "ui/animation.h"
+#include <QThread>
+#include <QTimer>
 
 struct VideoSoundData;
 struct VideoSoundPart;
@@ -47,8 +47,7 @@ void ScheduleDetachFromDeviceSafe();
 void ScheduleDetachIfNotUsedSafe();
 void StopDetachIfNotUsedSafe();
 
-template <typename Callback>
-void IterateSamples();
+template <typename Callback> void IterateSamples();
 
 } // namespace Audio
 
@@ -81,10 +80,8 @@ enum class State {
 };
 
 inline bool IsStopped(State state) {
-	return (state == State::Stopped)
-		|| (state == State::StoppedAtEnd)
-		|| (state == State::StoppedAtError)
-		|| (state == State::StoppedAtStart);
+	return (state == State::Stopped) || (state == State::StoppedAtEnd) || (state == State::StoppedAtError) ||
+	       (state == State::StoppedAtStart);
 }
 
 inline bool IsStoppedOrStopping(State state) {
@@ -96,15 +93,12 @@ inline bool IsStoppedAtEnd(State state) {
 }
 
 inline bool IsPaused(State state) {
-	return (state == State::Paused)
-		|| (state == State::PausedAtEnd);
+	return (state == State::Paused) || (state == State::PausedAtEnd);
 }
 
 inline bool IsFading(State state) {
-	return (state == State::Starting)
-		|| (state == State::Stopping)
-		|| (state == State::Pausing)
-		|| (state == State::Resuming);
+	return (state == State::Starting) || (state == State::Stopping) || (state == State::Pausing) ||
+	       (state == State::Resuming);
 }
 
 inline bool IsActive(State state) {
@@ -215,12 +209,12 @@ private:
 
 		qint32 format = 0;
 		qint32 frequency = kDefaultFrequency;
-		int samplesCount[kBuffersCount] = { 0 };
+		int samplesCount[kBuffersCount] = {0};
 		QByteArray bufferSamples[kBuffersCount];
 
 		struct Stream {
 			quint32 source = 0;
-			quint32 buffers[kBuffersCount] = { 0 };
+			quint32 buffers[kBuffersCount] = {0};
 		};
 		Stream stream;
 		std::unique_ptr<VideoSoundData> videoData;
@@ -232,7 +226,6 @@ private:
 		void createStream();
 		void destroyStream();
 		void resetStream();
-
 	};
 
 	// Thread: Any. Must be locked: AudioMutex.
@@ -260,7 +253,6 @@ private:
 	QThread _faderThread, _loaderThread;
 	Fader *_fader;
 	Loaders *_loader;
-
 };
 
 Mixer *mixer();
@@ -294,7 +286,8 @@ private:
 		EmitPositionUpdated = 0x04,
 		EmitNeedToPreload = 0x08,
 	};
-	qint32 updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasFading, double volumeMultiplier, bool volumeChanged);
+	qint32 updateOnePlayback(Mixer::Track *track, bool &hasPlaying, bool &hasFading, double volumeMultiplier,
+	                         bool volumeChanged);
 	void setStoppedState(Mixer::Track *track, State state = State::Stopped);
 
 	QTimer _timer;
@@ -311,7 +304,6 @@ private:
 	TimeMs _suppressAllStart = 0;
 	TimeMs _suppressAllEnd = 0;
 	TimeMs _suppressSongStart = 0;
-
 };
 
 FileLoadTask::Song PrepareForSending(const QString &fname, const QByteArray &data);
@@ -350,7 +342,7 @@ FORCE_INLINE quint16 ReadOneSample(qint16 data) {
 
 template <typename SampleType, typename Callback>
 void IterateSamples(base::const_byte_span bytes, Callback &&callback) {
-	auto samplesPointer = reinterpret_cast<const SampleType*>(bytes.data());
+	auto samplesPointer = reinterpret_cast<const SampleType *>(bytes.data());
 	auto samplesCount = bytes.size() / sizeof(SampleType);
 	auto samplesData = gsl::make_span(samplesPointer, samplesCount);
 	for (auto sampleData : samplesData) {

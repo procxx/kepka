@@ -45,14 +45,13 @@ private:
 	void desktopEnabledUpdated();
 	void viewParamUpdated();
 
-	object_ptr<Ui::Checkbox> _desktopNotifications = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _showSenderName = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _showMessagePreview = { nullptr };
-	object_ptr<Ui::Checkbox> _nativeNotifications = { nullptr };
-	object_ptr<Ui::Checkbox> _playSound = { nullptr };
-	object_ptr<Ui::Checkbox> _includeMuted = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _advanced = { nullptr };
-
+	object_ptr<Ui::Checkbox> _desktopNotifications = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _showSenderName = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _showMessagePreview = {nullptr};
+	object_ptr<Ui::Checkbox> _nativeNotifications = {nullptr};
+	object_ptr<Ui::Checkbox> _playSound = {nullptr};
+	object_ptr<Ui::Checkbox> _includeMuted = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _advanced = {nullptr};
 };
 
 } // namespace Settings

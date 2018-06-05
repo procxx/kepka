@@ -27,7 +27,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Media {
 namespace Player {
 
-Loaders::Loaders(QThread *thread) : _fromVideoNotify([this] { videoSoundAdded(); }) {
+Loaders::Loaders(QThread *thread)
+    : _fromVideoNotify([this] { videoSoundAdded(); }) {
 	moveToThread(thread);
 	_fromVideoNotify.moveToThread(thread);
 	connect(thread, SIGNAL(started()), this, SLOT(onInit()));
@@ -64,9 +65,8 @@ void Loaders::videoSoundAdded() {
 		return false;
 	};
 	for (auto i = queues.begin(), e = queues.end(); i != e; ++i) {
-		if (!tryLoader(_audio, _audioLoader, i)
-			&& !tryLoader(_song, _songLoader, i)
-			&& !tryLoader(_video, _videoLoader, i)) {
+		if (!tryLoader(_audio, _audioLoader, i) && !tryLoader(_song, _songLoader, i) &&
+		    !tryLoader(_video, _videoLoader, i)) {
 			for (auto &packetData : i.value()) {
 				AVPacket packet;
 				FFMpeg::packetFromDataWrap(packet, packetData);
@@ -95,8 +95,7 @@ void Loaders::clearFromVideoQueue() {
 	}
 }
 
-void Loaders::onInit() {
-}
+void Loaders::onInit() {}
 
 void Loaders::onStart(const AudioMsgId &audio, qint64 position) {
 	auto type = audio.type();
@@ -117,9 +116,18 @@ void Loaders::onStart(const AudioMsgId &audio, qint64 position) {
 AudioMsgId Loaders::clear(AudioMsgId::Type type) {
 	AudioMsgId result;
 	switch (type) {
-	case AudioMsgId::Type::Voice: std::swap(result, _audio); _audioLoader = nullptr; break;
-	case AudioMsgId::Type::Song: std::swap(result, _song); _songLoader = nullptr; break;
-	case AudioMsgId::Type::Video: std::swap(result, _video); _videoLoader = nullptr; break;
+	case AudioMsgId::Type::Voice:
+		std::swap(result, _audio);
+		_audioLoader = nullptr;
+		break;
+	case AudioMsgId::Type::Song:
+		std::swap(result, _song);
+		_songLoader = nullptr;
+		break;
+	case AudioMsgId::Type::Video:
+		std::swap(result, _video);
+		_videoLoader = nullptr;
+		break;
 	}
 	return result;
 }
@@ -236,7 +244,8 @@ void Loaders::loadData(AudioMsgId audio, qint64 position) {
 		track->bufferSamples[bufferIndex] = samples;
 		track->samplesCount[bufferIndex] = samplesCount;
 		track->bufferedLength += samplesCount;
-		alBufferData(track->stream.buffers[bufferIndex], track->format, samples.constData(), samples.size(), track->frequency);
+		alBufferData(track->stream.buffers[bufferIndex], track->format, samples.constData(), samples.size(),
+		             track->frequency);
 
 		alSourceQueueBuffers(track->stream.source, 1, track->stream.buffers + bufferIndex);
 
@@ -259,7 +268,8 @@ void Loaders::loadData(AudioMsgId audio, qint64 position) {
 	}
 
 	track->loading = false;
-	if (track->state.state == State::Resuming || track->state.state == State::Playing || track->state.state == State::Starting) {
+	if (track->state.state == State::Resuming || track->state.state == State::Playing ||
+	    track->state.state == State::Starting) {
 		ALint state = AL_INITIAL;
 		alGetSourcei(track->stream.source, AL_SOURCE_STATE, &state);
 		if (internal::audioCheckError()) {
@@ -307,9 +317,18 @@ AudioPlayerLoader *Loaders::setupLoader(const AudioMsgId &audio, SetupError &err
 	bool isGoodId = false;
 	AudioPlayerLoader *l = nullptr;
 	switch (audio.type()) {
-	case AudioMsgId::Type::Voice: l = _audioLoader.get(); isGoodId = (_audio == audio); break;
-	case AudioMsgId::Type::Song: l = _songLoader.get(); isGoodId = (_song == audio); break;
-	case AudioMsgId::Type::Video: l = _videoLoader.get(); isGoodId = (_video == audio); break;
+	case AudioMsgId::Type::Voice:
+		l = _audioLoader.get();
+		isGoodId = (_audio == audio);
+		break;
+	case AudioMsgId::Type::Song:
+		l = _songLoader.get();
+		isGoodId = (_song == audio);
+		break;
+	case AudioMsgId::Type::Video:
+		l = _videoLoader.get();
+		isGoodId = (_video == audio);
+		break;
 	}
 
 	if (l && (!isGoodId || !l->check(track->file, track->data))) {
@@ -320,9 +339,18 @@ AudioPlayerLoader *Loaders::setupLoader(const AudioMsgId &audio, SetupError &err
 	if (!l) {
 		std::unique_ptr<AudioPlayerLoader> *loader = nullptr;
 		switch (audio.type()) {
-		case AudioMsgId::Type::Voice: _audio = audio; loader = &_audioLoader; break;
-		case AudioMsgId::Type::Song: _song = audio; loader = &_songLoader; break;
-		case AudioMsgId::Type::Video: _video = audio; loader = &_videoLoader; break;
+		case AudioMsgId::Type::Voice:
+			_audio = audio;
+			loader = &_audioLoader;
+			break;
+		case AudioMsgId::Type::Song:
+			_song = audio;
+			loader = &_songLoader;
+			break;
+		case AudioMsgId::Type::Video:
+			_video = audio;
+			loader = &_videoLoader;
+			break;
 		}
 
 		if (audio.playId()) {
@@ -367,9 +395,18 @@ Mixer::Track *Loaders::checkLoader(AudioMsgId::Type type) {
 	auto isGoodId = false;
 	AudioPlayerLoader *l = nullptr;
 	switch (type) {
-	case AudioMsgId::Type::Voice: l = _audioLoader.get(); isGoodId = (track->state.id == _audio); break;
-	case AudioMsgId::Type::Song: l = _songLoader.get(); isGoodId = (track->state.id == _song); break;
-	case AudioMsgId::Type::Video: l = _videoLoader.get(); isGoodId = (track->state.id == _video); break;
+	case AudioMsgId::Type::Voice:
+		l = _audioLoader.get();
+		isGoodId = (track->state.id == _audio);
+		break;
+	case AudioMsgId::Type::Song:
+		l = _songLoader.get();
+		isGoodId = (track->state.id == _song);
+		break;
+	case AudioMsgId::Type::Video:
+		l = _videoLoader.get();
+		isGoodId = (track->state.id == _video);
+		break;
 	}
 	if (!l || !track) return nullptr;
 
@@ -383,9 +420,15 @@ Mixer::Track *Loaders::checkLoader(AudioMsgId::Type type) {
 
 void Loaders::onCancel(const AudioMsgId &audio) {
 	switch (audio.type()) {
-	case AudioMsgId::Type::Voice: if (_audio == audio) clear(audio.type()); break;
-	case AudioMsgId::Type::Song: if (_song == audio) clear(audio.type()); break;
-	case AudioMsgId::Type::Video: if (_video == audio) clear(audio.type()); break;
+	case AudioMsgId::Type::Voice:
+		if (_audio == audio) clear(audio.type());
+		break;
+	case AudioMsgId::Type::Song:
+		if (_song == audio) clear(audio.type());
+		break;
+	case AudioMsgId::Type::Video:
+		if (_video == audio) clear(audio.type());
+		break;
 	}
 
 	QMutexLocker lock(internal::audioPlayerMutex());

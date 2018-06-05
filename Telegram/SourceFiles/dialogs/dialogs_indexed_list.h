@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "structs.h"
 #include "dialogs/dialogs_common.h"
 #include "dialogs/dialogs_list.h"
+#include "structs.h"
 
 class History;
 
@@ -43,8 +43,9 @@ public:
 	// For sortMode != SortMode::Date
 	void peerNameChanged(PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars);
 
-	//For sortMode == SortMode::Date
-	void peerNameChanged(Mode list, PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars);
+	// For sortMode == SortMode::Date
+	void peerNameChanged(Mode list, PeerData *peer, const PeerData::Names &oldNames,
+	                     const PeerData::NameFirstChars &oldChars);
 
 	void del(const PeerData *peer, Row *replacedBy = nullptr);
 	void clear();
@@ -60,36 +61,70 @@ public:
 	~IndexedList();
 
 	// Part of List interface is duplicated here for all() list.
-	int size() const { return all().size(); }
-	bool isEmpty() const { return all().isEmpty(); }
-	bool contains(PeerId peerId) const { return all().contains(peerId); }
-	Row *getRow(PeerId peerId) const { return all().getRow(peerId); }
-	Row *rowAtY(qint32 y, qint32 h) const { return all().rowAtY(y, h); }
+	int size() const {
+		return all().size();
+	}
+	bool isEmpty() const {
+		return all().isEmpty();
+	}
+	bool contains(PeerId peerId) const {
+		return all().contains(peerId);
+	}
+	Row *getRow(PeerId peerId) const {
+		return all().getRow(peerId);
+	}
+	Row *rowAtY(qint32 y, qint32 h) const {
+		return all().rowAtY(y, h);
+	}
 
 	using iterator = List::iterator;
 	using const_iterator = List::const_iterator;
-	const_iterator cbegin() const { return all().cbegin(); }
-	const_iterator cend() const { return all().cend(); }
-	const_iterator begin() const { return all().cbegin(); }
-	const_iterator end() const { return all().cend(); }
-	iterator begin() { return all().begin(); }
-	iterator end() { return all().end(); }
-	const_iterator cfind(Row *value) const { return all().cfind(value); }
-	const_iterator find(Row *value) const { return all().cfind(value); }
-	iterator find(Row *value) { return all().find(value); }
-	const_iterator cfind(int y, int h) const { return all().cfind(y, h); }
-	const_iterator find(int y, int h) const { return all().cfind(y, h); }
-	iterator find(int y, int h) { return all().find(y, h); }
+	const_iterator cbegin() const {
+		return all().cbegin();
+	}
+	const_iterator cend() const {
+		return all().cend();
+	}
+	const_iterator begin() const {
+		return all().cbegin();
+	}
+	const_iterator end() const {
+		return all().cend();
+	}
+	iterator begin() {
+		return all().begin();
+	}
+	iterator end() {
+		return all().end();
+	}
+	const_iterator cfind(Row *value) const {
+		return all().cfind(value);
+	}
+	const_iterator find(Row *value) const {
+		return all().cfind(value);
+	}
+	iterator find(Row *value) {
+		return all().find(value);
+	}
+	const_iterator cfind(int y, int h) const {
+		return all().cfind(y, h);
+	}
+	const_iterator find(int y, int h) const {
+		return all().cfind(y, h);
+	}
+	iterator find(int y, int h) {
+		return all().find(y, h);
+	}
 
 private:
 	void adjustByName(PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars);
-	void adjustNames(Mode list, PeerData *peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars);
+	void adjustNames(Mode list, PeerData *peer, const PeerData::Names &oldNames,
+	                 const PeerData::NameFirstChars &oldChars);
 
 	SortMode _sortMode;
 	List _list;
-	using Index = QMap<QChar, List*>;
+	using Index = QMap<QChar, List *>;
 	Index _index;
-
 };
 
 } // namespace Dialogs

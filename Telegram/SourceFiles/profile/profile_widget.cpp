@@ -20,23 +20,24 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_widget.h"
 
-#include "styles/style_settings.h"
+#include "application.h"
+#include "facades.h"
+#include "mainwindow.h"
 #include "profile/profile_fixed_bar.h"
 #include "profile/profile_inner_widget.h"
 #include "profile/profile_section_memento.h"
-#include "mainwindow.h"
-#include "application.h"
+#include "styles/style_settings.h"
 #include "ui/effects/widget_fade_wrap.h"
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/shadow.h"
-#include "facades.h"
 
 namespace Profile {
 
-Widget::Widget(QWidget *parent, not_null<Window::Controller*> controller, PeerData *peer) : Window::SectionWidget(parent, controller)
-, _scroll(this, st::settingsScroll)
-, _fixedBar(this, peer)
-, _fixedBarShadow(this, object_ptr<Ui::PlainShadow>(this, st::shadowFg)) {
+Widget::Widget(QWidget *parent, not_null<Window::Controller *> controller, PeerData *peer)
+    : Window::SectionWidget(parent, controller)
+    , _scroll(this, st::settingsScroll)
+    , _fixedBar(this, peer)
+    , _fixedBarShadow(this, object_ptr<Ui::PlainShadow>(this, st::shadowFg)) {
 	_fixedBar->move(0, 0);
 	_fixedBar->resizeToWidth(width());
 	_fixedBar->show();
@@ -77,8 +78,8 @@ void Widget::doSetInnerFocus() {
 	_inner->setFocus();
 }
 
-bool Widget::showInternal(not_null<Window::SectionMemento*> memento) {
-	if (auto profileMemento = dynamic_cast<SectionMemento*>(memento.get())) {
+bool Widget::showInternal(not_null<Window::SectionMemento *> memento) {
+	if (auto profileMemento = dynamic_cast<SectionMemento *>(memento.get())) {
 		if (profileMemento->getPeer() == peer()) {
 			restoreState(profileMemento);
 			return true;
@@ -87,7 +88,7 @@ bool Widget::showInternal(not_null<Window::SectionMemento*> memento) {
 	return false;
 }
 
-void Widget::setInternalState(const QRect &geometry, not_null<SectionMemento*> memento) {
+void Widget::setInternalState(const QRect &geometry, not_null<SectionMemento *> memento) {
 	setGeometry(geometry);
 	myEnsureResized(this);
 	restoreState(memento);
@@ -99,12 +100,12 @@ std::unique_ptr<Window::SectionMemento> Widget::createMemento() {
 	return std::move(result);
 }
 
-void Widget::saveState(not_null<SectionMemento*> memento) {
+void Widget::saveState(not_null<SectionMemento *> memento) {
 	memento->setScrollTop(_scroll->scrollTop());
 	_inner->saveState(memento);
 }
 
-void Widget::restoreState(not_null<SectionMemento*> memento) {
+void Widget::restoreState(not_null<SectionMemento *> memento) {
 	_inner->restoreState(memento);
 	auto scrollTop = memento->getScrollTop();
 	_scroll->scrollToY(scrollTop);

@@ -20,14 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "boxes/abstract_box.h"
 #include "base/observer.h"
+#include "boxes/abstract_box.h"
 
 namespace Ui {
-template <typename Enum>
-class RadioenumGroup;
-template <typename Enum>
-class Radioenum;
+template <typename Enum> class RadioenumGroup;
+template <typename Enum> class Radioenum;
 class LinkButton;
 } // namespace Ui
 
@@ -73,5 +71,4 @@ private:
 	object_ptr<Ui::Radioenum<Directory>> _temp;
 	object_ptr<Ui::Radioenum<Directory>> _dir;
 	object_ptr<Ui::LinkButton> _pathLink;
-
 };

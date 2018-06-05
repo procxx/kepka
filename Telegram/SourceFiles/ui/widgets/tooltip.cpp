@@ -18,11 +18,11 @@
 #include "ui/widgets/tooltip.h"
 
 #include "mainwindow.h"
-#include "styles/style_widgets.h"
 #include "platform/platform_specific.h"
+#include "styles/style_widgets.h"
 
-#include <QDesktopWidget>
 #include <QApplication>
+#include <QDesktopWidget>
 #include <QWindow>
 
 #include "app.h"
@@ -49,10 +49,12 @@ AbstractTooltipShower::~AbstractTooltipShower() {
 	}
 }
 
-Tooltip::Tooltip() : TWidget(nullptr) {
+Tooltip::Tooltip()
+    : TWidget(nullptr) {
 	TooltipInstance = this;
 
-	setWindowFlags(Qt::WindowFlags(Qt::FramelessWindowHint) | Qt::BypassWindowManagerHint | Qt::NoDropShadowWindowHint | Qt::ToolTip);
+	setWindowFlags(Qt::WindowFlags(Qt::FramelessWindowHint) | Qt::BypassWindowManagerHint | Qt::NoDropShadowWindowHint |
+	               Qt::ToolTip);
 	setAttribute(Qt::WA_NoSystemBackground, true);
 	setAttribute(Qt::WA_TranslucentBackground, true);
 
@@ -171,12 +173,15 @@ void Tooltip::paintEvent(QPaintEvent *e) {
 		p.fillRect(QRect(0, 0, width(), st::lineWidth), _st->textBorder);
 		p.fillRect(QRect(0, height() - st::lineWidth, width(), st::lineWidth), _st->textBorder);
 		p.fillRect(QRect(0, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth), _st->textBorder);
-		p.fillRect(QRect(width() - st::lineWidth, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth), _st->textBorder);
+		p.fillRect(QRect(width() - st::lineWidth, st::lineWidth, st::lineWidth, height() - 2 * st::lineWidth),
+		           _st->textBorder);
 	}
-	qint32 lines = std::floor((height() - 2 * st::lineWidth - _st->textPadding.top() - _st->textPadding.bottom()) / _st->textStyle.font->height);
+	qint32 lines = std::floor((height() - 2 * st::lineWidth - _st->textPadding.top() - _st->textPadding.bottom()) /
+	                          _st->textStyle.font->height);
 
 	p.setPen(_st->textFg);
-	_text.drawElided(p, st::lineWidth + _st->textPadding.left(), st::lineWidth + _st->textPadding.top(), width() - 2 * st::lineWidth - _st->textPadding.left() - _st->textPadding.right(), lines);
+	_text.drawElided(p, st::lineWidth + _st->textPadding.left(), st::lineWidth + _st->textPadding.top(),
+	                 width() - 2 * st::lineWidth - _st->textPadding.left() - _st->textPadding.right(), lines);
 }
 
 void Tooltip::hideEvent(QHideEvent *e) {
@@ -207,9 +212,10 @@ void Tooltip::Hide() {
 	}
 }
 
-ImportantTooltip::ImportantTooltip(QWidget *parent, object_ptr<TWidget> content, const style::ImportantTooltip &st) : TWidget(parent)
-, _st(st)
-, _content(std::move(content)) {
+ImportantTooltip::ImportantTooltip(QWidget *parent, object_ptr<TWidget> content, const style::ImportantTooltip &st)
+    : TWidget(parent)
+    , _st(st)
+    , _content(std::move(content)) {
 	_content->setParent(this);
 	_hideTimer.setCallback([this] { toggleAnimated(false); });
 	hide();
@@ -260,7 +266,8 @@ void ImportantTooltip::countApproachSide(RectParts preferSide) {
 	if ((allowedAbove && allowedBelow) || (!allowedAbove && !allowedBelow)) {
 		_side = preferSide;
 	} else {
-		_side = (allowedAbove ? RectPart::Top : RectPart::Bottom) | (preferSide & (RectPart::Left | RectPart::Center | RectPart::Right));
+		_side = (allowedAbove ? RectPart::Top : RectPart::Bottom) |
+		        (preferSide & (RectPart::Left | RectPart::Center | RectPart::Right));
 	}
 	if (_useTransparency) {
 		auto arrow = QImage(QSize(_st.arrow * 2, _st.arrow) * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
@@ -298,7 +305,8 @@ void ImportantTooltip::toggleAnimated(bool visible) {
 			return;
 		}
 		hideChildren();
-		_visibleAnimation.start([this] { animationCallback(); }, _visible ? 0. : 1., _visible ? 1. : 0., _st.duration, anim::easeOutCirc);
+		_visibleAnimation.start([this] { animationCallback(); }, _visible ? 0. : 1., _visible ? 1. : 0., _st.duration,
+		                        anim::easeOutCirc);
 	}
 }
 

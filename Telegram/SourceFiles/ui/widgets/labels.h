@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QTouchEvent>
+#include "core/click_handler.h"
 #include "styles/style_widgets.h"
-#include "ui/twidget.h"
 #include "ui/animation.h"
 #include "ui/text/text.h"
 #include "ui/text/text_entity.h"
-#include "core/click_handler.h"
+#include "ui/twidget.h"
+#include <QTouchEvent>
 
 namespace Ui {
 
@@ -51,8 +51,9 @@ public:
 
 private:
 	struct Line {
-		Line(Part was, Part now) : was(std::move(was)), now(std::move(now)) {
-		}
+		Line(Part was, Part now)
+		    : was(std::move(was))
+		    , now(std::move(now)) {}
 		Part was;
 		Part now;
 	};
@@ -60,12 +61,12 @@ private:
 
 	style::color _bg;
 	QList<Line> _lines;
-
 };
 
 class LabelSimple : public TWidget {
 public:
-	LabelSimple(QWidget *parent, const style::LabelSimple &st = st::defaultLabelSimple, const QString &value = QString());
+	LabelSimple(QWidget *parent, const style::LabelSimple &st = st::defaultLabelSimple,
+	            const QString &value = QString());
 
 	// This method also resizes the label.
 	void setText(const QString &newText, bool *outTextChanged = nullptr);
@@ -81,7 +82,6 @@ private:
 	int _textWidth;
 
 	const style::LabelSimple &_st;
-
 };
 
 class FlatLabel : public TWidget, public ClickHandlerHost {
@@ -94,7 +94,8 @@ public:
 		Simple,
 		Rich,
 	};
-	FlatLabel(QWidget *parent, const QString &text, InitType initType, const style::FlatLabel &st = st::defaultFlatLabel);
+	FlatLabel(QWidget *parent, const QString &text, InitType initType,
+	          const style::FlatLabel &st = st::defaultFlatLabel);
 
 	void setOpacity(double o);
 
@@ -111,14 +112,15 @@ public:
 
 	void setLink(quint16 lnkIndex, const ClickHandlerPtr &lnk);
 
-	using ClickHandlerHook = base::lambda<bool(const ClickHandlerPtr&, Qt::MouseButton)>;
+	using ClickHandlerHook = base::lambda<bool(const ClickHandlerPtr &, Qt::MouseButton)>;
 	void setClickHandlerHook(ClickHandlerHook &&hook);
 
 	// ClickHandlerHost interface
 	void clickHandlerActiveChanged(const ClickHandlerPtr &action, bool active) override;
 	void clickHandlerPressedChanged(const ClickHandlerPtr &action, bool pressed) override;
 
-	static std::unique_ptr<CrossFadeAnimation> CrossFade(FlatLabel *from, FlatLabel *to, style::color bg, QPoint fromPosition = QPoint(), QPoint toPosition = QPoint());
+	static std::unique_ptr<CrossFadeAnimation> CrossFade(FlatLabel *from, FlatLabel *to, style::color bg,
+	                                                     QPoint fromPosition = QPoint(), QPoint toPosition = QPoint());
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
@@ -210,7 +212,6 @@ private:
 	bool _touchInProgress = false;
 	QPoint _touchStart, _touchPrevPos, _touchPos;
 	QTimer _touchSelectTimer;
-
 };
 
 } // namespace Ui

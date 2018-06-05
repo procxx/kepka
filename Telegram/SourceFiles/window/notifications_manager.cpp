@@ -20,26 +20,25 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/notifications_manager.h"
 
+#include "apiwrap.h"
+#include "app.h"
+#include "auth_session.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
+#include "media/media_audio.h"
+#include "media/media_audio_track.h"
 #include "platform/platform_notifications_manager.h"
 #include "window/notifications_manager_default.h"
-#include "media/media_audio_track.h"
-#include "media/media_audio.h"
-#include "lang/lang_keys.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "apiwrap.h"
-#include "auth_session.h"
-#include "app.h"
 
 namespace Window {
 namespace Notifications {
 
-System::System(AuthSession *session) : _authSession(session) {
+System::System(AuthSession *session)
+    : _authSession(session) {
 	createManager();
 
-	_waitTimer.setTimeoutHandler([this] {
-		showNext();
-	});
+	_waitTimer.setTimeoutHandler([this] { showNext(); });
 
 	subscribe(settingsChanged(), [this](ChangeType type) {
 		if (type == ChangeType::DesktopEnabled) {
@@ -100,7 +99,8 @@ void System::schedule(History *history, HistoryItem *item) {
 
 	int delay = item->Has<HistoryMessageForwarded>() ? 500 : 100, t = unixtime();
 	auto ms = getms(true);
-	bool isOnline = App::main()->lastWasOnline(), otherNotOld = ((cOtherOnline() * 1000LL) + Global::OnlineCloudTimeout() > t * 1000LL);
+	bool isOnline = App::main()->lastWasOnline(),
+	     otherNotOld = ((cOtherOnline() * 1000LL) + Global::OnlineCloudTimeout() > t * 1000LL);
 	bool otherLaterThanMe = (cOtherOnline() * 1000LL + (ms - App::main()->lastSetOnline()) > t * 1000LL);
 	if (!isOnline && otherNotOld && otherLaterThanMe) {
 		delay = Global::NotifyCloudDelay();
@@ -217,8 +217,10 @@ void System::showNext() {
 	qint32 now = unixtime();
 	for (auto i = _whenAlerts.begin(); i != _whenAlerts.end();) {
 		while (!i.value().isEmpty() && i.value().begin().key() <= ms) {
-			NotifySettingsPtr n = i.key()->peer->notify, f = i.value().begin().value() ? i.value().begin().value()->notify : UnknownNotifySettings;
-			while (!i.value().isEmpty() && i.value().begin().key() <= ms + 500) { // not more than one sound in 500ms from one peer - grouping
+			NotifySettingsPtr n = i.key()->peer->notify,
+			                  f = i.value().begin().value() ? i.value().begin().value()->notify : UnknownNotifySettings;
+			while (!i.value().isEmpty() &&
+			       i.value().begin().key() <= ms + 500) { // not more than one sound in 500ms from one peer - grouping
 				i.value().erase(i.value().begin());
 			}
 			if (n == EmptyNotifySettings || (n != UnknownNotifySettings && n->mute <= now)) {
@@ -298,7 +300,8 @@ void System::showNext() {
 				_waitTimer.start(next - ms);
 				break;
 			} else {
-				auto forwardedItem = notifyItem->Has<HistoryMessageForwarded>() ? notifyItem : nullptr; // forwarded notify grouping
+				auto forwardedItem =
+				    notifyItem->Has<HistoryMessageForwarded>() ? notifyItem : nullptr; // forwarded notify grouping
 				auto forwardedCount = 1;
 
 				auto ms = getms(true);
@@ -307,7 +310,7 @@ void System::showNext() {
 				if (j == _whenMaps.cend()) {
 					history->clearNotifications();
 				} else {
-					auto nextNotify = (HistoryItem*)nullptr;
+					auto nextNotify = (HistoryItem *)nullptr;
 					do {
 						history->skipNotification();
 						if (!history->hasNotification()) {
@@ -327,7 +330,9 @@ void System::showNext() {
 						if (nextNotify) {
 							if (forwardedItem) {
 								auto nextForwarded = nextNotify->Has<HistoryMessageForwarded>() ? nextNotify : nullptr;
-								if (nextForwarded && forwardedItem->author() == nextForwarded->author() && qAbs(qint64(nextForwarded->date.toTime_t()) - qint64(forwardedItem->date.toTime_t())) < 2) {
+								if (nextForwarded && forwardedItem->author() == nextForwarded->author() &&
+								    qAbs(qint64(nextForwarded->date.toTime_t()) -
+								         qint64(forwardedItem->date.toTime_t())) < 2) {
 									forwardedItem = nextForwarded;
 									++forwardedCount;
 								} else {
@@ -411,7 +416,7 @@ void Manager::notificationReplied(PeerId peerId, MsgId msgId, const QString &rep
 
 	MainWidget::MessageToSend message;
 	message.history = history;
-	message.textWithTags = { reply, TextWithTags::Tags() };
+	message.textWithTags = {reply, TextWithTags::Tags()};
 	message.replyTo = (msgId > 0 && !history->peer->isUser()) ? msgId : 0;
 	message.silent = false;
 	message.clearDraft = false;
@@ -425,9 +430,12 @@ void NativeManager::doShowNotification(HistoryItem *item, int forwardedCount) {
 
 	QString title = options.hideNameAndPhoto ? str_const_toString(AppName) : item->history()->peer->name;
 	QString subtitle = options.hideNameAndPhoto ? QString() : item->notificationHeader();
-	QString text = options.hideMessageText ? lang(lng_notification_preview) : (forwardedCount < 2 ? item->notificationText() : lng_forward_messages(lt_count, forwardedCount));
+	QString text = options.hideMessageText ?
+	                   lang(lng_notification_preview) :
+	                   (forwardedCount < 2 ? item->notificationText() : lng_forward_messages(lt_count, forwardedCount));
 
-	doShowNativeNotification(item->history()->peer, item->id, title, subtitle, text, options.hideNameAndPhoto, options.hideReplyButton);
+	doShowNativeNotification(item->history()->peer, item->id, title, subtitle, text, options.hideNameAndPhoto,
+	                         options.hideReplyButton);
 }
 
 System::~System() = default;

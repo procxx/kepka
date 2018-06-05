@@ -39,18 +39,14 @@ class BlockWidget : public TWidget, protected base::Subscriber {
 public:
 	BlockWidget(QWidget *parent, PeerData *peer, const QString &title);
 
-	virtual void showFinished() {
-	}
+	virtual void showFinished() {}
 
-	virtual void saveState(gsl::not_null<SectionMemento*> memento) {
-	}
-	virtual void restoreState(gsl::not_null<SectionMemento*> memento) {
-	}
+	virtual void saveState(gsl::not_null<SectionMemento *> memento) {}
+	virtual void restoreState(gsl::not_null<SectionMemento *> memento) {}
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
-	virtual void paintContents(Painter &p) {
-	}
+	virtual void paintContents(Painter &p) {}
 
 	// Where does the block content start (after the title).
 	int contentTop() const;
@@ -77,7 +73,6 @@ private:
 
 	PeerData *_peer;
 	QString _title;
-
 };
 
 int defaultOutlineButtonLeft();

@@ -25,8 +25,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "core/single_timer.h"
 #include "ui/twidget.h"
 
-#include <QPixmap>
 #include "ui/animation.h"
+#include <QPixmap>
 
 namespace Ui {
 class RoundButton;
@@ -73,7 +73,6 @@ private:
 	object_ptr<Ui::RoundButton> _revert;
 
 	base::lambda<void()> _hiddenCallback;
-
 };
 
 } // namespace Theme

@@ -20,52 +20,52 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/countryinput.h"
 
-#include "lang/lang_keys.h"
 #include "application.h"
-#include "ui/widgets/scroll_area.h"
-#include "ui/widgets/multi_select.h"
-#include "ui/effects/ripple_animation.h"
 #include "countries.h"
+#include "facades.h"
+#include "lang/lang_keys.h"
 #include "styles/style_boxes.h"
 #include "styles/style_intro.h"
-#include "facades.h"
+#include "ui/effects/ripple_animation.h"
+#include "ui/widgets/multi_select.h"
+#include "ui/widgets/scroll_area.h"
 
 namespace {
 
-	typedef QList<const CountryInfo *> CountriesFiltered;
-	typedef QVector<int> CountriesIds;
-	typedef QHash<QChar, CountriesIds> CountriesByLetter;
-	typedef QVector<QString> CountryNames;
-	typedef QVector<CountryNames> CountriesNames;
+typedef QList<const CountryInfo *> CountriesFiltered;
+typedef QVector<int> CountriesIds;
+typedef QHash<QChar, CountriesIds> CountriesByLetter;
+typedef QVector<QString> CountryNames;
+typedef QVector<CountryNames> CountriesNames;
 
-	CountriesByCode _countriesByCode;
-	CountriesByISO2 _countriesByISO2;
-	CountriesFiltered countriesFiltered, countriesAll, *countriesNow = &countriesAll;
-	CountriesByLetter countriesByLetter;
-	CountriesNames countriesNames;
+CountriesByCode _countriesByCode;
+CountriesByISO2 _countriesByISO2;
+CountriesFiltered countriesFiltered, countriesAll, *countriesNow = &countriesAll;
+CountriesByLetter countriesByLetter;
+CountriesNames countriesNames;
 
-	QString lastValidISO;
-	int countriesCount = sizeof(countries) / sizeof(countries[0]);
+QString lastValidISO;
+int countriesCount = sizeof(countries) / sizeof(countries[0]);
 
-	void initCountries() {
-		if (!_countriesByCode.isEmpty()) return;
+void initCountries() {
+	if (!_countriesByCode.isEmpty()) return;
 
-		_countriesByCode.reserve(countriesCount);
-		_countriesByISO2.reserve(countriesCount);
-		for (int i = 0; i < countriesCount; ++i) {
-			const CountryInfo *info(countries + i);
-			_countriesByCode.insert(info->code, info);
-			CountriesByISO2::const_iterator already = _countriesByISO2.constFind(info->iso2);
-			if (already != _countriesByISO2.cend()) {
-				QString badISO = info->iso2;
-				(void)badISO;
-			}
-			_countriesByISO2.insert(info->iso2, info);
+	_countriesByCode.reserve(countriesCount);
+	_countriesByISO2.reserve(countriesCount);
+	for (int i = 0; i < countriesCount; ++i) {
+		const CountryInfo *info(countries + i);
+		_countriesByCode.insert(info->code, info);
+		CountriesByISO2::const_iterator already = _countriesByISO2.constFind(info->iso2);
+		if (already != _countriesByISO2.cend()) {
+			QString badISO = info->iso2;
+			(void)badISO;
 		}
-		countriesAll.reserve(countriesCount);
-		countriesFiltered.reserve(countriesCount);
-		countriesNames.resize(countriesCount);
+		_countriesByISO2.insert(info->iso2, info);
 	}
+	countriesAll.reserve(countriesCount);
+	countriesFiltered.reserve(countriesCount);
+	countriesNames.resize(countriesCount);
+}
 
 } // namespace
 
@@ -90,17 +90,19 @@ QString findValidCode(QString fullCode) {
 	return "";
 }
 
-CountryInput::CountryInput(QWidget *parent, const style::InputField &st) : TWidget(parent)
-, _st(st)
-, _text(lang(lng_country_code)) {
+CountryInput::CountryInput(QWidget *parent, const style::InputField &st)
+    : TWidget(parent)
+    , _st(st)
+    , _text(lang(lng_country_code)) {
 	initCountries();
 	resize(_st.width, _st.heightMin);
 
-	auto availableWidth = width() - _st.textMargins.left() - _st.textMargins.right() - _st.placeholderMargins.left() - _st.placeholderMargins.right() - 1;
+	auto availableWidth = width() - _st.textMargins.left() - _st.textMargins.right() - _st.placeholderMargins.left() -
+	                      _st.placeholderMargins.right() - 1;
 	auto placeholderFont = _st.placeholderFont->f;
 	placeholderFont.setStyleStrategy(QFont::PreferMatch);
 	auto metrics = QFontMetrics(placeholderFont);
-	auto placeholder = QString();// metrics.elidedText(lang(lng_country_fake_ph), Qt::ElideRight, availableWidth);
+	auto placeholder = QString(); // metrics.elidedText(lang(lng_country_fake_ph), Qt::ElideRight, availableWidth);
 	if (!placeholder.isNull()) {
 		_placeholderPath.addText(0, QFontMetrics(placeholderFont).ascent(), placeholderFont, placeholder);
 	}
@@ -117,7 +119,8 @@ void CountryInput::paintEvent(QPaintEvent *e) {
 		p.fillRect(0, height() - _st.border, width(), _st.border, _st.borderFg);
 	}
 
-	st::introCountryIcon.paint(p, width() - st::introCountryIcon.width() - st::introCountryIconPosition.x(), st::introCountryIconPosition.y(), width());
+	st::introCountryIcon.paint(p, width() - st::introCountryIcon.width() - st::introCountryIconPosition.x(),
+	                           st::introCountryIconPosition.y(), width());
 
 	p.setFont(_st.font);
 	p.setPen(_st.textFg);
@@ -160,7 +163,7 @@ void CountryInput::mousePressEvent(QMouseEvent *e) {
 	mouseMoveEvent(e);
 	if (_active) {
 		auto box = Ui::show(Box<CountrySelectBox>());
-		connect(box, SIGNAL(countryChosen(const QString&)), this, SLOT(onChooseCountry(const QString&)));
+		connect(box, SIGNAL(countryChosen(const QString &)), this, SLOT(onChooseCountry(const QString &)));
 	}
 }
 
@@ -211,9 +214,8 @@ void CountryInput::setText(const QString &newText) {
 	_text = _st.font->elided(newText, width() - _st.textMargins.left() - _st.textMargins.right());
 }
 
-CountrySelectBox::CountrySelectBox(QWidget*)
-: _select(this, st::contactsMultiSelect, langFactory(lng_country_ph)) {
-}
+CountrySelectBox::CountrySelectBox(QWidget *)
+    : _select(this, st::contactsMultiSelect, langFactory(lng_country_ph)) {}
 
 void CountrySelectBox::prepare() {
 	setTitle(langFactory(lng_country_select));
@@ -229,7 +231,7 @@ void CountrySelectBox::prepare() {
 	setDimensions(st::boxWidth, st::boxMaxListHeight);
 
 	connect(_inner, SIGNAL(mustScrollTo(int, int)), this, SLOT(onScrollToY(int, int)));
-	connect(_inner, SIGNAL(countryChosen(const QString&)), this, SIGNAL(countryChosen(const QString&)));
+	connect(_inner, SIGNAL(countryChosen(const QString &)), this, SIGNAL(countryChosen(const QString &)));
 }
 
 void CountrySelectBox::onSubmit() {
@@ -268,8 +270,9 @@ void CountrySelectBox::setInnerFocus() {
 	_select->setInnerFocus();
 }
 
-CountrySelectBox::Inner::Inner(QWidget *parent) : TWidget(parent)
-, _rowHeight(st::countryRowHeight) {
+CountrySelectBox::Inner::Inner(QWidget *parent)
+    : TWidget(parent)
+    , _rowHeight(st::countryRowHeight) {
 	setAttribute(Qt::WA_OpaquePaintEvent);
 
 	CountriesByISO2::const_iterator l = _countriesByISO2.constFind(lastValidISO);
@@ -279,7 +282,8 @@ CountrySelectBox::Inner::Inner(QWidget *parent) : TWidget(parent)
 	countriesByLetter.clear();
 	const CountryInfo *lastValid = (l == _countriesByISO2.cend()) ? 0 : (*l);
 	for (int i = 0; i < countriesCount; ++i) {
-		const CountryInfo *ins = lastValid ? (i ? (countries + i - (seenLastValid ? 0 : 1)) : lastValid) : (countries + i);
+		const CountryInfo *ins =
+		    lastValid ? (i ? (countries + i - (seenLastValid ? 0 : 1)) : lastValid) : (countries + i);
 		if (lastValid && i && ins == lastValid) {
 			seenLastValid = true;
 			++ins;
@@ -290,7 +294,8 @@ CountrySelectBox::Inner::Inner(QWidget *parent) : TWidget(parent)
 			countriesAll.push_back(ins);
 		}
 
-		QStringList namesList = QString::fromUtf8(ins->name).toLower().split(QRegularExpression("[\\s\\-]"), QString::SkipEmptyParts);
+		QStringList namesList =
+		    QString::fromUtf8(ins->name).toLower().split(QRegularExpression("[\\s\\-]"), QString::SkipEmptyParts);
 		CountryNames &names(countriesNames[i]);
 		int l = namesList.size();
 		names.resize(0);
@@ -343,7 +348,8 @@ void CountrySelectBox::Inner::paintEvent(QPaintEvent *e) {
 
 			auto name = QString::fromUtf8((*countriesNow)[i]->name);
 			auto nameWidth = st::countryRowNameFont->width(name);
-			auto availWidth = width() - st::countryRowPadding.left() - st::countryRowPadding.right() - codeWidth - st::boxLayerScroll.width;
+			auto availWidth = width() - st::countryRowPadding.left() - st::countryRowPadding.right() - codeWidth -
+			                  st::boxLayerScroll.width;
 			if (nameWidth > availWidth) {
 				name = st::countryRowNameFont->elided(name, availWidth);
 				nameWidth = st::countryRowNameFont->width(name);
@@ -355,7 +361,8 @@ void CountrySelectBox::Inner::paintEvent(QPaintEvent *e) {
 
 			p.setFont(st::countryRowCodeFont);
 			p.setPen(selected ? st::countryRowCodeFgOver : st::countryRowCodeFg);
-			p.drawTextLeft(st::countryRowPadding.left() + nameWidth + st::countryRowPadding.right(), y + st::countryRowPadding.top(), width(), code);
+			p.drawTextLeft(st::countryRowPadding.left() + nameWidth + st::countryRowPadding.right(),
+			               y + st::countryRowPadding.top(), width(), code);
 		}
 	} else {
 		p.fillRect(r, st::boxBg);
@@ -397,9 +404,8 @@ void CountrySelectBox::Inner::mousePressEvent(QMouseEvent *e) {
 		}
 		if (!_ripples[_pressed]) {
 			auto mask = Ui::RippleAnimation::rectMask(QSize(width(), _rowHeight));
-			_ripples[_pressed] = std::make_unique<Ui::RippleAnimation>(st::countryRipple, std::move(mask), [this, index = _pressed] {
-				updateRow(index);
-			});
+			_ripples[_pressed] = std::make_unique<Ui::RippleAnimation>(st::countryRipple, std::move(mask),
+			                                                           [this, index = _pressed] { updateRow(index); });
 			_ripples[_pressed]->add(e->pos() - QPoint(0, st::countriesSkip + _pressed * _rowHeight));
 		}
 	}
@@ -497,7 +503,8 @@ void CountrySelectBox::Inner::chooseCountry() {
 }
 
 void CountrySelectBox::Inner::refresh() {
-	resize(width(), countriesNow->length() ? (countriesNow->length() * _rowHeight + st::countriesSkip) : st::noContactsHeight);
+	resize(width(),
+	       countriesNow->length() ? (countriesNow->length() * _rowHeight + st::countriesSkip) : st::noContactsHeight);
 }
 
 void CountrySelectBox::Inner::updateSelected(QPoint localPos) {
@@ -505,7 +512,10 @@ void CountrySelectBox::Inner::updateSelected(QPoint localPos) {
 
 	auto in = parentWidget()->rect().contains(parentWidget()->mapFromGlobal(QCursor::pos()));
 
-	auto selected = (in && localPos.y() >= st::countriesSkip && localPos.y() < st::countriesSkip + countriesNow->size() * _rowHeight) ? ((localPos.y() - st::countriesSkip) / _rowHeight) : -1;
+	auto selected = (in && localPos.y() >= st::countriesSkip &&
+	                 localPos.y() < st::countriesSkip + countriesNow->size() * _rowHeight) ?
+	                    ((localPos.y() - st::countriesSkip) / _rowHeight) :
+	                    -1;
 	if (_selected != selected) {
 		updateSelectedRow();
 		_selected = selected;

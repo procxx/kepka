@@ -30,8 +30,7 @@ class AutoLockBox : public BoxContent {
 	Q_OBJECT
 
 public:
-	AutoLockBox(QWidget*) {
-	}
+	AutoLockBox(QWidget*) {}
 
 protected:
 	void prepare() override;
@@ -40,5 +39,4 @@ private:
 	void durationChanged(int seconds);
 
 	std::vector<object_ptr<Ui::Radiobutton>> _options;
-
 };

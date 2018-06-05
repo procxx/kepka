@@ -37,7 +37,8 @@ namespace Profile {
 
 class PeerListWidget : public BlockWidget {
 public:
-	PeerListWidget(QWidget *parent, PeerData *peer, const QString &title, const style::ProfilePeerListItem &st = st::profileMemberItem, const QString &removeText = QString());
+	PeerListWidget(QWidget *parent, PeerData *peer, const QString &title,
+	               const style::ProfilePeerListItem &st = st::profileMemberItem, const QString &removeText = QString());
 
 	void setVisibleTopBottom(int visibleTop, int visibleBottom) override;
 
@@ -45,7 +46,7 @@ public:
 		explicit Item(PeerData *peer);
 		~Item();
 
-		PeerData * const peer;
+		PeerData *const peer;
 		Text name;
 		QString statusText;
 		bool statusHasOnlineColor = false;
@@ -64,7 +65,7 @@ public:
 
 	int getListLeft() const;
 
-	const QList<Item*> &items() const {
+	const QList<Item *> &items() const {
 		return _items;
 	}
 	int itemsCount() const {
@@ -82,21 +83,20 @@ public:
 	void reserveItemsForSize(int size) {
 		_items.reserve(size);
 	}
-	template <typename Predicate>
-	void sortItems(Predicate predicate) {
+	template <typename Predicate> void sortItems(Predicate predicate) {
 		qSort(_items.begin(), _items.end(), std::move(predicate));
 	}
 
 	void setPreloadMoreCallback(base::lambda<void()> callback) {
 		_preloadMoreCallback = std::move(callback);
 	}
-	void setSelectedCallback(base::lambda<void(PeerData*)> callback) {
+	void setSelectedCallback(base::lambda<void(PeerData *)> callback) {
 		_selectedCallback = std::move(callback);
 	}
-	void setRemovedCallback(base::lambda<void(PeerData*)> callback) {
+	void setRemovedCallback(base::lambda<void(PeerData *)> callback) {
 		_removedCallback = std::move(callback);
 	}
-	void setUpdateItemCallback(base::lambda<void(Item*)> callback) {
+	void setUpdateItemCallback(base::lambda<void(Item *)> callback) {
 		_updateItemCallback = std::move(callback);
 	}
 
@@ -140,11 +140,11 @@ private:
 	const style::ProfilePeerListItem &_st;
 
 	base::lambda<void()> _preloadMoreCallback;
-	base::lambda<void(PeerData*)> _selectedCallback;
-	base::lambda<void(PeerData*)> _removedCallback;
-	base::lambda<void(Item*)> _updateItemCallback;
+	base::lambda<void(PeerData *)> _selectedCallback;
+	base::lambda<void(PeerData *)> _removedCallback;
+	base::lambda<void(Item *)> _updateItemCallback;
 
-	QList<Item*> _items;
+	QList<Item *> _items;
 
 	int _visibleTop = 0;
 	int _visibleBottom = 0;
@@ -161,7 +161,6 @@ private:
 
 	Ui::PopupMenu *_menu = nullptr;
 	int _menuRowIndex = -1;
-
 };
 
 } // namespace Profile

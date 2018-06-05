@@ -20,18 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
-#include <QPainter>
-#include <QFontMetrics>
-#include <QWidget>
-#include <QEvent>
-#include <QPointer>
-#include "base/lambda.h"
 #include "base/flags.h"
+#include "base/lambda.h"
 #include "base/object_ptr.h"
-#include "ui/style/style_core.h"
 #include "styles/palette.h"
 #include "styles/style_basic.h"
+#include "ui/style/style_core.h"
+#include <QEvent>
+#include <QFontMetrics>
+#include <QPainter>
+#include <QPointer>
+#include <QString>
+#include <QWidget>
 
 
 namespace Fonts {
@@ -39,40 +39,42 @@ namespace Fonts {
 void Start();
 QString GetOverride(const QString &familyName);
 
-} // namespace
+} // namespace Fonts
 
 enum class RectPart {
-	None        = 0,
+	None = 0,
 
-	TopLeft     = (1 << 0),
-	Top         = (1 << 1),
-	TopRight    = (1 << 2),
-	Left        = (1 << 3),
-	Center      = (1 << 4),
-	Right       = (1 << 5),
-	BottomLeft  = (1 << 6),
-	Bottom      = (1 << 7),
+	TopLeft = (1 << 0),
+	Top = (1 << 1),
+	TopRight = (1 << 2),
+	Left = (1 << 3),
+	Center = (1 << 4),
+	Right = (1 << 5),
+	BottomLeft = (1 << 6),
+	Bottom = (1 << 7),
 	BottomRight = (1 << 8),
 
-	FullTop     = TopLeft | Top | TopRight,
+	FullTop = TopLeft | Top | TopRight,
 	NoTopBottom = Left | Center | Right,
-	FullBottom  = BottomLeft | Bottom | BottomRight,
-	NoTop       = NoTopBottom | FullBottom,
-	NoBottom    = FullTop | NoTopBottom,
+	FullBottom = BottomLeft | Bottom | BottomRight,
+	NoTop = NoTopBottom | FullBottom,
+	NoBottom = FullTop | NoTopBottom,
 
-	FullLeft    = TopLeft | Left | BottomLeft,
+	FullLeft = TopLeft | Left | BottomLeft,
 	NoLeftRight = Top | Center | Bottom,
-	FullRight   = TopRight | Right | BottomRight,
-	NoLeft      = NoLeftRight | FullRight,
-	NoRight     = FullLeft | NoLeftRight,
+	FullRight = TopRight | Right | BottomRight,
+	NoLeft = NoLeftRight | FullRight,
+	NoRight = FullLeft | NoLeftRight,
 
 	CornersMask = TopLeft | TopRight | BottomLeft | BottomRight,
-	SidesMask   = Top | Bottom | Left | Right,
+	SidesMask = Top | Bottom | Left | Right,
 
-	Full        = FullTop | NoTop,
+	Full = FullTop | NoTop,
 };
 using RectParts = base::flags<RectPart>;
-inline constexpr auto is_flag_type(RectPart) { return true; };
+inline constexpr auto is_flag_type(RectPart) {
+	return true;
+};
 
 inline bool IsTopCorner(RectPart corner) {
 	return (corner == RectPart::TopLeft) || (corner == RectPart::TopRight);
@@ -92,8 +94,8 @@ inline bool IsRightCorner(RectPart corner) {
 
 class Painter : public QPainter {
 public:
-	explicit Painter(QPaintDevice *device) : QPainter(device) {
-	}
+	explicit Painter(QPaintDevice *device)
+	    : QPainter(device) {}
 
 	void drawTextLeft(int x, int y, int outerw, const QString &text, int textWidth = -1) {
 		QFontMetrics m(fontMetrics());
@@ -154,18 +156,14 @@ public:
 
 private:
 	const style::TextPalette *_textPalette = nullptr;
-
 };
 
 class PainterHighQualityEnabler {
 public:
-	PainterHighQualityEnabler(Painter &p) : _painter(p) {
-		static constexpr QPainter::RenderHint Hints[] = {
-			QPainter::Antialiasing,
-			QPainter::SmoothPixmapTransform,
-			QPainter::TextAntialiasing,
-			QPainter::HighQualityAntialiasing
-		};
+	PainterHighQualityEnabler(Painter &p)
+	    : _painter(p) {
+		static constexpr QPainter::RenderHint Hints[] = {QPainter::Antialiasing, QPainter::SmoothPixmapTransform,
+		                                                 QPainter::TextAntialiasing, QPainter::HighQualityAntialiasing};
 
 		auto hints = _painter.renderHints();
 		for_const (auto hint, Hints) {
@@ -188,13 +186,11 @@ public:
 private:
 	Painter &_painter;
 	QPainter::RenderHints _hints = 0;
-
 };
 
 class TWidget;
 
-template <typename Base>
-class TWidgetHelper : public Base {
+template <typename Base> class TWidgetHelper : public Base {
 public:
 	using Base::Base;
 
@@ -284,49 +280,43 @@ protected:
 	}
 
 	// e - from enterEvent() of child TWidget
-	virtual void leaveToChildEvent(QEvent *e, QWidget *child) {
-	}
+	virtual void leaveToChildEvent(QEvent *e, QWidget *child) {}
 
 	// e - from leaveEvent() of child TWidget
-	virtual void enterFromChildEvent(QEvent *e, QWidget *child) {
-	}
+	virtual void enterFromChildEvent(QEvent *e, QWidget *child) {}
 
 private:
 	TWidget *tparent() {
-		return qobject_cast<TWidget*>(Base::parentWidget());
+		return qobject_cast<TWidget *>(Base::parentWidget());
 	}
 	const TWidget *tparent() const {
-		return qobject_cast<const TWidget*>(Base::parentWidget());
+		return qobject_cast<const TWidget *>(Base::parentWidget());
 	}
 
-	template <typename OtherBase>
-	friend class TWidgetHelper;
-
+	template <typename OtherBase> friend class TWidgetHelper;
 };
 
 class TWidget : public TWidgetHelper<QWidget> {
 	Q_OBJECT
 
 public:
-	TWidget(QWidget *parent = nullptr) : TWidgetHelper<QWidget>(parent) {
-	}
-	virtual void grabStart() {
-	}
-	virtual void grabFinish() {
-	}
+	TWidget(QWidget *parent = nullptr)
+	    : TWidgetHelper<QWidget>(parent) {}
+	virtual void grabStart() {}
+	virtual void grabFinish() {}
 
 	bool inFocusChain() const;
 
 	void hideChildren() {
 		for (auto child : children()) {
-			if (auto widget = qobject_cast<QWidget*>(child)) {
+			if (auto widget = qobject_cast<QWidget *>(child)) {
 				widget->hide();
 			}
 		}
 	}
 	void showChildren() {
 		for (auto child : children()) {
-			if (auto widget = qobject_cast<QWidget*>(child)) {
+			if (auto widget = qobject_cast<QWidget *>(child)) {
 				widget->show();
 			}
 		}
@@ -378,8 +368,7 @@ public:
 	}
 
 	// Updates the area that is visible inside the scroll container.
-	virtual void setVisibleTopBottom(int visibleTop, int visibleBottom) {
-	}
+	virtual void setVisibleTopBottom(int visibleTop, int visibleBottom) {}
 
 signals:
 	// Child widget is responsible for emitting this signal.
@@ -390,16 +379,13 @@ protected:
 	virtual int resizeGetHeight(int newWidth) {
 		return height();
 	}
-
 };
 
-template <typename Widget>
-QPointer<Widget> weak(Widget *object) {
+template <typename Widget> QPointer<Widget> weak(Widget *object) {
 	return QPointer<Widget>(object);
 }
 
-template <typename Widget>
-QPointer<const Widget> weak(const Widget *object) {
+template <typename Widget> QPointer<const Widget> weak(const Widget *object) {
 	return QPointer<const Widget>(object);
 }
 
@@ -409,8 +395,8 @@ QImage myGrabImage(TWidget *target, QRect rect = QRect(), QColor bg = QColor(255
 
 class SingleQueuedInvokation : public QObject {
 public:
-	SingleQueuedInvokation(base::lambda<void()> callback) : _callback(callback) {
-	}
+	SingleQueuedInvokation(base::lambda<void()> callback)
+	    : _callback(callback) {}
 	void call() {
 		if (_pending.testAndSetAcquire(0, 1)) {
 			InvokeQueued(this, [this] {
@@ -423,8 +409,7 @@ public:
 
 private:
 	base::lambda<void()> _callback;
-	QAtomicInt _pending = { 0 };
-
+	QAtomicInt _pending = {0};
 };
 
 void sendSynteticMouseEvent(QWidget *widget, QEvent::Type type, Qt::MouseButton button, const QPoint &globalPoint);

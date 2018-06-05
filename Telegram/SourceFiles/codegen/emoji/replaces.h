@@ -34,8 +34,8 @@ struct Replace {
 };
 
 struct Replaces {
-	Replaces(const QString &filename) : filename(filename) {
-	}
+	Replaces(const QString &filename)
+	    : filename(filename) {}
 	QString filename;
 	QVector<Replace> list;
 };

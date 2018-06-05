@@ -70,7 +70,7 @@ protected:
 
 private:
 	enum class Repeat : unsigned {
-		Interval   = 0,
+		Interval = 0,
 		SingleShot = 1,
 	};
 	void start(TimeMs timeout, Qt::TimerType type, Repeat repeat);
@@ -94,7 +94,6 @@ private:
 	Qt::TimerType _type : 2;
 	bool _adjusted : 1;
 	unsigned _repeat : 1;
-
 };
 
 class DelayedCallTimer final : private QObject {
@@ -111,7 +110,6 @@ protected:
 
 private:
 	std::map<int, lambda_once<void()>> _callbacks; // Better to use flatmap.
-
 };
 
 } // namespace base

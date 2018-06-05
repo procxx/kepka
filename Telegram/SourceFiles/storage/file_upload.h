@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "storage/localimageloader.h"
-#include "mtproto/rpc_sender.h"
 #include "mtproto/facade.h"
+#include "mtproto/rpc_sender.h"
+#include "storage/localimageloader.h"
 
 class RPCError;
 
@@ -65,7 +65,9 @@ signals:
 
 private:
 	struct File {
-		File(const SendMediaReady &media) : media(media), docSentParts(0) {
+		File(const SendMediaReady &media)
+		    : media(media)
+		    , docSentParts(0) {
 			partsCount = media.parts.size();
 			if (type() == SendMediaType::File || type() == SendMediaType::Audio) {
 				setDocSize(media.file.isEmpty() ? media.data.size() : media.filesize);
@@ -73,7 +75,9 @@ private:
 				docSize = docPartSize = docPartsCount = 0;
 			}
 		}
-		File(const FileLoadResultPtr &file) : file(file), docSentParts(0) {
+		File(const FileLoadResultPtr &file)
+		    : file(file)
+		    , docSentParts(0) {
 			partsCount = (type() == SendMediaType::Photo) ? file->fileparts.size() : file->thumbparts.size();
 			if (type() == SendMediaType::File || type() == SendMediaType::Audio) {
 				setDocSize(file->filesize);
@@ -138,13 +142,12 @@ private:
 	QMap<mtpRequestId, qint32> docRequestsSent;
 	QMap<mtpRequestId, qint32> dcMap;
 	quint32 sentSize = 0;
-	quint32 sentSizes[MTP::kUploadSessionsCount] = { 0 };
+	quint32 sentSizes[MTP::kUploadSessionsCount] = {0};
 
 	FullMsgId uploading, _paused;
 	Queue queue;
 	Queue uploaded;
 	QTimer nextTimer, killSessionsTimer;
-
 };
 
 } // namespace Storage

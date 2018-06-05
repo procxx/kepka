@@ -20,16 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/timer.h"
-#include <QtCore/QObject>
-#include "mtproto/rpc_sender.h"
-#include "mtproto/core_types.h"
-#include "core/single_timer.h"
-#include "mtproto/sender.h"
 #include "base/flat_map.h"
 #include "base/flat_set.h"
-#include "structs.h"
+#include "base/timer.h"
+#include "core/single_timer.h"
 #include "facades.h"
+#include "mtproto/core_types.h"
+#include "mtproto/rpc_sender.h"
+#include "mtproto/sender.h"
+#include "structs.h"
+#include <QtCore/QObject>
 
 class AuthSession;
 
@@ -49,17 +49,17 @@ class History;
 
 class ApiWrap : private MTP::Sender, private base::Subscriber {
 public:
-	ApiWrap(not_null<AuthSession*> session);
+	ApiWrap(not_null<AuthSession *> session);
 
 	void start();
 	void applyUpdates(const MTPUpdates &updates, quint64 sentMessageRandomId = 0);
 
-	using RequestMessageDataCallback = base::lambda<void(ChannelData*, MsgId)>;
+	using RequestMessageDataCallback = base::lambda<void(ChannelData *, MsgId)>;
 	void requestMessageData(ChannelData *channel, MsgId msgId, RequestMessageDataCallback callback);
 
 	void requestFullPeer(PeerData *peer);
 	void requestPeer(PeerData *peer);
-	void requestPeers(const QList<PeerData*> &peers);
+	void requestPeers(const QList<PeerData *> &peers);
 	void requestLastParticipants(ChannelData *channel, bool fromStart = true);
 	void requestBots(ChannelData *channel);
 	void requestParticipantsCountDelayed(ChannelData *channel);
@@ -79,7 +79,7 @@ public:
 	void requestStickerSets();
 	void saveStickerSets(const Stickers::Order &localOrder, const Stickers::Order &localRemoved);
 	void updateStickers();
-	void setGroupStickerSet(not_null<ChannelData*> megagroup, const MTPInputStickerSet &set);
+	void setGroupStickerSet(not_null<ChannelData *> megagroup, const MTPInputStickerSet &set);
 
 	void joinChannel(ChannelData *channel);
 	void leaveChannel(ChannelData *channel);
@@ -96,7 +96,7 @@ public:
 	void handlePrivacyChange(mtpTypeId keyTypeId, const MTPVector<MTPPrivacyRule> &rules);
 	int onlineTillFromStatus(const MTPUserStatus &status, int currentOnlineTill);
 
-	base::Observable<PeerData*> &fullPeerUpdated() {
+	base::Observable<PeerData *> &fullPeerUpdated() {
 		return _fullPeerUpdated;
 	}
 
@@ -105,15 +105,12 @@ public:
 	void applyUpdatesNoPtsCheck(const MTPUpdates &updates);
 	void applyUpdateNoPtsCheck(const MTPUpdate &update);
 
-	void jumpToDate(not_null<PeerData*> peer, const QDate &date);
+	void jumpToDate(not_null<PeerData *> peer, const QDate &date);
 
-	void preloadEnoughUnreadMentions(not_null<History*> history);
+	void preloadEnoughUnreadMentions(not_null<History *> history);
 	void checkForUnreadMentions(const base::flat_set<MsgId> &possiblyReadMentions, ChannelData *channel = nullptr);
 
-	void editChatAdmins(
-		not_null<ChatData*> chat,
-		bool adminsEnabled,
-		base::flat_set<not_null<UserData*>> &&admins);
+	void editChatAdmins(not_null<ChatData *> chat, bool adminsEnabled, base::flat_set<not_null<UserData *>> &&admins);
 
 	~ApiWrap();
 
@@ -156,18 +153,18 @@ private:
 	void requestFeaturedStickers(TimeId now);
 	void requestSavedGifs(TimeId now);
 
-	void cancelEditChatAdmins(not_null<ChatData*> chat);
-	void saveChatAdmins(not_null<ChatData*> chat);
-	void sendSaveChatAdminsRequests(not_null<ChatData*> chat);
+	void cancelEditChatAdmins(not_null<ChatData *> chat);
+	void saveChatAdmins(not_null<ChatData *> chat);
+	void sendSaveChatAdminsRequests(not_null<ChatData *> chat);
 
-	not_null<AuthSession*> _session;
+	not_null<AuthSession *> _session;
 	mtpRequestId _changelogSubscription = 0;
 
 	MessageDataRequests _messageDataRequests;
-	QMap<ChannelData*, MessageDataRequests> _channelMessageDataRequests;
+	QMap<ChannelData *, MessageDataRequests> _channelMessageDataRequests;
 	SingleQueuedInvokation _messageDataResolveDelayed;
 
-	using PeerRequests = QMap<PeerData*, mtpRequestId>;
+	using PeerRequests = QMap<PeerData *, mtpRequestId>;
 	PeerRequests _fullPeerRequests;
 	PeerRequests _peerRequests;
 
@@ -175,24 +172,24 @@ private:
 	PeerRequests _botsRequests;
 	base::DelayedCallTimer _participantsCountRequestTimer;
 
-	typedef QPair<PeerData*, UserData*> KickRequest;
+	typedef QPair<PeerData *, UserData *> KickRequest;
 	typedef QMap<KickRequest, mtpRequestId> KickRequests;
 	KickRequests _kickRequests;
 
-	QMap<ChannelData*, mtpRequestId> _selfParticipantRequests;
+	QMap<ChannelData *, mtpRequestId> _selfParticipantRequests;
 
-	QMap<WebPageData*, mtpRequestId> _webPagesPending;
+	QMap<WebPageData *, mtpRequestId> _webPagesPending;
 	base::Timer _webPagesTimer;
 
-	QMap<quint64, QPair<quint64, mtpRequestId> > _stickerSetRequests;
+	QMap<quint64, QPair<quint64, mtpRequestId>> _stickerSetRequests;
 
-	QMap<ChannelData*, mtpRequestId> _channelAmInRequests;
-	QMap<UserData*, mtpRequestId> _blockRequests;
-	QMap<PeerData*, mtpRequestId> _exportInviteRequests;
+	QMap<ChannelData *, mtpRequestId> _channelAmInRequests;
+	QMap<UserData *, mtpRequestId> _blockRequests;
+	QMap<PeerData *, mtpRequestId> _exportInviteRequests;
 
-	QMap<PeerData*, mtpRequestId> _notifySettingRequests;
+	QMap<PeerData *, mtpRequestId> _notifySettingRequests;
 
-	QMap<History*, mtpRequestId> _draftsSaveRequestIds;
+	QMap<History *, mtpRequestId> _draftsSaveRequestIds;
 	base::Timer _draftsSaveTimer;
 
 	OrderedSet<mtpRequestId> _stickerSetDisenableRequests;
@@ -210,12 +207,11 @@ private:
 
 	mtpRequestId _contactsStatusesRequestId = 0;
 
-	base::flat_map<not_null<History*>, mtpRequestId> _unreadMentionsRequests;
+	base::flat_map<not_null<History *>, mtpRequestId> _unreadMentionsRequests;
 
-	base::flat_map<not_null<ChatData*>, mtpRequestId> _chatAdminsEnabledRequests;
-	base::flat_map<not_null<ChatData*>, base::flat_set<not_null<UserData*>>> _chatAdminsToSave;
-	base::flat_map<not_null<ChatData*>, base::flat_set<mtpRequestId>> _chatAdminsSaveRequests;
+	base::flat_map<not_null<ChatData *>, mtpRequestId> _chatAdminsEnabledRequests;
+	base::flat_map<not_null<ChatData *>, base::flat_set<not_null<UserData *>>> _chatAdminsToSave;
+	base::flat_map<not_null<ChatData *>, base::flat_set<mtpRequestId>> _chatAdminsSaveRequests;
 
-	base::Observable<PeerData*> _fullPeerUpdated;
-
+	base::Observable<PeerData *> _fullPeerUpdated;
 };

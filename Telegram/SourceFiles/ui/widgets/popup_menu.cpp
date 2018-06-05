@@ -17,27 +17,29 @@
  */
 #include "ui/widgets/popup_menu.h"
 
-#include "ui/widgets/shadow.h"
-#include "platform/platform_specific.h"
-#include "application.h"
-#include "mainwindow.h"
-#include "lang/lang_keys.h"
 #include "app.h"
+#include "application.h"
+#include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "platform/platform_specific.h"
 #include "ui/effects/panel_animation.h"
+#include "ui/widgets/shadow.h"
 
 #include <QWindow>
 
 namespace Ui {
 
-PopupMenu::PopupMenu(QWidget*, const style::PopupMenu &st) : TWidget(nullptr)
-, _st(st)
-, _menu(this, _st.menu) {
+PopupMenu::PopupMenu(QWidget *, const style::PopupMenu &st)
+    : TWidget(nullptr)
+    , _st(st)
+    , _menu(this, _st.menu) {
 	init();
 }
 
-PopupMenu::PopupMenu(QWidget*, QMenu *menu, const style::PopupMenu &st) : TWidget(nullptr)
-, _st(st)
-, _menu(this, menu, _st.menu) {
+PopupMenu::PopupMenu(QWidget *, QMenu *menu, const style::PopupMenu &st)
+    : TWidget(nullptr)
+    , _st(st)
+    , _menu(this, menu, _st.menu) {
 	init();
 
 	for (auto action : actions()) {
@@ -50,12 +52,10 @@ PopupMenu::PopupMenu(QWidget*, QMenu *menu, const style::PopupMenu &st) : TWidge
 
 void PopupMenu::init() {
 	_menu->setResizedCallback([this] { handleMenuResize(); });
-	_menu->setActivatedCallback([this](QAction *action, int actionTop, TriggeredSource source) {
-		handleActivated(action, actionTop, source);
-	});
-	_menu->setTriggeredCallback([this](QAction *action, int actionTop, TriggeredSource source) {
-		handleTriggered(action, actionTop, source);
-	});
+	_menu->setActivatedCallback(
+	    [this](QAction *action, int actionTop, TriggeredSource source) { handleActivated(action, actionTop, source); });
+	_menu->setTriggeredCallback(
+	    [this](QAction *action, int actionTop, TriggeredSource source) { handleTriggered(action, actionTop, source); });
 	_menu->setKeyPressDelegate([this](int key) { return handleKeyPress(key); });
 	_menu->setMouseMoveDelegate([this](QPoint globalPosition) { handleMouseMove(globalPosition); });
 	_menu->setMousePressDelegate([this](QPoint globalPosition) { handleMousePress(globalPosition); });
@@ -63,7 +63,8 @@ void PopupMenu::init() {
 
 	handleCompositingUpdate();
 
-	setWindowFlags(Qt::WindowFlags(Qt::FramelessWindowHint) | Qt::BypassWindowManagerHint | Qt::Popup | Qt::NoDropShadowWindowHint);
+	setWindowFlags(Qt::WindowFlags(Qt::FramelessWindowHint) | Qt::BypassWindowManagerHint | Qt::Popup |
+	               Qt::NoDropShadowWindowHint);
 	setMouseTracking(true);
 
 	hide();
@@ -73,23 +74,28 @@ void PopupMenu::init() {
 }
 
 void PopupMenu::handleCompositingUpdate() {
-	_padding = _useTransparency ? _st.shadow.extend : style::margins(st::lineWidth, st::lineWidth, st::lineWidth, st::lineWidth);
+	_padding = _useTransparency ? _st.shadow.extend :
+	                              style::margins(st::lineWidth, st::lineWidth, st::lineWidth, st::lineWidth);
 	_menu->moveToLeft(_padding.left() + _st.scrollPadding.left(), _padding.top() + _st.scrollPadding.top());
 	handleMenuResize();
 }
 
 void PopupMenu::handleMenuResize() {
-	auto newWidth = _padding.left() + _st.scrollPadding.left() + _menu->width() + _st.scrollPadding.right() + _padding.right();
-	auto newHeight = _padding.top() + _st.scrollPadding.top() + _menu->height() + _st.scrollPadding.bottom() + _padding.bottom();
+	auto newWidth =
+	    _padding.left() + _st.scrollPadding.left() + _menu->width() + _st.scrollPadding.right() + _padding.right();
+	auto newHeight =
+	    _padding.top() + _st.scrollPadding.top() + _menu->height() + _st.scrollPadding.bottom() + _padding.bottom();
 	resize(newWidth, newHeight);
 	_inner = rect().marginsRemoved(_padding);
 }
 
-QAction *PopupMenu::addAction(const QString &text, const QObject *receiver, const char* member, const style::icon *icon, const style::icon *iconOver) {
+QAction *PopupMenu::addAction(const QString &text, const QObject *receiver, const char *member, const style::icon *icon,
+                              const style::icon *iconOver) {
 	return _menu->addAction(text, receiver, member, icon, iconOver);
 }
 
-QAction *PopupMenu::addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon, const style::icon *iconOver) {
+QAction *PopupMenu::addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon,
+                              const style::icon *iconOver) {
 	return _menu->addAction(text, std::move(callback), icon, iconOver);
 }
 
@@ -141,7 +147,8 @@ void PopupMenu::paintBg(Painter &p) {
 	} else {
 		p.fillRect(0, 0, width() - _padding.right(), _padding.top(), _st.shadow.fallback);
 		p.fillRect(width() - _padding.right(), 0, _padding.right(), height() - _padding.bottom(), _st.shadow.fallback);
-		p.fillRect(_padding.left(), height() - _padding.bottom(), width() - _padding.left(), _padding.bottom(), _st.shadow.fallback);
+		p.fillRect(_padding.left(), height() - _padding.bottom(), width() - _padding.left(), _padding.bottom(),
+		           _st.shadow.fallback);
 		p.fillRect(0, _padding.top(), _padding.left(), height() - _padding.top(), _st.shadow.fallback);
 		p.fillRect(_inner, _st.menu.itemBg);
 	}
@@ -363,7 +370,8 @@ void PopupMenu::startShowAnimation() {
 		_a_opacity = base::take(opacityAnimation);
 
 		_showAnimation = std::make_unique<PanelAnimation>(_st.animation, _origin);
-		_showAnimation->setFinalImage(std::move(cache), QRect(_inner.topLeft() * cIntRetinaFactor(), _inner.size() * cIntRetinaFactor()));
+		_showAnimation->setFinalImage(std::move(cache),
+		                              QRect(_inner.topLeft() * cIntRetinaFactor(), _inner.size() * cIntRetinaFactor()));
 		if (_useTransparency) {
 			auto corners = App::cornersMask(ImageRoundRadius::Small);
 			_showAnimation->setCornerMasks(corners[0], corners[1], corners[2], corners[3]);
@@ -405,7 +413,7 @@ QImage PopupMenu::grabForPanelAnimation() {
 			p.fillRect(_inner, _st.menu.itemBg);
 		}
 		for (auto child : children()) {
-			if (auto widget = qobject_cast<QWidget*>(child)) {
+			if (auto widget = qobject_cast<QWidget *>(child)) {
 				widget->render(&p, widget->pos(), widget->rect(), QWidget::DrawChildren | QWidget::IgnoreMask);
 			}
 		}
@@ -432,7 +440,8 @@ void PopupMenu::showMenu(const QPoint &p, PopupMenu *parent, TriggeredSource sou
 	handleCompositingUpdate();
 	if (rtl()) {
 		if (w.x() - width() < r.x() - _padding.left()) {
-			if (_parent && w.x() + _parent->width() - _padding.left() - _padding.right() + width() - _padding.right() <= r.x() + r.width()) {
+			if (_parent && w.x() + _parent->width() - _padding.left() - _padding.right() + width() - _padding.right() <=
+			                   r.x() + r.width()) {
 				w.setX(w.x() + _parent->width() - _padding.left() - _padding.right());
 			} else {
 				w.setX(r.x() - _padding.left());
@@ -442,8 +451,10 @@ void PopupMenu::showMenu(const QPoint &p, PopupMenu *parent, TriggeredSource sou
 		}
 	} else {
 		if (w.x() + width() - _padding.right() > r.x() + r.width()) {
-			if (_parent && w.x() - _parent->width() + _padding.left() + _padding.right() - width() + _padding.right() >= r.x() - _padding.left()) {
-				w.setX(w.x() + _padding.left() + _padding.right() - _parent->width() - width() + _padding.left() + _padding.right());
+			if (_parent && w.x() - _parent->width() + _padding.left() + _padding.right() - width() + _padding.right() >=
+			                   r.x() - _padding.left()) {
+				w.setX(w.x() + _padding.left() + _padding.right() - _parent->width() - width() + _padding.left() +
+				       _padding.right());
 			} else {
 				w.setX(p.x() - width() + _padding.right());
 			}
@@ -455,7 +466,8 @@ void PopupMenu::showMenu(const QPoint &p, PopupMenu *parent, TriggeredSource sou
 			w.setY(r.y() + r.height() - height() + _padding.bottom());
 		} else {
 			w.setY(p.y() - height() + _padding.bottom());
-			origin = (origin == PanelAnimation::Origin::TopRight) ? PanelAnimation::Origin::BottomRight : PanelAnimation::Origin::BottomLeft;
+			origin = (origin == PanelAnimation::Origin::TopRight) ? PanelAnimation::Origin::BottomRight :
+			                                                        PanelAnimation::Origin::BottomLeft;
 		}
 	}
 	if (w.x() < r.x()) {

@@ -40,11 +40,14 @@ class Controller;
 
 namespace ChatHelpers {
 
-class GifsListWidget : public TabbedSelector::Inner, public InlineBots::Layout::Context, private base::Subscriber, private MTP::Sender {
+class GifsListWidget : public TabbedSelector::Inner,
+                       public InlineBots::Layout::Context,
+                       private base::Subscriber,
+                       private MTP::Sender {
 	Q_OBJECT
 
 public:
-	GifsListWidget(QWidget *parent, not_null<Window::Controller*> controller);
+	GifsListWidget(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void refreshRecent() override;
 	void preloadImages() override;
@@ -131,15 +134,15 @@ private:
 
 	struct Row {
 		int height = 0;
-		QVector<LayoutItem*> items;
+		QVector<LayoutItem *> items;
 	};
 	QVector<Row> _rows;
 	void clearInlineRows(bool resultsDeleted);
 
-	std::map<DocumentData*, std::unique_ptr<LayoutItem>> _gifLayouts;
+	std::map<DocumentData *, std::unique_ptr<LayoutItem>> _gifLayouts;
 	LayoutItem *layoutPrepareSavedGif(DocumentData *doc, qint32 position);
 
-	std::map<InlineResult*, std::unique_ptr<LayoutItem>> _inlineLayouts;
+	std::map<InlineResult *, std::unique_ptr<LayoutItem>> _inlineLayouts;
 	LayoutItem *layoutPrepareInlineResult(InlineResult *result, qint32 position);
 
 	bool inlineRowsAddItem(DocumentData *savedGif, InlineResult *result, Row &row, qint32 &sumWidth);
@@ -170,7 +173,6 @@ private:
 	PeerData *_inlineQueryPeer = nullptr;
 	QString _inlineQuery, _inlineNextQuery, _inlineNextOffset;
 	mtpRequestId _inlineRequestId = 0;
-
 };
 
 } // namespace ChatHelpers

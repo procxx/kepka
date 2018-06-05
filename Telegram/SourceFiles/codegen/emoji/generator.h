@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <QtCore/QString>
-#include <QtCore/QSet>
 #include "codegen/common/cpp_file.h"
-#include "codegen/emoji/options.h"
 #include "codegen/emoji/data.h"
+#include "codegen/emoji/options.h"
 #include "codegen/emoji/replaces.h"
+#include <QtCore/QSet>
+#include <QtCore/QString>
+#include <memory>
 
 namespace codegen {
 namespace emoji {
@@ -50,8 +50,7 @@ private:
 	bool writeSuggestionsSource();
 	bool writeSuggestionsHeader();
 
-	template <typename Callback>
-	bool enumerateWholeList(Callback callback);
+	template <typename Callback> bool enumerateWholeList(Callback callback);
 
 	bool writeInitCode();
 	bool writeSections();
@@ -59,7 +58,8 @@ private:
 	bool writeGetSections();
 	bool writeFindReplace();
 	bool writeFind();
-	bool writeFindFromDictionary(const std::map<QString, int, std::greater<QString>> &dictionary, bool skipPostfixes = false);
+	bool writeFindFromDictionary(const std::map<QString, int, std::greater<QString>> &dictionary,
+	                             bool skipPostfixes = false);
 	bool writeGetReplacements();
 	void startBinary();
 	bool writeStringBinary(common::CppFile *source, const QString &string);
@@ -82,7 +82,6 @@ private:
 
 	int _binaryFullLength = 0;
 	int _binaryCount = 0;
-
 };
 
 } // namespace emoji

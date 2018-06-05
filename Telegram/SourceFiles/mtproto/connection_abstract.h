@@ -29,7 +29,8 @@ class AbstractConnection : public QObject {
 	Q_OBJECT
 
 public:
-	AbstractConnection(QThread *thread) : _sentEncrypted(false) {
+	AbstractConnection(QThread *thread)
+	    : _sentEncrypted(false) {
 		moveToThread(thread);
 	}
 	AbstractConnection(const AbstractConnection &other) = delete;
@@ -43,7 +44,8 @@ public:
 		_sentEncrypted = true;
 	}
 
-	virtual void sendData(mtpBuffer &buffer) = 0; // has size + 3, buffer[0] = len, buffer[1] = packetnum, buffer[last] = crc32
+	virtual void
+	sendData(mtpBuffer &buffer) = 0; // has size + 3, buffer[0] = len, buffer[1] = packetnum, buffer[last] = crc32
 	virtual void disconnectFromServer() = 0;
 	virtual void connectTcp(const DcOptions::Endpoint &endpoint) = 0;
 	virtual void connectHttp(const DcOptions::Endpoint &endpoint) = 0;
@@ -84,7 +86,6 @@ protected:
 	// we send them simultaneously through TCP/HTTP/IPv4/IPv6 to choose the working one
 	static mtpBuffer preparePQFake(const MTPint128 &nonce);
 	static MTPResPQ readPQFakeReply(const mtpBuffer &buffer);
-
 };
 
 } // namespace internal

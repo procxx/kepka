@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/text/text_entity.h"
 
+#include "app.h"
 #include "auth_session.h"
 #include "lang/lang_tag.h"
-#include "app.h"
 
 #include <QStack>
 
@@ -31,8 +31,7 @@ namespace TextUtilities {
 // note: these names are taken from Unicode Specification.
 // All spaces in this names are replaced to SwitchingCase, all dashes ('-')
 // are replaced to underscore ('_')
-enum UnicodePoints
-{
+enum UnicodePoints {
 	Left_PointingDoubleAngleQuotationMark = 171,
 	Right_PointingDoubleAngleQuotationMark = 187,
 	EmDash = 8212,
@@ -42,12 +41,24 @@ namespace {
 
 QString ExpressionDomain() {
 	// Matches any domain name, containing at least one '.', including "file.txt".
-	return QString::fromUtf8("(?<![\\w\\$\\-\\_%=\\.])(?:([a-zA-Z]+)://)?((?:[A-Za-z" "\xd0\x90-\xd0\xaf\xd0\x81" "\xd0\xb0-\xd1\x8f\xd1\x91" "0-9\\-\\_]+\\.){1,10}([A-Za-z" "\xd1\x80\xd1\x84" "\\-\\d]{2,22})(\\:\\d+)?)");
+	return QString::fromUtf8(
+	    "(?<![\\w\\$\\-\\_%=\\.])(?:([a-zA-Z]+)://)?((?:[A-Za-z"
+	    "\xd0\x90-\xd0\xaf\xd0\x81"
+	    "\xd0\xb0-\xd1\x8f\xd1\x91"
+	    "0-9\\-\\_]+\\.){1,10}([A-Za-z"
+	    "\xd1\x80\xd1\x84"
+	    "\\-\\d]{2,22})(\\:\\d+)?)");
 }
 
 QString ExpressionDomainExplicit() {
 	// Matches any domain name, containing a protocol, including "test://localhost".
-	return QString::fromUtf8("(?<![\\w\\$\\-\\_%=\\.])(?:([a-zA-Z]+)://)((?:[A-Za-z" "\xd0\x90-\xd0\xaf\xd0\x81" "\xd0\xb0-\xd1\x8f\xd1\x91" "0-9\\-\\_]+\\.){0,10}([A-Za-z" "\xd1\x80\xd1\x84" "\\-\\d]{2,22})(\\:\\d+)?)");
+	return QString::fromUtf8(
+	    "(?<![\\w\\$\\-\\_%=\\.])(?:([a-zA-Z]+)://)((?:[A-Za-z"
+	    "\xd0\x90-\xd0\xaf\xd0\x81"
+	    "\xd0\xb0-\xd1\x8f\xd1\x91"
+	    "0-9\\-\\_]+\\.){0,10}([A-Za-z"
+	    "\xd1\x80\xd1\x84"
+	    "\\-\\d]{2,22})(\\:\\d+)?)");
 }
 
 QString ExpressionMailNameAtEnd() {
@@ -71,7 +82,8 @@ QString ExpressionMention() {
 }
 
 QString ExpressionBotCommand() {
-	return qsl("(^|[") + ExpressionSeparators(qsl("`\\*")) + qsl("])/[A-Za-z_0-9]{1,64}(@[A-Za-z_0-9]{5,32})?([\\W]|$)");
+	return qsl("(^|[") + ExpressionSeparators(qsl("`\\*")) +
+	       qsl("])/[A-Za-z_0-9]{1,64}(@[A-Za-z_0-9]{5,32})?([\\W]|$)");
 }
 
 QString ExpressionMarkdownBold() {
@@ -1134,14 +1146,14 @@ inline QChar RemoveOneAccent(quint32 code) {
 	case 65363: return QChar(115);
 	case 65367: return QChar(119);
 	case 1105: return QChar(1077);
-	default:
-	break;
+	default: break;
 	}
 	return QChar(0);
 }
 
 const QRegularExpression &RegExpWordSplit() {
-	static const auto result = QRegularExpression (qsl("[\\@\\s\\-\\+\\(\\)\\[\\]\\{\\}\\<\\>\\,\\.\\:\\!\\_\\;\\\"\\'\\x0]"));
+	static const auto result =
+	    QRegularExpression(qsl("[\\@\\s\\-\\+\\(\\)\\[\\]\\{\\}\\<\\>\\,\\.\\:\\!\\_\\;\\\"\\'\\x0]"));
 	return result;
 }
 
@@ -1322,14 +1334,19 @@ bool CutPart(TextWithEntities &sending, TextWithEntities &left, qint32 limit) {
 	bool goodInEntity = false, goodCanBreakEntity = false;
 
 	qint32 s = 0, half = limit / 2, goodLevel = 0;
-	for (const QChar *start = left.text.constData(), *ch = start, *end = left.text.constEnd(), *good = ch; ch != end; ++ch, ++s) {
-		while (currentEntity < entityCount && ch >= start + left.entities[currentEntity].offset() + left.entities[currentEntity].length()) {
+	for (const QChar *start = left.text.constData(), *ch = start, *end = left.text.constEnd(), *good = ch; ch != end;
+	     ++ch, ++s) {
+		while (currentEntity < entityCount &&
+		       ch >= start + left.entities[currentEntity].offset() + left.entities[currentEntity].length()) {
 			++currentEntity;
 		}
 
 		if (s > half) {
-			bool inEntity = (currentEntity < entityCount) && (ch > start + left.entities[currentEntity].offset()) && (ch < start + left.entities[currentEntity].offset() + left.entities[currentEntity].length());
-			EntityInTextType entityType = (currentEntity < entityCount) ? left.entities[currentEntity].type() : EntityInTextInvalid;
+			bool inEntity =
+			    (currentEntity < entityCount) && (ch > start + left.entities[currentEntity].offset()) &&
+			    (ch < start + left.entities[currentEntity].offset() + left.entities[currentEntity].length());
+			EntityInTextType entityType =
+			    (currentEntity < entityCount) ? left.entities[currentEntity].type() : EntityInTextInvalid;
 			bool canBreakEntity = (entityType == EntityInTextPre || entityType == EntityInTextCode);
 			qint32 noEntityLevel = inEntity ? 0 : 1;
 
@@ -1356,9 +1373,13 @@ bool CutPart(TextWithEntities &sending, TextWithEntities &left, qint32 limit) {
 						}
 					} else if (ch + 1 < end && chIsNewline(*(ch + 1))) {
 						markGoodAsLevel(15);
-					} else if (currentEntity < entityCount && ch + 1 == start + left.entities[currentEntity].offset() && left.entities[currentEntity].type() == EntityInTextPre) {
+					} else if (currentEntity < entityCount && ch + 1 == start + left.entities[currentEntity].offset() &&
+					           left.entities[currentEntity].type() == EntityInTextPre) {
 						markGoodAsLevel(14);
-					} else if (currentEntity > 0 && ch == start + left.entities[currentEntity - 1].offset() + left.entities[currentEntity - 1].length() && left.entities[currentEntity - 1].type() == EntityInTextPre) {
+					} else if (currentEntity > 0 &&
+					           ch == start + left.entities[currentEntity - 1].offset() +
+					                     left.entities[currentEntity - 1].length() &&
+					           left.entities[currentEntity - 1].type() == EntityInTextPre) {
 						markGoodAsLevel(14);
 					} else {
 						markGoodAsLevel(13);
@@ -1434,7 +1455,8 @@ bool textcmdStartsLink(const QChar *start, qint32 len, qint32 commandOffset) {
 	return false;
 }
 
-bool checkTagStartInCommand(const QChar *start, qint32 len, qint32 tagStart, qint32 &commandOffset, bool &commandIsLink, bool &inLink) {
+bool checkTagStartInCommand(const QChar *start, qint32 len, qint32 tagStart, qint32 &commandOffset, bool &commandIsLink,
+                            bool &inLink) {
 	bool inCommand = false;
 	const QChar *commandEnd = start + commandOffset;
 	while (commandOffset < len && tagStart > commandOffset) { // skip commands, evaluating are we in link or not
@@ -1471,16 +1493,31 @@ EntitiesInText EntitiesFromMTP(const QVector<MTPMessageEntity> &entities) {
 		result.reserve(entities.size());
 		for_const (auto &entity, entities) {
 			switch (entity.type()) {
-			case mtpc_messageEntityUrl: { auto &d = entity.c_messageEntityUrl(); result.push_back(EntityInText(EntityInTextUrl, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityTextUrl: { auto &d = entity.c_messageEntityTextUrl(); result.push_back(EntityInText(EntityInTextCustomUrl, d.voffset.v, d.vlength.v, Clean(qs(d.vurl)))); } break;
-			case mtpc_messageEntityEmail: { auto &d = entity.c_messageEntityEmail(); result.push_back(EntityInText(EntityInTextEmail, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityHashtag: { auto &d = entity.c_messageEntityHashtag(); result.push_back(EntityInText(EntityInTextHashtag, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityMention: { auto &d = entity.c_messageEntityMention(); result.push_back(EntityInText(EntityInTextMention, d.voffset.v, d.vlength.v)); } break;
+			case mtpc_messageEntityUrl: {
+				auto &d = entity.c_messageEntityUrl();
+				result.push_back(EntityInText(EntityInTextUrl, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityTextUrl: {
+				auto &d = entity.c_messageEntityTextUrl();
+				result.push_back(EntityInText(EntityInTextCustomUrl, d.voffset.v, d.vlength.v, Clean(qs(d.vurl))));
+			} break;
+			case mtpc_messageEntityEmail: {
+				auto &d = entity.c_messageEntityEmail();
+				result.push_back(EntityInText(EntityInTextEmail, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityHashtag: {
+				auto &d = entity.c_messageEntityHashtag();
+				result.push_back(EntityInText(EntityInTextHashtag, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityMention: {
+				auto &d = entity.c_messageEntityMention();
+				result.push_back(EntityInText(EntityInTextMention, d.voffset.v, d.vlength.v));
+			} break;
 			case mtpc_messageEntityMentionName: {
 				auto &d = entity.c_messageEntityMentionName();
 				auto data = [&d] {
 					if (auto user = App::userLoaded(peerFromUser(d.vuser_id))) {
-						return MentionNameDataFromFields({ d.vuser_id.v, user->access });
+						return MentionNameDataFromFields({d.vuser_id.v, user->access});
 					}
 					return MentionNameDataFromFields(d.vuser_id.v);
 				};
@@ -1493,7 +1530,7 @@ EntitiesInText EntitiesFromMTP(const QVector<MTPMessageEntity> &entities) {
 						return MentionNameDataFromFields(Auth().userId());
 					} else if (d.vuser_id.type() == mtpc_inputUser) {
 						auto &user = d.vuser_id.c_inputUser();
-						return MentionNameDataFromFields({ user.vuser_id.v, user.vaccess_hash.v });
+						return MentionNameDataFromFields({user.vuser_id.v, user.vaccess_hash.v});
 					}
 					return QString();
 				})();
@@ -1501,11 +1538,26 @@ EntitiesInText EntitiesFromMTP(const QVector<MTPMessageEntity> &entities) {
 					result.push_back(EntityInText(EntityInTextMentionName, d.voffset.v, d.vlength.v, data));
 				}
 			} break;
-			case mtpc_messageEntityBotCommand: { auto &d = entity.c_messageEntityBotCommand(); result.push_back(EntityInText(EntityInTextBotCommand, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityBold: { auto &d = entity.c_messageEntityBold(); result.push_back(EntityInText(EntityInTextBold, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityItalic: { auto &d = entity.c_messageEntityItalic(); result.push_back(EntityInText(EntityInTextItalic, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityCode: { auto &d = entity.c_messageEntityCode(); result.push_back(EntityInText(EntityInTextCode, d.voffset.v, d.vlength.v)); } break;
-			case mtpc_messageEntityPre: { auto &d = entity.c_messageEntityPre(); result.push_back(EntityInText(EntityInTextPre, d.voffset.v, d.vlength.v, Clean(qs(d.vlanguage)))); } break;
+			case mtpc_messageEntityBotCommand: {
+				auto &d = entity.c_messageEntityBotCommand();
+				result.push_back(EntityInText(EntityInTextBotCommand, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityBold: {
+				auto &d = entity.c_messageEntityBold();
+				result.push_back(EntityInText(EntityInTextBold, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityItalic: {
+				auto &d = entity.c_messageEntityItalic();
+				result.push_back(EntityInText(EntityInTextItalic, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityCode: {
+				auto &d = entity.c_messageEntityCode();
+				result.push_back(EntityInText(EntityInTextCode, d.voffset.v, d.vlength.v));
+			} break;
+			case mtpc_messageEntityPre: {
+				auto &d = entity.c_messageEntityPre();
+				result.push_back(EntityInText(EntityInTextPre, d.voffset.v, d.vlength.v, Clean(qs(d.vlanguage))));
+			} break;
 			}
 		}
 	}
@@ -1517,12 +1569,9 @@ MTPVector<MTPMessageEntity> EntitiesToMTP(const EntitiesInText &entities, Conver
 	v.reserve(entities.size());
 	for_const (auto &entity, entities) {
 		if (entity.length() <= 0) continue;
-		if (option == ConvertOption::SkipLocal
-			&& entity.type() != EntityInTextBold
-			&& entity.type() != EntityInTextItalic
-			&& entity.type() != EntityInTextCode
-			&& entity.type() != EntityInTextPre
-			&& entity.type() != EntityInTextMentionName) {
+		if (option == ConvertOption::SkipLocal && entity.type() != EntityInTextBold &&
+		    entity.type() != EntityInTextItalic && entity.type() != EntityInTextCode &&
+		    entity.type() != EntityInTextPre && entity.type() != EntityInTextMentionName) {
 			continue;
 		}
 
@@ -1531,7 +1580,9 @@ MTPVector<MTPMessageEntity> EntitiesToMTP(const EntitiesInText &entities, Conver
 		switch (entity.type()) {
 		case EntityInTextInvalid: assert(false); // temp
 		case EntityInTextUrl: v.push_back(MTP_messageEntityUrl(offset, length)); break;
-		case EntityInTextCustomUrl: v.push_back(MTP_messageEntityTextUrl(offset, length, MTP_string(entity.data()))); break;
+		case EntityInTextCustomUrl:
+			v.push_back(MTP_messageEntityTextUrl(offset, length, MTP_string(entity.data())));
+			break;
 		case EntityInTextEmail: v.push_back(MTP_messageEntityEmail(offset, length)); break;
 		case EntityInTextHashtag: v.push_back(MTP_messageEntityHashtag(offset, length)); break;
 		case EntityInTextMention: v.push_back(MTP_messageEntityMention(offset, length)); break;
@@ -1561,8 +1612,9 @@ MTPVector<MTPMessageEntity> EntitiesToMTP(const EntitiesInText &entities, Conver
 
 struct MarkdownPart {
 	MarkdownPart() = default;
-	MarkdownPart(EntityInTextType type) : type(type), outerStart(-1) {
-	}
+	MarkdownPart(EntityInTextType type)
+	    : type(type)
+	    , outerStart(-1) {}
 	EntityInTextType type = EntityInTextInvalid;
 	int outerStart = 0;
 	int innerStart = 0;
@@ -1627,9 +1679,8 @@ void AdjustMarkdownPrePart(MarkdownPart &result, const TextWithEntities &text, b
 			lastEntityInsideEnd = entity.offset() + entity.length();
 		}
 	}
-	while (result.outerStart > lastEntityBeforeEnd
-		&& chIsSpace(*(start + result.outerStart - 1), rich)
-		&& !chIsNewline(*(start + result.outerStart - 1))) {
+	while (result.outerStart > lastEntityBeforeEnd && chIsSpace(*(start + result.outerStart - 1), rich) &&
+	       !chIsNewline(*(start + result.outerStart - 1))) {
 		--result.outerStart;
 	}
 	result.addNewlineBefore = (result.outerStart > 0 && !chIsNewline(*(start + result.outerStart - 1)));
@@ -1652,9 +1703,8 @@ void AdjustMarkdownPrePart(MarkdownPart &result, const TextWithEntities &text, b
 		}
 	}
 
-	while (result.outerEnd < firstEntityAfterStart
-		&& chIsSpace(*(start + result.outerEnd))
-		&& !chIsNewline(*(start + result.outerEnd))) {
+	while (result.outerEnd < firstEntityAfterStart && chIsSpace(*(start + result.outerEnd)) &&
+	       !chIsNewline(*(start + result.outerEnd))) {
 		++result.outerEnd;
 	}
 	result.addNewlineAfter = (result.outerEnd < length && !chIsNewline(*(start + result.outerEnd)));
@@ -1667,10 +1717,10 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 	auto newResult = TextWithEntities();
 
 	MarkdownPart computedParts[4] = {
-		{ EntityInTextBold },
-		{ EntityInTextItalic },
-		{ EntityInTextPre },
-		{ EntityInTextCode },
+	    {EntityInTextBold},
+	    {EntityInTextItalic},
+	    {EntityInTextPre},
+	    {EntityInTextCode},
 	};
 
 	auto existingEntityIndex = 0;
@@ -1721,7 +1771,8 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 		}
 
 		// Check if start sequence intersects a command.
-		auto inCommand = checkTagStartInCommand(start, length, part.outerStart, nextCommandOffset, commandIsLink, inLink);
+		auto inCommand =
+		    checkTagStartInCommand(start, length, part.outerStart, nextCommandOffset, commandIsLink, inLink);
 		if (inCommand || inLink) {
 			matchFromOffset = nextCommandOffset;
 			continue;
@@ -1730,8 +1781,9 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 		// Check if start or end sequences intersect any existing entity.
 		auto intersectedEntityEnd = 0;
 		for_const (auto &entity, result.entities) {
-			if (std::min(part.innerStart, entity.offset() + entity.length()) > std::max(part.outerStart, entity.offset()) ||
-				std::min(part.outerEnd, entity.offset() + entity.length()) > std::max(part.innerEnd, entity.offset())) {
+			if (std::min(part.innerStart, entity.offset() + entity.length()) >
+			        std::max(part.outerStart, entity.offset()) ||
+			    std::min(part.outerEnd, entity.offset() + entity.length()) > std::max(part.innerEnd, entity.offset())) {
 				intersectedEntityEnd = entity.offset() + entity.length();
 				break;
 			}
@@ -1746,7 +1798,9 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 		}
 
 		if (newResult.text.isEmpty()) newResult.text.reserve(result.text.size());
-		for (; existingEntityIndex < existingEntitiesCount && result.entities[existingEntityIndex].offset() < part.innerStart; ++existingEntityIndex) {
+		for (; existingEntityIndex < existingEntitiesCount &&
+		       result.entities[existingEntityIndex].offset() < part.innerStart;
+		     ++existingEntityIndex) {
 			auto &entity = result.entities[existingEntityIndex];
 			newResult.entities.push_back(entity);
 			newResult.entities.back().shiftLeft(existingEntityShiftLeft);
@@ -1761,7 +1815,9 @@ void ParseMarkdown(TextWithEntities &result, bool rich) {
 		auto entityLength = part.innerEnd - part.innerStart;
 		newResult.entities.push_back(EntityInText(part.type, entityStart, entityLength));
 
-		for (; existingEntityIndex < existingEntitiesCount && result.entities[existingEntityIndex].offset() <= part.innerEnd; ++existingEntityIndex) {
+		for (; existingEntityIndex < existingEntitiesCount &&
+		       result.entities[existingEntityIndex].offset() <= part.innerEnd;
+		     ++existingEntityIndex) {
 			auto &entity = result.entities[existingEntityIndex];
 			newResult.entities.push_back(entity);
 			newResult.entities.back().shiftLeft(existingEntityShiftLeft);
@@ -1813,21 +1869,23 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 		auto mDomain = RegExpDomain().match(result.text, matchOffset);
 		auto mExplicitDomain = RegExpDomainExplicit().match(result.text, matchOffset);
 		auto mHashtag = withHashtags ? RegExpHashtag().match(result.text, matchOffset) : QRegularExpressionMatch();
-		auto mMention = withMentions ? RegExpMention().match(result.text, std::max(mentionSkip, matchOffset)) : QRegularExpressionMatch();
-		auto mBotCommand = withBotCommands ? RegExpBotCommand().match(result.text, matchOffset) : QRegularExpressionMatch();
+		auto mMention = withMentions ? RegExpMention().match(result.text, std::max(mentionSkip, matchOffset)) :
+		                               QRegularExpressionMatch();
+		auto mBotCommand =
+		    withBotCommands ? RegExpBotCommand().match(result.text, matchOffset) : QRegularExpressionMatch();
 
 		EntityInTextType lnkType = EntityInTextUrl;
 		qint32 lnkStart = 0, lnkLength = 0;
 		qint32 domainStart = mDomain.hasMatch() ? mDomain.capturedStart() : INT_MAX,
-			domainEnd = mDomain.hasMatch() ? mDomain.capturedEnd() : INT_MAX,
-			explicitDomainStart = mExplicitDomain.hasMatch() ? mExplicitDomain.capturedStart() : INT_MAX,
-			explicitDomainEnd = mExplicitDomain.hasMatch() ? mExplicitDomain.capturedEnd() : INT_MAX,
-			hashtagStart = mHashtag.hasMatch() ? mHashtag.capturedStart() : INT_MAX,
-			hashtagEnd = mHashtag.hasMatch() ? mHashtag.capturedEnd() : INT_MAX,
-			mentionStart = mMention.hasMatch() ? mMention.capturedStart() : INT_MAX,
-			mentionEnd = mMention.hasMatch() ? mMention.capturedEnd() : INT_MAX,
-			botCommandStart = mBotCommand.hasMatch() ? mBotCommand.capturedStart() : INT_MAX,
-			botCommandEnd = mBotCommand.hasMatch() ? mBotCommand.capturedEnd() : INT_MAX;
+		       domainEnd = mDomain.hasMatch() ? mDomain.capturedEnd() : INT_MAX,
+		       explicitDomainStart = mExplicitDomain.hasMatch() ? mExplicitDomain.capturedStart() : INT_MAX,
+		       explicitDomainEnd = mExplicitDomain.hasMatch() ? mExplicitDomain.capturedEnd() : INT_MAX,
+		       hashtagStart = mHashtag.hasMatch() ? mHashtag.capturedStart() : INT_MAX,
+		       hashtagEnd = mHashtag.hasMatch() ? mHashtag.capturedEnd() : INT_MAX,
+		       mentionStart = mMention.hasMatch() ? mMention.capturedStart() : INT_MAX,
+		       mentionEnd = mMention.hasMatch() ? mMention.capturedEnd() : INT_MAX,
+		       botCommandStart = mBotCommand.hasMatch() ? mBotCommand.capturedStart() : INT_MAX,
+		       botCommandEnd = mBotCommand.hasMatch() ? mBotCommand.capturedEnd() : INT_MAX;
 		if (mHashtag.hasMatch()) {
 			if (!mHashtag.capturedRef(1).isEmpty()) {
 				++hashtagStart;
@@ -1865,7 +1923,8 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 				--botCommandEnd;
 			}
 		}
-		if (!mDomain.hasMatch() && !mExplicitDomain.hasMatch() && !mHashtag.hasMatch() && !mMention.hasMatch() && !mBotCommand.hasMatch()) {
+		if (!mDomain.hasMatch() && !mExplicitDomain.hasMatch() && !mHashtag.hasMatch() && !mMention.hasMatch() &&
+		    !mBotCommand.hasMatch()) {
 			break;
 		}
 
@@ -1936,7 +1995,7 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 				}
 				lnkStart = domainStart;
 
-				QStack<const QChar*> parenth;
+				QStack<const QChar *> parenth;
 				const QChar *domainEnd = start + mDomain.capturedEnd(), *p = domainEnd;
 				for (; p < end; ++p) {
 					QChar ch(*p);
@@ -1957,7 +2016,8 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 					} else if (ch == ')' || ch == ']' || ch == '}' || ch == '>') {
 						if (parenth.isEmpty()) break;
 						const QChar *q = parenth.pop(), open(*q);
-						if ((ch == ')' && open != '(') || (ch == ']' && open != '[') || (ch == '}' && open != '{') || (ch == '>' && open != '<')) {
+						if ((ch == ')' && open != '(') || (ch == ']' && open != '[') || (ch == '}' && open != '{') ||
+						    (ch == '>' && open != '<')) {
 							p = q;
 							break;
 						}
@@ -1972,7 +2032,8 @@ void ParseEntities(TextWithEntities &result, qint32 flags, bool rich) {
 				lnkLength = (p - start) - lnkStart;
 			}
 		}
-		for (; existingEntityIndex < existingEntitiesCount && result.entities[existingEntityIndex].offset() <= lnkStart; ++existingEntityIndex) {
+		for (; existingEntityIndex < existingEntitiesCount && result.entities[existingEntityIndex].offset() <= lnkStart;
+		     ++existingEntityIndex) {
 			auto &entity = result.entities[existingEntityIndex];
 			accumulate_max(existingEntityEnd, entity.offset() + entity.length());
 			newEntities.push_back(entity);
@@ -2229,7 +2290,8 @@ void Trim(TextWithEntities &result) {
 
 namespace Lang {
 
-TextWithEntities ReplaceTag<TextWithEntities>::Call(TextWithEntities &&original, ushort tag, const TextWithEntities &replacement) {
+TextWithEntities ReplaceTag<TextWithEntities>::Call(TextWithEntities &&original, ushort tag,
+                                                    const TextWithEntities &replacement) {
 	auto replacementPosition = FindTagReplacementPosition(original.text, tag);
 	if (replacementPosition < 0) {
 		return std::move(original);
@@ -2244,7 +2306,8 @@ TextWithEntities ReplaceTag<TextWithEntities>::Call(TextWithEntities &&original,
 
 		auto replacementEnd = replacementPosition + replacement.text.size();
 		auto replacementEntity = replacement.entities.cbegin();
-		auto addReplacementEntitiesUntil = [&replacementEntity, &replacement, &result, replacementPosition, replacementEnd](int untilPosition) {
+		auto addReplacementEntitiesUntil = [&replacementEntity, &replacement, &result, replacementPosition,
+		                                    replacementEnd](int untilPosition) {
 			while (replacementEntity != replacement.entities.cend()) {
 				auto newOffset = replacementPosition + replacementEntity->offset();
 				if (newOffset >= untilPosition) {
@@ -2254,7 +2317,8 @@ TextWithEntities ReplaceTag<TextWithEntities>::Call(TextWithEntities &&original,
 				newOffset = snap(newOffset, replacementPosition, replacementEnd);
 				newEnd = snap(newEnd, replacementPosition, replacementEnd);
 				if (auto newLength = newEnd - newOffset) {
-					result.entities.push_back(EntityInText(replacementEntity->type(), newOffset, newLength, replacementEntity->data()));
+					result.entities.push_back(
+					    EntityInText(replacementEntity->type(), newOffset, newLength, replacementEntity->data()));
 				}
 				++replacementEntity;
 			}

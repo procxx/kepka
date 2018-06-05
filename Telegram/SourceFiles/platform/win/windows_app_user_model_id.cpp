@@ -18,17 +18,17 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "settings.h"
 #include "platform/win/windows_app_user_model_id.h"
+#include "settings.h"
 
 #include "platform/win/windows_dlls.h"
-#include <propvarutil.h>
 #include <propkey.h>
+#include <propvarutil.h>
 
 #include <wrl/client.h>
 
-#include <QString>
 #include <QDir>
+#include <QString>
 
 using namespace Microsoft::WRL;
 
@@ -36,8 +36,10 @@ namespace Platform {
 namespace AppUserModelId {
 namespace {
 
-const PROPERTYKEY pkey_AppUserModel_ID = { { 0x9F4C2855, 0x9F79, 0x4B39, { 0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3 } }, 5 };
-const PROPERTYKEY pkey_AppUserModel_StartPinOption = { { 0x9F4C2855, 0x9F79, 0x4B39, { 0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3 } }, 12 };
+const PROPERTYKEY pkey_AppUserModel_ID = {
+    {0x9F4C2855, 0x9F79, 0x4B39, {0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3}}, 5};
+const PROPERTYKEY pkey_AppUserModel_StartPinOption = {
+    {0x9F4C2855, 0x9F79, 0x4B39, {0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3}}, 12};
 
 #ifdef OS_WIN_STORE
 const WCHAR AppUserModelIdRelease[] = L"Telegram.TelegramDesktop.Store";
@@ -71,7 +73,7 @@ void checkPinned() {
 
 	WCHAR src[MAX_PATH];
 	GetModuleFileName(GetModuleHandle(0), src, MAX_PATH);
-	BY_HANDLE_FILE_INFORMATION srcinfo = { 0 };
+	BY_HANDLE_FILE_INFORMATION srcinfo = {0};
 	HANDLE srcfile = CreateFile(src, 0x00, 0x00, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (srcfile == INVALID_HANDLE_VALUE) return;
 	BOOL srcres = GetFileInformationByHandle(srcfile, &srcinfo);
@@ -108,14 +110,15 @@ void checkPinned() {
 			hr = shellLink->GetPath(dst, MAX_PATH, 0, 0);
 			if (!SUCCEEDED(hr)) continue;
 
-			BY_HANDLE_FILE_INFORMATION dstinfo = { 0 };
+			BY_HANDLE_FILE_INFORMATION dstinfo = {0};
 			HANDLE dstfile = CreateFile(dst, 0x00, 0x00, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 			if (dstfile == INVALID_HANDLE_VALUE) continue;
 			BOOL dstres = GetFileInformationByHandle(dstfile, &dstinfo);
 			CloseHandle(dstfile);
 			if (!dstres) continue;
 
-			if (srcinfo.dwVolumeSerialNumber == dstinfo.dwVolumeSerialNumber && srcinfo.nFileIndexLow == dstinfo.nFileIndexLow && srcinfo.nFileIndexHigh == dstinfo.nFileIndexHigh) {
+			if (srcinfo.dwVolumeSerialNumber == dstinfo.dwVolumeSerialNumber &&
+			    srcinfo.nFileIndexLow == dstinfo.nFileIndexLow && srcinfo.nFileIndexHigh == dstinfo.nFileIndexHigh) {
 				ComPtr<IPropertyStore> propertyStore;
 				hr = shellLink.As(&propertyStore);
 				if (!SUCCEEDED(hr)) return;
@@ -196,7 +199,7 @@ void cleanupShortcut() {
 
 	WCHAR szGotPath[MAX_PATH];
 	WIN32_FIND_DATA wfd;
-	hr = shellLink->GetPath(szGotPath, MAX_PATH, (WIN32_FIND_DATA*)&wfd, SLGP_SHORTPATH);
+	hr = shellLink->GetPath(szGotPath, MAX_PATH, (WIN32_FIND_DATA *)&wfd, SLGP_SHORTPATH);
 	if (!SUCCEEDED(hr)) return;
 
 	if (QDir::toNativeSeparators(cExeDir() + cExeName()).toStdWString() == szGotPath) {
@@ -287,7 +290,8 @@ bool validateShortcut() {
 	hr = shellLink->SetArguments(L"");
 	if (!SUCCEEDED(hr)) return false;
 
-	hr = shellLink->SetWorkingDirectory(QDir::toNativeSeparators(QDir(cWorkingDir()).absolutePath()).toStdWString().c_str());
+	hr = shellLink->SetWorkingDirectory(
+	    QDir::toNativeSeparators(QDir(cWorkingDir()).absolutePath()).toStdWString().c_str());
 	if (!SUCCEEDED(hr)) return false;
 
 	ComPtr<IPropertyStore> propertyStore;

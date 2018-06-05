@@ -20,33 +20,33 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QPair>
 #include <QMap>
+#include <QPair>
 #include <QString>
 
+#include "base/flags.h"
+#include "core/click_handler.h"
 #include "private/qfixed_p.h"
 #include "styles/style_basic.h"
-#include "ui/twidget.h"
-#include "core/click_handler.h"
-#include "ui/text/text_entity.h"
 #include "ui/emoji_config.h"
-#include "base/flags.h"
+#include "ui/text/text_entity.h"
+#include "ui/twidget.h"
 
 static const QChar TextCommand(0x0010);
 enum TextCommands {
-	TextCommandBold        = 0x01,
-	TextCommandNoBold      = 0x02,
-	TextCommandItalic      = 0x03,
-	TextCommandNoItalic    = 0x04,
-	TextCommandUnderline   = 0x05,
+	TextCommandBold = 0x01,
+	TextCommandNoBold = 0x02,
+	TextCommandItalic = 0x03,
+	TextCommandNoItalic = 0x04,
+	TextCommandUnderline = 0x05,
 	TextCommandNoUnderline = 0x06,
-	TextCommandSemibold    = 0x07,
-	TextCommandNoSemibold  = 0x08,
-	TextCommandLinkIndex   = 0x09, // 0 - NoLink
-	TextCommandLinkText    = 0x0A,
-	TextCommandSkipBlock   = 0x0D,
+	TextCommandSemibold = 0x07,
+	TextCommandNoSemibold = 0x08,
+	TextCommandLinkIndex = 0x09, // 0 - NoLink
+	TextCommandLinkText = 0x0A,
+	TextCommandSkipBlock = 0x0D,
 
-	TextCommandLangTag     = 0x20,
+	TextCommandLangTag = 0x20,
 };
 
 struct TextParseOptions {
@@ -58,16 +58,18 @@ struct TextParseOptions {
 extern const TextParseOptions _defaultOptions, _textPlainOptions;
 
 enum class TextSelectType {
-	Letters    = 0x01,
-	Words      = 0x02,
+	Letters = 0x01,
+	Words = 0x02,
 	Paragraphs = 0x03,
 };
 
 struct TextSelection {
-	constexpr TextSelection() : from(0), to(0) {
-	}
-	constexpr TextSelection(quint16 from, quint16 to) : from(from), to(to) {
-	}
+	constexpr TextSelection()
+	    : from(0)
+	    , to(0) {}
+	constexpr TextSelection(quint16 from, quint16 to)
+	    : from(from)
+	    , to(to) {}
 	constexpr bool empty() const {
 		return from == to;
 	}
@@ -81,7 +83,7 @@ inline bool operator!=(TextSelection a, TextSelection b) {
 	return !(a == b);
 }
 
-static constexpr TextSelection AllTextSelection = { 0, 0xFFFF };
+static constexpr TextSelection AllTextSelection = {0, 0xFFFF};
 
 typedef QPair<QString, QString> TextCustomTag; // open str and close str
 typedef QMap<QChar, TextCustomTag> TextCustomTagsMap;
@@ -90,7 +92,8 @@ class ITextBlock;
 class Text {
 public:
 	Text(qint32 minResizeWidth = QFIXED_MAX);
-	Text(const style::TextStyle &st, const QString &text, const TextParseOptions &options = _defaultOptions, qint32 minResizeWidth = QFIXED_MAX, bool richText = false);
+	Text(const style::TextStyle &st, const QString &text, const TextParseOptions &options = _defaultOptions,
+	     qint32 minResizeWidth = QFIXED_MAX, bool richText = false);
 	Text(const Text &other);
 	Text(Text &&other);
 	Text &operator=(const Text &other);
@@ -100,8 +103,10 @@ public:
 	int countHeight(int width) const;
 	void countLineWidths(int width, QVector<int> *lineWidths) const;
 	void setText(const style::TextStyle &st, const QString &text, const TextParseOptions &options = _defaultOptions);
-	void setRichText(const style::TextStyle &st, const QString &text, TextParseOptions options = _defaultOptions, const TextCustomTagsMap &custom = TextCustomTagsMap());
-	void setMarkedText(const style::TextStyle &st, const TextWithEntities &textWithEntities, const TextParseOptions &options = _defaultOptions);
+	void setRichText(const style::TextStyle &st, const QString &text, TextParseOptions options = _defaultOptions,
+	                 const TextCustomTagsMap &custom = TextCustomTagsMap());
+	void setMarkedText(const style::TextStyle &st, const TextWithEntities &textWithEntities,
+	                   const TextParseOptions &options = _defaultOptions);
 
 	void setLink(quint16 lnkIndex, const ClickHandlerPtr &lnk);
 	bool hasLinks() const;
@@ -117,32 +122,47 @@ public:
 		return _minHeight;
 	}
 
-	void draw(Painter &p, qint32 left, qint32 top, qint32 width, style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, TextSelection selection = { 0, 0 }, bool fullWidthSelection = true) const;
-	void drawElided(Painter &p, qint32 left, qint32 top, qint32 width, qint32 lines = 1, style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, qint32 removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const;
-	void drawLeft(Painter &p, qint32 left, qint32 top, qint32 width, qint32 outerw, style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, TextSelection selection = { 0, 0 }) const {
+	void draw(Painter &p, qint32 left, qint32 top, qint32 width, style::align align = style::al_left, qint32 yFrom = 0,
+	          qint32 yTo = -1, TextSelection selection = {0, 0}, bool fullWidthSelection = true) const;
+	void drawElided(Painter &p, qint32 left, qint32 top, qint32 width, qint32 lines = 1,
+	                style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, qint32 removeFromEnd = 0,
+	                bool breakEverywhere = false, TextSelection selection = {0, 0}) const;
+	void drawLeft(Painter &p, qint32 left, qint32 top, qint32 width, qint32 outerw, style::align align = style::al_left,
+	              qint32 yFrom = 0, qint32 yTo = -1, TextSelection selection = {0, 0}) const {
 		draw(p, rtl() ? (outerw - left - width) : left, top, width, align, yFrom, yTo, selection);
 	}
-	void drawLeftElided(Painter &p, qint32 left, qint32 top, qint32 width, qint32 outerw, qint32 lines = 1, style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, qint32 removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const {
-		drawElided(p, rtl() ? (outerw - left - width) : left, top, width, lines, align, yFrom, yTo, removeFromEnd, breakEverywhere, selection);
+	void drawLeftElided(Painter &p, qint32 left, qint32 top, qint32 width, qint32 outerw, qint32 lines = 1,
+	                    style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1,
+	                    qint32 removeFromEnd = 0, bool breakEverywhere = false,
+	                    TextSelection selection = {0, 0}) const {
+		drawElided(p, rtl() ? (outerw - left - width) : left, top, width, lines, align, yFrom, yTo, removeFromEnd,
+		           breakEverywhere, selection);
 	}
-	void drawRight(Painter &p, qint32 right, qint32 top, qint32 width, qint32 outerw, style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, TextSelection selection = { 0, 0 }) const {
+	void drawRight(Painter &p, qint32 right, qint32 top, qint32 width, qint32 outerw,
+	               style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1,
+	               TextSelection selection = {0, 0}) const {
 		draw(p, rtl() ? right : (outerw - right - width), top, width, align, yFrom, yTo, selection);
 	}
-	void drawRightElided(Painter &p, qint32 right, qint32 top, qint32 width, qint32 outerw, qint32 lines = 1, style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1, qint32 removeFromEnd = 0, bool breakEverywhere = false, TextSelection selection = { 0, 0 }) const {
-		drawElided(p, rtl() ? right : (outerw - right - width), top, width, lines, align, yFrom, yTo, removeFromEnd, breakEverywhere, selection);
+	void drawRightElided(Painter &p, qint32 right, qint32 top, qint32 width, qint32 outerw, qint32 lines = 1,
+	                     style::align align = style::al_left, qint32 yFrom = 0, qint32 yTo = -1,
+	                     qint32 removeFromEnd = 0, bool breakEverywhere = false,
+	                     TextSelection selection = {0, 0}) const {
+		drawElided(p, rtl() ? right : (outerw - right - width), top, width, lines, align, yFrom, yTo, removeFromEnd,
+		           breakEverywhere, selection);
 	}
 
 	struct StateRequest {
 		enum class Flag {
 			BreakEverywhere = (1 << 0),
-			LookupSymbol    = (1 << 1),
-			LookupLink      = (1 << 2),
+			LookupSymbol = (1 << 1),
+			LookupLink = (1 << 2),
 		};
 		using Flags = base::flags<Flag>;
-		friend inline constexpr auto is_flag_type(Flag) { return true; };
+		friend inline constexpr auto is_flag_type(Flag) {
+			return true;
+		};
 
-		StateRequest() {
-		}
+		StateRequest() {}
 
 		style::align align = style::al_left;
 		Flags flags = Flag::LookupLink;
@@ -158,15 +178,15 @@ public:
 		return getState(rtlpoint(point, outerw), width, request);
 	}
 	struct StateRequestElided : public StateRequest {
-		StateRequestElided() {
-		}
-		StateRequestElided(const StateRequest &other) : StateRequest(other) {
-		}
+		StateRequestElided() {}
+		StateRequestElided(const StateRequest &other)
+		    : StateRequest(other) {}
 		int lines = 1;
 		int removeFromEnd = 0;
-    };
+	};
 	StateResult getStateElided(QPoint point, int width, StateRequestElided request = StateRequestElided()) const;
-	StateResult getStateElidedLeft(QPoint point, int width, int outerw, StateRequestElided request = StateRequestElided()) const {
+	StateResult getStateElidedLeft(QPoint point, int width, int outerw,
+	                               StateRequestElided request = StateRequestElided()) const {
 		return getStateElided(rtlpoint(point, outerw), width, request);
 	}
 
@@ -183,7 +203,8 @@ public:
 		return _text.size();
 	}
 
-	TextWithEntities originalTextWithEntities(TextSelection selection = AllTextSelection, ExpandLinksMode mode = ExpandLinksShortened) const;
+	TextWithEntities originalTextWithEntities(TextSelection selection = AllTextSelection,
+	                                          ExpandLinksMode mode = ExpandLinksShortened) const;
 	QString originalText(TextSelection selection = AllTextSelection, ExpandLinksMode mode = ExpandLinksShortened) const;
 
 	bool lastDots(qint32 dots, qint32 maxdots = 3) { // hack for typing animation
@@ -213,17 +234,21 @@ private:
 	using TextLinks = QVector<ClickHandlerPtr>;
 
 	quint16 countBlockEnd(const TextBlocks::const_iterator &i, const TextBlocks::const_iterator &e) const;
-	quint16 countBlockLength(const Text::TextBlocks::const_iterator &i, const Text::TextBlocks::const_iterator &e) const;
+	quint16 countBlockLength(const Text::TextBlocks::const_iterator &i,
+	                         const Text::TextBlocks::const_iterator &e) const;
 
 	// Template method for originalText(), originalTextWithEntities().
-	template <typename AppendPartCallback, typename ClickHandlerStartCallback, typename ClickHandlerFinishCallback, typename FlagsChangeCallback>
-	void enumerateText(TextSelection selection, AppendPartCallback appendPartCallback, ClickHandlerStartCallback clickHandlerStartCallback, ClickHandlerFinishCallback clickHandlerFinishCallback, FlagsChangeCallback flagsChangeCallback) const;
+	template <typename AppendPartCallback, typename ClickHandlerStartCallback, typename ClickHandlerFinishCallback,
+	          typename FlagsChangeCallback>
+	void enumerateText(TextSelection selection, AppendPartCallback appendPartCallback,
+	                   ClickHandlerStartCallback clickHandlerStartCallback,
+	                   ClickHandlerFinishCallback clickHandlerFinishCallback,
+	                   FlagsChangeCallback flagsChangeCallback) const;
 
 	// Template method for countWidth(), countHeight(), countLineWidths().
 	// callback(lineWidth, lineHeight) will be called for all lines with:
 	// QFixed lineWidth, int lineHeight
-	template <typename Callback>
-	void enumerateLines(int w, Callback callback) const;
+	template <typename Callback> void enumerateLines(int w, Callback callback) const;
 
 	void recountNaturalSize(bool initial, Qt::LayoutDirection optionsDir = Qt::LayoutDirectionAuto);
 
@@ -245,10 +270,9 @@ private:
 
 	friend class TextParser;
 	friend class TextPainter;
-
 };
 inline TextSelection snapSelection(int from, int to) {
-	return { static_cast<quint16>(snap(from, 0, 0xFFFF)), static_cast<quint16>(snap(to, 0, 0xFFFF)) };
+	return {static_cast<quint16>(snap(from, 0, 0xFFFF)), static_cast<quint16>(snap(to, 0, 0xFFFF))};
 }
 inline TextSelection shiftSelection(TextSelection selection, quint16 byLength) {
 	return snapSelection(int(selection.from) + byLength, int(selection.to) + byLength);
@@ -275,13 +299,18 @@ QString textcmdStopSemibold();
 const QChar *textSkipCommand(const QChar *from, const QChar *end, bool canLink = true);
 
 inline bool chIsSpace(QChar ch, bool rich = false) {
-	return ch.isSpace() || (ch < 32 && !(rich && ch == TextCommand)) || (ch == QChar::ParagraphSeparator) || (ch == QChar::LineSeparator) || (ch == QChar::ObjectReplacementCharacter) || (ch == QChar::CarriageReturn) || (ch == QChar::Tabulation);
+	return ch.isSpace() || (ch < 32 && !(rich && ch == TextCommand)) || (ch == QChar::ParagraphSeparator) ||
+	       (ch == QChar::LineSeparator) || (ch == QChar::ObjectReplacementCharacter) || (ch == QChar::CarriageReturn) ||
+	       (ch == QChar::Tabulation);
 }
 inline bool chIsDiac(QChar ch) { // diac and variation selectors
 	return (ch.category() == QChar::Mark_NonSpacing) || (ch == 1652) || (ch >= 64606 && ch <= 64611);
 }
 inline bool chIsBad(QChar ch) {
-	return (ch == 0) || (ch >= 8232 && ch < 8237) || (ch >= 65024 && ch < 65040 && ch != 65039) || (ch >= 127 && ch < 160 && ch != 156) || (cPlatform() == dbipMac && ch >= 0x0B00 && ch <= 0x0B7F && chIsDiac(ch) && cIsElCapitan()); // tmp hack see https://bugreports.qt.io/browse/QTBUG-48910
+	return (ch == 0) || (ch >= 8232 && ch < 8237) || (ch >= 65024 && ch < 65040 && ch != 65039) ||
+	       (ch >= 127 && ch < 160 && ch != 156) ||
+	       (cPlatform() == dbipMac && ch >= 0x0B00 && ch <= 0x0B7F && chIsDiac(ch) &&
+	        cIsElCapitan()); // tmp hack see https://bugreports.qt.io/browse/QTBUG-48910
 }
 inline bool chIsTrimmed(QChar ch, bool rich = false) {
 	return (!rich || ch != TextCommand) && (chIsSpace(ch) || chIsBad(ch));
@@ -290,10 +319,11 @@ inline bool chReplacedBySpace(QChar ch) {
 	// \xe2\x80[\xa8 - \xac\xad] // 8232 - 8237
 	// QString from1 = QString::fromUtf8("\xe2\x80\xa8"), to1 = QString::fromUtf8("\xe2\x80\xad");
 	// \xcc[\xb3\xbf\x8a] // 819, 831, 778
-	// QString bad1 = QString::fromUtf8("\xcc\xb3"), bad2 = QString::fromUtf8("\xcc\xbf"), bad3 = QString::fromUtf8("\xcc\x8a");
+	// QString bad1 = QString::fromUtf8("\xcc\xb3"), bad2 = QString::fromUtf8("\xcc\xbf"), bad3 =
+	// QString::fromUtf8("\xcc\x8a");
 	// [\x00\x01\x02\x07\x08\x0b-\x1f] // '\t' = 0x09
-	return (/*code >= 0x00 && */ch <= 0x02) || (ch >= 0x07 && ch <= 0x09) || (ch >= 0x0b && ch <= 0x1f) ||
-		(ch == 819) || (ch == 831) || (ch == 778) || (ch >= 8232 && ch <= 8237);
+	return (/*code >= 0x00 && */ ch <= 0x02) || (ch >= 0x07 && ch <= 0x09) || (ch >= 0x0b && ch <= 0x1f) ||
+	       (ch == 819) || (ch == 831) || (ch == 778) || (ch >= 8232 && ch <= 8237);
 }
 inline qint32 chMaxDiacAfterSymbol() {
 	return 2;
@@ -302,7 +332,8 @@ inline bool chIsNewline(QChar ch) {
 	return (ch == QChar::LineFeed || ch == 156);
 }
 inline bool chIsLinkEnd(QChar ch) {
-	return ch == TextCommand || chIsBad(ch) || chIsSpace(ch) || chIsNewline(ch) || ch.isLowSurrogate() || ch.isHighSurrogate();
+	return ch == TextCommand || chIsBad(ch) || chIsSpace(ch) || chIsNewline(ch) || ch.isLowSurrogate() ||
+	       ch.isHighSurrogate();
 }
 inline bool chIsAlmostLinkEnd(QChar ch) {
 	switch (ch.unicode()) {
@@ -312,10 +343,8 @@ inline bool chIsAlmostLinkEnd(QChar ch) {
 	case '"':
 	case ':':
 	case '!':
-	case '\'':
-		return true;
-	default:
-		break;
+	case '\'': return true;
+	default: break;
 	}
 	return false;
 }
@@ -352,10 +381,8 @@ inline bool chIsWordSeparator(QChar ch) {
 	case '"':
 	case '`':
 	case '~':
-	case '|':
-		return true;
-	default:
-		break;
+	case '|': return true;
+	default: break;
 	}
 	return false;
 }
@@ -363,10 +390,8 @@ inline bool chIsSentenceEnd(QChar ch) {
 	switch (ch.unicode()) {
 	case '.':
 	case '?':
-	case '!':
-		return true;
-	default:
-		break;
+	case '!': return true;
+	default: break;
 	}
 	return false;
 }
@@ -374,19 +399,15 @@ inline bool chIsSentencePartEnd(QChar ch) {
 	switch (ch.unicode()) {
 	case ',':
 	case ':':
-	case ';':
-		return true;
-	default:
-		break;
+	case ';': return true;
+	default: break;
 	}
 	return false;
 }
 inline bool chIsParagraphSeparator(QChar ch) {
 	switch (ch.unicode()) {
-	case QChar::LineFeed:
-		return true;
-	default:
-		break;
+	case QChar::LineFeed: return true;
+	default: break;
 	}
 	return false;
 }

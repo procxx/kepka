@@ -29,10 +29,9 @@ class SectionWidget;
 
 class SectionMemento {
 public:
-	virtual object_ptr<Window::SectionWidget> createWidget(QWidget *parent, gsl::not_null<Window::Controller*> controller, const QRect &geometry) = 0;
-	virtual ~SectionMemento() {
-	}
-
+	virtual object_ptr<Window::SectionWidget>
+	createWidget(QWidget *parent, gsl::not_null<Window::Controller *> controller, const QRect &geometry) = 0;
+	virtual ~SectionMemento() {}
 };
 
 } // namespace Window

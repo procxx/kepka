@@ -18,9 +18,9 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QTextStream>
 #include "lang/lang_file_parser.h"
 #include "base/parse_helper.h"
+#include <QTextStream>
 
 namespace Lang {
 namespace {
@@ -30,14 +30,15 @@ constexpr auto kLangFileLimit = 1024 * 1024;
 } // namespace
 
 FileParser::FileParser(const QString &file, const std::set<LangKey> &request)
-: _content(base::parse::stripComments(ReadFile(file, file)))
-, _request(request) {
+    : _content(base::parse::stripComments(ReadFile(file, file)))
+    , _request(request) {
 	parse();
 }
 
-FileParser::FileParser(const QByteArray &content, base::lambda<void(QLatin1String key, const QByteArray &value)> callback)
-: _content(base::parse::stripComments(content))
-, _callback(std::move(callback)) {
+FileParser::FileParser(const QByteArray &content,
+                       base::lambda<void(QLatin1String key, const QByteArray &value)> callback)
+    : _content(base::parse::stripComments(content))
+    , _callback(std::move(callback)) {
 	parse();
 }
 
@@ -78,7 +79,8 @@ bool FileParser::readKeyValue(const char *&from, const char *end) {
 	}
 	++from;
 	const char *nameStart = from;
-	while (from < end && ((*from >= 'a' && *from <= 'z') || (*from >= 'A' && *from <= 'Z') || *from == '_' || (*from >= '0' && *from <= '9') || *from == '#')) {
+	while (from < end && ((*from >= 'a' && *from <= 'z') || (*from >= 'A' && *from <= 'Z') || *from == '_' ||
+	                      (*from >= '0' && *from <= '9') || *from == '#')) {
 		++from;
 	}
 
@@ -110,7 +112,7 @@ bool FileParser::readKeyValue(const char *&from, const char *end) {
 	}
 
 	auto value = QByteArray();
-	auto appendValue = [&value, skipping](auto&&... args) {
+	auto appendValue = [&value, skipping](auto &&... args) {
 		if (!skipping) {
 			value.append(std::forward<decltype(args)>(args)...);
 		}
@@ -194,7 +196,8 @@ QByteArray FileParser::ReadFile(const QString &absolutePath, const QString &rela
 		}
 		return string.toUtf8();
 	};
-	if ((codecMagic.at(0) == '\xFF' && codecMagic.at(1) == '\xFE') || (codecMagic.at(0) == '\xFE' && codecMagic.at(1) == '\xFF') || (codecMagic.at(1) == 0)) {
+	if ((codecMagic.at(0) == '\xFF' && codecMagic.at(1) == '\xFE') ||
+	    (codecMagic.at(0) == '\xFE' && codecMagic.at(1) == '\xFF') || (codecMagic.at(1) == 0)) {
 		return readUtf16Stream(QTextStream(&file));
 	} else if (codecMagic.at(0) == 0) {
 		auto utf16WithBOM = "\xFE\xFF" + file.readAll();

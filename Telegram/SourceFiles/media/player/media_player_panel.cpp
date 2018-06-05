@@ -18,27 +18,28 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QWindow>
+#include "media/player/media_player_panel.h"
 #include "app.h"
 #include "facades.h"
-#include "ui/twidget.h"
-#include "media/player/media_player_panel.h"
+#include "mainwindow.h"
 #include "media/player/media_player_cover.h"
-#include "media/player/media_player_list.h"
 #include "media/player/media_player_instance.h"
+#include "media/player/media_player_list.h"
+#include "styles/style_media_player.h"
 #include "styles/style_overview.h"
 #include "styles/style_widgets.h"
-#include "styles/style_media_player.h"
-#include "ui/widgets/shadow.h"
+#include "ui/twidget.h"
 #include "ui/widgets/scroll_area.h"
-#include "mainwindow.h"
+#include "ui/widgets/shadow.h"
+#include <QWindow>
 
 namespace Media {
 namespace Player {
 
-Panel::Panel(QWidget *parent, Layout layout) : TWidget(parent)
-, _layout(layout)
-, _scroll(this, st::mediaPlayerScroll) {
+Panel::Panel(QWidget *parent, Layout layout)
+    : TWidget(parent)
+    , _layout(layout)
+    , _scroll(this, st::mediaPlayerScroll) {
 	_hideTimer.setSingleShot(true);
 	connect(&_hideTimer, SIGNAL(timeout()), this, SLOT(onHideStart()));
 
@@ -54,7 +55,9 @@ bool Panel::overlaps(const QRect &globalRect) {
 
 	auto marginLeft = rtl() ? contentRight() : contentLeft();
 	auto marginRight = rtl() ? contentLeft() : contentRight();
-	return rect().marginsRemoved(QMargins(marginLeft, contentTop(), marginRight, contentBottom())).contains(QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size()));
+	return rect()
+	    .marginsRemoved(QMargins(marginLeft, contentTop(), marginRight, contentBottom()))
+	    .contains(QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size()));
 }
 
 void Panel::onWindowActiveChanged() {
@@ -93,14 +96,14 @@ void Panel::updateControlsGeometry() {
 	if (scrollHeight > 0) {
 		_scroll->setGeometryToRight(contentRight(), scrollTop, width, scrollHeight);
 	}
-	if (auto widget = static_cast<TWidget*>(_scroll->widget())) {
+	if (auto widget = static_cast<TWidget *>(_scroll->widget())) {
 		widget->resizeToWidth(width);
 		onScroll();
 	}
 }
 
-void Panel::ui_repaintHistoryItem(not_null<const HistoryItem*> item) {
-	if (auto list = static_cast<ListWidget*>(_scroll->widget())) {
+void Panel::ui_repaintHistoryItem(not_null<const HistoryItem *> item) {
+	if (auto list = static_cast<ListWidget *>(_scroll->widget())) {
 		list->ui_repaintHistoryItem(item);
 	}
 }
@@ -113,7 +116,7 @@ int Panel::bestPositionFor(int left) const {
 }
 
 void Panel::scrollPlaylistToCurrentTrack() {
-	if (auto list = static_cast<ListWidget*>(_scroll->widget())) {
+	if (auto list = static_cast<ListWidget *>(_scroll->widget())) {
 		auto rect = list->getCurrentTrackGeometry();
 		auto top = _scroll->scrollTop(), bottom = top + _scroll->height();
 		_scroll->scrollToY(rect.y());
@@ -121,7 +124,7 @@ void Panel::scrollPlaylistToCurrentTrack() {
 }
 
 void Panel::onScroll() {
-	if (auto widget = static_cast<TWidget*>(_scroll->widget())) {
+	if (auto widget = static_cast<TWidget *>(_scroll->widget())) {
 		int visibleTop = _scroll->scrollTop();
 		int visibleBottom = visibleTop + _scroll->height();
 		widget->setVisibleTopBottom(visibleTop, visibleBottom);
@@ -139,7 +142,8 @@ void Panel::updateSize() {
 		listHeight = widget->height();
 	}
 	auto scrollVisible = (listHeight > 0);
-	auto scrollHeight = scrollVisible ? (std::min(listHeight, st::mediaPlayerListHeightMax) + st::mediaPlayerListMarginBottom) : 0;
+	auto scrollHeight =
+	    scrollVisible ? (std::min(listHeight, st::mediaPlayerListHeightMax) + st::mediaPlayerListMarginBottom) : 0;
 	height += scrollHeight + contentBottom();
 	resize(width, height);
 	_scroll->setVisible(scrollVisible);

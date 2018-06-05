@@ -33,10 +33,8 @@ class PhoneInput;
 class InputArea;
 class UsernameInput;
 class Checkbox;
-template <typename Enum>
-class RadioenumGroup;
-template <typename Enum>
-class Radioenum;
+template <typename Enum> class RadioenumGroup;
+template <typename Enum> class Radioenum;
 class LinkButton;
 class NewAvatarButton;
 } // namespace Ui
@@ -52,8 +50,8 @@ class AddContactBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	AddContactBox(QWidget*, QString fname = QString(), QString lname = QString(), QString phone = QString());
-	AddContactBox(QWidget*, UserData *user);
+	AddContactBox(QWidget *, QString fname = QString(), QString lname = QString(), QString phone = QString());
+	AddContactBox(QWidget *, UserData *user);
 
 protected:
 	void prepare() override;
@@ -88,14 +86,13 @@ private:
 
 	mtpRequestId _addRequest = 0;
 	QString _sentName;
-
 };
 
 class GroupInfoBox : public BoxContent, private MTP::Sender {
 	Q_OBJECT
 
 public:
-	GroupInfoBox(QWidget*, CreatingGroupType creating, bool fromTypeChoose);
+	GroupInfoBox(QWidget *, CreatingGroupType creating, bool fromTypeChoose);
 
 protected:
 	void prepare() override;
@@ -116,7 +113,8 @@ private slots:
 private:
 	void setupPhotoButton();
 	void createChannel(const QString &title, const QString &description);
-	void createGroup(not_null<PeerListBox*> selectUsersBox, const QString &title, const std::vector<not_null<PeerData*>> &users);
+	void createGroup(not_null<PeerListBox *> selectUsersBox, const QString &title,
+	                 const std::vector<not_null<PeerData *>> &users);
 
 	void updateMaxHeight();
 	void updateSelected(const QPoint &cursorGlobalPosition);
@@ -126,21 +124,20 @@ private:
 
 	object_ptr<Ui::NewAvatarButton> _photo;
 	object_ptr<Ui::InputField> _title;
-	object_ptr<Ui::InputArea> _description = { nullptr };
+	object_ptr<Ui::InputArea> _description = {nullptr};
 
 	QImage _photoImage;
 
 	// group / channel creation
 	mtpRequestId _creationRequestId = 0;
 	ChannelData *_createdChannel = nullptr;
-
 };
 
 class SetupChannelBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	SetupChannelBox(QWidget*, ChannelData *channel, bool existing = false);
+	SetupChannelBox(QWidget *, ChannelData *channel, bool existing = false);
 
 	void setInnerFocus() override;
 
@@ -199,14 +196,13 @@ private:
 	QString _sentUsername, _checkUsername, _errorText, _goodText;
 
 	QTimer _checkTimer;
-
 };
 
 class EditNameTitleBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	EditNameTitleBox(QWidget*, not_null<PeerData*> peer);
+	EditNameTitleBox(QWidget *, not_null<PeerData *> peer);
 
 protected:
 	void setInnerFocus() override;
@@ -225,7 +221,7 @@ private:
 	void onSaveChatDone(const MTPUpdates &updates);
 	bool onSaveChatFail(const RPCError &e);
 
-	not_null<PeerData*> _peer;
+	not_null<PeerData *> _peer;
 
 	object_ptr<Ui::InputField> _first;
 	object_ptr<Ui::InputField> _last;
@@ -234,12 +230,11 @@ private:
 
 	mtpRequestId _requestId = 0;
 	QString _sentName;
-
 };
 
 class EditBioBox : public BoxContent, private MTP::Sender {
 public:
-	EditBioBox(QWidget*, not_null<UserData*> self);
+	EditBioBox(QWidget *, not_null<UserData *> self);
 
 protected:
 	void setInnerFocus() override;
@@ -253,21 +248,20 @@ private:
 	void save();
 
 	style::InputField _dynamicFieldStyle;
-	not_null<UserData*> _self;
+	not_null<UserData *> _self;
 
 	object_ptr<Ui::InputArea> _bio;
 	object_ptr<Ui::FlatLabel> _countdown;
 	object_ptr<Ui::FlatLabel> _about;
 	mtpRequestId _requestId = 0;
 	QString _sentBio;
-
 };
 
 class EditChannelBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	EditChannelBox(QWidget*, not_null<ChannelData*> channel);
+	EditChannelBox(QWidget *, not_null<ChannelData *> channel);
 
 protected:
 	void prepare() override;
@@ -301,7 +295,7 @@ private:
 	void saveSign();
 	void saveInvites();
 
-	not_null<ChannelData*> _channel;
+	not_null<ChannelData *> _channel;
 
 	object_ptr<Ui::InputField> _title;
 	object_ptr<Ui::InputArea> _description;
@@ -323,12 +317,11 @@ private:
 	mtpRequestId _saveInvitesRequestId = 0;
 
 	QString _sentTitle, _sentDescription;
-
 };
 
 class RevokePublicLinkBox : public BoxContent, public RPCSender {
 public:
-	RevokePublicLinkBox(QWidget*, base::lambda<void()> revokeCallback);
+	RevokePublicLinkBox(QWidget *, base::lambda<void()> revokeCallback);
 
 protected:
 	void prepare() override;
@@ -343,5 +336,4 @@ private:
 
 	int _innerTop = 0;
 	base::lambda<void()> _revokeCallback;
-
 };

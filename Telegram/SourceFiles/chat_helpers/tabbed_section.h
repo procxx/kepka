@@ -28,8 +28,8 @@ class TabbedSelector;
 
 class TabbedSection : public Window::AbstractSectionWidget {
 public:
-	TabbedSection(QWidget *parent, not_null<Window::Controller*> controller);
-	TabbedSection(QWidget *parent, not_null<Window::Controller*> controller, object_ptr<TabbedSelector> selector);
+	TabbedSection(QWidget *parent, not_null<Window::Controller *> controller);
+	TabbedSection(QWidget *parent, not_null<Window::Controller *> controller, object_ptr<TabbedSelector> selector);
 
 	void beforeHiding();
 	void afterShown();
@@ -52,7 +52,6 @@ protected:
 private:
 	object_ptr<TabbedSelector> _selector;
 	base::lambda<void()> _cancelledCallback;
-
 };
 
 } // namespace ChatHelpers

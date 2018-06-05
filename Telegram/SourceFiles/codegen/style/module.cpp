@@ -31,8 +31,8 @@ QString fullNameKey(const FullName &name) {
 
 } // namespace
 
-Module::Module(const QString &fullpath) : fullpath_(fullpath) {
-}
+Module::Module(const QString &fullpath)
+    : fullpath_(fullpath) {}
 
 void Module::addIncluded(std::unique_ptr<Module> &&value) {
 	included_.push_back(std::move(value));

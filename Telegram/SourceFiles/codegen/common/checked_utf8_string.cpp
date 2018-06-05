@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/common/checked_utf8_string.h"
 
-#include <iostream>
 #include <QtCore/QTextCodec>
+#include <iostream>
 
 #include "codegen/common/const_utf8_string.h"
 
@@ -44,11 +44,11 @@ CheckedUtf8String::CheckedUtf8String(const char *string, int size) {
 	}
 }
 
-CheckedUtf8String::CheckedUtf8String(const QByteArray &string) : CheckedUtf8String(string.constData(), string.size()) {
-}
+CheckedUtf8String::CheckedUtf8String(const QByteArray &string)
+    : CheckedUtf8String(string.constData(), string.size()) {}
 
-CheckedUtf8String::CheckedUtf8String(const ConstUtf8String &string) : CheckedUtf8String(string.data(), string.size()) {
-}
+CheckedUtf8String::CheckedUtf8String(const ConstUtf8String &string)
+    : CheckedUtf8String(string.data(), string.size()) {}
 
 } // namespace common
 } // namespace codegen

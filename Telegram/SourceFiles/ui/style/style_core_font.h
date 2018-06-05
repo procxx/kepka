@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
-#include <QFontMetrics>
 #include <QFont>
+#include <QFontMetrics>
+#include <QString>
 
 namespace style {
 namespace internal {
@@ -33,8 +33,8 @@ int registerFontFamily(const QString &family);
 class FontData;
 class Font {
 public:
-	Font(Qt::Initialization = Qt::Uninitialized) : ptr(0) {
-	}
+	Font(Qt::Initialization = Qt::Uninitialized)
+	    : ptr(0) {}
 	Font(int size, quint32 flags, const QString &family);
 	Font(int size, quint32 flags, int family);
 
@@ -62,11 +62,10 @@ private:
 	void init(int size, quint32 flags, int family, Font *modified);
 	friend void startManager();
 
-	Font(FontData *p) : ptr(p) {
-	}
+	Font(FontData *p)
+	    : ptr(p) {}
 	Font(int size, quint32 flags, int family, Font *modified);
 	friend class FontData;
-
 };
 
 enum FontFlags {
@@ -79,7 +78,6 @@ enum FontFlags {
 
 class FontData {
 public:
-
 	qint32 width(const QString &str) const {
 		return m.width(str);
 	}
@@ -115,7 +113,6 @@ private:
 	int _size;
 	quint32 _flags;
 	int _family;
-
 };
 
 inline bool operator==(const Font &a, const Font &b) {

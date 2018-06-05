@@ -20,18 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/win/main_window_win.h"
 
-#include "styles/style_window.h"
-#include "platform/platform_notifications_manager.h"
-#include "platform/win/windows_dlls.h"
-#include "window/notifications_manager.h"
-#include "mainwindow.h"
-#include "messenger.h"
+#include "app.h"
 #include "application.h"
 #include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "messenger.h"
+#include "platform/platform_notifications_manager.h"
+#include "platform/win/windows_dlls.h"
 #include "storage/localstorage.h"
+#include "styles/style_window.h"
 #include "ui/widgets/popup_menu.h"
+#include "window/notifications_manager.h"
 #include "window/themes/window_theme.h"
-#include "app.h"
 
 #include <qpa/qplatformnativeinterface.h>
 
@@ -41,15 +41,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #undef min
 #undef max
 
-#include <windowsx.h>
-#include <Wtsapi32.h>
 #include <ShObjIdl.h>
+#include <Wtsapi32.h>
+#include <windowsx.h>
 #include <wrl/client.h>
 
-#include <QWindow>
+#include "facades.h"
 #include <QStyleFactory>
 #include <QWidget>
-#include "facades.h"
+#include <QWindow>
 
 HICON qt_pixmapToWinHICON(const QPixmap &);
 
@@ -109,11 +109,12 @@ enum {
 qint32 _psSize = 0;
 class _PsShadowWindows {
 public:
-
 	using Change = MainWindow::ShadowsChange;
 	using Changes = MainWindow::ShadowsChanges;
 
-	_PsShadowWindows() : screenDC(0), noKeyColor(RGB(255, 255, 255)) {
+	_PsShadowWindows()
+	    : screenDC(0)
+	    , noKeyColor(RGB(255, 255, 255)) {
 		for (int i = 0; i < 4; ++i) {
 			dcs[i] = 0;
 			bitmaps[i] = 0;
@@ -157,7 +158,10 @@ public:
 		_colors.reserve(_metaSize * _metaSize);
 		for (qint32 j = 0; j < _metaSize; ++j) {
 			for (qint32 i = 0; i < _metaSize; ++i) {
-				_colors.push_back((i < 2 * _shift || j < 2 * _shift) ? 1 : qMax(BYTE(1), BYTE(cornersImage.pixel(QPoint(i - 2 * _shift, j - 2 * _shift)) >> 24)));
+				_colors.push_back(
+				    (i < 2 * _shift || j < 2 * _shift) ?
+				        1 :
+				        qMax(BYTE(1), BYTE(cornersImage.pixel(QPoint(i - 2 * _shift, j - 2 * _shift)) >> 24)));
 			}
 		}
 		uchar prev = 0;
@@ -218,14 +222,18 @@ public:
 			wc.lpszClassName = _cn;
 			wc.hIconSm = 0;
 			if (!RegisterClassEx(&wc)) {
-				LOG(("Application Error: could not register shadow window class %1, error: %2").arg(i).arg(GetLastError()));
+				LOG(("Application Error: could not register shadow window class %1, error: %2")
+				        .arg(i)
+				        .arg(GetLastError()));
 				destroy();
 				return false;
 			}
 
 			hwnds[i] = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOOLWINDOW, _cn, 0, WS_POPUP, 0, 0, 0, 0, 0, 0, appinst, 0);
 			if (!hwnds[i]) {
-				LOG(("Application Error: could not create shadow window class %1, error: %2").arg(i).arg(GetLastError()));
+				LOG(("Application Error: could not create shadow window class %1, error: %2")
+				        .arg(i)
+				        .arg(GetLastError()));
 				destroy();
 				return false;
 			}
@@ -233,14 +241,18 @@ public:
 
 			dcs[i] = CreateCompatibleDC(screenDC);
 			if (!dcs[i]) {
-				LOG(("Application Error: could not create dc for shadow window class %1, error: %2").arg(i).arg(GetLastError()));
+				LOG(("Application Error: could not create dc for shadow window class %1, error: %2")
+				        .arg(i)
+				        .arg(GetLastError()));
 				destroy();
 				return false;
 			}
 
 			bitmaps[i] = CreateCompatibleBitmap(screenDC, (i % 2) ? _size : max_w, (i % 2) ? max_h : _size);
 			if (!bitmaps[i]) {
-				LOG(("Application Error: could not create bitmap for shadow window class %1, error: %2").arg(i).arg(GetLastError()));
+				LOG(("Application Error: could not create bitmap for shadow window class %1, error: %2")
+				        .arg(i)
+				        .arg(GetLastError()));
 				destroy();
 				return false;
 			}
@@ -249,9 +261,7 @@ public:
 		}
 
 		QStringList alphasForLog;
-		for_const (auto alpha, _alphas) {
-			alphasForLog.append(QString::number(alpha));
-		}
+		for_const (auto alpha, _alphas) { alphasForLog.append(QString::number(alpha)); }
 		LOG(("Window Shadow: %1").arg(alphasForLog.join(", ")));
 
 		initCorners();
@@ -315,7 +325,8 @@ public:
 	}
 	void horCorners(int w, Gdiplus::Graphics *pgraphics0, Gdiplus::Graphics *pgraphics2) {
 		Gdiplus::SolidBrush brush(Gdiplus::Color(_alphas[0], r, g, b));
-		pgraphics0->FillRectangle(&brush, w - 2 * _size - (_fullsize - (_size - _shift)), 0, _fullsize - (_size - _shift), 2 * _shift);
+		pgraphics0->FillRectangle(&brush, w - 2 * _size - (_fullsize - (_size - _shift)), 0,
+		                          _fullsize - (_size - _shift), 2 * _shift);
 		for (int j = 2 * _shift; j < _size; ++j) {
 			for (int k = 0; k < _fullsize - (_size - _shift); ++k) {
 				brush.SetColor(Gdiplus::Color(_colors[j * _metaSize + k + (_size + _shift)], r, g, b));
@@ -384,7 +395,8 @@ public:
 		}
 
 		if (w != _w) {
-			int from = (_w > 2 * (_fullsize + _shift)) ? (_w - _size - _fullsize - _shift) : (_fullsize - (_size - _shift));
+			int from =
+			    (_w > 2 * (_fullsize + _shift)) ? (_w - _size - _fullsize - _shift) : (_fullsize - (_size - _shift));
 			int to = w - _size - _fullsize - _shift;
 			if (w > max_w) {
 				from = _fullsize - (_size - _shift);
@@ -417,16 +429,16 @@ public:
 				graphics2.FillRectangle(&brush, w - _size - _fullsize - _shift, 0, _fullsize - (_size - _shift), _size);
 			}
 			horCorners(w, &graphics0, &graphics2);
-			POINT p0 = { x + _size, y }, p2 = { x + _size, y + h - _size }, f = { 0, 0 };
-			SIZE s = { w - 2 * _size, _size };
+			POINT p0 = {x + _size, y}, p2 = {x + _size, y + h - _size}, f = {0, 0};
+			SIZE s = {w - 2 * _size, _size};
 			updateWindow(0, &p0, &s);
 			updateWindow(2, &p2, &s);
 		} else if (x != _x || y != _y) {
-			POINT p0 = { x + _size, y }, p2 = { x + _size, y + h - _size };
+			POINT p0 = {x + _size, y}, p2 = {x + _size, y + h - _size};
 			updateWindow(0, &p0);
 			updateWindow(2, &p2);
 		} else if (h != _h) {
-			POINT p2 = { x + _size, y + h - _size };
+			POINT p2 = {x + _size, y + h - _size};
 			updateWindow(2, &p2);
 		}
 
@@ -463,16 +475,16 @@ public:
 			}
 			verCorners(h, &graphics1, &graphics3);
 
-			POINT p1 = { x + w - _size, y }, p3 = { x, y }, f = { 0, 0 };
-			SIZE s = { _size, h };
+			POINT p1 = {x + w - _size, y}, p3 = {x, y}, f = {0, 0};
+			SIZE s = {_size, h};
 			updateWindow(1, &p1, &s);
 			updateWindow(3, &p3, &s);
 		} else if (x != _x || y != _y) {
-			POINT p1 = { x + w - _size, y }, p3 = { x, y };
+			POINT p1 = {x + w - _size, y}, p3 = {x, y};
 			updateWindow(1, &p1);
 			updateWindow(3, &p3);
 		} else if (w != _w) {
-			POINT p1 = { x + w - _size, y };
+			POINT p1 = {x + w - _size, y};
 			updateWindow(1, &p1);
 		}
 		_x = x;
@@ -489,9 +501,10 @@ public:
 	}
 
 	void updateWindow(int i, POINT *p, SIZE *s = 0) {
-		static POINT f = { 0, 0 };
+		static POINT f = {0, 0};
 		if (s) {
-			UpdateLayeredWindow(hwnds[i], (s ? screenDC : 0), p, s, (s ? dcs[i] : 0), (s ? (&f) : 0), noKeyColor, &blend, ULW_ALPHA);
+			UpdateLayeredWindow(hwnds[i], (s ? screenDC : 0), p, s, (s ? dcs[i] : 0), (s ? (&f) : 0), noKeyColor,
+			                    &blend, ULW_ALPHA);
 		} else {
 			SetWindowPos(hwnds[i], 0, p->x, p->y, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER);
 		}
@@ -510,7 +523,6 @@ public:
 	}
 
 private:
-
 	int _x = 0, _y = 0, _w = 0, _h = 0;
 	int _metaSize = 0, _fullsize = 0, _size = 0, _shift = 0;
 	QVector<BYTE> _alphas, _colors;
@@ -527,7 +539,6 @@ private:
 	COLORREF noKeyColor;
 
 	static LRESULT CALLBACK _PsShadowWindows::wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 };
 _PsShadowWindows _psShadowWindows;
 
@@ -544,17 +555,21 @@ LRESULT CALLBACK _PsShadowWindows::wndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	if (i == 4) return DefWindowProc(hwnd, msg, wParam, lParam);
 
 	switch (msg) {
-	case WM_CLOSE:
-	App::wnd()->close();
-	break;
+	case WM_CLOSE: App::wnd()->close(); break;
 
 	case WM_NCHITTEST: {
 		qint32 xPos = GET_X_LPARAM(lParam), yPos = GET_Y_LPARAM(lParam);
 		switch (i) {
 		case 0: return HTTOP;
-		case 1: return (yPos < _psShadowWindows._y + _psSize) ? HTTOPRIGHT : ((yPos >= _psShadowWindows._y + _psShadowWindows._h - _psSize) ? HTBOTTOMRIGHT : HTRIGHT);
+		case 1:
+			return (yPos < _psShadowWindows._y + _psSize) ?
+			           HTTOPRIGHT :
+			           ((yPos >= _psShadowWindows._y + _psShadowWindows._h - _psSize) ? HTBOTTOMRIGHT : HTRIGHT);
 		case 2: return HTBOTTOM;
-		case 3: return (yPos < _psShadowWindows._y + _psSize) ? HTTOPLEFT : ((yPos >= _psShadowWindows._y + _psShadowWindows._h - _psSize) ? HTBOTTOMLEFT : HTLEFT);
+		case 3:
+			return (yPos < _psShadowWindows._y + _psSize) ?
+			           HTTOPLEFT :
+			           ((yPos >= _psShadowWindows._y + _psShadowWindows._h - _psSize) ? HTBOTTOMLEFT : HTLEFT);
 		}
 		return HTTRANSPARENT;
 	} break;
@@ -578,26 +593,25 @@ LRESULT CALLBACK _PsShadowWindows::wndProc(HWND hwnd, UINT msg, WPARAM wParam, L
 	case WM_NCPOINTERUPDATE:
 	case WM_NCPOINTERDOWN:
 	case WM_NCPOINTERUP:
-	if (App::wnd() && App::wnd()->psHwnd()) {
-		if (msg == WM_NCLBUTTONDOWN) {
-			::SetForegroundWindow(App::wnd()->psHwnd());
+		if (App::wnd() && App::wnd()->psHwnd()) {
+			if (msg == WM_NCLBUTTONDOWN) {
+				::SetForegroundWindow(App::wnd()->psHwnd());
+			}
+			LRESULT res = SendMessage(App::wnd()->psHwnd(), msg, wParam, lParam);
+			return res;
 		}
-		LRESULT res = SendMessage(App::wnd()->psHwnd(), msg, wParam, lParam);
-		return res;
-	}
-	return 0;
-	break;
+		return 0;
+		break;
 	case WM_ACTIVATE:
-	if (App::wnd() && App::wnd()->psHwnd() && wParam == WA_ACTIVE) {
-		if ((HWND)lParam != App::wnd()->psHwnd()) {
-			::SetForegroundWindow(hwnd);
-			::SetWindowPos(App::wnd()->psHwnd(), hwnd, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		if (App::wnd() && App::wnd()->psHwnd() && wParam == WA_ACTIVE) {
+			if ((HWND)lParam != App::wnd()->psHwnd()) {
+				::SetForegroundWindow(hwnd);
+				::SetWindowPos(App::wnd()->psHwnd(), hwnd, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			}
 		}
-	}
-	return DefWindowProc(hwnd, msg, wParam, lParam);
-	break;
-	default:
-	return DefWindowProc(hwnd, msg, wParam, lParam);
+		return DefWindowProc(hwnd, msg, wParam, lParam);
+		break;
+	default: return DefWindowProc(hwnd, msg, wParam, lParam);
 	}
 	return 0;
 }
@@ -611,7 +625,7 @@ bool handleSessionNotification = false;
 UINT MainWindow::_taskbarCreatedMsgId = 0;
 
 MainWindow::MainWindow()
-: ps_tbHider_hWnd(createTaskbarHider()) {
+    : ps_tbHider_hWnd(createTaskbarHider()) {
 	if (!_taskbarCreatedMsgId) {
 		_taskbarCreatedMsgId = RegisterWindowMessage(L"TaskbarButtonCreated");
 	}
@@ -634,12 +648,12 @@ void MainWindow::shadowsUpdate(ShadowsChanges changes, WINDOWPOS *position) {
 }
 
 void MainWindow::shadowsActivate() {
-//	_psShadowWindows.setColor(_shActive);
+	//	_psShadowWindows.setColor(_shActive);
 	shadowsUpdate(ShadowsChange::Activate);
 }
 
 void MainWindow::shadowsDeactivate() {
-//	_psShadowWindows.setColor(_shInactive);
+	//	_psShadowWindows.setColor(_shInactive);
 }
 
 void MainWindow::psShowTrayMenu() {
@@ -648,7 +662,7 @@ void MainWindow::psShowTrayMenu() {
 
 qint32 MainWindow::screenNameChecksum(const QString &name) const {
 	constexpr int DeviceNameSize = base::array_size(MONITORINFOEX().szDevice);
-	wchar_t buffer[DeviceNameSize] = { 0 };
+	wchar_t buffer[DeviceNameSize] = {0};
 	if (name.size() < DeviceNameSize) {
 		name.toWCharArray(buffer);
 	} else {
@@ -659,9 +673,7 @@ qint32 MainWindow::screenNameChecksum(const QString &name) const {
 
 void MainWindow::psRefreshTaskbarIcon() {
 	auto refresher = object_ptr<QWidget>(this);
-	auto guard = gsl::finally([&refresher] {
-		refresher.destroy();
-	});
+	auto guard = gsl::finally([&refresher] { refresher.destroy(); });
 	refresher->setWindowFlags(static_cast<Qt::WindowFlags>(Qt::Tool) | Qt::FramelessWindowHint);
 	refresher->setGeometry(x() + 1, y() + 1, 1, 1);
 	auto palette = refresher->palette();
@@ -673,8 +685,7 @@ void MainWindow::psRefreshTaskbarIcon() {
 	updateIconCounters();
 }
 
-void MainWindow::psTrayMenuUpdated() {
-}
+void MainWindow::psTrayMenuUpdated() {}
 
 void MainWindow::psSetupTrayIcon() {
 	if (!trayIcon) {
@@ -684,7 +695,8 @@ void MainWindow::psSetupTrayIcon() {
 
 		trayIcon->setIcon(icon);
 		trayIcon->setToolTip(str_const_toString(AppName));
-		connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(toggleTray(QSystemTrayIcon::ActivationReason)), Qt::UniqueConnection);
+		connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+		        SLOT(toggleTray(QSystemTrayIcon::ActivationReason)), Qt::UniqueConnection);
 		connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(showFromTray()));
 		App::wnd()->updateTrayMenu();
 	}
@@ -695,7 +707,8 @@ void MainWindow::psSetupTrayIcon() {
 
 void MainWindow::showTrayTooltip() {
 	if (trayIcon && !cSeenTrayTooltip()) {
-		trayIcon->showMessage(str_const_toString(AppName), lng_tray_icon_text(lt_appname, lang(appname)), QSystemTrayIcon::Information, 10000);
+		trayIcon->showMessage(str_const_toString(AppName), lng_tray_icon_text(lt_appname, lang(appname)),
+		                      QSystemTrayIcon::Information, 10000);
 		cSetSeenTrayTooltip(true);
 		Local::writeSettings();
 	}
@@ -774,7 +787,8 @@ void MainWindow::updateIconCounters() {
 			QIcon iconOverlay;
 			iconOverlay.addPixmap(App::pixmapFromImageInPlace(iconWithCounter(-16, counter, bg, fg, false)));
 			iconOverlay.addPixmap(App::pixmapFromImageInPlace(iconWithCounter(-32, counter, bg, fg, false)));
-			ps_iconOverlay = createHIconFromQIcon(iconOverlay, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+			ps_iconOverlay =
+			    createHIconFromQIcon(iconOverlay, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 		}
 		auto description = (counter > 0) ? lng_unread_bar(lt_count, counter) : QString();
 		taskbarList->SetOverlayIcon(ps_hWnd, ps_iconOverlay, description.toStdWString().c_str());
@@ -784,11 +798,13 @@ void MainWindow::updateIconCounters() {
 
 void MainWindow::initHook() {
 	auto platformInterface = QGuiApplication::platformNativeInterface();
-	ps_hWnd = static_cast<HWND>(platformInterface->nativeResourceForWindow(QByteArrayLiteral("handle"), windowHandle()));
+	ps_hWnd =
+	    static_cast<HWND>(platformInterface->nativeResourceForWindow(QByteArrayLiteral("handle"), windowHandle()));
 
 	if (!ps_hWnd) return;
 
-	handleSessionNotification = (Dlls::WTSRegisterSessionNotification != nullptr) && (Dlls::WTSUnRegisterSessionNotification != nullptr);
+	handleSessionNotification =
+	    (Dlls::WTSRegisterSessionNotification != nullptr) && (Dlls::WTSUnRegisterSessionNotification != nullptr);
 	if (handleSessionNotification) {
 		Dlls::WTSRegisterSessionNotification(ps_hWnd, NOTIFY_FOR_THIS_SESSION);
 	}
@@ -852,7 +868,7 @@ void MainWindow::updateSystemMenu(Qt::WindowState state) {
 	}
 	int itemCount = GetMenuItemCount(ps_menu);
 	for (int i = 0; i < itemCount; ++i) {
-		MENUITEMINFO itemInfo = { 0 };
+		MENUITEMINFO itemInfo = {0};
 		itemInfo.cbSize = sizeof(itemInfo);
 		itemInfo.fMask = MIIM_TYPE | MIIM_STATE | MIIM_ID;
 		if (GetMenuItemInfo(ps_menu, i, TRUE, &itemInfo)) {
@@ -863,20 +879,28 @@ void MainWindow::updateSystemMenu(Qt::WindowState state) {
 				UINT fOldState = itemInfo.fState, fState = itemInfo.fState & ~MFS_DISABLED;
 				if (itemInfo.wID == SC_CLOSE) {
 					fState |= MFS_DEFAULT;
-				} else if (itemInfo.wID == menuToDisable || (itemInfo.wID != SC_MINIMIZE && itemInfo.wID != SC_MAXIMIZE && itemInfo.wID != SC_RESTORE)) {
+				} else if (itemInfo.wID == menuToDisable ||
+				           (itemInfo.wID != SC_MINIMIZE && itemInfo.wID != SC_MAXIMIZE && itemInfo.wID != SC_RESTORE)) {
 					fState |= MFS_DISABLED;
 				}
 				itemInfo.fMask = MIIM_STATE;
 				itemInfo.fState = fState;
 				if (!SetMenuItemInfo(ps_menu, i, TRUE, &itemInfo)) {
-					DEBUG_LOG(("PS Error: could not set state %1 to menu item %2, old state %3, error %4").arg(fState).arg(itemInfo.wID).arg(fOldState).arg(GetLastError()));
+					DEBUG_LOG(("PS Error: could not set state %1 to menu item %2, old state %3, error %4")
+					              .arg(fState)
+					              .arg(itemInfo.wID)
+					              .arg(fOldState)
+					              .arg(GetLastError()));
 					DestroyMenu(ps_menu);
 					ps_menu = 0;
 					break;
 				}
 			}
 		} else {
-			DEBUG_LOG(("PS Error: could not get state, menu item %1 of %2, error %3").arg(i).arg(itemCount).arg(GetLastError()));
+			DEBUG_LOG(("PS Error: could not get state, menu item %1 of %2, error %3")
+			              .arg(i)
+			              .arg(itemCount)
+			              .arg(GetLastError()));
 			DestroyMenu(ps_menu);
 			ps_menu = 0;
 			break;

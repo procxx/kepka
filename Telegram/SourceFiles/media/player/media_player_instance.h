@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/observer.h"
-#include "structs.h"
 #include "history/history.h"
+#include "structs.h"
 
 namespace Notify {
 struct PeerUpdate;
@@ -151,8 +151,9 @@ private:
 	friend void start();
 
 	struct Data {
-		Data(AudioMsgId::Type type, MediaOverviewType overview) : type(type), overview(overview) {
-		}
+		Data(AudioMsgId::Type type, MediaOverviewType overview)
+		    : type(type)
+		    , overview(overview) {}
 
 		AudioMsgId::Type type;
 		MediaOverviewType overview;
@@ -176,8 +177,7 @@ private:
 	void preloadNext(Data *data);
 	void handleLogout();
 
-	template <typename CheckCallback>
-	void emitUpdate(AudioMsgId::Type type, CheckCallback check);
+	template <typename CheckCallback> void emitUpdate(AudioMsgId::Type type, CheckCallback check);
 
 	Data *getData(AudioMsgId::Type type) {
 		if (type == AudioMsgId::Type::Song) {
@@ -209,8 +209,7 @@ private:
 	base::Observable<AudioMsgId::Type> _playlistChangedNotifier;
 	base::Observable<AudioMsgId::Type> _trackChangedNotifier;
 	base::Observable<AudioMsgId::Type> _repeatChangedNotifier;
-
 };
 
-} // namespace Clip
+} // namespace Player
 } // namespace Media

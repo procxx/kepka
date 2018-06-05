@@ -34,7 +34,7 @@ class SessionsBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	SessionsBox(QWidget*);
+	SessionsBox(QWidget *);
 
 protected:
 	void prepare() override;
@@ -72,7 +72,6 @@ private:
 
 	object_ptr<SingleTimer> _shortPollTimer;
 	mtpRequestId _shortPollRequest = 0;
-
 };
 
 // This class is hold in header because it requires Qt preprocessing.
@@ -107,10 +106,9 @@ private:
 	SessionsBox::List *_list;
 	SessionsBox::Data *_current;
 
-	typedef QMap<quint64, Ui::IconButton*> TerminateButtons;
+	typedef QMap<quint64, Ui::IconButton *> TerminateButtons;
 	TerminateButtons _terminateButtons;
 
 	object_ptr<Ui::LinkButton> _terminateAll;
 	QPointer<ConfirmBox> _terminateBox;
-
 };

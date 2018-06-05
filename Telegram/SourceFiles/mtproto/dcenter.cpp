@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/dcenter.h"
 
-#include "mtproto/facade.h"
 #include "mtproto/auth_key.h"
 #include "mtproto/dc_options.h"
+#include "mtproto/facade.h"
 #include "mtproto/mtp_instance.h"
 #include "mtproto/special_config_request.h"
 #include "storage/localstorage.h"
@@ -36,10 +36,10 @@ constexpr auto kSpecialRequestTimeoutMs = 6000; // 4 seconds timeout for it to w
 
 } // namespace
 
-Dcenter::Dcenter(not_null<Instance*> instance, DcId dcId, AuthKeyPtr &&key)
-: _instance(instance)
-, _id(dcId)
-, _key(std::move(key)) {
+Dcenter::Dcenter(not_null<Instance *> instance, DcId dcId, AuthKeyPtr &&key)
+    : _instance(instance)
+    , _id(dcId)
+    , _key(std::move(key)) {
 	connect(this, SIGNAL(authKeyCreated()), this, SLOT(authKeyWrite()), Qt::QueuedConnection);
 }
 
@@ -51,7 +51,8 @@ void Dcenter::authKeyWrite() {
 }
 
 void Dcenter::setKey(AuthKeyPtr &&key) {
-	DEBUG_LOG(("AuthKey Info: MTProtoDC::setKey(%1), emitting authKeyCreated, dc %2").arg(key ? key->keyId() : 0).arg(_id));
+	DEBUG_LOG(
+	    ("AuthKey Info: MTProtoDC::setKey(%1), emitting authKeyCreated, dc %2").arg(key ? key->keyId() : 0).arg(_id));
 	_key = std::move(key);
 	_connectionInited = false;
 	_instance->setKeyForWrite(_id, _key);

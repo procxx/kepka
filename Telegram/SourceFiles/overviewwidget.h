@@ -20,14 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "history/history_item.h"
 #include "history/history.h"
+#include "history/history_item.h"
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/tooltip.h"
 #include "window/section_widget.h"
 #include "window/top_bar_widget.h"
-#include "ui/widgets/tooltip.h"
-#include "ui/widgets/scroll_area.h"
 
 namespace Overview {
 namespace Layout {
@@ -81,7 +79,8 @@ public:
 	void touchScrollUpdated(const QPoint &screenPos);
 	QPoint mapMouseToItem(QPoint p, MsgId itemId, qint32 itemIndex);
 
-	qint32 resizeToWidth(qint32 nwidth, qint32 scrollTop, qint32 minHeight, bool force = false); // returns new scroll top
+	qint32 resizeToWidth(qint32 nwidth, qint32 scrollTop, qint32 minHeight,
+	                     bool force = false); // returns new scroll top
 	void dropResizeIndex();
 
 	PeerData *peer() const;
@@ -159,7 +158,8 @@ private:
 	qint32 itemHeight(MsgId msgId, qint32 index) const;
 	void moveToNextItem(MsgId &msgId, qint32 &index, MsgId upTo, qint32 delta) const;
 
-	void updateDragSelection(MsgId dragSelFrom, qint32 dragSelFromIndex, MsgId dragSelTo, qint32 dragSelToIndex, bool dragSelecting);
+	void updateDragSelection(MsgId dragSelFrom, qint32 dragSelFromIndex, MsgId dragSelTo, qint32 dragSelToIndex,
+	                         bool dragSelecting);
 
 	void repaintItem(MsgId itemId, qint32 itemIndex);
 
@@ -191,11 +191,11 @@ private:
 	int _rowsLeft = 0;
 	int _rowWidth = 0;
 
-	typedef QVector<Overview::Layout::AbstractItem*> Items;
+	typedef QVector<Overview::Layout::AbstractItem *> Items;
 	Items _items;
-	typedef QMap<HistoryItem*, Overview::Layout::ItemBase*> LayoutItems;
+	typedef QMap<HistoryItem *, Overview::Layout::ItemBase *> LayoutItems;
 	LayoutItems _layoutItems;
-	typedef QMap<qint32, Overview::Layout::Date*> LayoutDates;
+	typedef QMap<qint32, Overview::Layout::Date *> LayoutDates;
 	LayoutDates _layoutDates;
 	Overview::Layout::ItemBase *layoutPrepare(HistoryItem *item);
 	Overview::Layout::AbstractItem *layoutPrepare(const QDate &date, bool month);
@@ -219,12 +219,7 @@ private:
 	MsgId _lastSearchId = 0;
 	MsgId _lastSearchMigratedId = 0;
 	int _searchedCount = 0;
-	enum SearchRequestType {
-		SearchFromStart,
-		SearchFromOffset,
-		SearchMigratedFromStart,
-		SearchMigratedFromOffset
-	};
+	enum SearchRequestType { SearchFromStart, SearchFromOffset, SearchMigratedFromStart, SearchMigratedFromOffset };
 	void searchReceived(SearchRequestType type, const MTPmessages_Messages &result, mtpRequestId req);
 	bool searchFailed(SearchRequestType type, const RPCError &error, mtpRequestId req);
 
@@ -294,7 +289,7 @@ class OverviewWidget : public Window::AbstractSectionWidget, public RPCSender {
 	Q_OBJECT
 
 public:
-	OverviewWidget(QWidget *parent, not_null<Window::Controller*> controller, PeerData *peer, MediaOverviewType type);
+	OverviewWidget(QWidget *parent, not_null<Window::Controller *> controller, PeerData *peer, MediaOverviewType type);
 
 	void clear();
 
@@ -340,7 +335,7 @@ public:
 		_inGrab = true;
 		resizeEvent(0);
 	}
-	void grapWithoutTopBarShadow();//@fixme grab?
+	void grapWithoutTopBarShadow(); //@fixme grab?
 	void grabFinish() override;
 	void rpcClear() override {
 		_inner->rpcClear();
@@ -356,7 +351,7 @@ public:
 	bool wheelEventFromFloatPlayer(QEvent *e, Window::Column myColumn, Window::Column playerColumn) override;
 	QRect rectForFloatPlayer(Window::Column myColumn, Window::Column playerColumn) override;
 
-	void ui_repaintHistoryItem(not_null<const HistoryItem*> item);
+	void ui_repaintHistoryItem(not_null<const HistoryItem *> item);
 
 	void notify_historyItemLayoutChanged(const HistoryItem *item);
 
@@ -380,7 +375,7 @@ private:
 	void topBarClick();
 	void animationCallback();
 
-	object_ptr<Ui::AbstractButton> _backAnimationButton = { nullptr };
+	object_ptr<Ui::AbstractButton> _backAnimationButton = {nullptr};
 	object_ptr<Window::TopBarWidget> _topBar;
 	object_ptr<Ui::ScrollArea> _scroll;
 	QPointer<OverviewInner> _inner;
@@ -402,6 +397,4 @@ private:
 
 	object_ptr<Ui::PlainShadow> _topShadow;
 	bool _inGrab = false;
-
 };
-

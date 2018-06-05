@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/images.h"
 
-#include "mainwidget.h"
-#include "storage/localstorage.h"
-#include "platform/platform_specific.h"
 #include "auth_session.h"
+#include "mainwidget.h"
+#include "platform/platform_specific.h"
+#include "storage/localstorage.h"
 
 #include <QBuffer>
 #include <QImageReader>
@@ -118,11 +118,12 @@ QImage prepareBlur(QImage img) {
 
 				x = 0;
 
-#define update(start, middle, end) \
-rgb[y * w + x] = (rgbsum >> 4) & 0x00FF00FF00FF00FFLL; \
-rgballsum += blurGetColors(&pix[yw + (start) * 4]) - 2 * blurGetColors(&pix[yw + (middle) * 4]) + blurGetColors(&pix[yw + (end) * 4]); \
-rgbsum += rgballsum; \
-x++;
+#define update(start, middle, end)                                                                                     \
+	rgb[y * w + x] = (rgbsum >> 4) & 0x00FF00FF00FF00FFLL;                                                             \
+	rgballsum += blurGetColors(&pix[yw + (start)*4]) - 2 * blurGetColors(&pix[yw + (middle)*4]) +                      \
+	             blurGetColors(&pix[yw + (end)*4]);                                                                    \
+	rgbsum += rgballsum;                                                                                               \
+	x++;
 
 				while (x < r1) {
 					update(0, x, x + r1);
@@ -151,16 +152,16 @@ x++;
 				y = 0;
 				int yi = x * 4;
 
-#define update(start, middle, end) \
-quint64 res = rgbsum >> 4; \
-pix[yi] = res & 0xFF; \
-pix[yi + 1] = (res >> 16) & 0xFF; \
-pix[yi + 2] = (res >> 32) & 0xFF; \
-pix[yi + 3] = (res >> 48) & 0xFF; \
-rgballsum += rgb[x + (start) * w] - 2 * rgb[x + (middle) * w] + rgb[x + (end) * w]; \
-rgbsum += rgballsum; \
-y++; \
-yi += stride;
+#define update(start, middle, end)                                                                                     \
+	quint64 res = rgbsum >> 4;                                                                                         \
+	pix[yi] = res & 0xFF;                                                                                              \
+	pix[yi + 1] = (res >> 16) & 0xFF;                                                                                  \
+	pix[yi + 2] = (res >> 32) & 0xFF;                                                                                  \
+	pix[yi + 3] = (res >> 48) & 0xFF;                                                                                  \
+	rgballsum += rgb[x + (start)*w] - 2 * rgb[x + (middle)*w] + rgb[x + (end)*w];                                      \
+	rgbsum += rgballsum;                                                                                               \
+	y++;                                                                                                               \
+	yi += stride;
 
 				while (y < r1) {
 					update(0, y, y + r1);
@@ -224,12 +225,13 @@ void prepareRound(QImage &image, QImage *cornerMasks, ImageRoundCorners corners)
 	Assert(image.depth() == static_cast<int>((imageIntsPerPixel * sizeof(quint32)) << 3));
 	Assert(image.bytesPerLine() == (imageIntsPerLine << 2));
 
-	auto ints = reinterpret_cast<quint32*>(image.bits());
+	auto ints = reinterpret_cast<quint32 *>(image.bits());
 	auto intsTopLeft = ints;
 	auto intsTopRight = ints + imageWidth - cornerWidth;
 	auto intsBottomLeft = ints + (imageHeight - cornerHeight) * imageWidth;
 	auto intsBottomRight = ints + (imageHeight - cornerHeight + 1) * imageWidth - cornerWidth;
-	auto maskCorner = [imageWidth, imageHeight, imageIntsPerPixel, imageIntsPerLine](quint32 *imageInts, const QImage &mask) {
+	auto maskCorner = [imageWidth, imageHeight, imageIntsPerPixel, imageIntsPerLine](quint32 *imageInts,
+	                                                                                 const QImage &mask) {
 		auto maskWidth = mask.width();
 		auto maskHeight = mask.height();
 		auto maskBytesPerPixel = (mask.depth() >> 3);
@@ -264,7 +266,8 @@ QImage prepareColored(style::color add, QImage image) {
 	}
 
 	if (auto pix = image.bits()) {
-		int ca = int(add->c.alphaF() * 0xFF), cr = int(add->c.redF() * 0xFF), cg = int(add->c.greenF() * 0xFF), cb = int(add->c.blueF() * 0xFF);
+		int ca = int(add->c.alphaF() * 0xFF), cr = int(add->c.redF() * 0xFF), cg = int(add->c.greenF() * 0xFF),
+		    cb = int(add->c.blueF() * 0xFF);
 		const int w = image.width(), h = image.height(), size = w * h * 4;
 		for (qint32 i = 0; i < size; i += 4) {
 			int b = pix[i], g = pix[i + 1], r = pix[i + 2], a = pix[i + 3], aca = a * ca;
@@ -280,7 +283,7 @@ QImage prepareColored(style::color add, QImage image) {
 QImage prepareOpaque(QImage image) {
 	if (image.hasAlphaChannel()) {
 		image = std::move(image).convertToFormat(QImage::Format_ARGB32_Premultiplied);
-		auto ints = reinterpret_cast<quint32*>(image.bits());
+		auto ints = reinterpret_cast<quint32 *>(image.bits());
 		auto bg = anim::shifted(st::imageBgTransparent->c);
 		auto width = image.width();
 		auto height = image.height();
@@ -304,10 +307,12 @@ QImage prepare(QImage img, int w, int h, Images::Options options, int outerw, in
 	}
 	if (w <= 0 || (w == img.width() && (h <= 0 || h == img.height()))) {
 	} else if (h <= 0) {
-		img = img.scaledToWidth(w, (options & Images::Option::Smooth) ? Qt::SmoothTransformation : Qt::FastTransformation);
+		img = img.scaledToWidth(w,
+		                        (options & Images::Option::Smooth) ? Qt::SmoothTransformation : Qt::FastTransformation);
 		Assert(!img.isNull());
 	} else {
-		img = img.scaled(w, h, Qt::IgnoreAspectRatio, (options & Images::Option::Smooth) ? Qt::SmoothTransformation : Qt::FastTransformation);
+		img = img.scaled(w, h, Qt::IgnoreAspectRatio,
+		                 (options & Images::Option::Smooth) ? Qt::SmoothTransformation : Qt::FastTransformation);
 		Assert(!img.isNull());
 	}
 	if (outerw > 0 && outerh > 0) {
@@ -325,17 +330,19 @@ QImage prepare(QImage img, int w, int h, Images::Options options, int outerw, in
 				if (w < outerw || h < outerh) {
 					p.fillRect(0, 0, result.width(), result.height(), st::imageBg);
 				}
-				p.drawImage((result.width() - img.width()) / (2 * cIntRetinaFactor()), (result.height() - img.height()) / (2 * cIntRetinaFactor()), img);
+				p.drawImage((result.width() - img.width()) / (2 * cIntRetinaFactor()),
+				            (result.height() - img.height()) / (2 * cIntRetinaFactor()), img);
 			}
 			img = result;
 			Assert(!img.isNull());
 		}
 	}
 	auto corners = [](Images::Options options) {
-		return ((options & Images::Option::RoundedTopLeft) ? ImageRoundCorner::TopLeft : ImageRoundCorner::None)
-			| ((options & Images::Option::RoundedTopRight) ? ImageRoundCorner::TopRight : ImageRoundCorner::None)
-			| ((options & Images::Option::RoundedBottomLeft) ? ImageRoundCorner::BottomLeft : ImageRoundCorner::None)
-			| ((options & Images::Option::RoundedBottomRight) ? ImageRoundCorner::BottomRight : ImageRoundCorner::None);
+		return ((options & Images::Option::RoundedTopLeft) ? ImageRoundCorner::TopLeft : ImageRoundCorner::None) |
+		       ((options & Images::Option::RoundedTopRight) ? ImageRoundCorner::TopRight : ImageRoundCorner::None) |
+		       ((options & Images::Option::RoundedBottomLeft) ? ImageRoundCorner::BottomLeft : ImageRoundCorner::None) |
+		       ((options & Images::Option::RoundedBottomRight) ? ImageRoundCorner::BottomRight :
+		                                                         ImageRoundCorner::None);
 	};
 	if (options & Images::Option::Circled) {
 		prepareCircle(img);
@@ -359,10 +366,10 @@ QImage prepare(QImage img, int w, int h, Images::Options options, int outerw, in
 
 namespace {
 
-using LocalImages = QMap<QString, Image*>;
+using LocalImages = QMap<QString, Image *>;
 LocalImages localImages;
 
-using WebImages = QMap<QString, WebImage*>;
+using WebImages = QMap<QString, WebImage *>;
 WebImages webImages;
 
 Image *generateBlankImage() {
@@ -377,10 +384,10 @@ Image *blank() {
 	return blankImage;
 }
 
-using StorageImages = QMap<StorageKey, StorageImage*>;
+using StorageImages = QMap<StorageKey, StorageImage *>;
 StorageImages storageImages;
 
-using WebFileImages = QMap<StorageKey, WebFileImage*>;
+using WebFileImages = QMap<StorageKey, WebFileImage *>;
 WebFileImages webFileImages;
 
 qint64 globalAcquiredSize = 0;
@@ -402,14 +409,16 @@ bool Image::isNull() const {
 	return (this == blank());
 }
 
-ImagePtr::ImagePtr() : Parent(blank()) {
-}
+ImagePtr::ImagePtr()
+    : Parent(blank()) {}
 
-ImagePtr::ImagePtr(qint32 width, qint32 height, const MTPFileLocation &location, ImagePtr def) :
-	Parent((location.type() == mtpc_fileLocation) ? (Image*)(internal::getImage(StorageImageLocation(width, height, location.c_fileLocation()))) : def.v()) {
-}
+ImagePtr::ImagePtr(qint32 width, qint32 height, const MTPFileLocation &location, ImagePtr def)
+    : Parent((location.type() == mtpc_fileLocation) ?
+                 (Image *)(internal::getImage(StorageImageLocation(width, height, location.c_fileLocation()))) :
+                 def.v()) {}
 
-Image::Image(const QString &file, QByteArray fmt) : _forgot(false) {
+Image::Image(const QString &file, QByteArray fmt)
+    : _forgot(false) {
 	_data = App::pixmapFromImageInPlace(App::readImage(file, &fmt, false, 0, &_saved));
 	_format = fmt;
 	if (!_data.isNull()) {
@@ -417,7 +426,8 @@ Image::Image(const QString &file, QByteArray fmt) : _forgot(false) {
 	}
 }
 
-Image::Image(const QByteArray &filecontent, QByteArray fmt) : _forgot(false) {
+Image::Image(const QByteArray &filecontent, QByteArray fmt)
+    : _forgot(false) {
 	_data = App::pixmapFromImageInPlace(App::readImage(filecontent, &fmt, false));
 	_format = fmt;
 	_saved = filecontent;
@@ -426,13 +436,20 @@ Image::Image(const QByteArray &filecontent, QByteArray fmt) : _forgot(false) {
 	}
 }
 
-Image::Image(const QPixmap &pixmap, QByteArray format) : _format(format), _forgot(false), _data(pixmap) {
+Image::Image(const QPixmap &pixmap, QByteArray format)
+    : _format(format)
+    , _forgot(false)
+    , _data(pixmap) {
 	if (!_data.isNull()) {
 		globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 	}
 }
 
-Image::Image(const QByteArray &filecontent, QByteArray fmt, const QPixmap &pixmap) : _saved(filecontent), _format(fmt), _forgot(false), _data(pixmap) {
+Image::Image(const QByteArray &filecontent, QByteArray fmt, const QPixmap &pixmap)
+    : _saved(filecontent)
+    , _format(fmt)
+    , _forgot(false)
+    , _data(pixmap) {
 	_data = pixmap;
 	_format = fmt;
 	_saved = filecontent;
@@ -445,17 +462,17 @@ const QPixmap &Image::pix(qint32 w, qint32 h) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
-        w = width();
-    } else if (cRetina()) {
-        w *= cIntRetinaFactor();
-        h *= cIntRetinaFactor();
-    }
+		w = width();
+	} else if (cRetina()) {
+		w *= cIntRetinaFactor();
+		h *= cIntRetinaFactor();
+	}
 	auto options = Images::Option::Smooth | Images::Option::None;
 	auto k = PixKey(w, h, options);
 	auto i = _sizesCache.constFind(k);
 	if (i == _sizesCache.cend()) {
 		auto p = pixNoCache(w, h, options);
-        if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
+		if (cRetina()) p.setDevicePixelRatio(cRetinaFactor());
 		i = _sizesCache.insert(k, p);
 		if (!p.isNull()) {
 			globalAcquiredSize += qint64(p.width()) * p.height() * 4;
@@ -475,10 +492,10 @@ const QPixmap &Image::pixRounded(qint32 w, qint32 h, ImageRoundRadius radius, Im
 	}
 	auto options = Images::Option::Smooth | Images::Option::None;
 	auto cornerOptions = [](ImageRoundCorners corners) {
-		return (corners & ImageRoundCorner::TopLeft ? Images::Option::RoundedTopLeft : Images::Option::None)
-			| (corners & ImageRoundCorner::TopRight ? Images::Option::RoundedTopRight : Images::Option::None)
-			| (corners & ImageRoundCorner::BottomLeft ? Images::Option::RoundedBottomLeft : Images::Option::None)
-			| (corners & ImageRoundCorner::BottomRight ? Images::Option::RoundedBottomRight : Images::Option::None);
+		return (corners & ImageRoundCorner::TopLeft ? Images::Option::RoundedTopLeft : Images::Option::None) |
+		       (corners & ImageRoundCorner::TopRight ? Images::Option::RoundedTopRight : Images::Option::None) |
+		       (corners & ImageRoundCorner::BottomLeft ? Images::Option::RoundedBottomLeft : Images::Option::None) |
+		       (corners & ImageRoundCorner::BottomRight ? Images::Option::RoundedBottomRight : Images::Option::None);
 	};
 	if (radius == ImageRoundRadius::Large) {
 		options |= Images::Option::RoundedLarge | cornerOptions(corners);
@@ -615,7 +632,8 @@ const QPixmap &Image::pixBlurredColored(style::color add, qint32 w, qint32 h) co
 	return i.value();
 }
 
-const QPixmap &Image::pixSingle(qint32 w, qint32 h, qint32 outerw, qint32 outerh, ImageRoundRadius radius, ImageRoundCorners corners, const style::color *colored) const {
+const QPixmap &Image::pixSingle(qint32 w, qint32 h, qint32 outerw, qint32 outerh, ImageRoundRadius radius,
+                                ImageRoundCorners corners, const style::color *colored) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -627,10 +645,10 @@ const QPixmap &Image::pixSingle(qint32 w, qint32 h, qint32 outerw, qint32 outerh
 
 	auto options = Images::Option::Smooth | Images::Option::None;
 	auto cornerOptions = [](ImageRoundCorners corners) {
-		return (corners & ImageRoundCorner::TopLeft ? Images::Option::RoundedTopLeft : Images::Option::None)
-			| (corners & ImageRoundCorner::TopRight ? Images::Option::RoundedTopRight : Images::Option::None)
-			| (corners & ImageRoundCorner::BottomLeft ? Images::Option::RoundedBottomLeft : Images::Option::None)
-			| (corners & ImageRoundCorner::BottomRight ? Images::Option::RoundedBottomRight : Images::Option::None);
+		return (corners & ImageRoundCorner::TopLeft ? Images::Option::RoundedTopLeft : Images::Option::None) |
+		       (corners & ImageRoundCorner::TopRight ? Images::Option::RoundedTopRight : Images::Option::None) |
+		       (corners & ImageRoundCorner::BottomLeft ? Images::Option::RoundedBottomLeft : Images::Option::None) |
+		       (corners & ImageRoundCorner::BottomRight ? Images::Option::RoundedBottomRight : Images::Option::None);
 	};
 	if (radius == ImageRoundRadius::Large) {
 		options |= Images::Option::RoundedLarge | cornerOptions(corners);
@@ -645,7 +663,8 @@ const QPixmap &Image::pixSingle(qint32 w, qint32 h, qint32 outerw, qint32 outerh
 
 	auto k = SinglePixKey(options);
 	auto i = _sizesCache.constFind(k);
-	if (i == _sizesCache.cend() || i->width() != (outerw * cIntRetinaFactor()) || i->height() != (outerh * cIntRetinaFactor())) {
+	if (i == _sizesCache.cend() || i->width() != (outerw * cIntRetinaFactor()) ||
+	    i->height() != (outerh * cIntRetinaFactor())) {
 		if (i != _sizesCache.cend()) {
 			globalAcquiredSize -= qint64(i->width()) * i->height() * 4;
 		}
@@ -659,7 +678,8 @@ const QPixmap &Image::pixSingle(qint32 w, qint32 h, qint32 outerw, qint32 outerh
 	return i.value();
 }
 
-const QPixmap &Image::pixBlurredSingle(int w, int h, qint32 outerw, qint32 outerh, ImageRoundRadius radius, ImageRoundCorners corners) const {
+const QPixmap &Image::pixBlurredSingle(int w, int h, qint32 outerw, qint32 outerh, ImageRoundRadius radius,
+                                       ImageRoundCorners corners) const {
 	checkload();
 
 	if (w <= 0 || !width() || !height()) {
@@ -671,10 +691,10 @@ const QPixmap &Image::pixBlurredSingle(int w, int h, qint32 outerw, qint32 outer
 
 	auto options = Images::Option::Smooth | Images::Option::Blurred;
 	auto cornerOptions = [](ImageRoundCorners corners) {
-		return (corners & ImageRoundCorner::TopLeft ? Images::Option::RoundedTopLeft : Images::Option::None)
-			| (corners & ImageRoundCorner::TopRight ? Images::Option::RoundedTopRight : Images::Option::None)
-			| (corners & ImageRoundCorner::BottomLeft ? Images::Option::RoundedBottomLeft : Images::Option::None)
-			| (corners & ImageRoundCorner::BottomRight ? Images::Option::RoundedBottomRight : Images::Option::None);
+		return (corners & ImageRoundCorner::TopLeft ? Images::Option::RoundedTopLeft : Images::Option::None) |
+		       (corners & ImageRoundCorner::TopRight ? Images::Option::RoundedTopRight : Images::Option::None) |
+		       (corners & ImageRoundCorner::BottomLeft ? Images::Option::RoundedBottomLeft : Images::Option::None) |
+		       (corners & ImageRoundCorner::BottomRight ? Images::Option::RoundedBottomRight : Images::Option::None);
 	};
 	if (radius == ImageRoundRadius::Large) {
 		options |= Images::Option::RoundedLarge | cornerOptions(corners);
@@ -686,7 +706,8 @@ const QPixmap &Image::pixBlurredSingle(int w, int h, qint32 outerw, qint32 outer
 
 	auto k = SinglePixKey(options);
 	auto i = _sizesCache.constFind(k);
-	if (i == _sizesCache.cend() || i->width() != (outerw * cIntRetinaFactor()) || i->height() != (outerh * cIntRetinaFactor())) {
+	if (i == _sizesCache.cend() || i->width() != (outerw * cIntRetinaFactor()) ||
+	    i->height() != (outerh * cIntRetinaFactor())) {
 		if (i != _sizesCache.cend()) {
 			globalAcquiredSize -= qint64(i->width()) * i->height() * 4;
 		}
@@ -700,8 +721,9 @@ const QPixmap &Image::pixBlurredSingle(int w, int h, qint32 outerw, qint32 outer
 	return i.value();
 }
 
-QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int outerh, const style::color *colored) const {
-	if (!loading()) const_cast<Image*>(this)->load();
+QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int outerh,
+                          const style::color *colored) const {
+	if (!loading()) const_cast<Image *>(this)->load();
 	restore();
 
 	if (_data.isNull()) {
@@ -722,20 +744,26 @@ QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int
 			QPainter p(&result);
 			if (w < outerw) {
 				p.fillRect(0, 0, (outerw - w) / 2, result.height(), st::imageBg);
-				p.fillRect(((outerw - w) / 2) + w, 0, result.width() - (((outerw - w) / 2) + w), result.height(), st::imageBg);
+				p.fillRect(((outerw - w) / 2) + w, 0, result.width() - (((outerw - w) / 2) + w), result.height(),
+				           st::imageBg);
 			}
 			if (h < outerh) {
-				p.fillRect(std::max(0, (outerw - w) / 2), 0, std::min(result.width(), w), (outerh - h) / 2, st::imageBg);
-				p.fillRect(std::max(0, (outerw - w) / 2), ((outerh - h) / 2) + h, std::min(result.width(), w), result.height() - (((outerh - h) / 2) + h), st::imageBg);
+				p.fillRect(std::max(0, (outerw - w) / 2), 0, std::min(result.width(), w), (outerh - h) / 2,
+				           st::imageBg);
+				p.fillRect(std::max(0, (outerw - w) / 2), ((outerh - h) / 2) + h, std::min(result.width(), w),
+				           result.height() - (((outerh - h) / 2) + h), st::imageBg);
 			}
-			p.fillRect(std::max(0, (outerw - w) / 2), std::max(0, (outerh - h) / 2), std::min(result.width(), w), std::min(result.height(), h), st::imageBgTransparent);
+			p.fillRect(std::max(0, (outerw - w) / 2), std::max(0, (outerh - h) / 2), std::min(result.width(), w),
+			           std::min(result.height(), h), st::imageBgTransparent);
 		}
 
 		auto corners = [](Images::Options options) {
-			return ((options & Images::Option::RoundedTopLeft) ? ImageRoundCorner::TopLeft : ImageRoundCorner::None)
-				| ((options & Images::Option::RoundedTopRight) ? ImageRoundCorner::TopRight : ImageRoundCorner::None)
-				| ((options & Images::Option::RoundedBottomLeft) ? ImageRoundCorner::BottomLeft : ImageRoundCorner::None)
-				| ((options & Images::Option::RoundedBottomRight) ? ImageRoundCorner::BottomRight : ImageRoundCorner::None);
+			return ((options & Images::Option::RoundedTopLeft) ? ImageRoundCorner::TopLeft : ImageRoundCorner::None) |
+			       ((options & Images::Option::RoundedTopRight) ? ImageRoundCorner::TopRight : ImageRoundCorner::None) |
+			       ((options & Images::Option::RoundedBottomLeft) ? ImageRoundCorner::BottomLeft :
+			                                                        ImageRoundCorner::None) |
+			       ((options & Images::Option::RoundedBottomRight) ? ImageRoundCorner::BottomRight :
+			                                                         ImageRoundCorner::None);
 		};
 		if (options & Images::Option::Circled) {
 			Images::prepareCircle(result);
@@ -755,7 +783,7 @@ QPixmap Image::pixNoCache(int w, int h, Images::Options options, int outerw, int
 }
 
 QPixmap Image::pixColoredNoCache(style::color add, qint32 w, qint32 h, bool smooth) const {
-	const_cast<Image*>(this)->load();
+	const_cast<Image *>(this)->load();
 	restore();
 	if (_data.isNull()) return blank()->pix();
 
@@ -764,13 +792,15 @@ QPixmap Image::pixColoredNoCache(style::color add, qint32 w, qint32 h, bool smoo
 		return App::pixmapFromImageInPlace(Images::prepareColored(add, std::move(img)));
 	}
 	if (h <= 0) {
-		return App::pixmapFromImageInPlace(Images::prepareColored(add, img.scaledToWidth(w, smooth ? Qt::SmoothTransformation : Qt::FastTransformation)));
+		return App::pixmapFromImageInPlace(Images::prepareColored(
+		    add, img.scaledToWidth(w, smooth ? Qt::SmoothTransformation : Qt::FastTransformation)));
 	}
-	return App::pixmapFromImageInPlace(Images::prepareColored(add, img.scaled(w, h, Qt::IgnoreAspectRatio, smooth ? Qt::SmoothTransformation : Qt::FastTransformation)));
+	return App::pixmapFromImageInPlace(Images::prepareColored(
+	    add, img.scaled(w, h, Qt::IgnoreAspectRatio, smooth ? Qt::SmoothTransformation : Qt::FastTransformation)));
 }
 
 QPixmap Image::pixBlurredColoredNoCache(style::color add, qint32 w, qint32 h) const {
-	const_cast<Image*>(this)->load();
+	const_cast<Image *>(this)->load();
 	restore();
 	if (_data.isNull()) return blank()->pix();
 
@@ -876,7 +906,7 @@ void RemoteImage::doCheckload() const {
 	_format = _loader->imageFormat(shrinkBox());
 	_data = data;
 	_saved = _loader->bytes();
-	const_cast<RemoteImage*>(this)->setInformation(_saved.size(), _data.width(), _data.height());
+	const_cast<RemoteImage *>(this)->setInformation(_saved.size(), _data.width(), _data.height());
 	globalAcquiredSize += qint64(_data.width()) * _data.height() * 4;
 
 	invalidateSizeCache();
@@ -1002,13 +1032,12 @@ qint32 RemoteImage::loadOffset() const {
 }
 
 StorageImage::StorageImage(const StorageImageLocation &location, qint32 size)
-: _location(location)
-, _size(size) {
-}
+    : _location(location)
+    , _size(size) {}
 
 StorageImage::StorageImage(const StorageImageLocation &location, QByteArray &bytes)
-: _location(location)
-, _size(bytes.size()) {
+    : _location(location)
+    , _size(bytes.size()) {
 	setData(bytes);
 	if (!_location.isNull()) {
 		Local::writeImage(storageKey(_location), StorageImageSaved(bytes));
@@ -1034,9 +1063,8 @@ FileLoader *StorageImage::createLoader(LoadFromCloudSetting fromCloud, bool auto
 }
 
 WebFileImage::WebFileImage(const WebFileImageLocation &location, qint32 size)
-: _location(location)
-, _size(size) {
-}
+    : _location(location)
+    , _size(size) {}
 
 qint32 WebFileImage::countWidth() const {
 	return _location.width();
@@ -1056,23 +1084,23 @@ FileLoader *WebFileImage::createLoader(LoadFromCloudSetting fromCloud, bool auto
 	return new mtpFileLoader(&_location, _size, fromCloud, autoLoading);
 }
 
-DelayedStorageImage::DelayedStorageImage() : StorageImage(StorageImageLocation())
-, _loadRequested(false)
-, _loadCancelled(false)
-, _loadFromCloud(false) {
-}
+DelayedStorageImage::DelayedStorageImage()
+    : StorageImage(StorageImageLocation())
+    , _loadRequested(false)
+    , _loadCancelled(false)
+    , _loadFromCloud(false) {}
 
-DelayedStorageImage::DelayedStorageImage(qint32 w, qint32 h) : StorageImage(StorageImageLocation(w, h, 0, 0, 0, 0))
-, _loadRequested(false)
-, _loadCancelled(false)
-, _loadFromCloud(false) {
-}
+DelayedStorageImage::DelayedStorageImage(qint32 w, qint32 h)
+    : StorageImage(StorageImageLocation(w, h, 0, 0, 0, 0))
+    , _loadRequested(false)
+    , _loadCancelled(false)
+    , _loadFromCloud(false) {}
 
-DelayedStorageImage::DelayedStorageImage(QByteArray &bytes) : StorageImage(StorageImageLocation(), bytes)
-, _loadRequested(false)
-, _loadCancelled(false)
-, _loadFromCloud(false) {
-}
+DelayedStorageImage::DelayedStorageImage(QByteArray &bytes)
+    : StorageImage(StorageImageLocation(), bytes)
+    , _loadRequested(false)
+    , _loadCancelled(false)
+    , _loadFromCloud(false) {}
 
 void DelayedStorageImage::setStorageLocation(const StorageImageLocation location) {
 	_location = location;
@@ -1139,11 +1167,18 @@ void DelayedStorageImage::cancel() {
 	StorageImage::cancel();
 }
 
-WebImage::WebImage(const QString &url, QSize box) : _url(url), _box(box), _size(0), _width(0), _height(0) {
-}
+WebImage::WebImage(const QString &url, QSize box)
+    : _url(url)
+    , _box(box)
+    , _size(0)
+    , _width(0)
+    , _height(0) {}
 
-WebImage::WebImage(const QString &url, int width, int height) : _url(url), _size(0), _width(width), _height(height) {
-}
+WebImage::WebImage(const QString &url, int width, int height)
+    : _url(url)
+    , _size(0)
+    , _width(width)
+    , _height(height) {}
 
 void WebImage::setSize(int width, int height) {
 	_width = width;
@@ -1170,7 +1205,8 @@ FileLoader *WebImage::createLoader(LoadFromCloudSetting fromCloud, bool autoLoad
 namespace internal {
 
 Image *getImage(const QString &file, QByteArray format) {
-	if (file.startsWith(qstr("http://"), Qt::CaseInsensitive) || file.startsWith(qstr("https://"), Qt::CaseInsensitive)) {
+	if (file.startsWith(qstr("http://"), Qt::CaseInsensitive) ||
+	    file.startsWith(qstr("https://"), Qt::CaseInsensitive)) {
 		QString key = file;
 		WebImages::const_iterator i = webImages.constFind(key);
 		if (i == webImages.cend()) {
@@ -1260,17 +1296,20 @@ WebFileImage *getImage(const WebFileImageLocation &location, qint32 size) {
 
 } // namespace internal
 
-ReadAccessEnabler::ReadAccessEnabler(const PsFileBookmark *bookmark) : _bookmark(bookmark), _failed(_bookmark ? !_bookmark->enable() : false) {
-}
+ReadAccessEnabler::ReadAccessEnabler(const PsFileBookmark *bookmark)
+    : _bookmark(bookmark)
+    , _failed(_bookmark ? !_bookmark->enable() : false) {}
 
-ReadAccessEnabler::ReadAccessEnabler(const QSharedPointer<PsFileBookmark> &bookmark) : _bookmark(bookmark.data()), _failed(_bookmark ? !_bookmark->enable() : false) {
-}
+ReadAccessEnabler::ReadAccessEnabler(const QSharedPointer<PsFileBookmark> &bookmark)
+    : _bookmark(bookmark.data())
+    , _failed(_bookmark ? !_bookmark->enable() : false) {}
 
 ReadAccessEnabler::~ReadAccessEnabler() {
 	if (_bookmark && !_failed) _bookmark->disable();
 }
 
-FileLocation::FileLocation(const QString &name) : fname(name) {
+FileLocation::FileLocation(const QString &name)
+    : fname(name) {
 	if (fname.isEmpty()) {
 		size = 0;
 	} else {
@@ -1300,7 +1339,7 @@ bool FileLocation::check() const {
 
 	ReadAccessEnabler enabler(_bookmark);
 	if (enabler.failed()) {
-		const_cast<FileLocation*>(this)->_bookmark.clear();
+		const_cast<FileLocation *>(this)->_bookmark.clear();
 	}
 
 	QFileInfo f(name());
@@ -1318,7 +1357,9 @@ bool FileLocation::check() const {
 	}
 	auto realModified = f.lastModified();
 	if (realModified != modified) {
-		DEBUG_LOG(("File location check: Wrong last modified time %1 when should be %2").arg(realModified.toMSecsSinceEpoch()).arg(modified.toMSecsSinceEpoch()));
+		DEBUG_LOG(("File location check: Wrong last modified time %1 when should be %2")
+		              .arg(realModified.toMSecsSinceEpoch())
+		              .arg(modified.toMSecsSinceEpoch()));
 		return false;
 	}
 	return true;

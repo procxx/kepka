@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <QtCore/QString>
-#include <QtCore/QVector>
 #include <QtCore/QTextStream>
+#include <QtCore/QVector>
 
 namespace codegen {
 namespace common {
@@ -48,7 +48,7 @@ public:
 		stream() << "\n";
 		return *this;
 	}
-    CppFile &include(const QString &header, bool global = false);
+	CppFile &include(const QString &header, bool global = false);
 
 	// Empty name adds anonymous namespace.
 	CppFile &pushNamespace(const QString &name = QString());
@@ -62,7 +62,6 @@ private:
 	QTextStream stream_;
 	QVector<QString> namespaces_;
 	bool forceReGenerate_;
-
 };
 
 } // namespace common

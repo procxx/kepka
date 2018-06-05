@@ -17,9 +17,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "platform/mac/specific_mac_p.h"
-#include "core/utils.h" // TimeMs
 #include "core/basic_types.h" // qsl()
+#include "core/utils.h" // TimeMs
+#include "platform/mac/specific_mac_p.h"
 #include <QFile>
 
 class QAbstractNativeEventFilter;
@@ -35,24 +35,22 @@ QString CurrentExecutablePath(int argc, char *argv[]);
 
 namespace ThirdParty {
 
-inline void start() {
-}
+inline void start() {}
 
-inline void finish() {
-}
+inline void finish() {}
 
 } // namespace ThirdParty
 } // namespace Platform
 
 inline QString psServerPrefix() {
 #ifndef OS_MAC_STORE
-    return qsl("/tmp/");
+	return qsl("/tmp/");
 #else // OS_MAC_STORE
 	return objc_documentsPath();
 #endif // OS_MAC_STORE
 }
 inline void psCheckLocalSocket(const QString &serverName) {
-    QFile address(serverName);
+	QFile address(serverName);
 	if (address.exists()) {
 		address.remove();
 	}
@@ -101,8 +99,8 @@ QByteArray psPathBookmark(const QString &path);
 
 class PsFileBookmark {
 public:
-	PsFileBookmark(const QByteArray &bookmark) : _inner(bookmark) {
-	}
+	PsFileBookmark(const QByteArray &bookmark)
+	    : _inner(bookmark) {}
 	bool check() const {
 		return _inner.valid();
 	}
@@ -121,7 +119,6 @@ public:
 
 private:
 	objc_FileBookmark _inner;
-
 };
 
 QString strNotificationAboutThemeChange();

@@ -20,16 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "intro/introstart.h"
 
-#include "config.h"
-#include "lang/lang_keys.h"
 #include "application.h"
+#include "config.h"
 #include "intro/introphone.h"
+#include "lang/lang_keys.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
 
 namespace Intro {
 
-StartWidget::StartWidget(QWidget *parent, Widget::Data *data) : Step(parent, data, true) {
+StartWidget::StartWidget(QWidget *parent, Widget::Data *data)
+    : Step(parent, data, true) {
 	setMouseTracking(true);
 	setTitleText([] { return str_const_toString(AppName); });
 	setDescriptionText(langFactory(lng_intro_about));

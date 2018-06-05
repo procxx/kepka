@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QTimer>
 #include "base/observer.h"
-#include "ui/twidget.h"
-#include "ui/animation.h"
 #include "structs.h"
+#include "ui/animation.h"
+#include "ui/twidget.h"
+#include <QTimer>
 
 namespace Ui {
 class ScrollArea;
@@ -32,9 +32,9 @@ class ScrollArea;
 
 namespace internal {
 
-using MentionRows = QList<UserData*>;
+using MentionRows = QList<UserData *>;
 using HashtagRows = QList<QString>;
-using BotCommandRows = QList<QPair<UserData*, const BotCommand*>>;
+using BotCommandRows = QList<QPair<UserData *, const BotCommand *>>;
 
 class FieldAutocompleteInner;
 
@@ -110,7 +110,8 @@ private:
 	internal::BotCommandRows _brows;
 	StickerPack _srows;
 
-	void rowsUpdated(const internal::MentionRows &mrows, const internal::HashtagRows &hrows, const internal::BotCommandRows &brows, const StickerPack &srows, bool resetScroll);
+	void rowsUpdated(const internal::MentionRows &mrows, const internal::HashtagRows &hrows,
+	                 const internal::BotCommandRows &brows, const StickerPack &srows, bool resetScroll);
 
 	object_ptr<Ui::ScrollArea> _scroll;
 	QPointer<internal::FieldAutocompleteInner> _inner;
@@ -136,7 +137,6 @@ private:
 	Animation _a_opacity;
 
 	friend class internal::FieldAutocompleteInner;
-
 };
 
 namespace internal {
@@ -145,7 +145,8 @@ class FieldAutocompleteInner final : public TWidget, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	FieldAutocompleteInner(FieldAutocomplete *parent, MentionRows *mrows, HashtagRows *hrows, BotCommandRows *brows, StickerPack *srows);
+	FieldAutocompleteInner(FieldAutocomplete *parent, MentionRows *mrows, HashtagRows *hrows, BotCommandRows *brows,
+	                       StickerPack *srows);
 
 	void clearSel(bool hidden = false);
 	bool moveSel(int key);
@@ -194,7 +195,6 @@ private:
 	bool _previewShown;
 
 	QTimer _previewTimer;
-
 };
 
 } // namespace internal

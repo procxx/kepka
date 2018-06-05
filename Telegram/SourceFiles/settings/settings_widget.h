@@ -30,7 +30,7 @@ class Widget : public Layer, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	Widget(QWidget*);
+	Widget(QWidget *);
 
 	void refreshLang();
 
@@ -46,7 +46,6 @@ private:
 	QPointer<InnerWidget> _inner;
 
 	int _contentLeft = 0;
-
 };
 
 } // namespace Settings

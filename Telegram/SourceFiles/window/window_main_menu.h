@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/timer.h"
 #include "base/lambda.h"
+#include "base/timer.h"
 #include "ui/twidget.h"
 
 namespace Ui {
@@ -55,8 +55,8 @@ private:
 	void updatePhone();
 	void refreshMenu();
 
-	object_ptr<Profile::UserpicButton> _userpicButton = { nullptr };
-	object_ptr<Ui::IconButton> _cloudButton = { nullptr };
+	object_ptr<Profile::UserpicButton> _userpicButton = {nullptr};
+	object_ptr<Ui::IconButton> _cloudButton = {nullptr};
 	object_ptr<Ui::Menu> _menu;
 	object_ptr<Ui::FlatLabel> _telegram;
 	object_ptr<Ui::FlatLabel> _version;
@@ -65,7 +65,6 @@ private:
 
 	bool _showFinished = false;
 	QString _phoneText;
-
 };
 
 } // namespace Window

@@ -31,17 +31,17 @@ bool ApplyArchivedResultFake(); // For testing.
 void InstallLocally(quint64 setId);
 void UndoInstallLocally(quint64 setId);
 void MarkFeaturedAsRead(quint64 setId);
-bool IsFaved(not_null<DocumentData*> document);
-void SetFaved(not_null<DocumentData*> document, bool faved);
+bool IsFaved(not_null<DocumentData *> document);
+void SetFaved(not_null<DocumentData *> document, bool faved);
 
 void SetsReceived(const QVector<MTPStickerSet> &data, qint32 hash);
-void SpecialSetReceived(quint64 setId, const QString &setTitle, const QVector<MTPDocument> &items, qint32 hash, const QVector<MTPStickerPack> &packs = QVector<MTPStickerPack>());
+void SpecialSetReceived(quint64 setId, const QString &setTitle, const QVector<MTPDocument> &items, qint32 hash,
+                        const QVector<MTPStickerPack> &packs = QVector<MTPStickerPack>());
 void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVector<MTPlong> &unread, qint32 hash);
 void GifsReceived(const QVector<MTPDocument> &items, qint32 hash);
 
 StickerPack GetListByEmoji(not_null<EmojiPtr> emoji);
-base::optional<std::vector<not_null<EmojiPtr>>> GetEmojiListFromSet(
-	not_null<DocumentData*> document);
+base::optional<std::vector<not_null<EmojiPtr>>> GetEmojiListFromSet(not_null<DocumentData *> document);
 
 Set *FeedSet(const MTPDstickerSet &data);
 Set *FeedSetFull(const MTPmessages_StickerSet &data);
@@ -60,7 +60,6 @@ private:
 
 	object_ptr<SingleTimer> _timer;
 	OrderedSet<quint64> _setIds;
-
 };
 
 } // namespace internal

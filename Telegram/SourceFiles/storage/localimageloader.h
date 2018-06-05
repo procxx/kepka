@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
-#include <QByteArray>
-#include <QMap>
-#include <QList>
-#include <QImage>
-#include <QMutex>
 #include "base/variant.h"
 #include "structs.h"
+#include <QByteArray>
+#include <QImage>
+#include <QList>
+#include <QMap>
+#include <QMutex>
+#include <QString>
 
 enum class CompressConfirm {
 	Auto,
@@ -43,14 +43,31 @@ enum class SendMediaType {
 };
 
 struct SendMediaPrepare {
-	SendMediaPrepare(const QString &file, const PeerId &peer, SendMediaType type, MsgId replyTo) : id(rand_value<PhotoId>()), file(file), peer(peer), type(type), replyTo(replyTo) {
-	}
-	SendMediaPrepare(const QImage &img, const PeerId &peer, SendMediaType type, MsgId replyTo) : id(rand_value<PhotoId>()), img(img), peer(peer), type(type), replyTo(replyTo) {
-	}
-	SendMediaPrepare(const QByteArray &data, const PeerId &peer, SendMediaType type, MsgId replyTo) : id(rand_value<PhotoId>()), data(data), peer(peer), type(type), replyTo(replyTo) {
-	}
-	SendMediaPrepare(const QByteArray &data, int duration, const PeerId &peer, SendMediaType type, MsgId replyTo) : id(rand_value<PhotoId>()), data(data), peer(peer), type(type), duration(duration), replyTo(replyTo) {
-	}
+	SendMediaPrepare(const QString &file, const PeerId &peer, SendMediaType type, MsgId replyTo)
+	    : id(rand_value<PhotoId>())
+	    , file(file)
+	    , peer(peer)
+	    , type(type)
+	    , replyTo(replyTo) {}
+	SendMediaPrepare(const QImage &img, const PeerId &peer, SendMediaType type, MsgId replyTo)
+	    : id(rand_value<PhotoId>())
+	    , img(img)
+	    , peer(peer)
+	    , type(type)
+	    , replyTo(replyTo) {}
+	SendMediaPrepare(const QByteArray &data, const PeerId &peer, SendMediaType type, MsgId replyTo)
+	    : id(rand_value<PhotoId>())
+	    , data(data)
+	    , peer(peer)
+	    , type(type)
+	    , replyTo(replyTo) {}
+	SendMediaPrepare(const QByteArray &data, int duration, const PeerId &peer, SendMediaType type, MsgId replyTo)
+	    : id(rand_value<PhotoId>())
+	    , data(data)
+	    , peer(peer)
+	    , type(type)
+	    , duration(duration)
+	    , replyTo(replyTo) {}
 	PhotoId id;
 	QString file;
 	QImage img;
@@ -59,27 +76,29 @@ struct SendMediaPrepare {
 	SendMediaType type;
 	int duration = 0;
 	MsgId replyTo;
-
 };
 using SendMediaPrepareList = QList<SendMediaPrepare>;
 
-using UploadFileParts =  QMap<int, QByteArray>;
+using UploadFileParts = QMap<int, QByteArray>;
 struct SendMediaReady {
 	SendMediaReady() = default; // temp
-	SendMediaReady(SendMediaType type, const QString &file, const QString &filename, qint32 filesize, const QByteArray &data, const quint64 &id, const quint64 &thumbId, const QString &thumbExt, const PeerId &peer, const MTPPhoto &photo, const PreparedPhotoThumbs &photoThumbs, const MTPDocument &document, const QByteArray &jpeg, MsgId replyTo)
-		: replyTo(replyTo)
-		, type(type)
-		, file(file)
-		, filename(filename)
-		, filesize(filesize)
-		, data(data)
-		, thumbExt(thumbExt)
-		, id(id)
-		, thumbId(thumbId)
-		, peer(peer)
-		, photo(photo)
-		, document(document)
-		, photoThumbs(photoThumbs) {
+	SendMediaReady(SendMediaType type, const QString &file, const QString &filename, qint32 filesize,
+	               const QByteArray &data, const quint64 &id, const quint64 &thumbId, const QString &thumbExt,
+	               const PeerId &peer, const MTPPhoto &photo, const PreparedPhotoThumbs &photoThumbs,
+	               const MTPDocument &document, const QByteArray &jpeg, MsgId replyTo)
+	    : replyTo(replyTo)
+	    , type(type)
+	    , file(file)
+	    , filename(filename)
+	    , filesize(filesize)
+	    , data(data)
+	    , thumbExt(thumbExt)
+	    , id(id)
+	    , thumbId(thumbId)
+	    , peer(peer)
+	    , photo(photo)
+	    , document(document)
+	    , photoThumbs(photoThumbs) {
 		if (!jpeg.isEmpty()) {
 			qint32 size = jpeg.size();
 			for (qint32 i = 0, part = 0; i < size; i += UploadPartSize, ++part) {
@@ -105,10 +124,9 @@ struct SendMediaReady {
 	QByteArray jpeg_md5;
 
 	QString caption;
-
 };
 
-using TaskId = void*; // no interface, just id
+using TaskId = void *; // no interface, just id
 
 class Task {
 public:
@@ -117,9 +135,8 @@ public:
 	virtual ~Task() = default;
 
 	TaskId id() const {
-		return static_cast<TaskId>(const_cast<Task*>(this));
+		return static_cast<TaskId>(const_cast<Task *>(this));
 	}
-
 };
 using TaskPtr = QSharedPointer<Task>;
 using TasksList = QList<TaskPtr>;
@@ -154,15 +171,14 @@ private:
 	QThread *_thread;
 	TaskQueueWorker *_worker;
 	QTimer *_stopTimer;
-
 };
 
 class TaskQueueWorker : public QObject {
 	Q_OBJECT
 
 public:
-	TaskQueueWorker(TaskQueue *queue) : _queue(queue) {
-	}
+	TaskQueueWorker(TaskQueue *queue)
+	    : _queue(queue) {}
 
 signals:
 	void taskProcessed();
@@ -173,15 +189,13 @@ public slots:
 private:
 	TaskQueue *_queue;
 	bool _inTaskAdded = false;
-
 };
 
 struct FileLoadTo {
 	FileLoadTo(const PeerId &peer, bool silent, MsgId replyTo)
-		: peer(peer)
-		, silent(silent)
-		, replyTo(replyTo) {
-	}
+	    : peer(peer)
+	    , silent(silent)
+	    , replyTo(replyTo) {}
 	PeerId peer;
 	bool silent;
 	MsgId replyTo;
@@ -189,10 +203,9 @@ struct FileLoadTo {
 
 struct FileLoadResult {
 	FileLoadResult(const quint64 &id, const FileLoadTo &to, const QString &caption)
-		: id(id)
-		, to(to)
-		, caption(caption) {
-	}
+	    : id(id)
+	    , to(to)
+	    , caption(caption) {}
 
 	quint64 id;
 	FileLoadTo to;
@@ -265,11 +278,15 @@ public:
 		QString filemime;
 		base::variant<Image, Song, Video> media;
 	};
-	static std::unique_ptr<MediaInformation> ReadMediaInformation(const QString &filepath, const QByteArray &content, const QString &filemime);
+	static std::unique_ptr<MediaInformation> ReadMediaInformation(const QString &filepath, const QByteArray &content,
+	                                                              const QString &filemime);
 
-	FileLoadTask(const QString &filepath, std::unique_ptr<MediaInformation> information, SendMediaType type, const FileLoadTo &to, const QString &caption);
-	FileLoadTask(const QByteArray &content, const QImage &image, SendMediaType type, const FileLoadTo &to, const QString &caption);
-	FileLoadTask(const QByteArray &voice, qint32 duration, const VoiceWaveform &waveform, const FileLoadTo &to, const QString &caption);
+	FileLoadTask(const QString &filepath, std::unique_ptr<MediaInformation> information, SendMediaType type,
+	             const FileLoadTo &to, const QString &caption);
+	FileLoadTask(const QByteArray &content, const QImage &image, SendMediaType type, const FileLoadTo &to,
+	             const QString &caption);
+	FileLoadTask(const QByteArray &voice, qint32 duration, const VoiceWaveform &waveform, const FileLoadTo &to,
+	             const QString &caption);
 
 	quint64 fileid() const {
 		return _id;
@@ -279,12 +296,16 @@ public:
 	void finish();
 
 private:
-	static bool CheckForSong(const QString &filepath, const QByteArray &content, std::unique_ptr<MediaInformation> &result);
-	static bool CheckForVideo(const QString &filepath, const QByteArray &content, std::unique_ptr<MediaInformation> &result);
-	static bool CheckForImage(const QString &filepath, const QByteArray &content, std::unique_ptr<MediaInformation> &result);
+	static bool CheckForSong(const QString &filepath, const QByteArray &content,
+	                         std::unique_ptr<MediaInformation> &result);
+	static bool CheckForVideo(const QString &filepath, const QByteArray &content,
+	                          std::unique_ptr<MediaInformation> &result);
+	static bool CheckForImage(const QString &filepath, const QByteArray &content,
+	                          std::unique_ptr<MediaInformation> &result);
 
 	template <typename Mimes, typename Extensions>
-	static bool CheckMimeOrExtensions(const QString &filepath, const QString &filemime, Mimes &mimes, Extensions &extensions);
+	static bool CheckMimeOrExtensions(const QString &filepath, const QString &filemime, Mimes &mimes,
+	                                  Extensions &extensions);
 
 	std::unique_ptr<MediaInformation> readMediaInformation(const QString &filemime) const {
 		return ReadMediaInformation(_filepath, _content, filemime);
@@ -302,5 +323,4 @@ private:
 	QString _caption;
 
 	FileLoadResultPtr _result;
-
 };

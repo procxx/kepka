@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/style/parsed_file.h"
 
-#include <iostream>
-#include <QtCore/QMap>
-#include <QtCore/QDir>
-#include <QtCore/QRegularExpression>
 #include "codegen/common/basic_tokenized_file.h"
 #include "codegen/common/logging.h"
+#include <QtCore/QDir>
+#include <QtCore/QMap>
+#include <QtCore/QRegularExpression>
+#include <iostream>
 
 using BasicToken = codegen::common::BasicTokenizedFile::Token;
 using BasicType = BasicToken::Type;
@@ -37,14 +37,14 @@ using structure::logFullName;
 
 namespace {
 
-constexpr int kErrorInIncluded         = 801;
-constexpr int kErrorTypeMismatch       = 802;
-constexpr int kErrorUnknownField       = 803;
+constexpr int kErrorInIncluded = 801;
+constexpr int kErrorTypeMismatch = 802;
+constexpr int kErrorUnknownField = 803;
 constexpr int kErrorIdentifierNotFound = 804;
-constexpr int kErrorAlreadyDefined     = 805;
-constexpr int kErrorBadString          = 806;
-constexpr int kErrorIconDuplicate      = 807;
-constexpr int kErrorBadIconModifier    = 808;
+constexpr int kErrorAlreadyDefined = 805;
+constexpr int kErrorBadString = 806;
+constexpr int kErrorIconDuplicate = 807;
+constexpr int kErrorBadIconModifier = 808;
 
 QString findInputFile(const Options &options) {
 	for (const auto &dir : options.includePaths) {
@@ -101,28 +101,23 @@ structure::data::color convertWebColor(const QString &str, const QString &fallba
 			a = readHexUchar(str.at(6), str.at(7));
 		}
 	}
-	return { r, g, b, a, fallback };
+	return {r, g, b, a, fallback};
 }
 
 structure::data::color convertIntColor(int r, int g, int b, int a) {
-	return { uchar(r & 0xFF), uchar(g & 0xFF), uchar(b & 0xFF), uchar(a & 0xFF) };
+	return {uchar(r & 0xFF), uchar(g & 0xFF), uchar(b & 0xFF), uchar(a & 0xFF)};
 }
 
 std::string logType(const structure::Type &type) {
 	if (type.tag == structure::TypeTag::Struct) {
 		return "struct " + logFullName(type.name);
 	}
-	static auto builtInTypes = new QMap<structure::TypeTag, std::string> {
-		{ structure::TypeTag::Int       , "int" },
-		{ structure::TypeTag::Double    , "double" },
-		{ structure::TypeTag::Pixels    , "pixels" },
-		{ structure::TypeTag::String    , "string" },
-		{ structure::TypeTag::Color     , "color" },
-		{ structure::TypeTag::Point     , "point" },
-		{ structure::TypeTag::Size      , "size" },
-		{ structure::TypeTag::Align     , "align" },
-		{ structure::TypeTag::Margins   , "margins" },
-		{ structure::TypeTag::Font      , "font" },
+	static auto builtInTypes = new QMap<structure::TypeTag, std::string>{
+	    {structure::TypeTag::Int, "int"},         {structure::TypeTag::Double, "double"},
+	    {structure::TypeTag::Pixels, "pixels"},   {structure::TypeTag::String, "string"},
+	    {structure::TypeTag::Color, "color"},     {structure::TypeTag::Point, "point"},
+	    {structure::TypeTag::Size, "size"},       {structure::TypeTag::Align, "align"},
+	    {structure::TypeTag::Margins, "margins"}, {structure::TypeTag::Font, "font"},
 	};
 	return builtInTypes->value(type.tag, "invalid");
 }
@@ -162,10 +157,9 @@ Modifier GetModifier(const QString &name) {
 }
 
 ParsedFile::ParsedFile(const Options &options)
-: filePath_(findInputFile(options))
-, file_(filePath_)
-, options_(options) {
-}
+    : filePath_(findInputFile(options))
+    , file_(filePath_)
+    , options_(options) {}
 
 bool ParsedFile::read() {
 	if (!file_.read()) {
@@ -186,7 +180,8 @@ bool ParsedFile::read() {
 					if (module_->addStruct(structResult)) {
 						continue;
 					}
-					logError(kErrorAlreadyDefined) << "struct '" << logFullName(structResult.name) << "' already defined";
+					logError(kErrorAlreadyDefined)
+					    << "struct '" << logFullName(structResult.name) << "' already defined";
 					break;
 				}
 			} else if (auto colonToken = file_.getToken(BasicType::Colon)) {
@@ -194,7 +189,8 @@ bool ParsedFile::read() {
 					if (module_->addVariable(variableResult)) {
 						continue;
 					}
-					logError(kErrorAlreadyDefined) << "variable '" << logFullName(variableResult.name) << "' already defined";
+					logError(kErrorAlreadyDefined)
+					    << "variable '" << logFullName(variableResult.name) << "' already defined";
 					break;
 				}
 			}
@@ -235,7 +231,7 @@ structure::Struct ParsedFile::readStruct(const QString &name) {
 		return {};
 	}
 
-	structure::Struct result = { composeFullName(name) };
+	structure::Struct result = {composeFullName(name)};
 	do {
 		if (auto fieldName = file_.getToken(BasicType::Name)) {
 			if (auto field = readStructField(tokenValue(fieldName))) {
@@ -252,7 +248,7 @@ structure::Struct ParsedFile::readStruct(const QString &name) {
 }
 
 structure::Variable ParsedFile::readVariable(const QString &name) {
-	structure::Variable result = { composeFullName(name) };
+	structure::Variable result = {composeFullName(name)};
 	if (auto value = readValue()) {
 		result.value = value;
 		if (options_.isPalette && value.type().tag != structure::TypeTag::Color) {
@@ -268,7 +264,7 @@ structure::Variable ParsedFile::readVariable(const QString &name) {
 }
 
 structure::StructField ParsedFile::readStructField(const QString &name) {
-	structure::StructField result = { composeFullName(name) };
+	structure::StructField result = {composeFullName(name)};
 	if (auto colonToken = assertNextToken(BasicType::Colon)) {
 		if (auto type = readType()) {
 			result.type = type;
@@ -350,14 +346,15 @@ structure::Value ParsedFile::defaultConstructedStruct(const structure::FullName 
 		fields.reserve(pattern->fields.size());
 		for (const auto &fieldType : pattern->fields) {
 			fields.push_back({
-				{ // variable
-					fieldType.name,
-					{ fieldType.type, Qt::Uninitialized }, // value
-				},
-				structure::data::field::Status::Uninitialized, // status
+			    {
+			        // variable
+			        fieldType.name,
+			        {fieldType.type, Qt::Uninitialized}, // value
+			    },
+			    structure::data::field::Status::Uninitialized, // status
 			});
 		}
-		return { structName, fields };
+		return {structName, fields};
 	}
 	return {};
 }
@@ -366,7 +363,9 @@ void ParsedFile::applyStructParent(structure::Value &result, const structure::Fu
 	bool fromTheSameModule = false;
 	if (auto parent = module_->findVariable(parentName, &fromTheSameModule)) {
 		if (parent->value.type() != result.type()) {
-			logErrorTypeMismatch() << "parent '" << logFullName(parentName) << "' has type '" << logType(parent->value.type()) << "' while child value has type " << logType(result.type());
+			logErrorTypeMismatch() << "parent '" << logFullName(parentName) << "' has type '"
+			                       << logType(parent->value.type()) << "' while child value has type "
+			                       << logType(result.type());
 			return;
 		}
 
@@ -382,8 +381,7 @@ void ParsedFile::applyStructParent(structure::Value &result, const structure::Fu
 			const auto &srcField(srcFields->at(i));
 			auto &dstField((*dstFields)[i]);
 			using Status = structure::data::field::Status;
-			if (srcField.status == Status::Explicit ||
-				dstField.status == Status::Uninitialized) {
+			if (srcField.status == Status::Explicit || dstField.status == Status::Uninitialized) {
 				const auto &srcValue(srcField.variable.value);
 				auto &dstValue(dstField.variable.value);
 				logAssert(srcValue.type() == dstValue.type()) << "struct field type check failed";
@@ -396,11 +394,10 @@ void ParsedFile::applyStructParent(structure::Value &result, const structure::Fu
 				// a.style has "A: Struct { icon: icon { ..file.. } };" and
 				// b.style has "B: Struct(A) { .. };" with non-overriden icon field.
 				// Then both style_a.cpp and style_b.cpp will contain binary data of "file".
-				if (!fromTheSameModule
-					&& srcValue.type().tag == structure::TypeTag::Icon
-					&& !srcValue.Icon().parts.empty()
-					&& srcValue.copyOf().isEmpty()) {
-					logError(kErrorIconDuplicate) << "an unnamed icon field '" << logFullName(srcField.variable.name) << "' is inherited from parent '" << logFullName(parentName) << "'";
+				if (!fromTheSameModule && srcValue.type().tag == structure::TypeTag::Icon &&
+				    !srcValue.Icon().parts.empty() && srcValue.copyOf().isEmpty()) {
+					logError(kErrorIconDuplicate) << "an unnamed icon field '" << logFullName(srcField.variable.name)
+					                              << "' is inherited from parent '" << logFullName(parentName) << "'";
 					return;
 				}
 				dstValue = srcValue;
@@ -444,12 +441,15 @@ bool ParsedFile::assignStructField(structure::Value &result, const structure::Va
 				already.status = structure::data::field::Status::Explicit;
 				return true;
 			} else {
-				logErrorTypeMismatch() << "field '" << logFullName(already.variable.name) << "' has type '" << logType(already.variable.value.type()) << "' while value has type '" << logType(field.value.type()) << "'";
+				logErrorTypeMismatch() << "field '" << logFullName(already.variable.name) << "' has type '"
+				                       << logType(already.variable.value.type()) << "' while value has type '"
+				                       << logType(field.value.type()) << "'";
 				return false;
 			}
 		}
 	}
-	logError(kErrorUnknownField) << "field '" << logFullName(field.name) << "' was not found in struct of type '" << logType(result.type()) << "'";
+	logError(kErrorUnknownField) << "field '" << logFullName(field.name) << "' was not found in struct of type '"
+	                             << logType(result.type()) << "'";
 	return false;
 }
 
@@ -472,14 +472,14 @@ bool ParsedFile::readStructParents(structure::Value &result) {
 structure::Value ParsedFile::readPositiveValue() {
 	auto numericToken = file_.getAnyToken();
 	if (numericToken.type == BasicType::Int) {
-		return { structure::TypeTag::Int, tokenValue(numericToken).toInt() };
+		return {structure::TypeTag::Int, tokenValue(numericToken).toInt()};
 	} else if (numericToken.type == BasicType::Double) {
-		return { structure::TypeTag::Double, tokenValue(numericToken).toDouble() };
+		return {structure::TypeTag::Double, tokenValue(numericToken).toDouble()};
 	} else if (numericToken.type == BasicType::Name) {
 		auto value = tokenValue(numericToken);
 		auto match = QRegularExpression("^\\d+px$").match(value);
 		if (match.hasMatch()) {
-			return { structure::TypeTag::Pixels, value.mid(0, value.size() - 2).toInt() };
+			return {structure::TypeTag::Pixels, value.mid(0, value.size() - 2).toInt()};
 		}
 	}
 	file_.putBack();
@@ -491,7 +491,7 @@ structure::Value ParsedFile::readNumericValue() {
 		return value;
 	} else if (auto minusToken = file_.getToken(BasicType::Minus)) {
 		if (auto positiveValue = readNumericValue()) {
-			return { positiveValue.type().tag, -positiveValue.Int() };
+			return {positiveValue.type().tag, -positiveValue.Int()};
 		}
 		logErrorUnexpectedToken() << "numeric value";
 	}
@@ -502,7 +502,7 @@ structure::Value ParsedFile::readStringValue() {
 	if (auto stringToken = file_.getToken(BasicType::String)) {
 		auto value = tokenValue(stringToken);
 		if (validateAnsiString(value)) {
-			return { structure::TypeTag::String, stringToken.value.toStdString() };
+			return {structure::TypeTag::String, stringToken.value.toStdString()};
 		}
 		logError(kErrorBadString) << "unicode symbols are not supported";
 	}
@@ -519,9 +519,9 @@ structure::Value ParsedFile::readColorValue() {
 					if (auto fallbackSeparator = file_.getToken(BasicType::Or)) {
 						if (options_.isPalette) {
 							if (auto fallbackName = file_.getToken(BasicType::Name)) {
-								structure::FullName name = { tokenValue(fallbackName) };
+								structure::FullName name = {tokenValue(fallbackName)};
 								if (auto variable = module_->findVariableInModule(name, *module_)) {
-									return { convertWebColor(chars, tokenValue(fallbackName)) };
+									return {convertWebColor(chars, tokenValue(fallbackName))};
 								} else {
 									logError(kErrorIdentifierNotFound) << "fallback color name";
 								}
@@ -532,7 +532,7 @@ structure::Value ParsedFile::readColorValue() {
 							logErrorUnexpectedToken() << "';', color fallbacks are only allowed in palette module";
 						}
 					} else {
-						return { convertWebColor(chars) };
+						return {convertWebColor(chars)};
 					}
 				}
 			} else {
@@ -543,7 +543,7 @@ structure::Value ParsedFile::readColorValue() {
 		}
 	} else if (auto transparentName = file_.getToken(BasicType::Name)) {
 		if (tokenValue(transparentName) == "transparent") {
-			return { structure::data::color { 255, 255, 255, 0 } };
+			return {structure::data::color{255, 255, 255, 0}};
 		}
 		file_.putBack();
 	}
@@ -556,16 +556,16 @@ structure::Value ParsedFile::readPointValue() {
 		if (tokenValue(font) == "point") {
 			assertNextToken(BasicType::LeftParenthesis);
 
-			auto x = readNumericOrNumericCopyValue(); assertNextToken(BasicType::Comma);
+			auto x = readNumericOrNumericCopyValue();
+			assertNextToken(BasicType::Comma);
 			auto y = readNumericOrNumericCopyValue();
-			if (x.type().tag != structure::TypeTag::Pixels ||
-				y.type().tag != structure::TypeTag::Pixels) {
+			if (x.type().tag != structure::TypeTag::Pixels || y.type().tag != structure::TypeTag::Pixels) {
 				logErrorTypeMismatch() << "expected two px values for the point";
 			}
 
 			assertNextToken(BasicType::RightParenthesis);
 
-			return { structure::data::point { x.Int(), y.Int() } };
+			return {structure::data::point{x.Int(), y.Int()}};
 		}
 		file_.putBack();
 	}
@@ -577,16 +577,16 @@ structure::Value ParsedFile::readSizeValue() {
 		if (tokenValue(font) == "size") {
 			assertNextToken(BasicType::LeftParenthesis);
 
-			auto w = readNumericOrNumericCopyValue(); assertNextToken(BasicType::Comma);
+			auto w = readNumericOrNumericCopyValue();
+			assertNextToken(BasicType::Comma);
 			auto h = readNumericOrNumericCopyValue();
-			if (w.type().tag != structure::TypeTag::Pixels ||
-				h.type().tag != structure::TypeTag::Pixels) {
+			if (w.type().tag != structure::TypeTag::Pixels || h.type().tag != structure::TypeTag::Pixels) {
 				logErrorTypeMismatch() << "expected two px values for the size";
 			}
 
 			assertNextToken(BasicType::RightParenthesis);
 
-			return { structure::data::size { w.Int(), h.Int() } };
+			return {structure::data::size{w.Int(), h.Int()}};
 		}
 		file_.putBack();
 	}
@@ -603,7 +603,7 @@ structure::Value ParsedFile::readAlignValue() {
 			assertNextToken(BasicType::RightParenthesis);
 
 			if (validateAlignString(align)) {
-				return { structure::TypeTag::Align, align.toStdString() };
+				return {structure::TypeTag::Align, align.toStdString()};
 			} else {
 				logError(kErrorBadString) << "bad align string";
 			}
@@ -618,20 +618,21 @@ structure::Value ParsedFile::readMarginsValue() {
 		if (tokenValue(font) == "margins") {
 			assertNextToken(BasicType::LeftParenthesis);
 
-			auto l = readNumericOrNumericCopyValue(); assertNextToken(BasicType::Comma);
-			auto t = readNumericOrNumericCopyValue(); assertNextToken(BasicType::Comma);
-			auto r = readNumericOrNumericCopyValue(); assertNextToken(BasicType::Comma);
+			auto l = readNumericOrNumericCopyValue();
+			assertNextToken(BasicType::Comma);
+			auto t = readNumericOrNumericCopyValue();
+			assertNextToken(BasicType::Comma);
+			auto r = readNumericOrNumericCopyValue();
+			assertNextToken(BasicType::Comma);
 			auto b = readNumericOrNumericCopyValue();
-			if (l.type().tag != structure::TypeTag::Pixels ||
-				t.type().tag != structure::TypeTag::Pixels ||
-				r.type().tag != structure::TypeTag::Pixels ||
-				b.type().tag != structure::TypeTag::Pixels) {
+			if (l.type().tag != structure::TypeTag::Pixels || t.type().tag != structure::TypeTag::Pixels ||
+			    r.type().tag != structure::TypeTag::Pixels || b.type().tag != structure::TypeTag::Pixels) {
 				logErrorTypeMismatch() << "expected four px values for the margins";
 			}
 
 			assertNextToken(BasicType::RightParenthesis);
 
-			return { structure::data::margins { l.Int(), t.Int(), r.Int(), b.Int() } };
+			return {structure::data::margins{l.Int(), t.Int(), r.Int(), b.Int()}};
 		}
 		file_.putBack();
 	}
@@ -671,7 +672,7 @@ structure::Value ParsedFile::readFontValue() {
 			if (size.type().tag != structure::TypeTag::Pixels) {
 				logErrorTypeMismatch() << "px value for the font size expected";
 			}
-			return { structure::data::font { family.String(), size.Int(), flags } };
+			return {structure::data::font{family.String(), size.Int(), flags}};
 		}
 		file_.putBack();
 	}
@@ -707,7 +708,7 @@ structure::Value ParsedFile::readIconValue() {
 				}
 			}
 
-			return { structure::data::icon { parts } };
+			return {structure::data::icon{parts}};
 		}
 		file_.putBack();
 	}
@@ -716,7 +717,7 @@ structure::Value ParsedFile::readIconValue() {
 
 structure::Value ParsedFile::readCopyValue() {
 	if (auto copyName = file_.getToken(BasicType::Name)) {
-		structure::FullName name = { tokenValue(copyName) };
+		structure::FullName name = {tokenValue(copyName)};
 		if (auto variable = module_->findVariable(name)) {
 			return variable->value.makeCopy(variable->name);
 		}
@@ -730,9 +731,8 @@ structure::Value ParsedFile::readNumericOrNumericCopyValue() {
 		return result;
 	} else if (auto copy = readCopyValue()) {
 		auto type = copy.type().tag;
-		if (type == structure::TypeTag::Int
-			|| type == structure::TypeTag::Double
-			|| type == structure::TypeTag::Pixels) {
+		if (type == structure::TypeTag::Int || type == structure::TypeTag::Double ||
+		    type == structure::TypeTag::Pixels) {
 			return copy;
 		} else {
 			file_.putBack();
@@ -773,7 +773,7 @@ structure::data::monoicon ParsedFile::readMonoIconFields() {
 						logErrorUnexpectedToken() << "icon offset";
 					}
 				} else {
-					result.offset = { structure::data::point { 0, 0 } };
+					result.offset = {structure::data::point{0, 0}};
 				}
 			} else {
 				logErrorUnexpectedToken() << "icon color";
@@ -837,7 +837,7 @@ Options ParsedFile::includedOptions(const QString &filepath) {
 
 // Compose context-dependent full name.
 structure::FullName ParsedFile::composeFullName(const QString &name) {
-	return { name };
+	return {name};
 }
 
 } // namespace style

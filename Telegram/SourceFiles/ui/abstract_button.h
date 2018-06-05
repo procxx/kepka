@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
 #include "base/flags.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 
@@ -29,7 +29,8 @@ class AbstractButton : public TWidget {
 	Q_OBJECT
 
 public:
-	AbstractButton(QWidget *parent) : TWidget(parent) {
+	AbstractButton(QWidget *parent)
+	    : TWidget(parent) {
 		setMouseTracking(true);
 	}
 
@@ -76,9 +77,9 @@ signals:
 
 protected:
 	enum class StateFlag {
-		None     = 0,
-		Over     = (1 << 0),
-		Down     = (1 << 1),
+		None = 0,
+		Over = (1 << 0),
+		Down = (1 << 1),
 		Disabled = (1 << 2),
 	};
 	using State = base::flags<StateFlag>;
@@ -94,8 +95,7 @@ protected:
 	};
 	void setOver(bool over, StateChangeSource source = StateChangeSource::ByUser);
 
-	virtual void onStateChanged(State was, StateChangeSource source) {
-	}
+	virtual void onStateChanged(State was, StateChangeSource source) {}
 
 private:
 	void updateCursor();
@@ -108,7 +108,6 @@ private:
 	bool _enablePointerCursor = true;
 
 	base::lambda<void()> _clickedCallback;
-
 };
 
 } // namespace Ui

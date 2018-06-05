@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/images.h"
 #include "mtproto/auth_key.h"
+#include "ui/images.h"
 
 namespace Serialize {
 
@@ -42,7 +42,7 @@ struct ReadBytesVectorWrap {
 };
 
 inline ReadBytesVectorWrap bytes(base::byte_vector &bytes) {
-	return ReadBytesVectorWrap { bytes };
+	return ReadBytesVectorWrap{bytes};
 }
 
 // Compatible with QDataStream &operator>>(QDataStream &, QByteArray &);
@@ -59,7 +59,7 @@ inline QDataStream &operator>>(QDataStream &stream, ReadBytesVectorWrap data) {
 	for (auto allocated = quint32(0); allocated < len;) {
 		auto blockSize = qMin(kStep, len - allocated);
 		bytes.resize(allocated + blockSize);
-		if (stream.readRawData(reinterpret_cast<char*>(bytes.data()) + allocated, blockSize) != blockSize) {
+		if (stream.readRawData(reinterpret_cast<char *>(bytes.data()) + allocated, blockSize) != blockSize) {
 			bytes.clear();
 			stream.setStatus(QDataStream::ReadPastEnd);
 			return stream;
@@ -75,7 +75,7 @@ struct WriteBytesWrap {
 };
 
 inline WriteBytesWrap bytes(base::const_byte_span bytes) {
-	return WriteBytesWrap { bytes };
+	return WriteBytesWrap{bytes};
 }
 
 inline QDataStream &operator<<(QDataStream &stream, WriteBytesWrap data) {
@@ -85,13 +85,13 @@ inline QDataStream &operator<<(QDataStream &stream, WriteBytesWrap data) {
 	} else {
 		auto size = quint32(bytes.size());
 		stream << size;
-		stream.writeRawData(reinterpret_cast<const char*>(bytes.data()), size);
+		stream.writeRawData(reinterpret_cast<const char *>(bytes.data()), size);
 	}
 	return stream;
 }
 
 inline QDataStream &operator<<(QDataStream &stream, ReadBytesVectorWrap data) {
-	return stream << WriteBytesWrap { data.bytes };
+	return stream << WriteBytesWrap{data.bytes};
 }
 
 inline int dateTimeSize() {
@@ -102,17 +102,15 @@ void writeStorageImageLocation(QDataStream &stream, const StorageImageLocation &
 StorageImageLocation readStorageImageLocation(QDataStream &stream);
 int storageImageLocationSize();
 
-template <typename T>
-inline T read(QDataStream &stream) {
+template <typename T> inline T read(QDataStream &stream) {
 	auto result = T();
 	stream >> result;
 	return result;
 }
 
-template <>
-inline MTP::AuthKey::Data read<MTP::AuthKey::Data>(QDataStream &stream) {
+template <> inline MTP::AuthKey::Data read<MTP::AuthKey::Data>(QDataStream &stream) {
 	auto result = MTP::AuthKey::Data();
-	stream.readRawData(reinterpret_cast<char*>(result.data()), result.size());
+	stream.readRawData(reinterpret_cast<char *>(result.data()), result.size());
 	return result;
 }
 

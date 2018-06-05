@@ -37,7 +37,9 @@ class MessageField final : public Ui::FlatTextarea {
 	Q_OBJECT
 
 public:
-	MessageField(QWidget *parent, not_null<Window::Controller*> controller, const style::FlatTextarea &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
+	MessageField(QWidget *parent, not_null<Window::Controller *> controller, const style::FlatTextarea &st,
+	             base::lambda<QString()> placeholderFactory = base::lambda<QString()>(),
+	             const QString &val = QString());
 
 	bool hasSendText() const;
 
@@ -58,7 +60,6 @@ protected:
 	void insertFromMimeData(const QMimeData *source) override;
 
 private:
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 	base::lambda<bool(const QMimeData *data)> _insertFromMimeDataHook;
-
 };

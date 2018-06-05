@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
 #include "base/lambda.h"
-#include "ui/animation.h"
 #include "styles/style_widgets.h"
+#include "ui/animation.h"
+#include "ui/twidget.h"
 
 class QMouseEvent;
 class QTimerEvent;
@@ -70,11 +70,9 @@ protected:
 		return _sections.size();
 	}
 
-	template <typename Lambda>
-	void enumerateSections(Lambda callback);
+	template <typename Lambda> void enumerateSections(Lambda callback);
 
-	virtual void startRipple(int sectionIndex) {
-	}
+	virtual void startRipple(int sectionIndex) {}
 
 	void stopAnimation() {
 		_a_left.finish();
@@ -102,7 +100,6 @@ private:
 
 	int _timerId = -1;
 	TimeMs _callbackAfterMs = 0;
-
 };
 
 class SettingsSlider : public DiscreteSlider {
@@ -127,8 +124,6 @@ private:
 
 	const style::SettingsSlider &_st;
 	int _rippleTopRoundRadius = 0;
-
-
 };
 
 } // namespace Ui

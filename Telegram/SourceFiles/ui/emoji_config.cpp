@@ -23,8 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "emoji_config.h"
 
-#include "chat_helpers/emoji_suggestions_helper.h"
 #include "auth_session.h"
+#include "chat_helpers/emoji_suggestions_helper.h"
 
 namespace Ui {
 namespace Emoji {
@@ -134,23 +134,49 @@ QString IdFromOldKey(quint64 oldKey) {
 	auto sequenceIndex = int(code & 0xFFFFU);
 	switch (sequenceIndex) {
 	case 0: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7");
-	case 1: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa6");
-	case 2: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa6\xe2\x80\x8d\xf0\x9f\x91\xa6");
-	case 3: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa7");
+	case 1:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa6");
+	case 2:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa6\xe2\x80\x8d\xf0\x9f\x91\xa6");
+	case 3:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa7");
 	case 4: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa6");
 	case 5: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7");
-	case 6: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa6");
-	case 7: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa6\xe2\x80\x8d\xf0\x9f\x91\xa6");
-	case 8: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa7");
+	case 6:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa6");
+	case 7:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa6\xe2\x80\x8d\xf0\x9f\x91\xa6");
+	case 8:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa9\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa7");
 	case 9: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa6");
 	case 10: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa7");
-	case 11: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa6");
-	case 12: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa6\xe2\x80\x8d\xf0\x9f\x91\xa6");
-	case 13: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa7");
-	case 14: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x91\xa9");
-	case 15: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x91\xa8");
-	case 16: return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x92\x8b\xe2\x80\x8d\xf0\x9f\x91\xa9");
-	case 17: return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x92\x8b\xe2\x80\x8d\xf0\x9f\x91\xa8");
+	case 11:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa6");
+	case 12:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa6\xe2\x80\x8d\xf0\x9f\x91\xa6");
+	case 13:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa8\xe2\x80\x8d\xf0\x9f\x91\xa7\xe2\x80\x8d\xf0\x9f\x91\xa7");
+	case 14:
+		return QString::fromUtf8("\xf0\x9f\x91\xa9\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x91\xa9");
+	case 15:
+		return QString::fromUtf8("\xf0\x9f\x91\xa8\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x91\xa8");
+	case 16:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa9\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x92\x8b\xe2\x80\x8d\xf0\x9f\x91"
+		    "\xa9");
+	case 17:
+		return QString::fromUtf8(
+		    "\xf0\x9f\x91\xa8\xe2\x80\x8d\xe2\x9d\xa4\xef\xb8\x8f\xe2\x80\x8d\xf0\x9f\x92\x8b\xe2\x80\x8d\xf0\x9f\x91"
+		    "\xa8");
 	case 18: return QString::fromUtf8("\xf0\x9f\x91\x81\xe2\x80\x8d\xf0\x9f\x97\xa8");
 	}
 	return QString();
@@ -173,11 +199,13 @@ void ReplaceInText(TextWithEntities &result) {
 		while (currentEntity != entitiesEnd && ch >= emojiStart + currentEntity->offset() + currentEntity->length()) {
 			++currentEntity;
 		}
-		if (emoji &&
-			(ch == emojiStart || !ch->isLetterOrNumber() || !(ch - 1)->isLetterOrNumber()) &&
-			(newEmojiEnd == end || !newEmojiEnd->isLetterOrNumber() || newEmojiEnd == emojiStart || !(newEmojiEnd - 1)->isLetterOrNumber()) &&
-			(currentEntity == entitiesEnd || (ch < emojiStart + currentEntity->offset() && newEmojiEnd <= emojiStart + currentEntity->offset()) || (ch >= emojiStart + currentEntity->offset() + currentEntity->length() && newEmojiEnd > emojiStart + currentEntity->offset() + currentEntity->length()))
-			) {
+		if (emoji && (ch == emojiStart || !ch->isLetterOrNumber() || !(ch - 1)->isLetterOrNumber()) &&
+		    (newEmojiEnd == end || !newEmojiEnd->isLetterOrNumber() || newEmojiEnd == emojiStart ||
+		     !(newEmojiEnd - 1)->isLetterOrNumber()) &&
+		    (currentEntity == entitiesEnd ||
+		     (ch < emojiStart + currentEntity->offset() && newEmojiEnd <= emojiStart + currentEntity->offset()) ||
+		     (ch >= emojiStart + currentEntity->offset() + currentEntity->length() &&
+		      newEmojiEnd > emojiStart + currentEntity->offset() + currentEntity->length()))) {
 			if (newText.text.isEmpty()) newText.text.reserve(result.text.size());
 
 			AppendPartToResult(newText, emojiStart, emojiEnd, ch);
@@ -233,40 +261,11 @@ RecentEmojiPack &GetRecent() {
 			}
 		}
 		auto defaultRecent = {
-			0xD83DDE02LLU,
-			0xD83DDE18LLU,
-			0x2764LLU,
-			0xD83DDE0DLLU,
-			0xD83DDE0ALLU,
-			0xD83DDE01LLU,
-			0xD83DDC4DLLU,
-			0x263ALLU,
-			0xD83DDE14LLU,
-			0xD83DDE04LLU,
-			0xD83DDE2DLLU,
-			0xD83DDC8BLLU,
-			0xD83DDE12LLU,
-			0xD83DDE33LLU,
-			0xD83DDE1CLLU,
-			0xD83DDE48LLU,
-			0xD83DDE09LLU,
-			0xD83DDE03LLU,
-			0xD83DDE22LLU,
-			0xD83DDE1DLLU,
-			0xD83DDE31LLU,
-			0xD83DDE21LLU,
-			0xD83DDE0FLLU,
-			0xD83DDE1ELLU,
-			0xD83DDE05LLU,
-			0xD83DDE1ALLU,
-			0xD83DDE4ALLU,
-			0xD83DDE0CLLU,
-			0xD83DDE00LLU,
-			0xD83DDE0BLLU,
-			0xD83DDE06LLU,
-			0xD83DDC4CLLU,
-			0xD83DDE10LLU,
-			0xD83DDE15LLU,
+		    0xD83DDE02LLU, 0xD83DDE18LLU, 0x2764LLU,     0xD83DDE0DLLU, 0xD83DDE0ALLU, 0xD83DDE01LLU, 0xD83DDC4DLLU,
+		    0x263ALLU,     0xD83DDE14LLU, 0xD83DDE04LLU, 0xD83DDE2DLLU, 0xD83DDC8BLLU, 0xD83DDE12LLU, 0xD83DDE33LLU,
+		    0xD83DDE1CLLU, 0xD83DDE48LLU, 0xD83DDE09LLU, 0xD83DDE03LLU, 0xD83DDE22LLU, 0xD83DDE1DLLU, 0xD83DDE31LLU,
+		    0xD83DDE21LLU, 0xD83DDE0FLLU, 0xD83DDE1ELLU, 0xD83DDE05LLU, 0xD83DDE1ALLU, 0xD83DDE4ALLU, 0xD83DDE0CLLU,
+		    0xD83DDE00LLU, 0xD83DDE0BLLU, 0xD83DDE06LLU, 0xD83DDC4CLLU, 0xD83DDE10LLU, 0xD83DDE15LLU,
 		};
 		for (auto oldKey : defaultRecent) {
 			if (result.size() >= kPanelPerRow * kPanelRowsPerPage) break;

@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_actions.h"
 
-#include "styles/style_profile.h"
-#include "styles/style_boxes.h"
-#include "ui/widgets/buttons.h"
-#include "boxes/confirm_box.h"
-#include "boxes/report_box.h"
-#include "mainwidget.h"
-#include "observer_peer.h"
 #include "apiwrap.h"
 #include "auth_session.h"
+#include "boxes/confirm_box.h"
+#include "boxes/report_box.h"
 #include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
 #include "profile/profile_channel_controllers.h"
+#include "styles/style_boxes.h"
+#include "styles/style_profile.h"
+#include "ui/widgets/buttons.h"
 
 namespace Profile {
 
@@ -39,14 +39,13 @@ constexpr auto kMaxChannelMembersDeleteAllowed = 1000;
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
 
-ActionsWidget::ActionsWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_actions_section)) {
-	auto observeEvents = UpdateFlag::ChannelAmIn
-		| UpdateFlag::UserIsBlocked
-		| UpdateFlag::BotCommandsChanged
-		| UpdateFlag::MembersChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+ActionsWidget::ActionsWidget(QWidget *parent, PeerData *peer)
+    : BlockWidget(parent, peer, lang(lng_profile_actions_section)) {
+	auto observeEvents = UpdateFlag::ChannelAmIn | UpdateFlag::UserIsBlocked | UpdateFlag::BotCommandsChanged |
+	                     UpdateFlag::MembersChanged;
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	validateBlockStatus();
 	refreshButtons();
@@ -105,7 +104,8 @@ void ActionsWidget::validateBlockStatus() const {
 	}
 }
 
-Ui::LeftOutlineButton *ActionsWidget::addButton(const QString &text, const char *slot, const style::OutlineButton &st, int skipHeight) {
+Ui::LeftOutlineButton *ActionsWidget::addButton(const QString &text, const char *slot, const style::OutlineButton &st,
+                                                int skipHeight) {
 	auto result = new Ui::LeftOutlineButton(this, text, st);
 	connect(result, SIGNAL(clicked()), this, slot);
 	result->show();
@@ -127,9 +127,7 @@ void ActionsWidget::resizeButton(Ui::LeftOutlineButton *button, int newWidth, in
 
 void ActionsWidget::refreshButtons() {
 	auto buttons = base::take(_buttons);
-	for_const (auto &button, buttons) {
-		delete button;
-	}
+	for_const (auto &button, buttons) { delete button; }
 	_blockUser = _leaveChannel = nullptr;
 
 	if (auto user = peer()->asUser()) {
@@ -142,7 +140,8 @@ void ActionsWidget::refreshButtons() {
 		addButton(lang(lng_profile_clear_history), SLOT(onClearHistory()));
 		addButton(lang(lng_profile_delete_conversation), SLOT(onDeleteConversation()));
 		if (user->botInfo) {
-			addButton(lang(lng_profile_report), SLOT(onReport()), st::defaultLeftOutlineButton, st::profileBlockOneLineSkip);
+			addButton(lang(lng_profile_report), SLOT(onReport()), st::defaultLeftOutlineButton,
+			          st::profileBlockOneLineSkip);
 		}
 		refreshBlockUser();
 	} else if (auto chat = peer()->asChat()) {
@@ -228,7 +227,8 @@ void ActionsWidget::refreshBlockUser() {
 				_blockUser->setText(blockText);
 			}
 		} else if (!blockText.isEmpty()) {
-			_blockUser = addButton(blockText, SLOT(onBlockUser()), st::attentionLeftOutlineButton, st::profileBlockOneLineSkip);
+			_blockUser =
+			    addButton(blockText, SLOT(onBlockUser()), st::attentionLeftOutlineButton, st::profileBlockOneLineSkip);
 		}
 	}
 }
@@ -236,7 +236,9 @@ void ActionsWidget::refreshBlockUser() {
 void ActionsWidget::refreshDeleteChannel() {
 	if (auto channel = peer()->asChannel()) {
 		if (channel->canDelete() && !_deleteChannel) {
-			_deleteChannel = addButton(lang(channel->isMegagroup() ? lng_profile_delete_group : lng_profile_delete_channel), SLOT(onDeleteChannel()), st::attentionLeftOutlineButton);
+			_deleteChannel =
+			    addButton(lang(channel->isMegagroup() ? lng_profile_delete_group : lng_profile_delete_channel),
+			              SLOT(onDeleteChannel()), st::attentionLeftOutlineButton);
 		} else if (!channel->canDelete() && _deleteChannel) {
 			_buttons.removeOne(_deleteChannel);
 			delete _deleteChannel;
@@ -249,7 +251,9 @@ void ActionsWidget::refreshLeaveChannel() {
 	if (auto channel = peer()->asChannel()) {
 		if (!channel->amCreator()) {
 			if (channel->amIn() && !_leaveChannel) {
-				_leaveChannel = addButton(lang(channel->isMegagroup() ? lng_profile_leave_group : lng_profile_leave_channel), SLOT(onLeaveChannel()));
+				_leaveChannel =
+				    addButton(lang(channel->isMegagroup() ? lng_profile_leave_group : lng_profile_leave_channel),
+				              SLOT(onLeaveChannel()));
 			} else if (!channel->amIn() && _leaveChannel) {
 				_buttons.removeOne(_leaveChannel);
 				delete _leaveChannel;
@@ -260,9 +264,7 @@ void ActionsWidget::refreshLeaveChannel() {
 }
 
 int ActionsWidget::resizeGetHeight(int newWidth) {
-	for_const (auto button, _buttons) {
-		resizeButton(button, newWidth, button->y());
-	}
+	for_const (auto button, _buttons) { resizeButton(button, newWidth, button->y()); }
 	return buttonsBottom();
 }
 
@@ -290,11 +292,12 @@ void ActionsWidget::onClearHistory() {
 		confirmation = lng_sure_delete_group_history(lt_group, App::peerName(peer()));
 	}
 	if (!confirmation.isEmpty()) {
-		Ui::show(Box<ConfirmBox>(confirmation, lang(lng_box_delete), st::attentionBoxButton, base::lambda_guarded(this, [this] {
-			Ui::hideLayer();
-			App::main()->clearHistory(peer());
-			Ui::showPeerHistory(peer(), ShowAtUnreadMsgId);
-		})));
+		Ui::show(Box<ConfirmBox>(confirmation, lang(lng_box_delete), st::attentionBoxButton,
+		                         base::lambda_guarded(this, [this] {
+			                         Ui::hideLayer();
+			                         App::main()->clearHistory(peer());
+			                         Ui::showPeerHistory(peer(), ShowAtUnreadMsgId);
+		                         })));
 	}
 }
 
@@ -308,15 +311,16 @@ void ActionsWidget::onDeleteConversation() {
 		confirmButton = lang(lng_box_leave);
 	}
 	if (!confirmation.isEmpty()) {
-		Ui::show(Box<ConfirmBox>(confirmation, confirmButton, st::attentionBoxButton, base::lambda_guarded(this, [this] {
-			Ui::hideLayer();
-			Ui::showChatsList();
-			if (auto user = peer()->asUser()) {
-				App::main()->deleteConversation(peer());
-			} else if (auto chat = peer()->asChat()) {
-				App::main()->deleteAndExit(chat);
-			}
-		})));
+		Ui::show(
+		    Box<ConfirmBox>(confirmation, confirmButton, st::attentionBoxButton, base::lambda_guarded(this, [this] {
+			                    Ui::hideLayer();
+			                    Ui::showChatsList();
+			                    if (auto user = peer()->asUser()) {
+				                    App::main()->deleteConversation(peer());
+			                    } else if (auto chat = peer()->asChat()) {
+				                    App::main()->deleteAndExit(chat);
+			                    }
+		                    })));
 	}
 }
 
@@ -339,22 +343,25 @@ void ActionsWidget::onUpgradeToSupergroup() {
 void ActionsWidget::onDeleteChannel() {
 	if (auto channel = peer()->asChannel()) {
 		if (channel->membersCount() > kMaxChannelMembersDeleteAllowed) {
-			Ui::show(Box<InformBox>((channel->isMegagroup() ? lng_cant_delete_group : lng_cant_delete_channel)(lt_count, kMaxChannelMembersDeleteAllowed)));
+			Ui::show(Box<InformBox>((channel->isMegagroup() ? lng_cant_delete_group : lng_cant_delete_channel)(
+			    lt_count, kMaxChannelMembersDeleteAllowed)));
 			return;
 		}
 	}
 
 	auto text = lang(peer()->isMegagroup() ? lng_sure_delete_group : lng_sure_delete_channel);
 	Ui::show(Box<ConfirmBox>(text, lang(lng_box_delete), st::attentionBoxButton, base::lambda_guarded(this, [this] {
-		Ui::hideLayer();
-		Ui::showChatsList();
-		if (auto chat = peer()->migrateFrom()) {
-			App::main()->deleteAndExit(chat);
-		}
-		if (auto channel = peer()->asChannel()) {
-			MTP::send(MTPchannels_DeleteChannel(channel->inputChannel), App::main()->rpcDone(&MainWidget::sentUpdatesReceived), App::main()->rpcFail(&MainWidget::deleteChannelFailed));
-		}
-	})));
+		                         Ui::hideLayer();
+		                         Ui::showChatsList();
+		                         if (auto chat = peer()->migrateFrom()) {
+			                         App::main()->deleteAndExit(chat);
+		                         }
+		                         if (auto channel = peer()->asChannel()) {
+			                         MTP::send(MTPchannels_DeleteChannel(channel->inputChannel),
+			                                   App::main()->rpcDone(&MainWidget::sentUpdatesReceived),
+			                                   App::main()->rpcFail(&MainWidget::deleteChannelFailed));
+		                         }
+	                         })));
 }
 
 void ActionsWidget::onLeaveChannel() {
@@ -362,9 +369,8 @@ void ActionsWidget::onLeaveChannel() {
 	if (!channel) return;
 
 	auto text = lang(channel->isMegagroup() ? lng_sure_leave_group : lng_sure_leave_channel);
-	Ui::show(Box<ConfirmBox>(text, lang(lng_box_leave), base::lambda_guarded(this, [this] {
-		Auth().api().leaveChannel(peer()->asChannel());
-	})));
+	Ui::show(Box<ConfirmBox>(text, lang(lng_box_leave),
+	                         base::lambda_guarded(this, [this] { Auth().api().leaveChannel(peer()->asChannel()); })));
 }
 
 void ActionsWidget::onSearchMembers() {

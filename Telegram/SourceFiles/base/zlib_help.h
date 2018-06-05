@@ -25,8 +25,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <QByteArray>
 
-#include "minizip/zip.h"
 #include "minizip/unzip.h"
+#include "minizip/zip.h"
 
 #include "logs.h"
 
@@ -35,8 +35,8 @@ namespace internal {
 
 class InMemoryFile {
 public:
-	InMemoryFile(const QByteArray &data = QByteArray()) : _data(data) {
-	}
+	InMemoryFile(const QByteArray &data = QByteArray())
+	    : _data(data) {}
 
 	zlib_filefunc_def funcs() {
 		zlib_filefunc_def result;
@@ -74,7 +74,7 @@ private:
 		return this;
 	}
 
-	uLong read(voidpf stream, void* buf, uLong size) {
+	uLong read(voidpf stream, void *buf, uLong size) {
 		uLong toRead = 0;
 		if (!_error) {
 			if (_data.size() > int(_position)) {
@@ -89,7 +89,7 @@ private:
 		return toRead;
 	}
 
-	uLong write(voidpf stream, const void* buf, uLong size) {
+	uLong write(voidpf stream, const void *buf, uLong size) {
 		if (_data.size() < int(_position + size)) {
 			_data.resize(_position + size);
 		}
@@ -127,38 +127,37 @@ private:
 		return _error;
 	}
 
-	static voidpf Open(voidpf opaque, const char* filename, int mode) {
-		return static_cast<InMemoryFile*>(opaque)->open(filename, mode);
+	static voidpf Open(voidpf opaque, const char *filename, int mode) {
+		return static_cast<InMemoryFile *>(opaque)->open(filename, mode);
 	}
 
-	static uLong Read(voidpf opaque, voidpf stream, void* buf, uLong size) {
-		return static_cast<InMemoryFile*>(opaque)->read(stream, buf, size);
+	static uLong Read(voidpf opaque, voidpf stream, void *buf, uLong size) {
+		return static_cast<InMemoryFile *>(opaque)->read(stream, buf, size);
 	}
 
-	static uLong Write(voidpf opaque, voidpf stream, const void* buf, uLong size) {
-		return static_cast<InMemoryFile*>(opaque)->write(stream, buf, size);
+	static uLong Write(voidpf opaque, voidpf stream, const void *buf, uLong size) {
+		return static_cast<InMemoryFile *>(opaque)->write(stream, buf, size);
 	}
 
 	static int Close(voidpf opaque, voidpf stream) {
-		return static_cast<InMemoryFile*>(opaque)->close(stream);
+		return static_cast<InMemoryFile *>(opaque)->close(stream);
 	}
 
 	static int Error(voidpf opaque, voidpf stream) {
-		return static_cast<InMemoryFile*>(opaque)->error(stream);
+		return static_cast<InMemoryFile *>(opaque)->error(stream);
 	}
 
 	static long Tell(voidpf opaque, voidpf stream) {
-		return static_cast<InMemoryFile*>(opaque)->tell(stream);
+		return static_cast<InMemoryFile *>(opaque)->tell(stream);
 	}
 
 	static long Seek(voidpf opaque, voidpf stream, uLong offset, int origin) {
-		return static_cast<InMemoryFile*>(opaque)->seek(stream, offset, origin);
+		return static_cast<InMemoryFile *>(opaque)->seek(stream, offset, origin);
 	}
 
 	uLong _position = 0;
 	int _error = 0;
 	QByteArray _data;
-
 };
 
 } // namespace internal
@@ -168,7 +167,8 @@ constexpr int kCaseInsensitive = 2;
 
 class FileToRead {
 public:
-	FileToRead(const QByteArray &content) : _data(content) {
+	FileToRead(const QByteArray &content)
+	    : _data(content) {
 		auto funcs = _data.funcs();
 		if (!(_handle = unzOpen2(nullptr, &funcs))) {
 			_error = -1;
@@ -189,26 +189,12 @@ public:
 		return error();
 	}
 
-	int getCurrentFileInfo(
-		unz_file_info *pfile_info,
-		char *szFileName,
-		uLong fileNameBufferSize,
-		void *extraField,
-		uLong extraFieldBufferSize,
-		char *szComment,
-		uLong commentBufferSize
-	) {
+	int getCurrentFileInfo(unz_file_info *pfile_info, char *szFileName, uLong fileNameBufferSize, void *extraField,
+	                       uLong extraFieldBufferSize, char *szComment, uLong commentBufferSize) {
 		if (error() == UNZ_OK) {
-			_error = _handle ? unzGetCurrentFileInfo(
-				_handle,
-				pfile_info,
-				szFileName,
-				fileNameBufferSize,
-				extraField,
-				extraFieldBufferSize,
-				szComment,
-				commentBufferSize
-			) : -1;
+			_error = _handle ? unzGetCurrentFileInfo(_handle, pfile_info, szFileName, fileNameBufferSize, extraField,
+			                                         extraFieldBufferSize, szComment, commentBufferSize) :
+			                   -1;
 		}
 		return error();
 	}
@@ -240,7 +226,7 @@ public:
 	}
 
 	QByteArray readCurrentFileContent(int fileSizeLimit) {
-		unz_file_info fileInfo = { 0 };
+		unz_file_info fileInfo = {0};
 		if (getCurrentFileInfo(&fileInfo, nullptr, 0, nullptr, 0, nullptr, 0) != UNZ_OK) {
 			LOG(("Error: could not get current file info in a zip file."));
 			return QByteArray();
@@ -249,7 +235,9 @@ public:
 		auto size = fileInfo.uncompressed_size;
 		if (size > static_cast<quint32>(fileSizeLimit)) {
 			if (_error == UNZ_OK) _error = -1;
-			LOG(("Error: current file is too large (should be less than %1, got %2) in a zip file.").arg(fileSizeLimit).arg(size));
+			LOG(("Error: current file is too large (should be less than %1, got %2) in a zip file.")
+			        .arg(fileSizeLimit)
+			        .arg(size));
 			return QByteArray();
 		}
 		if (openCurrentFile() != UNZ_OK) {
@@ -308,7 +296,6 @@ private:
 	internal::InMemoryFile _data;
 	unzFile _handle = nullptr;
 	int _error = 0;
-
 };
 
 class FileToWrite {
@@ -320,35 +307,18 @@ public:
 		}
 	}
 
-	int openNewFile(
-		const char *filename,
-		const zip_fileinfo *zipfi,
-		const void *extrafield_local,
-		uInt size_extrafield_local,
-		const void* extrafield_global,
-		uInt size_extrafield_global,
-		const char* comment,
-		int method,
-		int level
-	) {
+	int openNewFile(const char *filename, const zip_fileinfo *zipfi, const void *extrafield_local,
+	                uInt size_extrafield_local, const void *extrafield_global, uInt size_extrafield_global,
+	                const char *comment, int method, int level) {
 		if (error() == ZIP_OK) {
-			_error = _handle ? zipOpenNewFileInZip(
-				_handle,
-				filename,
-				zipfi,
-				extrafield_local,
-				size_extrafield_local,
-				extrafield_global,
-				size_extrafield_global,
-				comment,
-				method,
-				level
-			) : -1;
+			_error = _handle ? zipOpenNewFileInZip(_handle, filename, zipfi, extrafield_local, size_extrafield_local,
+			                                       extrafield_global, size_extrafield_global, comment, method, level) :
+			                   -1;
 		}
 		return error();
 	}
 
-	int writeInFile(const void* buf, unsigned len) {
+	int writeInFile(const void *buf, unsigned len) {
 		if (error() == ZIP_OK) {
 			_error = _handle ? zipWriteInFileInZip(_handle, buf, len) : -1;
 		}
@@ -388,7 +358,6 @@ private:
 	internal::InMemoryFile _data;
 	zipFile _handle = nullptr;
 	int _error = 0;
-
 };
 
 } // namespace zlib

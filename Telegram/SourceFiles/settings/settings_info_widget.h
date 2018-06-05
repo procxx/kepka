@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "settings/settings_block_widget.h"
 #include "base/object_ptr.h"
+#include "settings/settings_block_widget.h"
 #include "ui/twidget.h"
 
 struct TextWithEntities;
@@ -54,7 +54,8 @@ private:
 	public:
 		LabeledWidget(QWidget *parent, const style::FlatLabel &valueSt);
 
-		void setLabeledText(const QString &label, const TextWithEntities &textWithEntities, const TextWithEntities &shortTextWithEntities, const QString &copyText);
+		void setLabeledText(const QString &label, const TextWithEntities &textWithEntities,
+		                    const TextWithEntities &shortTextWithEntities, const QString &copyText);
 
 		Ui::FlatLabel *textLabel() const;
 		Ui::FlatLabel *shortTextLabel() const;
@@ -65,22 +66,22 @@ private:
 		int resizeGetHeight(int newWidth) override;
 
 	private:
-		void setLabelText(object_ptr<Ui::FlatLabel> &text, const TextWithEntities &textWithEntities, const QString &copyText);
+		void setLabelText(object_ptr<Ui::FlatLabel> &text, const TextWithEntities &textWithEntities,
+		                  const QString &copyText);
 
 		const style::FlatLabel &_valueSt;
-		object_ptr<Ui::FlatLabel> _label = { nullptr };
-		object_ptr<Ui::FlatLabel> _text = { nullptr };
-		object_ptr<Ui::FlatLabel> _shortText = { nullptr };
-
+		object_ptr<Ui::FlatLabel> _label = {nullptr};
+		object_ptr<Ui::FlatLabel> _text = {nullptr};
+		object_ptr<Ui::FlatLabel> _shortText = {nullptr};
 	};
 
 	using LabeledWrap = Ui::WidgetSlideWrap<LabeledWidget>;
-	void setLabeledText(object_ptr<LabeledWrap> &row, const QString &label, const TextWithEntities &textWithEntities, const TextWithEntities &shortTextWithEntities, const QString &copyText);
+	void setLabeledText(object_ptr<LabeledWrap> &row, const QString &label, const TextWithEntities &textWithEntities,
+	                    const TextWithEntities &shortTextWithEntities, const QString &copyText);
 
-	object_ptr<LabeledWrap> _mobileNumber = { nullptr };
-	object_ptr<LabeledWrap> _username = { nullptr };
-	object_ptr<LabeledWrap> _bio = { nullptr };
-
+	object_ptr<LabeledWrap> _mobileNumber = {nullptr};
+	object_ptr<LabeledWrap> _username = {nullptr};
+	object_ptr<LabeledWrap> _bio = {nullptr};
 };
 
 } // namespace Settings

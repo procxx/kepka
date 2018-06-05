@@ -38,5 +38,4 @@ private:
 
 	class Inner;
 	QPointer<Inner> _inner;
-
 };

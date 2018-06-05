@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <string>
-#include <QtCore/QString>
 #include <QtCore/QByteArray>
+#include <QtCore/QString>
+#include <string>
 
 namespace codegen {
 namespace common {
@@ -31,14 +31,15 @@ namespace common {
 // Not null-terminated! It does not hold any ownership.
 class ConstUtf8String {
 public:
-	explicit ConstUtf8String(const char *string, int size = -1) : string_(string) {
+	explicit ConstUtf8String(const char *string, int size = -1)
+	    : string_(string) {
 		if (size < 0) {
 			size = strlen(string);
 		}
 		size_ = size;
 	}
-	ConstUtf8String(const char *string, const char *end) : ConstUtf8String(string, end - string) {
-	}
+	ConstUtf8String(const char *string, const char *end)
+	    : ConstUtf8String(string, end - string) {}
 
 	QByteArray toByteArray() const {
 		return QByteArray(string_, size_);
@@ -68,7 +69,6 @@ public:
 private:
 	const char *string_;
 	int size_;
-
 };
 
 } // namespace common

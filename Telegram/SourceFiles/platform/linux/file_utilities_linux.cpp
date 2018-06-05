@@ -21,12 +21,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "platform/linux/file_utilities_linux.h"
 
 // #include <private/qguiapplication_p.h>
-#include "platform/linux/linux_libs.h"
-#include "platform/linux/linux_gdk_helper.h"
-#include "messenger.h"
-#include "mainwindow.h"
-#include "storage/localstorage.h"
 #include "facades.h"
+#include "mainwindow.h"
+#include "messenger.h"
+#include "platform/linux/linux_gdk_helper.h"
+#include "platform/linux/linux_libs.h"
+#include "storage/localstorage.h"
 
 #include <QProcess>
 
@@ -69,7 +69,9 @@ void UnsafeShowInFolder(const QString &filepath) {
 
 	auto absolutePath = QFileInfo(filepath).absoluteFilePath();
 	QProcess process;
-	process.start("xdg-mime", QStringList() << "query" << "default" << "inode/directory");
+	process.start("xdg-mime", QStringList() << "query"
+	                                        << "default"
+	                                        << "inode/directory");
 	process.waitForFinished();
 	auto output = QString::fromLatin1(process.readLine().simplified());
 	auto command = qsl("xdg-open");
@@ -77,7 +79,8 @@ void UnsafeShowInFolder(const QString &filepath) {
 	if (output == qstr("dolphin.desktop") || output == qstr("org.kde.dolphin.desktop")) {
 		command = qsl("dolphin");
 		arguments << "--select" << absolutePath;
-	} else if (output == qstr("nautilus.desktop") || output == qstr("org.gnome.Nautilus.desktop") || output == qstr("nautilus-folder-handler.desktop")) {
+	} else if (output == qstr("nautilus.desktop") || output == qstr("org.gnome.Nautilus.desktop") ||
+	           output == qstr("nautilus-folder-handler.desktop")) {
 		command = qsl("nautilus");
 		arguments << "--no-desktop" << absolutePath;
 	} else if (output == qstr("nemo.desktop")) {
@@ -103,14 +106,14 @@ using Type = ::FileDialog::internal::Type;
 
 } // namespace
 
-bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter, Type type, QString startFile) {
+bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter, Type type,
+         QString startFile) {
 	return ::FileDialog::internal::GetDefault(files, remoteContent, caption, filter, type, startFile);
 }
 
 namespace {
 
-const char *filterRegExp =
-"^(.*)\\(([a-zA-Z0-9_.,*? +;#\\-\\[\\]@\\{\\}/!<>\\$%&=^~:\\|]*)\\)$";
+const char *filterRegExp = "^(.*)\\(([a-zA-Z0-9_.,*? +;#\\-\\[\\]@\\{\\}/!<>\\$%&=^~:\\|]*)\\)$";
 
 // Makes a list of filters from a normal filter string "Image Files (*.png *.jpg)"
 QStringList cleanFilterList(const QString &filter) {
@@ -118,8 +121,7 @@ QStringList cleanFilterList(const QString &filter) {
 	Q_ASSERT(regexp.isValid());
 	QString f = filter;
 	int i = regexp.indexIn(f);
-	if (i >= 0)
-		f = regexp.cap(2);
+	if (i >= 0) f = regexp.cap(2);
 	return f.split(QLatin1Char(' '), QString::SkipEmptyParts);
 }
 

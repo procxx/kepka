@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
+#include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtCore/QString>
-#include <QtCore/QList>
+#include <memory>
 
-#include "codegen/common/const_utf8_string.h"
 #include "codegen/common/clean_file_reader.h"
+#include "codegen/common/const_utf8_string.h"
 
 namespace codegen {
 namespace common {
@@ -139,31 +139,32 @@ private:
 	bool tokenStartWhitespace_ = false;
 
 	const QMap<char, Type> singleLetterTokens_ = {
-		{ '(', Type::LeftParenthesis },
-		{ ')', Type::RightParenthesis },
-		{ '{', Type::LeftBrace },
-		{ '}', Type::RightBrace },
-		{ '[', Type::LeftBracket },
-		{ ']', Type::RightBracket },
-		{ ':', Type::Colon },
-		{ ';', Type::Semicolon },
-		{ ',', Type::Comma },
-		{ '.', Type::Dot },
-		{ '#', Type::Number },
-		{ '+', Type::Plus },
-		{ '-', Type::Minus },
-		{ '=', Type::Equals },
-		{ '&', Type::And },
-		{ '|', Type::Or },
+	    {'(', Type::LeftParenthesis},
+	    {')', Type::RightParenthesis},
+	    {'{', Type::LeftBrace},
+	    {'}', Type::RightBrace},
+	    {'[', Type::LeftBracket},
+	    {']', Type::RightBracket},
+	    {':', Type::Colon},
+	    {';', Type::Semicolon},
+	    {',', Type::Comma},
+	    {'.', Type::Dot},
+	    {'#', Type::Number},
+	    {'+', Type::Plus},
+	    {'-', Type::Minus},
+	    {'=', Type::Equals},
+	    {'&', Type::And},
+	    {'|', Type::Or},
 	};
-
 };
 
 LogStream operator<<(LogStream &&stream, BasicTokenizedFile::Token::Type type);
 template <>
-LogStream operator<< <BasicTokenizedFile::Token::Type>(LogStream &&stream, BasicTokenizedFile::Token::Type &&value) = delete;
+LogStream operator<<<BasicTokenizedFile::Token::Type>(LogStream &&stream,
+                                                      BasicTokenizedFile::Token::Type &&value) = delete;
 template <>
-LogStream operator<< <const BasicTokenizedFile::Token::Type&>(LogStream &&stream, const BasicTokenizedFile::Token::Type &value) = delete;
+LogStream operator<<<const BasicTokenizedFile::Token::Type &>(LogStream &&stream,
+                                                              const BasicTokenizedFile::Token::Type &value) = delete;
 
 } // namespace common
 } // namespace codegen

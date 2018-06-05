@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QTextEdit>
 #include "base/observer.h"
-#include "ui/twidget.h"
 #include "ui/effects/panel_animation.h"
+#include "ui/twidget.h"
+#include <QTextEdit>
 
 namespace Ui {
 
@@ -68,7 +68,7 @@ private:
 	void triggerSelectedRow();
 	void triggerRow(const Row &row);
 
-	not_null<const style::Menu*> _st;
+	not_null<const style::Menu *> _st;
 
 	QString _query;
 	std::vector<Row> _rows;
@@ -77,12 +77,11 @@ private:
 	bool _mouseSelection = false;
 	int _selected = -1;
 	int _pressed = -1;
-
 };
 
 class SuggestionsController : public QObject, private base::Subscriber {
 public:
-	SuggestionsController(QWidget *parent, not_null<QTextEdit*> field);
+	SuggestionsController(QWidget *parent, not_null<QTextEdit *> field);
 
 	void raise();
 
@@ -106,7 +105,6 @@ private:
 	QPointer<QTextEdit> _field;
 	object_ptr<InnerDropdown> _container;
 	QPointer<SuggestionsWidget> _suggestions;
-
 };
 
 } // namespace Emoji

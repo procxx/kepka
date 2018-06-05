@@ -30,7 +30,10 @@ class FlatLabel;
 
 class SentCodeField : public Ui::InputField {
 public:
-	SentCodeField(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString()) : Ui::InputField(parent, st, std::move(placeholderFactory), val) {
+	SentCodeField(QWidget *parent, const style::InputField &st,
+	              base::lambda<QString()> placeholderFactory = base::lambda<QString()>(),
+	              const QString &val = QString())
+	    : Ui::InputField(parent, st, std::move(placeholderFactory), val) {
 		connect(this, &Ui::InputField::changed, [this] { fix(); });
 	}
 
@@ -51,7 +54,6 @@ private:
 	int _autoSubmitLength = 0;
 	base::lambda<void()> _submitCallback;
 	base::lambda<void()> _changedCallback;
-
 };
 
 class SentCodeCall {
@@ -65,10 +67,10 @@ public:
 		Disabled,
 	};
 	struct Status {
-		Status() {
-		}
-		Status(State state, int timeout) : state(state), timeout(timeout) {
-		}
+		Status() {}
+		Status(State state, int timeout)
+		    : state(state)
+		    , timeout(timeout) {}
 
 		State state = State::Disabled;
 		int timeout = 0;
@@ -91,7 +93,6 @@ private:
 	object_ptr<QTimer> _timer;
 	base::lambda_once<void()> _call;
 	base::lambda<void()> _update;
-
 };
 
 class ConfirmPhoneBox : public BoxContent, public RPCSender {
@@ -113,7 +114,7 @@ protected:
 	void resizeEvent(QResizeEvent *e) override;
 
 private:
-	ConfirmPhoneBox(QWidget*, const QString &phone, const QString &hash);
+	ConfirmPhoneBox(QWidget *, const QString &phone, const QString &hash);
 	friend class object_ptr<ConfirmPhoneBox>;
 
 	void sendCall();
@@ -146,10 +147,9 @@ private:
 
 	mtpRequestId _checkCodeRequestId = 0;
 
-	object_ptr<Ui::FlatLabel> _about = { nullptr };
-	object_ptr<SentCodeField> _code = { nullptr };
+	object_ptr<Ui::FlatLabel> _about = {nullptr};
+	object_ptr<SentCodeField> _code = {nullptr};
 
 	QString _error;
 	SentCodeCall _call;
-
 };

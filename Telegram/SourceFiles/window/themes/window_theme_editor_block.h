@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
 #include "base/observer.h"
+#include "ui/twidget.h"
 
 class EditColorBox;
 
@@ -106,17 +106,13 @@ private:
 	void addToSearch(const Row &row);
 	void removeFromSearch(const Row &row);
 
-	template <typename Callback>
-	void enumerateRows(Callback callback);
+	template <typename Callback> void enumerateRows(Callback callback);
 
-	template <typename Callback>
-	void enumerateRows(Callback callback) const;
+	template <typename Callback> void enumerateRows(Callback callback) const;
 
-	template <typename Callback>
-	void enumerateRowsFrom(int top, Callback callback);
+	template <typename Callback> void enumerateRowsFrom(int top, Callback callback);
 
-	template <typename Callback>
-	void enumerateRowsFrom(int top, Callback callback) const;
+	template <typename Callback> void enumerateRowsFrom(int top, Callback callback) const;
 
 	Row &rowAtIndex(int index);
 	int findRowIndex(const QString &name) const;
@@ -167,7 +163,6 @@ private:
 	bool _mouseSelection = false;
 
 	QBrush _transparent;
-
 };
 
 } // namespace Theme

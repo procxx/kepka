@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/flags.h"
+#include "base/runtime_composer.h"
+#include "core/click_handler.h"
 #include "history/history.h"
+#include "structs.h"
 #include "ui/animation.h"
 #include "ui/text/text.h"
-#include "core/click_handler.h"
-#include "base/runtime_composer.h"
-#include "base/flags.h"
-#include "structs.h"
 
 namespace Ui {
 class RippleAnimation;
@@ -61,7 +61,6 @@ protected:
 	mutable int _maxw = 0;
 	mutable int _minh = 0;
 	mutable int _height = 0;
-
 };
 
 class HistoryMessage;
@@ -76,11 +75,10 @@ enum HistoryCursorState {
 struct HistoryTextState {
 	HistoryTextState() = default;
 	HistoryTextState(const Text::StateResult &state)
-		: cursor(state.uponSymbol ? HistoryInTextCursorState : HistoryDefaultCursorState)
-		, link(state.link)
-		, afterSymbol(state.afterSymbol)
-		, symbol(state.symbol) {
-	}
+	    : cursor(state.uponSymbol ? HistoryInTextCursorState : HistoryDefaultCursorState)
+	    , link(state.link)
+	    , afterSymbol(state.afterSymbol)
+	    , symbol(state.symbol) {}
 	HistoryTextState &operator=(const Text::StateResult &state) {
 		cursor = state.uponSymbol ? HistoryInTextCursorState : HistoryDefaultCursorState;
 		link = state.link;
@@ -149,7 +147,7 @@ struct HistoryMessageForwarded : public RuntimeComponent<HistoryMessageForwarded
 	PeerData *_originalSender = nullptr;
 	QString _originalAuthor;
 	MsgId _originalId = 0;
-	mutable Text _text = { 1 };
+	mutable Text _text = {1};
 };
 
 struct HistoryMessageReply : public RuntimeComponent<HistoryMessageReply> {
@@ -187,7 +185,9 @@ struct HistoryMessageReply : public RuntimeComponent<HistoryMessageReply> {
 		Selected = (1 << 1),
 	};
 	using PaintFlags = base::flags<PaintFlag>;
-	friend inline constexpr auto is_flag_type(PaintFlag) { return true; };
+	friend inline constexpr auto is_flag_type(PaintFlag) {
+		return true;
+	};
 	void paint(Painter &p, const HistoryItem *holder, int x, int y, int w, PaintFlags flags) const;
 
 	MsgId replyToId() const {
@@ -213,8 +213,8 @@ struct HistoryMessageReply : public RuntimeComponent<HistoryMessageReply> {
 class ReplyKeyboard;
 struct HistoryMessageReplyMarkup : public RuntimeComponent<HistoryMessageReplyMarkup> {
 	HistoryMessageReplyMarkup() = default;
-	HistoryMessageReplyMarkup(MTPDreplyKeyboardMarkup::Flags f) : flags(f) {
-	}
+	HistoryMessageReplyMarkup(MTPDreplyKeyboardMarkup::Flags f)
+	    : flags(f) {}
 
 	void create(const MTPReplyMarkup &markup);
 	void create(const HistoryMessageReplyMarkup &markup);
@@ -249,7 +249,6 @@ struct HistoryMessageReplyMarkup : public RuntimeComponent<HistoryMessageReplyMa
 
 private:
 	void createFromButtonRows(const QVector<MTPKeyboardButtonRow> &v);
-
 };
 
 class ReplyMarkupClickHandler : public LeftButtonClickHandler {
@@ -290,7 +289,6 @@ private:
 
 	// Returns the full text of the corresponding button.
 	QString buttonText() const;
-
 };
 
 class ReplyKeyboard {
@@ -300,8 +298,8 @@ private:
 public:
 	class Style {
 	public:
-		Style(const style::BotKeyboardButton &st) : _st(&st) {
-		}
+		Style(const style::BotKeyboardButton &st)
+		    : _st(&st) {}
 
 		virtual void startPaint(Painter &p) const = 0;
 		virtual const style::TextStyle &textStyle() const = 0;
@@ -311,13 +309,13 @@ public:
 		int buttonHeight() const;
 		virtual int buttonRadius() const = 0;
 
-		virtual void repaint(not_null<const HistoryItem*> item) const = 0;
-		virtual ~Style() {
-		}
+		virtual void repaint(not_null<const HistoryItem *> item) const = 0;
+		virtual ~Style() {}
 
 	protected:
 		virtual void paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const = 0;
-		virtual void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth, HistoryMessageReplyMarkup::Button::Type type) const = 0;
+		virtual void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth,
+		                             HistoryMessageReplyMarkup::Button::Type type) const = 0;
 		virtual void paintButtonLoading(Painter &p, const QRect &rect) const = 0;
 		virtual int minButtonWidth(HistoryMessageReplyMarkup::Button::Type type) const = 0;
 
@@ -326,7 +324,6 @@ public:
 
 		void paintButton(Painter &p, int outerWidth, const ReplyKeyboard::Button &button, TimeMs ms) const;
 		friend class ReplyKeyboard;
-
 	};
 	typedef std::unique_ptr<Style> StylePtr;
 
@@ -357,7 +354,7 @@ private:
 	friend class Style;
 	using ReplyMarkupClickHandlerPtr = QSharedPointer<ReplyMarkupClickHandler>;
 	struct Button {
-		Text text = { 1 };
+		Text text = {1};
 		QRect rect;
 		int characters = 0;
 		double howMuchOver = 0.;
@@ -389,7 +386,6 @@ private:
 	ClickHandlerPtr _savedPressed;
 	ClickHandlerPtr _savedActive;
 	mutable QPoint _savedCoords;
-
 };
 
 // Any HistoryItem can have this Component for
@@ -424,7 +420,6 @@ struct HistoryMessageUnreadBar : public RuntimeComponent<HistoryMessageUnreadBar
 	// we've seen the bar and new messages are marked as read
 	// as soon as they are added to the chat history.
 	bool _freezed = false;
-
 };
 
 class HistoryWebPage;
@@ -437,7 +432,6 @@ struct HistoryMessageLogEntryOriginal : public RuntimeComponent<HistoryMessageLo
 	~HistoryMessageLogEntryOriginal();
 
 	std::unique_ptr<HistoryWebPage> _page;
-
 };
 
 // HistoryMedia has a special owning smart pointer
@@ -473,7 +467,6 @@ public:
 
 private:
 	std::unique_ptr<HistoryMedia> _pointer;
-
 };
 
 namespace internal {
@@ -504,8 +497,7 @@ public:
 	}
 	virtual void draw(Painter &p, QRect clip, TextSelection selection, TimeMs ms) const = 0;
 
-	virtual void dependencyItemRemoved(HistoryItem *dependency) {
-	}
+	virtual void dependencyItemRemoved(HistoryItem *dependency) {}
 	virtual bool updateDependencyItem() {
 		return true;
 	}
@@ -538,7 +530,7 @@ public:
 	}
 	void addLogEntryOriginal(WebPageId localId, const QString &label, const TextWithEntities &content);
 
-	not_null<History*> history() const {
+	not_null<History *> history() const {
 		return _history;
 	}
 	PeerData *from() const {
@@ -654,8 +646,7 @@ public:
 	}
 
 	virtual HistoryTextState getState(QPoint point, HistoryStateRequest request) const WARN_UNUSED_RESULT = 0;
-	virtual void updatePressed(QPoint point) {
-	}
+	virtual void updatePressed(QPoint point) {}
 
 	virtual TextSelection adjustSelection(TextSelection selection, TextSelectType type) const WARN_UNUSED_RESULT {
 		return selection;
@@ -668,19 +659,14 @@ public:
 	virtual bool serviceMsg() const {
 		return false;
 	}
-	virtual void applyEdition(const MTPDmessage &message) {
-	}
-	virtual void applyEdition(const MTPDmessageService &message) {
-	}
-	virtual void updateMedia(const MTPMessageMedia *media) {
-	}
-	virtual void updateReplyMarkup(const MTPReplyMarkup *markup) {
-	}
+	virtual void applyEdition(const MTPDmessage &message) {}
+	virtual void applyEdition(const MTPDmessageService &message) {}
+	virtual void updateMedia(const MTPMessageMedia *media) {}
+	virtual void updateReplyMarkup(const MTPReplyMarkup *markup) {}
 	virtual qint32 addToOverview(AddToOverviewMethod method) {
 		return 0;
 	}
-	virtual void eraseFromOverview() {
-	}
+	virtual void eraseFromOverview() {}
 	virtual bool hasBubble() const {
 		return false;
 	}
@@ -689,7 +675,7 @@ public:
 	void nextItemChanged();
 
 	virtual TextWithEntities selectedText(TextSelection selection) const {
-		return { qsl("[-]"), EntitiesInText() };
+		return {qsl("[-]"), EntitiesInText()};
 	}
 
 	virtual QString notificationHeader() const {
@@ -709,31 +695,23 @@ public:
 		return notificationText();
 	}
 	virtual TextWithEntities originalText() const {
-		return { QString(), EntitiesInText() };
+		return {QString(), EntitiesInText()};
 	}
 
-	virtual void drawInfo(Painter &p, qint32 right, qint32 bottom, qint32 width, bool selected, InfoDisplayType type) const {
-	}
+	virtual void drawInfo(Painter &p, qint32 right, qint32 bottom, qint32 width, bool selected,
+	                      InfoDisplayType type) const {}
 	virtual ClickHandlerPtr fastShareLink() const {
 		return ClickHandlerPtr();
 	}
 	virtual bool displayFastShare() const {
 		return false;
 	}
-	virtual void drawFastShare(Painter &p, int left, int top, int outerWidth) const {
-	}
-	virtual void setViewsCount(qint32 count) {
-	}
+	virtual void drawFastShare(Painter &p, int left, int top, int outerWidth) const {}
+	virtual void setViewsCount(qint32 count) {}
 	virtual void setId(MsgId newId);
 
-	void drawInDialog(
-		Painter &p,
-		const QRect &r,
-		bool active,
-		bool selected,
-		DrawInDialog way,
-		const HistoryItem *&cacheFor,
-		Text &cache) const;
+	void drawInDialog(Painter &p, const QRect &r, bool active, bool selected, DrawInDialog way,
+	                  const HistoryItem *&cacheFor, Text &cache) const;
 
 	bool emptyText() const {
 		return _text.isEmpty();
@@ -769,8 +747,7 @@ public:
 	HistoryMedia *getMedia() const {
 		return _media.get();
 	}
-	virtual void setText(const TextWithEntities &textWithEntities) {
-	}
+	virtual void setText(const TextWithEntities &textWithEntities) {}
 	virtual bool textHasLinks() const {
 		return false;
 	}
@@ -929,7 +906,7 @@ public:
 	void clipCallback(Media::Clip::Notification notification);
 	void audioTrackUpdated();
 
-	bool computeIsAttachToPrevious(not_null<HistoryItem*> previous);
+	bool computeIsAttachToPrevious(not_null<HistoryItem *> previous);
 	void setLogEntryDisplayDate(bool displayDate) {
 		Expects(isLogEntry());
 		setDisplayDate(displayDate);
@@ -946,12 +923,7 @@ public:
 	~HistoryItem();
 
 protected:
-	HistoryItem(
-		not_null<History*> history,
-		MsgId id,
-		MTPDmessage::Flags flags,
-		QDateTime date,
-		UserId from);
+	HistoryItem(not_null<History *> history, MsgId id, MTPDmessage::Flags flags, QDateTime date, UserId from);
 
 	// To completely create history item we need to call
 	// a virtual method, it can not be done from constructor.
@@ -960,16 +932,15 @@ protected:
 	// Called from resizeGetHeight() when MTPDmessage_ClientFlag::f_pending_init_dimensions is set.
 	virtual void initDimensions() = 0;
 
-	virtual void markMediaAsReadHook() {
-	}
+	virtual void markMediaAsReadHook() {}
 
 	virtual int resizeContentGetHeight() = 0;
 
 	void finishEdition(int oldKeyboardTop);
 	void finishEditionToEmpty();
 
-	const not_null<History*> _history;
-	not_null<PeerData*> _from;
+	const not_null<History *> _history;
+	not_null<PeerData *> _from;
 	HistoryBlock *_block = nullptr;
 	int _indexInBlock = -1;
 	MTPDmessage::Flags _flags = 0;
@@ -1025,10 +996,10 @@ protected:
 	void setAttachToNext(bool attachToNext);
 
 	const HistoryMessageReplyMarkup *inlineReplyMarkup() const {
-		return const_cast<HistoryItem*>(this)->inlineReplyMarkup();
+		return const_cast<HistoryItem *>(this)->inlineReplyMarkup();
 	}
 	const ReplyKeyboard *inlineReplyKeyboard() const {
-		return const_cast<HistoryItem*>(this)->inlineReplyKeyboard();
+		return const_cast<HistoryItem *>(this)->inlineReplyKeyboard();
 	}
 	HistoryMessageReplyMarkup *inlineReplyMarkup() {
 		if (auto markup = Get<HistoryMessageReplyMarkup>()) {
@@ -1052,7 +1023,7 @@ protected:
 		return internal::shiftSelection(selection, _text);
 	}
 
-	Text _text = { int(st::msgMinWidth) };
+	Text _text = {int(st::msgMinWidth)};
 	int _textWidth = -1;
 	int _textHeight = 0;
 
@@ -1061,23 +1032,19 @@ protected:
 private:
 	int _y = 0;
 	int _width = 0;
-
 };
 
 // make all the constructors in HistoryItem children protected
 // and wrapped with a static create() call with the same args
 // so that history item can not be created directly, without
 // calling a virtual finishCreate() method
-template <typename T>
-class HistoryItemInstantiated {
+template <typename T> class HistoryItemInstantiated {
 public:
-	template <typename ...Args>
-	static not_null<T*> _create(Args &&... args) {
+	template <typename... Args> static not_null<T *> _create(Args &&... args) {
 		auto result = new T(std::forward<Args>(args)...);
 		result->finishCreate();
 		return result;
 	}
-
 };
 
 ClickHandlerPtr goToMessageClickHandler(PeerData *peer, MsgId msgId);

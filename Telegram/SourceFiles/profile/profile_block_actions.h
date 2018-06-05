@@ -76,15 +76,15 @@ private:
 	void refreshLeaveChannel();
 	void refreshVisibility();
 
-	Ui::LeftOutlineButton *addButton(const QString &text, const char *slot
-		, const style::OutlineButton &st = st::defaultLeftOutlineButton, int skipHeight = 0);
+	Ui::LeftOutlineButton *addButton(const QString &text, const char *slot,
+	                                 const style::OutlineButton &st = st::defaultLeftOutlineButton, int skipHeight = 0);
 	void resizeButton(Ui::LeftOutlineButton *button, int newWidth, int top);
 
 	QString getBlockButtonText() const;
 	bool hasBotCommand(const QString &command) const;
 	void sendBotCommand(const QString &command);
 
-	QList<Ui::LeftOutlineButton*> _buttons;
+	QList<Ui::LeftOutlineButton *> _buttons;
 
 	// Hold some button pointers to update / toggle them.
 	bool _hasBotHelp = false;
@@ -92,7 +92,6 @@ private:
 	Ui::LeftOutlineButton *_blockUser = nullptr;
 	Ui::LeftOutlineButton *_deleteChannel = nullptr;
 	Ui::LeftOutlineButton *_leaveChannel = nullptr;
-
 };
 
 } // namespace Profile

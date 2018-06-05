@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/toast/toast.h"
 #include "core/single_timer.h"
+#include "ui/toast/toast.h"
 
 namespace Ui {
 namespace Toast {
@@ -55,11 +55,10 @@ private:
 	SingleTimer _hideTimer;
 	TimeMs _nextHide = 0;
 
-	QMultiMap<TimeMs, Instance*> _toastByHideTime;
-	QMap<Widget*, Instance*> _toastByWidget;
-	QList<Instance*> _toasts;
+	QMultiMap<TimeMs, Instance *> _toastByHideTime;
+	QMap<Widget *, Instance *> _toastByWidget;
+	QList<Instance *> _toasts;
 	OrderedSet<QPointer<QWidget>> _toastParents;
-
 };
 
 } // namespace internal

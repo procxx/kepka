@@ -56,11 +56,7 @@ public slots:
 	void requestFinished(QNetworkReply *reply);
 
 private:
-	enum Status {
-		WaitingHttp = 0,
-		UsingHttp,
-		FinishedWork
-	};
+	enum Status { WaitingHttp = 0, UsingHttp, FinishedWork };
 	Status status;
 	MTPint128 httpNonce;
 	MTPDdcOption::Flags _flags;
@@ -68,9 +64,8 @@ private:
 	QNetworkAccessManager manager;
 	QUrl address;
 
-	typedef QSet<QNetworkReply*> Requests;
+	typedef QSet<QNetworkReply *> Requests;
 	Requests requests;
-
 };
 
 } // namespace internal

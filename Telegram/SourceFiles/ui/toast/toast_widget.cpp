@@ -30,13 +30,14 @@ constexpr auto kToastMaxLines = 16;
 
 } // namespace
 
-Widget::Widget(QWidget *parent, const Config &config) : TWidget(parent)
-, _multiline(config.maxWidth > 0)
-, _maxWidth((config.maxWidth > 0) ? config.maxWidth : st::toastMaxWidth)
-, _padding((config.padding.left() > 0) ? config.padding : st::toastPadding)
-, _maxTextWidth(_maxWidth - _padding.left() - _padding.right())
-, _text(_multiline ? _maxTextWidth : QFIXED_MAX) {
-	TextParseOptions toastOptions = { 0, _maxTextWidth, st::toastTextStyle.font->height, Qt::LayoutDirectionAuto };
+Widget::Widget(QWidget *parent, const Config &config)
+    : TWidget(parent)
+    , _multiline(config.maxWidth > 0)
+    , _maxWidth((config.maxWidth > 0) ? config.maxWidth : st::toastMaxWidth)
+    , _padding((config.padding.left() > 0) ? config.padding : st::toastPadding)
+    , _maxTextWidth(_maxWidth - _padding.left() - _padding.right())
+    , _text(_multiline ? _maxTextWidth : QFIXED_MAX) {
+	TextParseOptions toastOptions = {0, _maxTextWidth, st::toastTextStyle.font->height, Qt::LayoutDirectionAuto};
 	if (_multiline) {
 		toastOptions.maxh *= kToastMaxLines;
 	}
@@ -56,7 +57,8 @@ void Widget::onParentResized() {
 	auto maxHeight = kToastMaxLines * st::toastTextStyle.font->height;
 	auto textHeight = _multiline ? std::min(_text.countHeight(_textWidth), maxHeight) : _text.minHeight();
 	auto newHeight = _padding.top() + textHeight + _padding.bottom();
-	setGeometry((parentWidget()->width() - newWidth) / 2, (parentWidget()->height() - newHeight) / 2, newWidth, newHeight);
+	setGeometry((parentWidget()->width() - newWidth) / 2, (parentWidget()->height() - newHeight) / 2, newWidth,
+	            newHeight);
 }
 
 void Widget::setShownLevel(double shownLevel) {

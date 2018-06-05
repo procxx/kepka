@@ -20,19 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_common_groups_section.h"
 
-#include "profile/profile_section_memento.h"
+#include "apiwrap.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
 #include "profile/profile_back_button.h"
-#include "styles/style_widgets.h"
+#include "profile/profile_section_memento.h"
 #include "styles/style_profile.h"
-#include "styles/style_window.h"
 #include "styles/style_settings.h"
+#include "styles/style_widgets.h"
+#include "styles/style_window.h"
 #include "ui/effects/ripple_animation.h"
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/shadow.h"
-#include "mainwidget.h"
-#include "observer_peer.h"
-#include "apiwrap.h"
-#include "lang/lang_keys.h"
 
 namespace Profile {
 namespace CommonGroups {
@@ -42,14 +42,16 @@ constexpr int kCommonGroupsPerPage = 40;
 
 } // namespace
 
-object_ptr<Window::SectionWidget> SectionMemento::createWidget(QWidget *parent, not_null<Window::Controller*> controller, const QRect &geometry) {
+object_ptr<Window::SectionWidget>
+SectionMemento::createWidget(QWidget *parent, not_null<Window::Controller *> controller, const QRect &geometry) {
 	auto result = object_ptr<Widget>(parent, controller, _user);
 	result->setInternalState(geometry, this);
 	return std::move(result);
 }
 
-FixedBar::FixedBar(QWidget *parent) : TWidget(parent)
-, _backButton(this, lang(lng_profile_common_groups_section)) {
+FixedBar::FixedBar(QWidget *parent)
+    : TWidget(parent)
+    , _backButton(this, lang(lng_profile_common_groups_section)) {
 	_backButton->moveToLeft(0, 0);
 	connect(_backButton, SIGNAL(clicked()), this, SLOT(onBack()));
 }
@@ -92,16 +94,18 @@ void FixedBar::mousePressEvent(QMouseEvent *e) {
 	}
 }
 
-InnerWidget::Item::Item(PeerData *peer) : peer(peer) {
-}
+InnerWidget::Item::Item(PeerData *peer)
+    : peer(peer) {}
 
 InnerWidget::Item::~Item() = default;
 
-InnerWidget::InnerWidget(QWidget *parent, not_null<UserData*> user) : TWidget(parent)
-, _user(user) {
+InnerWidget::InnerWidget(QWidget *parent, not_null<UserData *> user)
+    : TWidget(parent)
+    , _user(user) {
 	setMouseTracking(true);
 	setAttribute(Qt::WA_OpaquePaintEvent);
-	_rowHeight = st::profileCommonGroupsPadding.top() + st::profileCommonGroupsPhotoSize + st::profileCommonGroupsPadding.bottom();
+	_rowHeight = st::profileCommonGroupsPadding.top() + st::profileCommonGroupsPhotoSize +
+	             st::profileCommonGroupsPadding.bottom();
 	_contentTop = st::profileCommonGroupsSkip;
 }
 
@@ -118,18 +122,16 @@ void InnerWidget::checkPreloadMore() {
 	}
 }
 
-void InnerWidget::saveState(not_null<SectionMemento*> memento) {
+void InnerWidget::saveState(not_null<SectionMemento *> memento) {
 	if (auto count = _items.size()) {
-		QList<not_null<PeerData*>> groups;
+		QList<not_null<PeerData *>> groups;
 		groups.reserve(count);
-		for_const (auto item, _items) {
-			groups.push_back(item->peer);
-		}
+		for_const (auto item, _items) { groups.push_back(item->peer); }
 		memento->setCommonGroups(groups);
 	}
 }
 
-void InnerWidget::restoreState(not_null<SectionMemento*> memento) {
+void InnerWidget::restoreState(not_null<SectionMemento *> memento) {
 	auto list = memento->getCommonGroups();
 	_allLoaded = false;
 	if (!list.empty()) {
@@ -137,7 +139,7 @@ void InnerWidget::restoreState(not_null<SectionMemento*> memento) {
 	}
 }
 
-void InnerWidget::showInitial(const QList<not_null<PeerData*>> &list) {
+void InnerWidget::showInitial(const QList<not_null<PeerData *>> &list) {
 	for_const (auto group, list) {
 		if (auto item = computeItem(group)) {
 			_items.push_back(item);
@@ -151,37 +153,39 @@ void InnerWidget::preloadMore() {
 	if (_preloadRequestId || _allLoaded) {
 		return;
 	}
-	auto request = MTPmessages_GetCommonChats(user()->inputUser, MTP_int(_preloadGroupId), MTP_int(kCommonGroupsPerPage));
-	_preloadRequestId = MTP::send(request, ::rpcDone(base::lambda_guarded(this, [this](const MTPmessages_Chats &result) {
-		_preloadRequestId = 0;
-		_preloadGroupId = 0;
-		_allLoaded = true;
-		if (auto chats = Api::getChatsFromMessagesChats(result)) {
-			auto &list = chats->v;
-			if (!list.empty()) {
-				_items.reserve(_items.size() + list.size());
-				for_const (auto &chatData, list) {
-					if (auto chat = App::feedChat(chatData)) {
-						auto found = false;
-						for_const (auto item, _items) {
-							if (item->peer == chat) {
-								found = true;
-								break;
-							}
-						}
-						if (!found) {
-							if (auto item = computeItem(chat)) {
-								_items.push_back(item);
-							}
-						}
-						_preloadGroupId = chat->bareId();
-						_allLoaded = false;
-					}
-				}
-				updateSize();
-			}
-		}
-	})));
+	auto request =
+	    MTPmessages_GetCommonChats(user()->inputUser, MTP_int(_preloadGroupId), MTP_int(kCommonGroupsPerPage));
+	_preloadRequestId =
+	    MTP::send(request, ::rpcDone(base::lambda_guarded(this, [this](const MTPmessages_Chats &result) {
+		              _preloadRequestId = 0;
+		              _preloadGroupId = 0;
+		              _allLoaded = true;
+		              if (auto chats = Api::getChatsFromMessagesChats(result)) {
+			              auto &list = chats->v;
+			              if (!list.empty()) {
+				              _items.reserve(_items.size() + list.size());
+				              for_const (auto &chatData, list) {
+					              if (auto chat = App::feedChat(chatData)) {
+						              auto found = false;
+						              for_const (auto item, _items) {
+							              if (item->peer == chat) {
+								              found = true;
+								              break;
+							              }
+						              }
+						              if (!found) {
+							              if (auto item = computeItem(chat)) {
+								              _items.push_back(item);
+							              }
+						              }
+						              _preloadGroupId = chat->bareId();
+						              _allLoaded = false;
+					              }
+				              }
+				              updateSize();
+			              }
+		              }
+	              })));
 }
 
 void InnerWidget::updateSize() {
@@ -196,7 +200,8 @@ int InnerWidget::resizeGetHeight(int newWidth) {
 	auto contentLeftMax = st::profileCommonGroupsLeftMax;
 	auto widthWithMin = st::windowMinWidth;
 	auto widthWithMax = st::profileCommonGroupsWidthMax + 2 * contentLeftMax;
-	_contentLeft = anim::interpolate(contentLeftMax, contentLeftMin, std::max(widthWithMax - newWidth, 0) / double(widthWithMax - widthWithMin));
+	_contentLeft = anim::interpolate(contentLeftMax, contentLeftMin,
+	                                 std::max(widthWithMax - newWidth, 0) / double(widthWithMax - widthWithMin));
 	_contentWidth = std::min(newWidth - 2 * _contentLeft, st::profileCommonGroupsWidthMax);
 
 	auto newHeight = _contentTop;
@@ -237,7 +242,8 @@ void InnerWidget::paintRow(Painter &p, int index, TimeMs ms) {
 
 	x += st::profileCommonGroupsPadding.left();
 	y += st::profileCommonGroupsPadding.top();
-	item->peer->paintUserpic(p, rtl() ? (width() - x - st::profileCommonGroupsPhotoSize) : x, y, st::profileCommonGroupsPhotoSize);
+	item->peer->paintUserpic(p, rtl() ? (width() - x - st::profileCommonGroupsPhotoSize) : x, y,
+	                         st::profileCommonGroupsPhotoSize);
 
 	p.setPen(st::profileMemberNameFg);
 	x += st::profileCommonGroupsPhotoSize + st::profileCommonGroupsNameLeft;
@@ -287,9 +293,8 @@ void InnerWidget::mousePressEvent(QMouseEvent *e) {
 		auto item = _items[_pressed];
 		if (!item->ripple) {
 			auto mask = Ui::RippleAnimation::rectMask(QSize(_contentWidth, _rowHeight));
-			item->ripple = std::make_unique<Ui::RippleAnimation>(st::profileCommonGroupsRipple, std::move(mask), [this, index = _pressed] {
-				updateRow(index);
-			});
+			item->ripple = std::make_unique<Ui::RippleAnimation>(st::profileCommonGroupsRipple, std::move(mask),
+			                                                     [this, index = _pressed] { updateRow(index); });
 		}
 		auto left = _contentLeft;
 		auto top = _contentTop + _rowHeight * _pressed;
@@ -335,10 +340,11 @@ InnerWidget::~InnerWidget() {
 	}
 }
 
-Widget::Widget(QWidget *parent, not_null<Window::Controller*> controller, not_null<UserData*> user) : Window::SectionWidget(parent, controller)
-, _scroll(this, st::settingsScroll)
-, _fixedBar(this)
-, _fixedBarShadow(this, st::shadowFg) {
+Widget::Widget(QWidget *parent, not_null<Window::Controller *> controller, not_null<UserData *> user)
+    : Window::SectionWidget(parent, controller)
+    , _scroll(this, st::settingsScroll)
+    , _fixedBar(this)
+    , _fixedBarShadow(this, st::shadowFg) {
 	_fixedBar->move(0, 0);
 	_fixedBar->resizeToWidth(width());
 	_fixedBar->show();
@@ -359,7 +365,7 @@ void Widget::updateAdaptiveLayout() {
 	_fixedBarShadow->moveToLeft(Adaptive::OneColumn() ? 0 : st::lineWidth, _fixedBar->height());
 }
 
-not_null<UserData*> Widget::user() const {
+not_null<UserData *> Widget::user() const {
 	return _inner->user();
 }
 
@@ -374,8 +380,8 @@ void Widget::doSetInnerFocus() {
 	_inner->setFocus();
 }
 
-bool Widget::showInternal(not_null<Window::SectionMemento*> memento) {
-	if (auto profileMemento = dynamic_cast<SectionMemento*>(memento.get())) {
+bool Widget::showInternal(not_null<Window::SectionMemento *> memento) {
+	if (auto profileMemento = dynamic_cast<SectionMemento *>(memento.get())) {
 		if (profileMemento->getUser() == user()) {
 			restoreState(profileMemento);
 			return true;
@@ -384,7 +390,7 @@ bool Widget::showInternal(not_null<Window::SectionMemento*> memento) {
 	return false;
 }
 
-void Widget::setInternalState(const QRect &geometry, not_null<SectionMemento*> memento) {
+void Widget::setInternalState(const QRect &geometry, not_null<SectionMemento *> memento) {
 	setGeometry(geometry);
 	myEnsureResized(this);
 	restoreState(memento);
@@ -396,12 +402,12 @@ std::unique_ptr<Window::SectionMemento> Widget::createMemento() {
 	return std::move(result);
 }
 
-void Widget::saveState(not_null<SectionMemento*> memento) {
+void Widget::saveState(not_null<SectionMemento *> memento) {
 	memento->setScrollTop(_scroll->scrollTop());
 	_inner->saveState(memento);
 }
 
-void Widget::restoreState(not_null<SectionMemento*> memento) {
+void Widget::restoreState(not_null<SectionMemento *> memento) {
 	_inner->restoreState(memento);
 	auto scrollTop = memento->getScrollTop();
 	_scroll->scrollToY(scrollTop);

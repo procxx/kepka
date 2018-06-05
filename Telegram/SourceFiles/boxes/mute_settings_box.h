@@ -14,15 +14,14 @@
 class MuteSettingsBox : public BoxContent {
 	Q_OBJECT
 
-  public:
-	MuteSettingsBox(QWidget *parent, not_null<PeerData*> peer)
-	  : _peer(peer) {
-	}
+public:
+	MuteSettingsBox(QWidget *parent, not_null<PeerData *> peer)
+	    : _peer(peer) {}
 
-  protected:
+protected:
 	void prepare() override;
 
-  private:
-	not_null<PeerData*> _peer;
+private:
+	not_null<PeerData *> _peer;
 };
 // vi: ts=4 tw=80

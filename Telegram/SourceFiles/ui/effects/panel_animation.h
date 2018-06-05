@@ -26,7 +26,8 @@ namespace Ui {
 
 class RoundShadowAnimation {
 public:
-	void setCornerMasks(const QImage &topLeft, const QImage &topRight, const QImage &bottomLeft, const QImage &bottomRight);
+	void setCornerMasks(const QImage &topLeft, const QImage &topRight, const QImage &bottomLeft,
+	                    const QImage &bottomRight);
 
 protected:
 	void start(int frameWidth, int frameHeight, double devicePixelRatio);
@@ -79,7 +80,6 @@ protected:
 	int _frameAlpha = 0; // recounted each getFrame()
 	int _frameIntsPerLine = 0;
 	int _frameIntsPerLineAdded = 0;
-
 };
 
 class PanelAnimation : public RoundShadowAnimation {
@@ -90,8 +90,9 @@ public:
 		BottomLeft,
 		BottomRight,
 	};
-	PanelAnimation(const style::PanelAnimation &st, Origin origin) : _st(st), _origin(origin) {
-	}
+	PanelAnimation(const style::PanelAnimation &st, Origin origin)
+	    : _st(st)
+	    , _origin(origin) {}
 
 	void setFinalImage(QImage &&finalImage, QRect inner);
 	void setSkipShadow(bool skipShadow);
@@ -135,7 +136,6 @@ private:
 	double _widthDuration = 1.;
 	double _heightDuration = 1.;
 	double _alphaDuration = 1.;
-
 };
 
 } // namespace Ui

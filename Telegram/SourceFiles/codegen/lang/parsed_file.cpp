@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/lang/parsed_file.h"
 
-#include <iostream>
-#include <QtCore/QMap>
-#include <QtCore/QDir>
-#include <QtCore/QRegularExpression>
 #include "codegen/common/basic_tokenized_file.h"
 #include "codegen/common/logging.h"
+#include <QtCore/QDir>
+#include <QtCore/QMap>
+#include <QtCore/QRegularExpression>
+#include <iostream>
 
 namespace codegen {
 namespace lang {
@@ -34,7 +34,7 @@ namespace {
 using BasicToken = codegen::common::BasicTokenizedFile::Token;
 using BasicType = BasicToken::Type;
 
-constexpr int kErrorBadString          = 806;
+constexpr int kErrorBadString = 806;
 
 bool ValidateAnsiString(const QString &value) {
 	for (auto ch : value) {
@@ -46,7 +46,8 @@ bool ValidateAnsiString(const QString &value) {
 }
 
 bool ValidateKey(const QString &key) {
-	static const auto validator = QRegularExpression("^[a-z0-9_.-]+(#(one|other))?$", QRegularExpression::CaseInsensitiveOption);
+	static const auto validator =
+	    QRegularExpression("^[a-z0-9_.-]+(#(one|other))?$", QRegularExpression::CaseInsensitiveOption);
 	if (!validator.match(key).hasMatch()) {
 		return false;
 	}
@@ -78,14 +79,14 @@ QString PrepareCommandString(int index) {
 
 } // namespace
 
-const std::array<QString, kPluralPartCount> kPluralParts = { {
-	"zero",
-	"one",
-	"two",
-	"few",
-	"many",
-	"other",
-} };
+const std::array<QString, kPluralPartCount> kPluralParts = {{
+    "zero",
+    "one",
+    "two",
+    "few",
+    "many",
+    "other",
+}};
 
 const QString kPluralTag = "count";
 
@@ -94,10 +95,9 @@ QString ComputePluralKey(const QString &base, int index) {
 }
 
 ParsedFile::ParsedFile(const Options &options)
-: filePath_(options.inputPath)
-, file_(filePath_)
-, options_(options) {
-}
+    : filePath_(options.inputPath)
+    , file_(filePath_)
+    , options_(options) {}
 
 bool ParsedFile::read() {
 	if (!file_.read()) {
@@ -232,7 +232,7 @@ QString ParsedFile::extractTagData(const QString &tagText, LangPack *to) {
 		++index;
 	}
 	if (tagIndex == result_.tags.size()) {
-		result_.tags.push_back({ tag });
+		result_.tags.push_back({tag});
 	}
 	if (numericPart > 0) {
 		auto numericParts = tagText.mid(numericPart + 1).split('|');
@@ -245,14 +245,15 @@ QString ParsedFile::extractTagData(const QString &tagText, LangPack *to) {
 			auto numericPartEntry = LangPack::Entry();
 			numericPartEntry.key = tag + QString::number(index++);
 			if (part.indexOf('#') != part.lastIndexOf('#')) {
-				logErrorBadString() << "bad option for plural key part in tag: '" << tagText.toStdString() << "', too many '#'.";
+				logErrorBadString() << "bad option for plural key part in tag: '" << tagText.toStdString()
+				                    << "', too many '#'.";
 				return QString();
 			}
 			numericPartEntry.value = part.replace('#', PrepareCommandString(tagIndex));
 			to->entries.push_back(numericPartEntry);
 		}
 	}
-	to->tags.push_back({ tag });
+	to->tags.push_back({tag});
 	return PrepareCommandString(tagIndex);
 }
 
@@ -263,7 +264,8 @@ void ParsedFile::addEntity(QString key, const QString &value) {
 		auto pluralPart = key.mid(pluralPartOffset + 1);
 		pluralIndex = std::find(kPluralParts.begin(), kPluralParts.end(), pluralPart) - kPluralParts.begin();
 		if (pluralIndex < 0 || pluralIndex >= kPluralParts.size()) {
-			logError(kErrorBadString) << "bad plural part for key '" << key.toStdString() << "': '" << pluralPart.toStdString() << "'";
+			logError(kErrorBadString) << "bad plural part for key '" << key.toStdString() << "': '"
+			                          << pluralPart.toStdString() << "'";
 			return;
 		}
 		key = key.mid(0, pluralPartOffset);
@@ -321,7 +323,7 @@ void ParsedFile::addEntity(QString key, const QString &value) {
 		realEntry.value = entry.value;
 
 		// Add all new tags to the existing ones.
-		realEntry.tags = std::vector<LangPack::Tag>(1, LangPack::Tag { kPluralTag });
+		realEntry.tags = std::vector<LangPack::Tag>(1, LangPack::Tag{kPluralTag});
 		for (auto &tag : entry.tags) {
 			if (std::find(realEntry.tags.begin(), realEntry.tags.end(), tag) == realEntry.tags.end()) {
 				realEntry.tags.push_back(tag);

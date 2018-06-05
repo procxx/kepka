@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/flat_set.h"
+#include "base/optional.h"
+#include "base/timer.h"
+#include "dialogs/dialogs_common.h" // For Dialogs::Mode
 #include "ui/animation.h" // For BasicAnimation
 #include "ui/effects/send_action_animations.h" // For SendActionAnimation
-#include "dialogs/dialogs_common.h" // For Dialogs::Mode
-#include "base/timer.h"
-#include "base/optional.h"
-#include "base/flat_set.h"
 
 void HistoryInit();
 
 class HistoryItem;
-using SelectedItemSet = QMap<int, not_null<HistoryItem*>>;
+using SelectedItemSet = QMap<int, not_null<HistoryItem *>>;
 
 enum NewMessageType {
 	NewMessageUnread,
@@ -41,10 +41,11 @@ enum NewMessageType {
 class History;
 class Histories {
 public:
-	using Map = QHash<PeerId, History*>;
+	using Map = QHash<PeerId, History *>;
 	Map map;
 
-	Histories() : _a_typings(animation(this, &Histories::step_typings)) {
+	Histories()
+	    : _a_typings(animation(this, &Histories::step_typings)) {
 		_selfDestructTimer.setCallback([this] { checkSelfDestructItems(); });
 	}
 
@@ -52,15 +53,16 @@ public:
 	void step_typings(TimeMs ms, bool timer);
 
 	History *find(const PeerId &peerId);
-	not_null<History*> findOrInsert(const PeerId &peerId);
-	not_null<History*> findOrInsert(const PeerId &peerId, qint32 unreadCount, qint32 maxInboxRead, qint32 maxOutboxRead);
+	not_null<History *> findOrInsert(const PeerId &peerId);
+	not_null<History *> findOrInsert(const PeerId &peerId, qint32 unreadCount, qint32 maxInboxRead,
+	                                 qint32 maxOutboxRead);
 
 	void clear();
 	void remove(const PeerId &peer);
 
 	HistoryItem *addNewMessage(const MTPMessage &msg, NewMessageType type);
 
-	typedef QMap<History*, TimeMs> TypingHistories; // when typing in this history started
+	typedef QMap<History *, TimeMs> TypingHistories; // when typing in this history started
 	TypingHistories typing;
 	BasicAnimation _a_typings;
 
@@ -86,7 +88,7 @@ public:
 	void setIsPinned(History *history, bool isPinned);
 	void clearPinned();
 	int pinnedCount() const;
-	QList<History*> getPinnedOrder() const;
+	QList<History *> getPinnedOrder() const;
 	void savePinnedToServer() const;
 
 	struct SendActionAnimationUpdate {
@@ -98,7 +100,7 @@ public:
 	base::Observable<SendActionAnimationUpdate> &sendActionAnimationUpdated() {
 		return _sendActionAnimationUpdated;
 	}
-	void selfDestructIn(not_null<HistoryItem*> item, TimeMs delay);
+	void selfDestructIn(not_null<HistoryItem *> item, TimeMs delay);
 
 private:
 	void checkSelfDestructItems();
@@ -106,11 +108,10 @@ private:
 	int _unreadFull = 0;
 	int _unreadMuted = 0;
 	base::Observable<SendActionAnimationUpdate> _sendActionAnimationUpdated;
-	OrderedSet<History*> _pinnedDialogs;
+	OrderedSet<History *> _pinnedDialogs;
 
 	base::Timer _selfDestructTimer;
 	std::vector<FullMsgId> _selfDestructItems;
-
 };
 
 class HistoryBlock;
@@ -134,15 +135,15 @@ enum HistoryMediaType {
 };
 
 enum MediaOverviewType {
-	OverviewPhotos          = 0,
-	OverviewVideos          = 1,
-	OverviewMusicFiles      = 2,
-	OverviewFiles           = 3,
-	OverviewVoiceFiles      = 4,
-	OverviewLinks           = 5,
-	OverviewChatPhotos      = 6,
+	OverviewPhotos = 0,
+	OverviewVideos = 1,
+	OverviewMusicFiles = 2,
+	OverviewFiles = 3,
+	OverviewVoiceFiles = 4,
+	OverviewLinks = 5,
+	OverviewChatPhotos = 6,
 	OverviewRoundVoiceFiles = 7,
-	OverviewGIFs            = 8,
+	OverviewGIFs = 8,
 
 	OverviewCount
 };
@@ -209,7 +210,7 @@ public:
 	ChannelHistory *asChannelHistory();
 	const ChannelHistory *asChannelHistory() const;
 
-	not_null<History*> migrateToOrMe() const;
+	not_null<History *> migrateToOrMe() const;
 	History *migrateFrom() const;
 
 	bool isEmpty() const {
@@ -221,13 +222,20 @@ public:
 
 	virtual ~History();
 
-	HistoryItem *addNewService(MsgId msgId, QDateTime date, const QString &text, MTPDmessage::Flags flags = 0, bool newMsg = true);
+	HistoryItem *addNewService(MsgId msgId, QDateTime date, const QString &text, MTPDmessage::Flags flags = 0,
+	                           bool newMsg = true);
 	HistoryItem *addNewMessage(const MTPMessage &msg, NewMessageType type);
 	HistoryItem *addToHistory(const MTPMessage &msg);
-	HistoryItem *addNewForwarded(MsgId id, MTPDmessage::Flags flags, QDateTime date, UserId from, const QString &postAuthor, HistoryMessage *item);
-	HistoryItem *addNewDocument(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, DocumentData *doc, const QString &caption, const MTPReplyMarkup &markup);
-	HistoryItem *addNewPhoto(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, PhotoData *photo, const QString &caption, const MTPReplyMarkup &markup);
-	HistoryItem *addNewGame(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, GameData *game, const MTPReplyMarkup &markup);
+	HistoryItem *addNewForwarded(MsgId id, MTPDmessage::Flags flags, QDateTime date, UserId from,
+	                             const QString &postAuthor, HistoryMessage *item);
+	HistoryItem *addNewDocument(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date,
+	                            UserId from, const QString &postAuthor, DocumentData *doc, const QString &caption,
+	                            const MTPReplyMarkup &markup);
+	HistoryItem *addNewPhoto(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date,
+	                         UserId from, const QString &postAuthor, PhotoData *photo, const QString &caption,
+	                         const MTPReplyMarkup &markup);
+	HistoryItem *addNewGame(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date,
+	                        UserId from, const QString &postAuthor, GameData *game, const MTPReplyMarkup &markup);
 
 	// Used only internally and for channel admin log.
 	HistoryItem *createItem(const MTPMessage &msg, bool applyServiceAction, bool detachExistingItem);
@@ -373,7 +381,7 @@ public:
 	void eraseFromUnreadMentions(MsgId msgId);
 	void addUnreadMentionsSlice(const MTPmessages_Messages &result);
 
-	using Blocks = QList<HistoryBlock*>;
+	using Blocks = QList<HistoryBlock *>;
 	Blocks blocks;
 
 	int width = 0;
@@ -391,7 +399,7 @@ public:
 	HistoryItem *lastSentMsg = nullptr;
 	QDateTime lastMsgDate;
 
-	typedef QList<HistoryItem*> NotifyQueue;
+	typedef QList<HistoryItem *> NotifyQueue;
 	NotifyQueue notifies;
 
 	Data::Draft *localDraft() {
@@ -477,7 +485,7 @@ public:
 		if (result < 0) return defaultValue;
 		if (result < loaded) {
 			if (result > 0) {
-				const_cast<History*>(this)->_overviewCountData[overviewIndex] = 0;
+				const_cast<History *>(this)->_overviewCountData[overviewIndex] = 0;
 			}
 			return loaded;
 		}
@@ -511,10 +519,16 @@ protected:
 
 	void clearBlocks(bool leaveItems);
 
-	HistoryItem *createItemForwarded(MsgId id, MTPDmessage::Flags flags, QDateTime date, UserId from, const QString &postAuthor, HistoryMessage *msg);
-	HistoryItem *createItemDocument(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, DocumentData *doc, const QString &caption, const MTPReplyMarkup &markup);
-	HistoryItem *createItemPhoto(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, PhotoData *photo, const QString &caption, const MTPReplyMarkup &markup);
-	HistoryItem *createItemGame(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date, UserId from, const QString &postAuthor, GameData *game, const MTPReplyMarkup &markup);
+	HistoryItem *createItemForwarded(MsgId id, MTPDmessage::Flags flags, QDateTime date, UserId from,
+	                                 const QString &postAuthor, HistoryMessage *msg);
+	HistoryItem *createItemDocument(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date,
+	                                UserId from, const QString &postAuthor, DocumentData *doc, const QString &caption,
+	                                const MTPReplyMarkup &markup);
+	HistoryItem *createItemPhoto(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date,
+	                             UserId from, const QString &postAuthor, PhotoData *photo, const QString &caption,
+	                             const MTPReplyMarkup &markup);
+	HistoryItem *createItemGame(MsgId id, MTPDmessage::Flags flags, UserId viaBotId, MsgId replyTo, QDateTime date,
+	                            UserId from, const QString &postAuthor, GameData *game, const MTPReplyMarkup &markup);
 
 	HistoryItem *addNewItem(HistoryItem *adding, bool newMsg);
 	HistoryItem *addNewInTheMiddle(HistoryItem *newItem, qint32 blockIndex, qint32 itemIndex);
@@ -545,10 +559,12 @@ private:
 
 	enum class Flag {
 		f_has_pending_resized_items = (1 << 0),
-		f_pending_resize            = (1 << 1),
+		f_pending_resize = (1 << 1),
 	};
 	using Flags = base::flags<Flag>;
-	friend inline constexpr auto is_flag_type(Flag) { return true; };
+	friend inline constexpr auto is_flag_type(Flag) {
+		return true;
+	};
 
 	Flags _flags = 0;
 	bool _mute = false;
@@ -591,9 +607,9 @@ private:
 	std::unique_ptr<Data::Draft> _editDraft;
 	QVector<FullMsgId> _forwardDraft;
 
-	using TypingUsers = QMap<UserData*, TimeMs>;
+	using TypingUsers = QMap<UserData *, TimeMs>;
 	TypingUsers _typing;
-	using SendActionUsers = QMap<UserData*, SendAction>;
+	using SendActionUsers = QMap<UserData *, SendAction>;
 	SendActionUsers _sendActions;
 	QString _sendActionString;
 	Text _sendActionText;
@@ -601,8 +617,7 @@ private:
 	QMap<SendAction::Type, TimeMs> _mySendActions;
 
 	int _pinnedIndex = 0; // > 0 for pinned dialogs
-
- };
+};
 
 class HistoryJoined;
 class ChannelHistory : public History {
@@ -622,7 +637,7 @@ public:
 
 private:
 	friend class History;
-	HistoryItem* addNewChannelMessage(const MTPMessage &msg, NewMessageType type);
+	HistoryItem *addNewChannelMessage(const MTPMessage &msg, NewMessageType type);
 	HistoryItem *addNewToBlocks(const MTPMessage &msg, NewMessageType type);
 
 	void checkMaxReadMessageDate();
@@ -636,18 +651,17 @@ private:
 	MsgId _rangeDifferenceFromId, _rangeDifferenceToId;
 	qint32 _rangeDifferencePts;
 	mtpRequestId _rangeDifferenceRequestId;
-
 };
 
 class HistoryBlock {
 public:
-	HistoryBlock(not_null<History*> history) : _history(history) {
-	}
+	HistoryBlock(not_null<History *> history)
+	    : _history(history) {}
 
 	HistoryBlock(const HistoryBlock &) = delete;
 	HistoryBlock &operator=(const HistoryBlock &) = delete;
 
-	QVector<HistoryItem*> items;
+	QVector<HistoryItem *> items;
 
 	void clear(bool leaveItems = false);
 	~HistoryBlock() {
@@ -665,7 +679,7 @@ public:
 	int height() const {
 		return _height;
 	}
-	not_null<History*> history() const {
+	not_null<History *> history() const {
 		return _history;
 	}
 
@@ -691,10 +705,9 @@ public:
 	}
 
 protected:
-	const not_null<History*> _history;
+	const not_null<History *> _history;
 
 	int _y = 0;
 	int _height = 0;
 	int _indexInHistory = -1;
-
 };

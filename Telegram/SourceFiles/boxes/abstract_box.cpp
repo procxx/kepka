@@ -18,25 +18,27 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <algorithm>
 #include "boxes/abstract_box.h"
+#include <algorithm>
 
-#include "styles/style_boxes.h"
-#include "styles/style_profile.h"
-#include "storage/localstorage.h"
 #include "lang/lang_keys.h"
-#include "ui/effects/widget_fade_wrap.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/scroll_area.h"
-#include "ui/widgets/labels.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
+#include "styles/style_profile.h"
+#include "ui/effects/widget_fade_wrap.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/labels.h"
+#include "ui/widgets/scroll_area.h"
 
-QPointer<Ui::RoundButton> BoxContent::addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback) {
+QPointer<Ui::RoundButton> BoxContent::addButton(base::lambda<QString()> textFactory,
+                                                base::lambda<void()> clickCallback) {
 	return addButton(std::move(textFactory), std::move(clickCallback), st::defaultBoxButton);
 }
 
-QPointer<Ui::RoundButton> BoxContent::addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback) {
+QPointer<Ui::RoundButton> BoxContent::addLeftButton(base::lambda<QString()> textFactory,
+                                                    base::lambda<void()> clickCallback) {
 	return getDelegate()->addLeftButton(std::move(textFactory), std::move(clickCallback), st::defaultBoxButton);
 }
 
@@ -105,12 +107,13 @@ void BoxContent::onDraggingScrollDelta(int delta) {
 }
 
 void BoxContent::onDraggingScrollTimer() {
-	auto delta = (_draggingScrollDelta > 0) ? std::min(_draggingScrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : std::max(_draggingScrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
+	auto delta = (_draggingScrollDelta > 0) ? std::min(_draggingScrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) :
+	                                          std::max(_draggingScrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + delta);
 }
 
 void BoxContent::updateInnerVisibleTopBottom() {
-	if (auto widget = static_cast<TWidget*>(_scroll ? _scroll->widget() : nullptr)) {
+	if (auto widget = static_cast<TWidget *>(_scroll ? _scroll->widget() : nullptr)) {
 		auto top = _scroll->scrollTop();
 		widget->setVisibleTopBottom(top, top + _scroll->height());
 	}
@@ -210,9 +213,10 @@ void BoxContent::paintEvent(QPaintEvent *e) {
 	}
 }
 
-AbstractBox::AbstractBox(QWidget *parent, Window::Controller *controller, object_ptr<BoxContent> content) : LayerWidget(parent)
-, _controller(controller)
-, _content(std::move(content)) {
+AbstractBox::AbstractBox(QWidget *parent, Window::Controller *controller, object_ptr<BoxContent> content)
+    : LayerWidget(parent)
+    , _controller(controller)
+    , _content(std::move(content)) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 	_content->setParent(this);
 	_content->setDelegate(this);
@@ -263,7 +267,9 @@ void AbstractBox::paintEvent(QPaintEvent *e) {
 void AbstractBox::paintAdditionalTitle(Painter &p) {
 	p.setFont(st::boxLayerTitleAdditionalFont);
 	p.setPen(st::boxTitleAdditionalFg);
-	p.drawTextLeft(_titleLeft + (_title ? _title->width() : 0) + st::boxLayerTitleAdditionalSkip, _titleTop + st::boxTitleFont->ascent - st::boxLayerTitleAdditionalFont->ascent, width(), _additionalTitle);
+	p.drawTextLeft(_titleLeft + (_title ? _title->width() : 0) + st::boxLayerTitleAdditionalSkip,
+	               _titleTop + st::boxTitleFont->ascent - st::boxLayerTitleAdditionalFont->ascent, width(),
+	               _additionalTitle);
 }
 
 void AbstractBox::parentResized() {
@@ -349,7 +355,8 @@ void AbstractBox::clearButtons() {
 	_leftButton.destroy();
 }
 
-QPointer<Ui::RoundButton> AbstractBox::addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) {
+QPointer<Ui::RoundButton> AbstractBox::addButton(base::lambda<QString()> textFactory,
+                                                 base::lambda<void()> clickCallback, const style::RoundButton &st) {
 	_buttons.push_back(object_ptr<Ui::RoundButton>(this, std::move(textFactory), st));
 	auto result = QPointer<Ui::RoundButton>(_buttons.back());
 	result->setClickedCallback(std::move(clickCallback));
@@ -358,7 +365,8 @@ QPointer<Ui::RoundButton> AbstractBox::addButton(base::lambda<QString()> textFac
 	return result;
 }
 
-QPointer<Ui::RoundButton> AbstractBox::addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) {
+QPointer<Ui::RoundButton> AbstractBox::addLeftButton(base::lambda<QString()> textFactory,
+                                                     base::lambda<void()> clickCallback, const style::RoundButton &st) {
 	_leftButton = object_ptr<Ui::RoundButton>(this, std::move(textFactory), st);
 	auto result = QPointer<Ui::RoundButton>(_leftButton);
 	result->setClickedCallback(std::move(clickCallback));
@@ -379,7 +387,8 @@ void AbstractBox::setDimensions(int newWidth, int maxHeight) {
 			auto newGeometry = geometry();
 			auto parentHeight = parentWidget()->height();
 			if (newGeometry.top() + newGeometry.height() + st::boxVerticalMargin > parentHeight) {
-				auto newTop = std::max(parentHeight - int(st::boxVerticalMargin) - newGeometry.height(), (parentHeight - newGeometry.height()) / 2);
+				auto newTop = std::max(parentHeight - int(st::boxVerticalMargin) - newGeometry.height(),
+				                       (parentHeight - newGeometry.height()) / 2);
 				if (newTop != newGeometry.top()) {
 					move(newGeometry.left(), newTop);
 				}
@@ -422,11 +431,11 @@ void AbstractBox::keyPressEvent(QKeyEvent *e) {
 	}
 }
 
-BoxLayerTitleShadow::BoxLayerTitleShadow(QWidget *parent) : Ui::PlainShadow(parent, st::boxLayerTitleShadow) {
-}
+BoxLayerTitleShadow::BoxLayerTitleShadow(QWidget *parent)
+    : Ui::PlainShadow(parent, st::boxLayerTitleShadow) {}
 
-BoxContentDivider::BoxContentDivider(QWidget *parent) : TWidget(parent) {
-}
+BoxContentDivider::BoxContentDivider(QWidget *parent)
+    : TWidget(parent) {}
 
 int BoxContentDivider::resizeGetHeight(int newWidth) {
 	return st::rightsDividerHeight;
@@ -437,6 +446,7 @@ void BoxContentDivider::paintEvent(QPaintEvent *e) {
 	p.fillRect(e->rect(), st::contactsAboutBg);
 	auto dividerFillTop = myrtlrect(0, 0, width(), st::profileDividerTop.height());
 	st::profileDividerTop.fill(p, dividerFillTop);
-	auto dividerFillBottom = myrtlrect(0, height() - st::profileDividerBottom.height(), width(), st::profileDividerBottom.height());
+	auto dividerFillBottom =
+	    myrtlrect(0, height() - st::profileDividerBottom.height(), width(), st::profileDividerBottom.height());
 	st::profileDividerBottom.fill(p, dividerFillBottom);
 }

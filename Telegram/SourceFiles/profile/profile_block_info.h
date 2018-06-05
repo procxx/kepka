@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "mtproto/rpc_sender.h"
 #include "profile/profile_block_widget.h"
 #include "ui/text/text_entity.h"
-#include "mtproto/rpc_sender.h"
 
 namespace style {
 struct FlatLabel;
@@ -61,22 +61,22 @@ private:
 
 	// labelWidget may be nullptr.
 	void setLabeledText(object_ptr<Ui::FlatLabel> *labelWidget, const QString &label,
-		object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities,
-		const style::FlatLabel &st, const QString &copyText);
+	                    object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities,
+	                    const style::FlatLabel &st, const QString &copyText);
 	void setSingleLineLabeledText(object_ptr<Ui::FlatLabel> *labelWidget, const QString &label,
-		object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities, const QString &copyText);
+	                              object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities,
+	                              const QString &copyText);
 
-	object_ptr<Ui::FlatLabel> _about = { nullptr };
-	object_ptr<Ui::FlatLabel> _channelLinkLabel = { nullptr };
-	object_ptr<Ui::FlatLabel> _channelLink = { nullptr };
-	object_ptr<Ui::FlatLabel> _channelLinkShort = { nullptr };
-	object_ptr<Ui::FlatLabel> _mobileNumberLabel = { nullptr };
-	object_ptr<Ui::FlatLabel> _mobileNumber = { nullptr };
-	object_ptr<Ui::FlatLabel> _bioLabel = { nullptr };
-	object_ptr<Ui::FlatLabel> _bio = { nullptr };
-	object_ptr<Ui::FlatLabel> _usernameLabel = { nullptr };
-	object_ptr<Ui::FlatLabel> _username = { nullptr };
-
+	object_ptr<Ui::FlatLabel> _about = {nullptr};
+	object_ptr<Ui::FlatLabel> _channelLinkLabel = {nullptr};
+	object_ptr<Ui::FlatLabel> _channelLink = {nullptr};
+	object_ptr<Ui::FlatLabel> _channelLinkShort = {nullptr};
+	object_ptr<Ui::FlatLabel> _mobileNumberLabel = {nullptr};
+	object_ptr<Ui::FlatLabel> _mobileNumber = {nullptr};
+	object_ptr<Ui::FlatLabel> _bioLabel = {nullptr};
+	object_ptr<Ui::FlatLabel> _bio = {nullptr};
+	object_ptr<Ui::FlatLabel> _usernameLabel = {nullptr};
+	object_ptr<Ui::FlatLabel> _username = {nullptr};
 };
 
 } // namespace Profile

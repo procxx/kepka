@@ -19,8 +19,8 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "media/view/media_clip_playback.h"
-#include "styles/style_mediaview.h"
 #include "media/media_audio.h"
+#include "styles/style_mediaview.h"
 
 namespace Media {
 namespace Clip {
@@ -30,8 +30,8 @@ constexpr auto kPlaybackAnimationDurationMs = TimeMs(200);
 
 } // namespace
 
-Playback::Playback() : _a_value(animation(this, &Playback::step_value)) {
-}
+Playback::Playback()
+    : _a_value(animation(this, &Playback::step_value)) {}
 
 void Playback::updateState(const Player::TrackState &state) {
 	qint64 position = 0, length = state.length;

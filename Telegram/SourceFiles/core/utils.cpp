@@ -18,19 +18,19 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include "core/utils.h"
+#include <QMimeDatabase>
 #include <QMutex>
 #include <QThread>
-#include <QMimeDatabase>
-#include "core/utils.h"
 
+#include <QSslSocket>
+#include <openssl/conf.h>
 #include <openssl/crypto.h>
-#include <openssl/sha.h>
+#include <openssl/engine.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/engine.h>
-#include <openssl/conf.h>
+#include <openssl/sha.h>
 #include <openssl/ssl.h>
-#include <QSslSocket>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -40,7 +40,7 @@ extern "C" {
 #include "application.h"
 #include "platform/platform_specific.h"
 
-quint64 _SharedMemoryLocation[4] = { 0x00, 0x01, 0x02, 0x03 };
+quint64 _SharedMemoryLocation[4] = {0x00, 0x01, 0x02, 0x03};
 
 #ifdef Q_OS_WIN
 #elif defined Q_OS_MAC
@@ -74,30 +74,30 @@ static_assert(sizeof(MTPdouble) == 8, "Basic types size check failed");
 // Unixtime functions
 
 namespace {
-	QReadWriteLock unixtimeLock;
-	volatile qint32 unixtimeDelta = 0;
-	volatile bool unixtimeWasSet = false;
-    volatile quint64 _msgIdStart, _msgIdLocal = 0, _msgIdMsStart;
-	qint32 _reqId = 0;
+QReadWriteLock unixtimeLock;
+volatile qint32 unixtimeDelta = 0;
+volatile bool unixtimeWasSet = false;
+volatile quint64 _msgIdStart, _msgIdLocal = 0, _msgIdMsStart;
+qint32 _reqId = 0;
 
-	void _initMsgIdConstants() {
+void _initMsgIdConstants() {
 #ifdef Q_OS_WIN
-		LARGE_INTEGER li;
-		QueryPerformanceCounter(&li);
-		_msgIdMsStart = li.QuadPart;
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
+	_msgIdMsStart = li.QuadPart;
 #elif defined Q_OS_MAC
-		_msgIdMsStart = mach_absolute_time();
+	_msgIdMsStart = mach_absolute_time();
 #else
-		timespec ts;
-		clock_gettime(CLOCK_REALTIME, &ts);
-		_msgIdMsStart = 1000000000 * quint64(ts.tv_sec) + quint64(ts.tv_nsec);
+	timespec ts;
+	clock_gettime(CLOCK_REALTIME, &ts);
+	_msgIdMsStart = 1000000000 * quint64(ts.tv_sec) + quint64(ts.tv_nsec);
 #endif
 
-		quint32 msgIdRand;
-		memset_rand(&msgIdRand, sizeof(quint32));
-		_msgIdStart = (((quint64)((quint32)unixtime()) << 32) | (quint64)msgIdRand);
-	}
+	quint32 msgIdRand;
+	memset_rand(&msgIdRand, sizeof(quint32));
+	_msgIdStart = (((quint64)((quint32)unixtime()) << 32) | (quint64)msgIdRand);
 }
+} // namespace
 
 TimeId myunixtime() {
 	return (TimeId)time(NULL);
@@ -156,177 +156,178 @@ struct CRYPTO_dynlock_value {
 };
 
 namespace {
-	bool _sslInited = false;
-	QMutex *_sslLocks = nullptr;
-	void _sslLockingCallback(int mode, int type, const char *file, int line) {
-		if (!_sslLocks) return; // not inited
+bool _sslInited = false;
+QMutex *_sslLocks = nullptr;
+void _sslLockingCallback(int mode, int type, const char *file, int line) {
+	if (!_sslLocks) return; // not inited
 
-		if (mode & CRYPTO_LOCK) {
-			_sslLocks[type].lock();
-		} else {
-			_sslLocks[type].unlock();
-		}
+	if (mode & CRYPTO_LOCK) {
+		_sslLocks[type].lock();
+	} else {
+		_sslLocks[type].unlock();
 	}
-	void _sslThreadId(CRYPTO_THREADID *id) {
-		CRYPTO_THREADID_set_pointer(id, QThread::currentThreadId());
-	}
-	CRYPTO_dynlock_value *_sslCreateFunction(const char *file, int line) {
-		return new CRYPTO_dynlock_value();
-	}
-	void _sslLockFunction(int mode, CRYPTO_dynlock_value *l, const char *file, int line) {
-		if (mode & CRYPTO_LOCK) {
-			l->mutex.lock();
-		} else {
-			l->mutex.unlock();
-		}
-	}
-	void _sslDestroyFunction(CRYPTO_dynlock_value *l, const char *file, int line) {
-		delete l;
-	}
-
-	int _ffmpegLockManager(void **mutex, AVLockOp op) {
-		switch (op) {
-		case AV_LOCK_CREATE: {
-			Assert(*mutex == 0);
-			*mutex = reinterpret_cast<void*>(new QMutex());
-		} break;
-
-		case AV_LOCK_OBTAIN: {
-			Assert(*mutex != 0);
-			reinterpret_cast<QMutex*>(*mutex)->lock();
-		} break;
-
-		case AV_LOCK_RELEASE: {
-			Assert(*mutex != 0);
-			reinterpret_cast<QMutex*>(*mutex)->unlock();
-		}; break;
-
-		case AV_LOCK_DESTROY: {
-			Assert(*mutex != 0);
-			delete reinterpret_cast<QMutex*>(*mutex);
-			*mutex = 0;
-		} break;
-		}
-		return 0;
-	}
-
-	double _msFreq;
-	double _msgIdCoef;
-	TimeMs _msStart = 0, _msAddToMsStart = 0, _msAddToUnixtime = 0;
-	qint32 _timeStart = 0;
-
-	class _MsInitializer {
-	public:
-		_MsInitializer() {
-#ifdef Q_OS_WIN
-			LARGE_INTEGER li;
-			QueryPerformanceFrequency(&li);
-            _msFreq = 1000. / double(li.QuadPart);
-
-			// 0xFFFF0000L istead of 0x100000000L to make msgId grow slightly slower, than unixtime and we had time to reconfigure
-			_msgIdCoef = double(0xFFFF0000L) / double(li.QuadPart);
-
-			QueryPerformanceCounter(&li);
-			_msStart = li.QuadPart;
-#elif defined Q_OS_MAC
-            mach_timebase_info_data_t tb = { 0, 0 };
-            mach_timebase_info(&tb);
-            _msFreq = (double(tb.numer) / tb.denom) / 1000000.;
-
-            _msgIdCoef = _msFreq * (double(0xFFFF0000L) / 1000.);
-
-            _msStart = mach_absolute_time();
-#else
-            timespec ts;
-            clock_gettime(CLOCK_MONOTONIC, &ts);
-            //_msFreq = 1 / 1000000.;
-            _msgIdCoef = double(0xFFFF0000L) / 1000000000.;
-            _msStart = 1000LL * static_cast<TimeMs>(ts.tv_sec) + (static_cast<TimeMs>(ts.tv_nsec) / 1000000LL);
-#endif
-			_timeStart = myunixtime();
-			srand((quint32)(_msStart & 0xFFFFFFFFL));
-		}
-	};
-
-	void _msInitialize() {
-		static _MsInitializer _msInitializer;
-	}
-
-	class _MsStarter {
-	public:
-		_MsStarter() {
-			getms();
-		}
-	};
-	_MsStarter _msStarter;
 }
+void _sslThreadId(CRYPTO_THREADID *id) {
+	CRYPTO_THREADID_set_pointer(id, QThread::currentThreadId());
+}
+CRYPTO_dynlock_value *_sslCreateFunction(const char *file, int line) {
+	return new CRYPTO_dynlock_value();
+}
+void _sslLockFunction(int mode, CRYPTO_dynlock_value *l, const char *file, int line) {
+	if (mode & CRYPTO_LOCK) {
+		l->mutex.lock();
+	} else {
+		l->mutex.unlock();
+	}
+}
+void _sslDestroyFunction(CRYPTO_dynlock_value *l, const char *file, int line) {
+	delete l;
+}
+
+int _ffmpegLockManager(void **mutex, AVLockOp op) {
+	switch (op) {
+	case AV_LOCK_CREATE: {
+		Assert(*mutex == 0);
+		*mutex = reinterpret_cast<void *>(new QMutex());
+	} break;
+
+	case AV_LOCK_OBTAIN: {
+		Assert(*mutex != 0);
+		reinterpret_cast<QMutex *>(*mutex)->lock();
+	} break;
+
+	case AV_LOCK_RELEASE: {
+		Assert(*mutex != 0);
+		reinterpret_cast<QMutex *>(*mutex)->unlock();
+	}; break;
+
+	case AV_LOCK_DESTROY: {
+		Assert(*mutex != 0);
+		delete reinterpret_cast<QMutex *>(*mutex);
+		*mutex = 0;
+	} break;
+	}
+	return 0;
+}
+
+double _msFreq;
+double _msgIdCoef;
+TimeMs _msStart = 0, _msAddToMsStart = 0, _msAddToUnixtime = 0;
+qint32 _timeStart = 0;
+
+class _MsInitializer {
+public:
+	_MsInitializer() {
+#ifdef Q_OS_WIN
+		LARGE_INTEGER li;
+		QueryPerformanceFrequency(&li);
+		_msFreq = 1000. / double(li.QuadPart);
+
+		// 0xFFFF0000L istead of 0x100000000L to make msgId grow slightly slower, than unixtime and we had time to
+		// reconfigure
+		_msgIdCoef = double(0xFFFF0000L) / double(li.QuadPart);
+
+		QueryPerformanceCounter(&li);
+		_msStart = li.QuadPart;
+#elif defined Q_OS_MAC
+		mach_timebase_info_data_t tb = {0, 0};
+		mach_timebase_info(&tb);
+		_msFreq = (double(tb.numer) / tb.denom) / 1000000.;
+
+		_msgIdCoef = _msFreq * (double(0xFFFF0000L) / 1000.);
+
+		_msStart = mach_absolute_time();
+#else
+		timespec ts;
+		clock_gettime(CLOCK_MONOTONIC, &ts);
+		//_msFreq = 1 / 1000000.;
+		_msgIdCoef = double(0xFFFF0000L) / 1000000000.;
+		_msStart = 1000LL * static_cast<TimeMs>(ts.tv_sec) + (static_cast<TimeMs>(ts.tv_nsec) / 1000000LL);
+#endif
+		_timeStart = myunixtime();
+		srand((quint32)(_msStart & 0xFFFFFFFFL));
+	}
+};
+
+void _msInitialize() {
+	static _MsInitializer _msInitializer;
+}
+
+class _MsStarter {
+public:
+	_MsStarter() {
+		getms();
+	}
+};
+_MsStarter _msStarter;
+} // namespace
 
 namespace ThirdParty {
 
-	void start() {
-		Platform::ThirdParty::start();
+void start() {
+	Platform::ThirdParty::start();
 
-		if (!RAND_status()) { // should be always inited in all modern OS
-			char buf[16];
-			memcpy(buf, &_msStart, 8);
-			memcpy(buf + 8, &_msFreq, 8);
-			uchar sha256Buffer[32];
-			RAND_seed(hashSha256(buf, 16, sha256Buffer), 32);
-			if (!RAND_status()) {
-				LOG(("MTP Error: Could not init OpenSSL rand, RAND_status() is 0..."));
-			}
+	if (!RAND_status()) { // should be always inited in all modern OS
+		char buf[16];
+		memcpy(buf, &_msStart, 8);
+		memcpy(buf + 8, &_msFreq, 8);
+		uchar sha256Buffer[32];
+		RAND_seed(hashSha256(buf, 16, sha256Buffer), 32);
+		if (!RAND_status()) {
+			LOG(("MTP Error: Could not init OpenSSL rand, RAND_status() is 0..."));
 		}
-
-		// Force OpenSSL loading if it is linked in Qt,
-		// so that we won't mess with our OpenSSL locking with Qt OpenSSL locking.
-		auto sslSupported = QSslSocket::supportsSsl();
-		if (!sslSupported) {
-			LOG(("Error: current Qt build doesn't support SSL requests."));
-		}
-		if (!CRYPTO_get_locking_callback()) {
-			// Qt didn't initialize OpenSSL, so we will.
-			auto numLocks = CRYPTO_num_locks();
-			if (numLocks) {
-				_sslLocks = new QMutex[numLocks];
-				CRYPTO_set_locking_callback(_sslLockingCallback);
-			} else {
-				LOG(("MTP Error: Could not init OpenSSL threads, CRYPTO_num_locks() returned zero!"));
-			}
-			CRYPTO_THREADID_set_callback(_sslThreadId);
-		}
-		if (!CRYPTO_get_dynlock_create_callback()) {
-			CRYPTO_set_dynlock_create_callback(_sslCreateFunction);
-			CRYPTO_set_dynlock_lock_callback(_sslLockFunction);
-			CRYPTO_set_dynlock_destroy_callback(_sslDestroyFunction);
-		} else if (!CRYPTO_get_dynlock_lock_callback()) {
-			LOG(("MTP Error: dynlock_create callback is set without dynlock_lock callback!"));
-		}
-
-		av_register_all();
-		avcodec_register_all();
-
-		av_lockmgr_register(_ffmpegLockManager);
-
-		_sslInited = true;
 	}
 
-	void finish() {
-		av_lockmgr_register(nullptr);
-
-		CRYPTO_cleanup_all_ex_data();
-		// FIPS_mode_set(0);
-		ENGINE_cleanup();
-		CONF_modules_unload(1);
-		ERR_remove_state(0);
-		ERR_free_strings();
-		ERR_remove_thread_state(nullptr);
-		EVP_cleanup();
-
-		delete[] base::take(_sslLocks);
-
-		Platform::ThirdParty::finish();
+	// Force OpenSSL loading if it is linked in Qt,
+	// so that we won't mess with our OpenSSL locking with Qt OpenSSL locking.
+	auto sslSupported = QSslSocket::supportsSsl();
+	if (!sslSupported) {
+		LOG(("Error: current Qt build doesn't support SSL requests."));
 	}
+	if (!CRYPTO_get_locking_callback()) {
+		// Qt didn't initialize OpenSSL, so we will.
+		auto numLocks = CRYPTO_num_locks();
+		if (numLocks) {
+			_sslLocks = new QMutex[numLocks];
+			CRYPTO_set_locking_callback(_sslLockingCallback);
+		} else {
+			LOG(("MTP Error: Could not init OpenSSL threads, CRYPTO_num_locks() returned zero!"));
+		}
+		CRYPTO_THREADID_set_callback(_sslThreadId);
+	}
+	if (!CRYPTO_get_dynlock_create_callback()) {
+		CRYPTO_set_dynlock_create_callback(_sslCreateFunction);
+		CRYPTO_set_dynlock_lock_callback(_sslLockFunction);
+		CRYPTO_set_dynlock_destroy_callback(_sslDestroyFunction);
+	} else if (!CRYPTO_get_dynlock_lock_callback()) {
+		LOG(("MTP Error: dynlock_create callback is set without dynlock_lock callback!"));
+	}
+
+	av_register_all();
+	avcodec_register_all();
+
+	av_lockmgr_register(_ffmpegLockManager);
+
+	_sslInited = true;
 }
+
+void finish() {
+	av_lockmgr_register(nullptr);
+
+	CRYPTO_cleanup_all_ex_data();
+	// FIPS_mode_set(0);
+	ENGINE_cleanup();
+	CONF_modules_unload(1);
+	ERR_remove_state(0);
+	ERR_free_strings();
+	ERR_remove_thread_state(nullptr);
+	EVP_cleanup();
+
+	delete[] base::take(_sslLocks);
+
+	Platform::ThirdParty::finish();
+}
+} // namespace ThirdParty
 
 bool checkms() {
 	auto unixms = (myunixtime() - _timeStart) * 1000LL + _msAddToUnixtime;
@@ -342,39 +343,39 @@ bool checkms() {
 }
 
 TimeMs getms(bool checked) {
-    _msInitialize();
+	_msInitialize();
 #ifdef Q_OS_WIN
-    LARGE_INTEGER li;
-    QueryPerformanceCounter(&li);
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
 	return ((li.QuadPart - _msStart) * _msFreq) + (checked ? _msAddToMsStart : 0LL);
 #elif defined Q_OS_MAC
 	auto msCount = static_cast<TimeMs>(mach_absolute_time());
 	return ((msCount - _msStart) * _msFreq) + (checked ? _msAddToMsStart : 0LL);
 #else
-    timespec ts;
-    auto res = clock_gettime(CLOCK_MONOTONIC, &ts);
-    if (res != 0) {
-        LOG(("Bad clock_gettime result: %1").arg(res));
-        return 0;
-    }
-    auto msCount = 1000LL * static_cast<TimeMs>(ts.tv_sec) + (static_cast<TimeMs>(ts.tv_nsec) / 1000000LL);
-    return (msCount - _msStart) + (checked ? _msAddToMsStart : 0LL);
+	timespec ts;
+	auto res = clock_gettime(CLOCK_MONOTONIC, &ts);
+	if (res != 0) {
+		LOG(("Bad clock_gettime result: %1").arg(res));
+		return 0;
+	}
+	auto msCount = 1000LL * static_cast<TimeMs>(ts.tv_sec) + (static_cast<TimeMs>(ts.tv_nsec) / 1000000LL);
+	return (msCount - _msStart) + (checked ? _msAddToMsStart : 0LL);
 #endif
 }
 
 quint64 msgid() {
 #ifdef Q_OS_WIN
-    LARGE_INTEGER li;
-    QueryPerformanceCounter(&li);
-    quint64 result = _msgIdStart + (quint64)floor((li.QuadPart - _msgIdMsStart) * _msgIdCoef);
+	LARGE_INTEGER li;
+	QueryPerformanceCounter(&li);
+	quint64 result = _msgIdStart + (quint64)floor((li.QuadPart - _msgIdMsStart) * _msgIdCoef);
 #elif defined Q_OS_MAC
-    quint64 msCount = mach_absolute_time();
-    quint64 result = _msgIdStart + (quint64)floor((msCount - _msgIdMsStart) * _msgIdCoef);
+	quint64 msCount = mach_absolute_time();
+	quint64 result = _msgIdStart + (quint64)floor((msCount - _msgIdMsStart) * _msgIdCoef);
 #else
-    timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    quint64 msCount = 1000000000 * quint64(ts.tv_sec) + quint64(ts.tv_nsec);
-    quint64 result = _msgIdStart + (quint64)floor((msCount - _msgIdMsStart) * _msgIdCoef);
+	timespec ts;
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	quint64 msCount = 1000000000 * quint64(ts.tv_sec) + quint64(ts.tv_nsec);
+	quint64 result = _msgIdStart + (quint64)floor((msCount - _msgIdMsStart) * _msgIdCoef);
 #endif
 
 	result &= ~0x03L;
@@ -393,33 +394,33 @@ qint32 reqid() {
 // crc32 hash, taken somewhere from the internet
 
 namespace {
-	quint32 _crc32Table[256];
-	class _Crc32Initializer {
-	public:
-		_Crc32Initializer() {
-			quint32 poly = 0x04c11db7;
-			for (quint32 i = 0; i < 256; ++i) {
-				_crc32Table[i] = reflect(i, 8) << 24;
-				for (quint32 j = 0; j < 8; ++j) {
-					_crc32Table[i] = (_crc32Table[i] << 1) ^ (_crc32Table[i] & (1 << 31) ? poly : 0);
-				}
-				_crc32Table[i] = reflect(_crc32Table[i], 32);
+quint32 _crc32Table[256];
+class _Crc32Initializer {
+public:
+	_Crc32Initializer() {
+		quint32 poly = 0x04c11db7;
+		for (quint32 i = 0; i < 256; ++i) {
+			_crc32Table[i] = reflect(i, 8) << 24;
+			for (quint32 j = 0; j < 8; ++j) {
+				_crc32Table[i] = (_crc32Table[i] << 1) ^ (_crc32Table[i] & (1 << 31) ? poly : 0);
 			}
+			_crc32Table[i] = reflect(_crc32Table[i], 32);
 		}
+	}
 
-	private:
-		quint32 reflect(quint32 val, char ch) {
-			quint32 result = 0;
-			for (int i = 1; i < (ch + 1); ++i) {
-				if (val & 1) {
-					result |= 1 << (ch - i);
-				}
-				val >>= 1;
+private:
+	quint32 reflect(quint32 val, char ch) {
+		quint32 result = 0;
+		for (int i = 1; i < (ch + 1); ++i) {
+			if (val & 1) {
+				result |= 1 << (ch - i);
 			}
-			return result;
+			val >>= 1;
 		}
-	};
-}
+		return result;
+	}
+};
+} // namespace
 
 qint32 hashCrc32(const void *data, quint32 len) {
 	static _Crc32Initializer _crc32Initializer;
@@ -427,84 +428,84 @@ qint32 hashCrc32(const void *data, quint32 len) {
 	const uchar *buf = (const uchar *)data;
 
 	quint32 crc(0xffffffff);
-    for (quint32 i = 0; i < len; ++i) {
+	for (quint32 i = 0; i < len; ++i) {
 		crc = (crc >> 8) ^ _crc32Table[(crc & 0xFF) ^ buf[i]];
 	}
 
-    return crc ^ 0xffffffff;
+	return crc ^ 0xffffffff;
 }
 
 qint32 *hashSha1(const void *data, quint32 len, void *dest) {
-	return (qint32*)SHA1((const uchar*)data, (size_t)len, (uchar*)dest);
+	return (qint32 *)SHA1((const uchar *)data, (size_t)len, (uchar *)dest);
 }
 
 qint32 *hashSha256(const void *data, quint32 len, void *dest) {
-	return (qint32*)SHA256((const uchar*)data, (size_t)len, (uchar*)dest);
+	return (qint32 *)SHA256((const uchar *)data, (size_t)len, (uchar *)dest);
 }
 
 // md5 hash, taken somewhere from the internet
 
 namespace {
 
-	inline void _md5_decode(quint32 *output, const uchar *input, quint32 len) {
-		for (quint32 i = 0, j = 0; j < len; i++, j += 4) {
-			output[i] = ((quint32)input[j]) | (((quint32)input[j + 1]) << 8) | (((quint32)input[j + 2]) << 16) | (((quint32)input[j + 3]) << 24);
-		}
+inline void _md5_decode(quint32 *output, const uchar *input, quint32 len) {
+	for (quint32 i = 0, j = 0; j < len; i++, j += 4) {
+		output[i] = ((quint32)input[j]) | (((quint32)input[j + 1]) << 8) | (((quint32)input[j + 2]) << 16) |
+		            (((quint32)input[j + 3]) << 24);
 	}
-
-	inline void _md5_encode(uchar *output, const quint32 *input, quint32 len) {
-		for (quint32 i = 0, j = 0; j < len; i++, j += 4) {
-			output[j + 0] = (input[i]) & 0xFF;
-			output[j + 1] = (input[i] >> 8) & 0xFF;
-			output[j + 2] = (input[i] >> 16) & 0xFF;
-			output[j + 3] = (input[i] >> 24) & 0xFF;
-		}
-	}
-
-	inline quint32 _md5_rotate_left(quint32 x, int n) {
-		return (x << n) | (x >> (32 - n));
-	}
-
-	inline quint32 _md5_F(quint32 x, quint32 y, quint32 z) {
-		return (x & y) | (~x & z);
-	}
-
-	inline quint32 _md5_G(quint32 x, quint32 y, quint32 z) {
-		return (x & z) | (y & ~z);
-	}
-
-	inline quint32 _md5_H(quint32 x, quint32 y, quint32 z) {
-		return x ^ y ^ z;
-	}
-
-	inline quint32 _md5_I(quint32 x, quint32 y, quint32 z) {
-		return y ^ (x | ~z);
-	}
-
-	inline void _md5_FF(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
-		a = _md5_rotate_left(a + _md5_F(b, c, d) + x + ac, s) + b;
-	}
-
-	inline void _md5_GG(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
-		a = _md5_rotate_left(a + _md5_G(b, c, d) + x + ac, s) + b;
-	}
-
-	inline void _md5_HH(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
-		a = _md5_rotate_left(a + _md5_H(b, c, d) + x + ac, s) + b;
-	}
-
-	inline void _md5_II(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
-		a = _md5_rotate_left(a + _md5_I(b, c, d) + x + ac, s) + b;
-	}
-
-	static uchar _md5_padding[64] = {
-		0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-	};
 }
 
-HashMd5::HashMd5(const void *input, quint32 length) : _finalized(false) {
+inline void _md5_encode(uchar *output, const quint32 *input, quint32 len) {
+	for (quint32 i = 0, j = 0; j < len; i++, j += 4) {
+		output[j + 0] = (input[i]) & 0xFF;
+		output[j + 1] = (input[i] >> 8) & 0xFF;
+		output[j + 2] = (input[i] >> 16) & 0xFF;
+		output[j + 3] = (input[i] >> 24) & 0xFF;
+	}
+}
+
+inline quint32 _md5_rotate_left(quint32 x, int n) {
+	return (x << n) | (x >> (32 - n));
+}
+
+inline quint32 _md5_F(quint32 x, quint32 y, quint32 z) {
+	return (x & y) | (~x & z);
+}
+
+inline quint32 _md5_G(quint32 x, quint32 y, quint32 z) {
+	return (x & z) | (y & ~z);
+}
+
+inline quint32 _md5_H(quint32 x, quint32 y, quint32 z) {
+	return x ^ y ^ z;
+}
+
+inline quint32 _md5_I(quint32 x, quint32 y, quint32 z) {
+	return y ^ (x | ~z);
+}
+
+inline void _md5_FF(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
+	a = _md5_rotate_left(a + _md5_F(b, c, d) + x + ac, s) + b;
+}
+
+inline void _md5_GG(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
+	a = _md5_rotate_left(a + _md5_G(b, c, d) + x + ac, s) + b;
+}
+
+inline void _md5_HH(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
+	a = _md5_rotate_left(a + _md5_H(b, c, d) + x + ac, s) + b;
+}
+
+inline void _md5_II(quint32 &a, quint32 b, quint32 c, quint32 d, quint32 x, quint32 s, quint32 ac) {
+	a = _md5_rotate_left(a + _md5_I(b, c, d) + x + ac, s) + b;
+}
+
+static uchar _md5_padding[64] = {0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+} // namespace
+
+HashMd5::HashMd5(const void *input, quint32 length)
+    : _finalized(false) {
 	init();
 	if (input && length > 0) feed(input, length);
 }
@@ -541,7 +542,7 @@ void HashMd5::feed(const void *input, quint32 length) {
 
 qint32 *HashMd5::result() {
 	if (!_finalized) finalize();
-	return (qint32*)_digest;
+	return (qint32 *)_digest;
 }
 
 void HashMd5::init() {
@@ -573,73 +574,73 @@ void HashMd5::transform(const uchar *block) {
 	quint32 a = _state[0], b = _state[1], c = _state[2], d = _state[3], x[16];
 	_md5_decode(x, block, _md5_block_size);
 
-	_md5_FF(a, b, c, d, x[0] , 7 , 0xd76aa478);
-	_md5_FF(d, a, b, c, x[1] , 12, 0xe8c7b756);
-	_md5_FF(c, d, a, b, x[2] , 17, 0x242070db);
-	_md5_FF(b, c, d, a, x[3] , 22, 0xc1bdceee);
-	_md5_FF(a, b, c, d, x[4] , 7 , 0xf57c0faf);
-	_md5_FF(d, a, b, c, x[5] , 12, 0x4787c62a);
-	_md5_FF(c, d, a, b, x[6] , 17, 0xa8304613);
-	_md5_FF(b, c, d, a, x[7] , 22, 0xfd469501);
-	_md5_FF(a, b, c, d, x[8] , 7 , 0x698098d8);
-	_md5_FF(d, a, b, c, x[9] , 12, 0x8b44f7af);
+	_md5_FF(a, b, c, d, x[0], 7, 0xd76aa478);
+	_md5_FF(d, a, b, c, x[1], 12, 0xe8c7b756);
+	_md5_FF(c, d, a, b, x[2], 17, 0x242070db);
+	_md5_FF(b, c, d, a, x[3], 22, 0xc1bdceee);
+	_md5_FF(a, b, c, d, x[4], 7, 0xf57c0faf);
+	_md5_FF(d, a, b, c, x[5], 12, 0x4787c62a);
+	_md5_FF(c, d, a, b, x[6], 17, 0xa8304613);
+	_md5_FF(b, c, d, a, x[7], 22, 0xfd469501);
+	_md5_FF(a, b, c, d, x[8], 7, 0x698098d8);
+	_md5_FF(d, a, b, c, x[9], 12, 0x8b44f7af);
 	_md5_FF(c, d, a, b, x[10], 17, 0xffff5bb1);
 	_md5_FF(b, c, d, a, x[11], 22, 0x895cd7be);
-	_md5_FF(a, b, c, d, x[12], 7 , 0x6b901122);
+	_md5_FF(a, b, c, d, x[12], 7, 0x6b901122);
 	_md5_FF(d, a, b, c, x[13], 12, 0xfd987193);
 	_md5_FF(c, d, a, b, x[14], 17, 0xa679438e);
 	_md5_FF(b, c, d, a, x[15], 22, 0x49b40821);
 
-	_md5_GG(a, b, c, d, x[1] , 5 , 0xf61e2562);
-	_md5_GG(d, a, b, c, x[6] , 9 , 0xc040b340);
+	_md5_GG(a, b, c, d, x[1], 5, 0xf61e2562);
+	_md5_GG(d, a, b, c, x[6], 9, 0xc040b340);
 	_md5_GG(c, d, a, b, x[11], 14, 0x265e5a51);
-	_md5_GG(b, c, d, a, x[0] , 20, 0xe9b6c7aa);
-	_md5_GG(a, b, c, d, x[5] , 5 , 0xd62f105d);
-	_md5_GG(d, a, b, c, x[10], 9 , 0x2441453);
+	_md5_GG(b, c, d, a, x[0], 20, 0xe9b6c7aa);
+	_md5_GG(a, b, c, d, x[5], 5, 0xd62f105d);
+	_md5_GG(d, a, b, c, x[10], 9, 0x2441453);
 	_md5_GG(c, d, a, b, x[15], 14, 0xd8a1e681);
-	_md5_GG(b, c, d, a, x[4] , 20, 0xe7d3fbc8);
-	_md5_GG(a, b, c, d, x[9] , 5 , 0x21e1cde6);
-	_md5_GG(d, a, b, c, x[14], 9 , 0xc33707d6);
-	_md5_GG(c, d, a, b, x[3] , 14, 0xf4d50d87);
-	_md5_GG(b, c, d, a, x[8] , 20, 0x455a14ed);
-	_md5_GG(a, b, c, d, x[13], 5 , 0xa9e3e905);
-	_md5_GG(d, a, b, c, x[2] , 9 , 0xfcefa3f8);
-	_md5_GG(c, d, a, b, x[7] , 14, 0x676f02d9);
+	_md5_GG(b, c, d, a, x[4], 20, 0xe7d3fbc8);
+	_md5_GG(a, b, c, d, x[9], 5, 0x21e1cde6);
+	_md5_GG(d, a, b, c, x[14], 9, 0xc33707d6);
+	_md5_GG(c, d, a, b, x[3], 14, 0xf4d50d87);
+	_md5_GG(b, c, d, a, x[8], 20, 0x455a14ed);
+	_md5_GG(a, b, c, d, x[13], 5, 0xa9e3e905);
+	_md5_GG(d, a, b, c, x[2], 9, 0xfcefa3f8);
+	_md5_GG(c, d, a, b, x[7], 14, 0x676f02d9);
 	_md5_GG(b, c, d, a, x[12], 20, 0x8d2a4c8a);
 
-	_md5_HH(a, b, c, d, x[5] , 4 , 0xfffa3942);
-	_md5_HH(d, a, b, c, x[8] , 11, 0x8771f681);
+	_md5_HH(a, b, c, d, x[5], 4, 0xfffa3942);
+	_md5_HH(d, a, b, c, x[8], 11, 0x8771f681);
 	_md5_HH(c, d, a, b, x[11], 16, 0x6d9d6122);
 	_md5_HH(b, c, d, a, x[14], 23, 0xfde5380c);
-	_md5_HH(a, b, c, d, x[1] , 4 , 0xa4beea44);
-	_md5_HH(d, a, b, c, x[4] , 11, 0x4bdecfa9);
-	_md5_HH(c, d, a, b, x[7] , 16, 0xf6bb4b60);
+	_md5_HH(a, b, c, d, x[1], 4, 0xa4beea44);
+	_md5_HH(d, a, b, c, x[4], 11, 0x4bdecfa9);
+	_md5_HH(c, d, a, b, x[7], 16, 0xf6bb4b60);
 	_md5_HH(b, c, d, a, x[10], 23, 0xbebfbc70);
-	_md5_HH(a, b, c, d, x[13], 4 , 0x289b7ec6);
-	_md5_HH(d, a, b, c, x[0] , 11, 0xeaa127fa);
-	_md5_HH(c, d, a, b, x[3] , 16, 0xd4ef3085);
-	_md5_HH(b, c, d, a, x[6] , 23, 0x4881d05);
-	_md5_HH(a, b, c, d, x[9] , 4 , 0xd9d4d039);
+	_md5_HH(a, b, c, d, x[13], 4, 0x289b7ec6);
+	_md5_HH(d, a, b, c, x[0], 11, 0xeaa127fa);
+	_md5_HH(c, d, a, b, x[3], 16, 0xd4ef3085);
+	_md5_HH(b, c, d, a, x[6], 23, 0x4881d05);
+	_md5_HH(a, b, c, d, x[9], 4, 0xd9d4d039);
 	_md5_HH(d, a, b, c, x[12], 11, 0xe6db99e5);
 	_md5_HH(c, d, a, b, x[15], 16, 0x1fa27cf8);
-	_md5_HH(b, c, d, a, x[2] , 23, 0xc4ac5665);
+	_md5_HH(b, c, d, a, x[2], 23, 0xc4ac5665);
 
-	_md5_II(a, b, c, d, x[0] , 6 , 0xf4292244);
-	_md5_II(d, a, b, c, x[7] , 10, 0x432aff97);
+	_md5_II(a, b, c, d, x[0], 6, 0xf4292244);
+	_md5_II(d, a, b, c, x[7], 10, 0x432aff97);
 	_md5_II(c, d, a, b, x[14], 15, 0xab9423a7);
-	_md5_II(b, c, d, a, x[5] , 21, 0xfc93a039);
-	_md5_II(a, b, c, d, x[12], 6 , 0x655b59c3);
-	_md5_II(d, a, b, c, x[3] , 10, 0x8f0ccc92);
+	_md5_II(b, c, d, a, x[5], 21, 0xfc93a039);
+	_md5_II(a, b, c, d, x[12], 6, 0x655b59c3);
+	_md5_II(d, a, b, c, x[3], 10, 0x8f0ccc92);
 	_md5_II(c, d, a, b, x[10], 15, 0xffeff47d);
-	_md5_II(b, c, d, a, x[1] , 21, 0x85845dd1);
-	_md5_II(a, b, c, d, x[8] , 6 , 0x6fa87e4f);
+	_md5_II(b, c, d, a, x[1], 21, 0x85845dd1);
+	_md5_II(a, b, c, d, x[8], 6, 0x6fa87e4f);
 	_md5_II(d, a, b, c, x[15], 10, 0xfe2ce6e0);
-	_md5_II(c, d, a, b, x[6] , 15, 0xa3014314);
+	_md5_II(c, d, a, b, x[6], 15, 0xa3014314);
 	_md5_II(b, c, d, a, x[13], 21, 0x4e0811a1);
-	_md5_II(a, b, c, d, x[4] , 6 , 0xf7537e82);
+	_md5_II(a, b, c, d, x[4], 6, 0xf7537e82);
 	_md5_II(d, a, b, c, x[11], 10, 0xbd3af235);
-	_md5_II(c, d, a, b, x[2] , 15, 0x2ad7d2bb);
-	_md5_II(b, c, d, a, x[9] , 21, 0xeb86d391);
+	_md5_II(c, d, a, b, x[2], 15, 0x2ad7d2bb);
+	_md5_II(b, c, d, a, x[9], 21, 0xeb86d391);
 
 	_state[0] += a;
 	_state[1] += b;
@@ -651,12 +652,12 @@ qint32 *hashMd5(const void *data, quint32 len, void *dest) {
 	HashMd5 md5(data, len);
 	memcpy(dest, md5.result(), 16);
 
-	return (qint32*)dest;
+	return (qint32 *)dest;
 }
 
 char *hashMd5Hex(const qint32 *hashmd5, void *dest) {
-	char *md5To = (char*)dest;
-	const uchar *res = (const uchar*)hashmd5;
+	char *md5To = (char *)dest;
+	const uchar *res = (const uchar *)hashmd5;
 
 	for (int i = 0; i < 16; ++i) {
 		uchar ch(res[i]), high = (ch >> 4) & 0x0F, low = ch & 0x0F;
@@ -669,26 +670,33 @@ char *hashMd5Hex(const qint32 *hashmd5, void *dest) {
 
 void memset_rand(void *data, quint32 len) {
 	Assert(_sslInited);
-	RAND_bytes((uchar*)data, len);
+	RAND_bytes((uchar *)data, len);
 }
 
 namespace {
-	QMap<QString, QString> fastRusEng;
-	QHash<QChar, QString> fastLetterRusEng;
-	QMap<quint32, QString> fastDoubleLetterRusEng;
-	QHash<QChar, QChar> fastRusKeyboardSwitch;
-}
+QMap<QString, QString> fastRusEng;
+QHash<QChar, QString> fastLetterRusEng;
+QMap<quint32, QString> fastDoubleLetterRusEng;
+QHash<QChar, QChar> fastRusKeyboardSwitch;
+} // namespace
 
 QString translitLetterRusEng(QChar letter, QChar next, qint32 &toSkip) {
 	if (fastDoubleLetterRusEng.isEmpty()) {
-		fastDoubleLetterRusEng.insert((QString::fromUtf8("Ы").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("Y"));
-		fastDoubleLetterRusEng.insert((QString::fromUtf8("и").at(0).unicode() << 16) | QString::fromUtf8("я").at(0).unicode(), qsl("ia"));
-		fastDoubleLetterRusEng.insert((QString::fromUtf8("и").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("y"));
-		fastDoubleLetterRusEng.insert((QString::fromUtf8("к").at(0).unicode() << 16) | QString::fromUtf8("с").at(0).unicode(), qsl("x"));
-		fastDoubleLetterRusEng.insert((QString::fromUtf8("ы").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("y"));
-		fastDoubleLetterRusEng.insert((QString::fromUtf8("ь").at(0).unicode() << 16) | QString::fromUtf8("е").at(0).unicode(), qsl("ye"));
+		fastDoubleLetterRusEng.insert(
+		    (QString::fromUtf8("Ы").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("Y"));
+		fastDoubleLetterRusEng.insert(
+		    (QString::fromUtf8("и").at(0).unicode() << 16) | QString::fromUtf8("я").at(0).unicode(), qsl("ia"));
+		fastDoubleLetterRusEng.insert(
+		    (QString::fromUtf8("и").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("y"));
+		fastDoubleLetterRusEng.insert(
+		    (QString::fromUtf8("к").at(0).unicode() << 16) | QString::fromUtf8("с").at(0).unicode(), qsl("x"));
+		fastDoubleLetterRusEng.insert(
+		    (QString::fromUtf8("ы").at(0).unicode() << 16) | QString::fromUtf8("й").at(0).unicode(), qsl("y"));
+		fastDoubleLetterRusEng.insert(
+		    (QString::fromUtf8("ь").at(0).unicode() << 16) | QString::fromUtf8("е").at(0).unicode(), qsl("ye"));
 	}
-	QMap<quint32, QString>::const_iterator i = fastDoubleLetterRusEng.constFind((letter.unicode() << 16) | next.unicode());
+	QMap<quint32, QString>::const_iterator i =
+	    fastDoubleLetterRusEng.constFind((letter.unicode() << 16) | next.unicode());
 	if (i != fastDoubleLetterRusEng.cend()) {
 		toSkip = 2;
 		return i.value();

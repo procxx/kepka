@@ -29,8 +29,7 @@ inline void UnsafeOpenEmailLink(const QString &email) {
 	return ::File::internal::UnsafeOpenEmailLinkDefault(email);
 }
 
-inline void PostprocessDownloaded(const QString &filepath) {
-}
+inline void PostprocessDownloaded(const QString &filepath) {}
 
 } // namespace File
 
@@ -40,7 +39,8 @@ inline void InitLastPath() {
 	::FileDialog::internal::InitLastPathDefault();
 }
 
-inline bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter, ::FileDialog::internal::Type type, QString startFile) {
+inline bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter,
+                ::FileDialog::internal::Type type, QString startFile) {
 	return ::FileDialog::internal::GetDefault(files, remoteContent, caption, filter, type, startFile);
 }
 

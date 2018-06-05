@@ -32,8 +32,9 @@ class PasscodeBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	PasscodeBox(QWidget*, bool turningOff);
-	PasscodeBox(QWidget*, const QByteArray &newSalt, const QByteArray &curSalt, bool hasRecovery, const QString &hint, bool turningOff = false);
+	PasscodeBox(QWidget *, bool turningOff);
+	PasscodeBox(QWidget *, const QByteArray &newSalt, const QByteArray &curSalt, bool hasRecovery, const QString &hint,
+	            bool turningOff = false);
 
 private slots:
 	void onSave(bool force = false);
@@ -88,14 +89,13 @@ private:
 	object_ptr<Ui::LinkButton> _recover;
 
 	QString _oldError, _newError, _emailError;
-
 };
 
 class RecoverBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	RecoverBox(QWidget*, const QString &pattern);
+	RecoverBox(QWidget *, const QString &pattern);
 
 public slots:
 	void onSubmit();
@@ -123,5 +123,4 @@ private:
 	object_ptr<Ui::InputField> _recoverCode;
 
 	QString _error;
-
 };

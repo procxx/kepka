@@ -20,7 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/rpc_sender.h"
 
-RPCOwnedDoneHandler::RPCOwnedDoneHandler(RPCSender *owner) : _owner(owner) {
+RPCOwnedDoneHandler::RPCOwnedDoneHandler(RPCSender *owner)
+    : _owner(owner) {
 	_owner->_rpcRegHandler(this);
 }
 
@@ -28,7 +29,8 @@ RPCOwnedDoneHandler::~RPCOwnedDoneHandler() {
 	if (_owner) _owner->_rpcUnregHandler(this);
 }
 
-RPCOwnedFailHandler::RPCOwnedFailHandler(RPCSender *owner) : _owner(owner) {
+RPCOwnedFailHandler::RPCOwnedFailHandler(RPCSender *owner)
+    : _owner(owner) {
 	_owner->_rpcRegHandler(this);
 }
 

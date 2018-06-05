@@ -20,26 +20,27 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_background_widget.h"
 
-#include "styles/style_settings.h"
+#include "boxes/background_box.h"
+#include "core/file_utilities.h"
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
-#include "boxes/background_box.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/buttons.h"
-#include "storage/localstorage.h"
 #include "mainwindow.h"
+#include "storage/localstorage.h"
+#include "styles/style_settings.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 #include "window/themes/window_theme.h"
 #include "window/themes/window_theme_editor.h"
-#include "core/file_utilities.h"
 
 namespace Settings {
 
-BackgroundRow::BackgroundRow(QWidget *parent) : TWidget(parent)
-, _chooseFromGallery(this, lang(lng_settings_bg_from_gallery), st::boxLinkButton)
-, _chooseFromFile(this, lang(lng_settings_bg_from_file), st::boxLinkButton)
-, _editTheme(this, lang(lng_settings_bg_edit_theme), st::boxLinkButton)
-, _radial(animation(this, &BackgroundRow::step_radial)) {
+BackgroundRow::BackgroundRow(QWidget *parent)
+    : TWidget(parent)
+    , _chooseFromGallery(this, lang(lng_settings_bg_from_gallery), st::boxLinkButton)
+    , _chooseFromFile(this, lang(lng_settings_bg_from_file), st::boxLinkButton)
+    , _editTheme(this, lang(lng_settings_bg_edit_theme), st::boxLinkButton)
+    , _radial(animation(this, &BackgroundRow::step_radial)) {
 	updateImage();
 
 	connect(_chooseFromGallery, SIGNAL(clicked()), this, SIGNAL(chooseFromGallery()));
@@ -83,11 +84,16 @@ void BackgroundRow::paintEvent(QPaintEvent *e) {
 			p.drawPixmap(0, 0, _background);
 		} else {
 			const QPixmap &pix = App::main()->newBackgroundThumb()->pixBlurred(st::settingsBackgroundSize);
-			p.drawPixmap(0, 0, st::settingsBackgroundSize, st::settingsBackgroundSize, pix, 0, (pix.height() - st::settingsBackgroundSize * cIntRetinaFactor()) / 2, st::settingsBackgroundSize * cIntRetinaFactor(), st::settingsBackgroundSize * cIntRetinaFactor());
+			p.drawPixmap(0, 0, st::settingsBackgroundSize, st::settingsBackgroundSize, pix, 0,
+			             (pix.height() - st::settingsBackgroundSize * cIntRetinaFactor()) / 2,
+			             st::settingsBackgroundSize * cIntRetinaFactor(),
+			             st::settingsBackgroundSize * cIntRetinaFactor());
 		}
 
 		auto outer = radialRect();
-		QRect inner(QPoint(outer.x() + (outer.width() - st::radialSize.width()) / 2, outer.y() + (outer.height() - st::radialSize.height()) / 2), st::radialSize);
+		QRect inner(QPoint(outer.x() + (outer.width() - st::radialSize.width()) / 2,
+		                   outer.y() + (outer.height() - st::radialSize.height()) / 2),
+		            st::radialSize);
 		p.setPen(Qt::NoPen);
 		p.setOpacity(radialOpacity);
 		p.setBrush(st::radialBg);
@@ -140,7 +146,7 @@ bool BackgroundRow::radialLoading() const {
 			if (m->chatBackgroundLoading()) {
 				return true;
 			} else {
-				const_cast<BackgroundRow*>(this)->updateImage();
+				const_cast<BackgroundRow *>(this)->updateImage();
 			}
 		}
 	}
@@ -196,7 +202,8 @@ void BackgroundRow::updateImage() {
 	}
 }
 
-BackgroundWidget::BackgroundWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_background)) {
+BackgroundWidget::BackgroundWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_background)) {
 	createControls();
 
 	using Update = Window::Theme::BackgroundUpdate;
@@ -207,9 +214,8 @@ BackgroundWidget::BackgroundWidget(QWidget *parent, UserData *self) : BlockWidge
 			needBackgroundUpdate(update.tiled);
 		}
 	});
-	subscribe(Adaptive::Changed(), [this]() {
-		_adaptive->toggleAnimated(Global::AdaptiveChatLayout() == Adaptive::ChatLayout::Wide);
-	});
+	subscribe(Adaptive::Changed(),
+	          [this]() { _adaptive->toggleAnimated(Global::AdaptiveChatLayout() == Adaptive::ChatLayout::Wide); });
 }
 
 void BackgroundWidget::createControls() {
@@ -222,8 +228,10 @@ void BackgroundWidget::createControls() {
 	connect(_background, SIGNAL(editTheme()), this, SLOT(onEditTheme()));
 	connect(_background, SIGNAL(useDefault()), this, SLOT(onUseDefaultTheme()));
 
-	addChildRow(_tile, margin, lang(lng_settings_bg_tile), [this](bool) { onTile(); }, Window::Theme::Background()->tile());
-	addChildRow(_adaptive, margin, slidedPadding, lang(lng_settings_adaptive_wide), [this](bool) { onAdaptive(); }, Global::AdaptiveForWide());
+	addChildRow(_tile, margin, lang(lng_settings_bg_tile), [this](bool) { onTile(); },
+	            Window::Theme::Background()->tile());
+	addChildRow(_adaptive, margin, slidedPadding, lang(lng_settings_adaptive_wide), [this](bool) { onAdaptive(); },
+	            Global::AdaptiveForWide());
 	if (Global::AdaptiveChatLayout() != Adaptive::ChatLayout::Wide) {
 		_adaptive->hideFast();
 	}
@@ -240,41 +248,44 @@ void BackgroundWidget::needBackgroundUpdate(bool tile) {
 
 void BackgroundWidget::onChooseFromFile() {
 	auto imgExtensions = cImgExtensions();
-	auto filters = QStringList(qsl("Theme files (*.tdesktop-theme *.tdesktop-palette *") + imgExtensions.join(qsl(" *")) + qsl(")"));
+	auto filters = QStringList(qsl("Theme files (*.tdesktop-theme *.tdesktop-palette *") +
+	                           imgExtensions.join(qsl(" *")) + qsl(")"));
 	filters.push_back(FileDialog::AllFilesFilter());
-	FileDialog::GetOpenPath(lang(lng_choose_image), filters.join(qsl(";;")), base::lambda_guarded(this, [this](const FileDialog::OpenResult &result) {
-		if (result.paths.isEmpty() && result.remoteContent.isEmpty()) {
-			return;
-		}
+	FileDialog::GetOpenPath(
+	    lang(lng_choose_image), filters.join(qsl(";;")),
+	    base::lambda_guarded(this, [this](const FileDialog::OpenResult &result) {
+		    if (result.paths.isEmpty() && result.remoteContent.isEmpty()) {
+			    return;
+		    }
 
-		if (!result.paths.isEmpty()) {
-			auto filePath = result.paths.front();
-			if (filePath.endsWith(qstr(".tdesktop-theme"), Qt::CaseInsensitive)
-				|| filePath.endsWith(qstr(".tdesktop-palette"), Qt::CaseInsensitive)) {
-				Window::Theme::Apply(filePath);
-				return;
-			}
-		}
+		    if (!result.paths.isEmpty()) {
+			    auto filePath = result.paths.front();
+			    if (filePath.endsWith(qstr(".tdesktop-theme"), Qt::CaseInsensitive) ||
+			        filePath.endsWith(qstr(".tdesktop-palette"), Qt::CaseInsensitive)) {
+				    Window::Theme::Apply(filePath);
+				    return;
+			    }
+		    }
 
-		QImage img;
-		if (!result.remoteContent.isEmpty()) {
-			img = App::readImage(result.remoteContent);
-		} else {
-			img = App::readImage(result.paths.front());
-		}
+		    QImage img;
+		    if (!result.remoteContent.isEmpty()) {
+			    img = App::readImage(result.remoteContent);
+		    } else {
+			    img = App::readImage(result.paths.front());
+		    }
 
-		if (img.isNull() || img.width() <= 0 || img.height() <= 0) return;
+		    if (img.isNull() || img.width() <= 0 || img.height() <= 0) return;
 
-		if (img.width() > 4096 * img.height()) {
-			img = img.copy((img.width() - 4096 * img.height()) / 2, 0, 4096 * img.height(), img.height());
-		} else if (img.height() > 4096 * img.width()) {
-			img = img.copy(0, (img.height() - 4096 * img.width()) / 2, img.width(), 4096 * img.width());
-		}
+		    if (img.width() > 4096 * img.height()) {
+			    img = img.copy((img.width() - 4096 * img.height()) / 2, 0, 4096 * img.height(), img.height());
+		    } else if (img.height() > 4096 * img.width()) {
+			    img = img.copy(0, (img.height() - 4096 * img.width()) / 2, img.width(), 4096 * img.width());
+		    }
 
-		Window::Theme::Background()->setImage(Window::Theme::kCustomBackground, std::move(img));
-		_tile->setChecked(false);
-		_background->updateImage();
-	}));
+		    Window::Theme::Background()->setImage(Window::Theme::kCustomBackground, std::move(img));
+		    _tile->setChecked(false);
+		    _background->updateImage();
+	    }));
 }
 
 void BackgroundWidget::onEditTheme() {

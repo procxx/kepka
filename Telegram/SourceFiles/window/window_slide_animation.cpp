@@ -32,14 +32,17 @@ void SlideAnimation::paintContents(Painter &p, const QRect &update) const {
 	auto coordUnder = anim::interpolate(0, -st::slideShift, progress);
 	auto coordOver = anim::interpolate(_cacheOver.width() / cIntRetinaFactor(), 0, progress);
 	if (coordOver) {
-		p.drawPixmap(QRect(0, 0, coordOver, _cacheUnder.height() / retina), _cacheUnder, QRect(-coordUnder * retina, 0, coordOver * retina, _cacheUnder.height()));
+		p.drawPixmap(QRect(0, 0, coordOver, _cacheUnder.height() / retina), _cacheUnder,
+		             QRect(-coordUnder * retina, 0, coordOver * retina, _cacheUnder.height()));
 		p.setOpacity(progress);
 		p.fillRect(0, 0, coordOver, _cacheUnder.height() / retina, st::slideFadeOutBg);
 		p.setOpacity(1);
 	}
-	p.drawPixmap(QRect(coordOver, 0, _cacheOver.width() / retina, _cacheOver.height() / retina), _cacheOver, QRect(0, 0, _cacheOver.width(), _cacheOver.height()));
+	p.drawPixmap(QRect(coordOver, 0, _cacheOver.width() / retina, _cacheOver.height() / retina), _cacheOver,
+	             QRect(0, 0, _cacheOver.width(), _cacheOver.height()));
 	p.setOpacity(progress);
-	st::slideShadow.fill(p, QRect(coordOver - st::slideShadow.width(), 0, st::slideShadow.width(), _cacheOver.height() / retina));
+	st::slideShadow.fill(
+	    p, QRect(coordOver - st::slideShadow.width(), 0, st::slideShadow.width(), _cacheOver.height() / retina));
 
 	if (_topBarShadowEnabled) {
 		p.setOpacity(1);
@@ -72,7 +75,8 @@ void SlideAnimation::start() {
 	auto delta = st::slideShift;
 	auto fromLeft = (_direction == SlideDirection::FromLeft);
 	if (fromLeft) std::swap(_cacheUnder, _cacheOver);
-	_animation.start([this] { animationCallback(); }, fromLeft ? 1. : 0., fromLeft ? 0. : 1., st::slideDuration, transition());
+	_animation.start([this] { animationCallback(); }, fromLeft ? 1. : 0., fromLeft ? 0. : 1., st::slideDuration,
+	                 transition());
 	_repaintCallback();
 }
 

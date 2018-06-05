@@ -35,7 +35,8 @@ void Shadow::paint(Painter &p, const QRect &box, int outerWidth, const style::Sh
 			from += st.topLeft.height() - st.extend.top();
 		}
 		if (bottom && !st.bottomLeft.empty()) {
-			st.bottomLeft.paint(p, box.x() - st.extend.left(), box.y() + box.height() + st.extend.bottom() - st.bottomLeft.height(), outerWidth);
+			st.bottomLeft.paint(p, box.x() - st.extend.left(),
+			                    box.y() + box.height() + st.extend.bottom() - st.bottomLeft.height(), outerWidth);
 			to -= st.bottomLeft.height() - st.extend.bottom();
 		}
 		if (to > from && !st.left.empty()) {
@@ -46,15 +47,18 @@ void Shadow::paint(Painter &p, const QRect &box, int outerWidth, const style::Sh
 		auto from = box.y();
 		auto to = from + box.height();
 		if (top && !st.topRight.empty()) {
-			st.topRight.paint(p, box.x() + box.width() + st.extend.right() - st.topRight.width(), box.y() - st.extend.top(), outerWidth);
+			st.topRight.paint(p, box.x() + box.width() + st.extend.right() - st.topRight.width(),
+			                  box.y() - st.extend.top(), outerWidth);
 			from += st.topRight.height() - st.extend.top();
 		}
 		if (bottom && !st.bottomRight.empty()) {
-			st.bottomRight.paint(p, box.x() + box.width() + st.extend.right() - st.bottomRight.width(), box.y() + box.height() + st.extend.bottom() - st.bottomRight.height(), outerWidth);
+			st.bottomRight.paint(p, box.x() + box.width() + st.extend.right() - st.bottomRight.width(),
+			                     box.y() + box.height() + st.extend.bottom() - st.bottomRight.height(), outerWidth);
 			to -= st.bottomRight.height() - st.extend.bottom();
 		}
 		if (to > from && !st.right.empty()) {
-			st.right.fill(p, rtlrect(box.x() + box.width() + st.extend.right() - st.right.width(), from, st.right.width(), to - from, outerWidth));
+			st.right.fill(p, rtlrect(box.x() + box.width() + st.extend.right() - st.right.width(), from,
+			                         st.right.width(), to - from, outerWidth));
 		}
 	}
 	if (top && !st.top.empty()) {
@@ -72,7 +76,8 @@ void Shadow::paint(Painter &p, const QRect &box, int outerWidth, const style::Sh
 		if (left && !st.bottomLeft.empty()) from += st.bottomLeft.width() - st.extend.left();
 		if (right && !st.bottomRight.empty()) to -= st.bottomRight.width() - st.extend.right();
 		if (to > from) {
-			st.bottom.fill(p, rtlrect(from, box.y() + box.height() + st.extend.bottom() - st.bottom.height(), to - from, st.bottom.height(), outerWidth));
+			st.bottom.fill(p, rtlrect(from, box.y() + box.height() + st.extend.bottom() - st.bottom.height(), to - from,
+			                          st.bottom.height(), outerWidth));
 		}
 	}
 }
@@ -81,12 +86,10 @@ QPixmap Shadow::grab(TWidget *target, const style::Shadow &shadow, RectParts sid
 	myEnsureResized(target);
 	auto rect = target->rect();
 	auto extend = QMargins(
-		(sides & RectPart::Left) ? shadow.extend.left() : 0,
-		(sides & RectPart::Top) ? shadow.extend.top() : 0,
-		(sides & RectPart::Right) ? shadow.extend.right() : 0,
-		(sides & RectPart::Bottom) ? shadow.extend.bottom() : 0
-	);
-	auto full = QRect(0, 0, extend.left() + rect.width() + extend.right(), extend.top() + rect.height() + extend.bottom());
+	    (sides & RectPart::Left) ? shadow.extend.left() : 0, (sides & RectPart::Top) ? shadow.extend.top() : 0,
+	    (sides & RectPart::Right) ? shadow.extend.right() : 0, (sides & RectPart::Bottom) ? shadow.extend.bottom() : 0);
+	auto full =
+	    QRect(0, 0, extend.left() + rect.width() + extend.right(), extend.top() + rect.height() + extend.bottom());
 	auto result = QPixmap(full.size() * cIntRetinaFactor());
 	result.setDevicePixelRatio(cRetinaFactor());
 	result.fill(Qt::transparent);

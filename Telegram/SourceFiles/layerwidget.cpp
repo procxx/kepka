@@ -20,21 +20,21 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "lang/lang_keys.h"
 
-#include "media/media_clip_reader.h"
-#include "boxes/abstract_box.h"
-#include "layerwidget.h"
 #include "application.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "core/file_utilities.h"
-#include "styles/style_boxes.h"
-#include "styles/style_widgets.h"
-#include "styles/style_chat_helpers.h"
-#include "ui/widgets/shadow.h"
-#include "window/window_main_menu.h"
 #include "auth_session.h"
+#include "boxes/abstract_box.h"
 #include "chat_helpers/stickers.h"
+#include "core/file_utilities.h"
+#include "layerwidget.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
+#include "media/media_clip_reader.h"
+#include "styles/style_boxes.h"
+#include "styles/style_chat_helpers.h"
+#include "styles/style_widgets.h"
+#include "ui/widgets/shadow.h"
 #include "window/window_controller.h"
+#include "window/window_main_menu.h"
 
 namespace {
 
@@ -44,15 +44,16 @@ constexpr int kStickerPreviewEmojiLimit = 10;
 
 class LayerStackWidget::BackgroundWidget : public TWidget {
 public:
-	BackgroundWidget(QWidget *parent) : TWidget(parent) {
-	}
+	BackgroundWidget(QWidget *parent)
+	    : TWidget(parent) {}
 
 	void setDoneCallback(base::lambda<void()> callback) {
 		_doneCallback = std::move(callback);
 	}
 
 	void setLayerBoxes(const QRect &specialLayerBox, const QRect &layerBox);
-	void setCacheImages(QPixmap &&bodyCache, QPixmap &&mainMenuCache, QPixmap &&specialLayerCache, QPixmap &&layerCache);
+	void setCacheImages(QPixmap &&bodyCache, QPixmap &&mainMenuCache, QPixmap &&specialLayerCache,
+	                    QPixmap &&layerCache);
 	void startAnimation(Action action);
 	void finishAnimation();
 
@@ -96,10 +97,10 @@ private:
 	bool _mainMenuShown = false;
 	bool _specialLayerShown = false;
 	bool _layerShown = false;
-
 };
 
-void LayerStackWidget::BackgroundWidget::setCacheImages(QPixmap &&bodyCache, QPixmap &&mainMenuCache, QPixmap &&specialLayerCache, QPixmap &&layerCache) {
+void LayerStackWidget::BackgroundWidget::setCacheImages(QPixmap &&bodyCache, QPixmap &&mainMenuCache,
+                                                        QPixmap &&specialLayerCache, QPixmap &&layerCache) {
 	_bodyCache = std::move(bodyCache);
 	_mainMenuCache = std::move(mainMenuCache);
 	_specialLayerCache = std::move(specialLayerCache);
@@ -145,7 +146,8 @@ void LayerStackWidget::BackgroundWidget::setMainMenuShown(bool shown) {
 	auto wasShown = isShown();
 	if (_mainMenuShown != shown) {
 		_mainMenuShown = shown;
-		_a_mainMenuShown.start([this] { animationCallback(); }, _mainMenuShown ? 0. : 1., _mainMenuShown ? 1. : 0., st::boxDuration, anim::easeOutCirc);
+		_a_mainMenuShown.start([this] { animationCallback(); }, _mainMenuShown ? 0. : 1., _mainMenuShown ? 1. : 0.,
+		                       st::boxDuration, anim::easeOutCirc);
 	}
 	_mainMenuCacheWidth = (_mainMenuCache.width() / cIntRetinaFactor()) - st::boxRoundShadow.extend.right();
 	_mainMenuRight = _mainMenuShown ? _mainMenuCacheWidth : 0;
@@ -156,7 +158,8 @@ void LayerStackWidget::BackgroundWidget::setSpecialLayerShown(bool shown) {
 	auto wasShown = isShown();
 	if (_specialLayerShown != shown) {
 		_specialLayerShown = shown;
-		_a_specialLayerShown.start([this] { animationCallback(); }, _specialLayerShown ? 0. : 1., _specialLayerShown ? 1. : 0., st::boxDuration);
+		_a_specialLayerShown.start([this] { animationCallback(); }, _specialLayerShown ? 0. : 1.,
+		                           _specialLayerShown ? 1. : 0., st::boxDuration);
 	}
 	checkWasShown(wasShown);
 }
@@ -165,14 +168,16 @@ void LayerStackWidget::BackgroundWidget::setLayerShown(bool shown) {
 	auto wasShown = isShown();
 	if (_layerShown != shown) {
 		_layerShown = shown;
-		_a_layerShown.start([this] { animationCallback(); }, _layerShown ? 0. : 1., _layerShown ? 1. : 0., st::boxDuration);
+		_a_layerShown.start([this] { animationCallback(); }, _layerShown ? 0. : 1., _layerShown ? 1. : 0.,
+		                    st::boxDuration);
 	}
 	checkWasShown(wasShown);
 }
 
 void LayerStackWidget::BackgroundWidget::checkWasShown(bool wasShown) {
 	if (isShown() != wasShown) {
-		_a_shown.start([this] { animationCallback(); }, wasShown ? 1. : 0., wasShown ? 0. : 1., st::boxDuration, anim::easeOutCirc);
+		_a_shown.start([this] { animationCallback(); }, wasShown ? 1. : 0., wasShown ? 0. : 1., st::boxDuration,
+		               anim::easeOutCirc);
 	}
 }
 
@@ -200,7 +205,10 @@ void LayerStackWidget::BackgroundWidget::paintEvent(QPaintEvent *e) {
 
 	auto ms = getms();
 	auto mainMenuProgress = _a_mainMenuShown.current(ms, -1);
-	auto mainMenuRight = (_mainMenuCache.isNull() || mainMenuProgress < 0) ? _mainMenuRight : (mainMenuProgress < 0) ? _mainMenuRight : anim::interpolate(0, _mainMenuCacheWidth, mainMenuProgress);
+	auto mainMenuRight =
+	    (_mainMenuCache.isNull() || mainMenuProgress < 0) ?
+	        _mainMenuRight :
+	        (mainMenuProgress < 0) ? _mainMenuRight : anim::interpolate(0, _mainMenuCacheWidth, mainMenuProgress);
 	if (mainMenuRight) {
 		// Move showing boxes to the right while main menu is hiding.
 		if (!_specialLayerCache.isNull()) {
@@ -240,7 +248,9 @@ void LayerStackWidget::BackgroundWidget::paintEvent(QPaintEvent *e) {
 			sides |= RectPart::Bottom;
 		}
 		if (topCorners || bottomCorners) {
-			p.setClipRegion(QRegion(rect()) - specialLayerBox.marginsRemoved(QMargins(st::boxRadius, 0, st::boxRadius, 0)) - specialLayerBox.marginsRemoved(QMargins(0, st::boxRadius, 0, st::boxRadius)));
+			p.setClipRegion(QRegion(rect()) -
+			                specialLayerBox.marginsRemoved(QMargins(st::boxRadius, 0, st::boxRadius, 0)) -
+			                specialLayerBox.marginsRemoved(QMargins(0, st::boxRadius, 0, st::boxRadius)));
 		}
 		Ui::Shadow::paint(p, specialLayerBox, width(), st::boxRoundShadow, sides);
 
@@ -248,8 +258,8 @@ void LayerStackWidget::BackgroundWidget::paintEvent(QPaintEvent *e) {
 			// In case of painting the shadow above the special layer we get
 			// glitches in the corners, so we need to paint the corners once more.
 			p.setClipping(false);
-			auto parts = (topCorners ? (RectPart::TopLeft | RectPart::TopRight) : RectPart::None)
-				| (bottomCorners ? (RectPart::BottomLeft | RectPart::BottomRight) : RectPart::None);
+			auto parts = (topCorners ? (RectPart::TopLeft | RectPart::TopRight) : RectPart::None) |
+			             (bottomCorners ? (RectPart::BottomLeft | RectPart::BottomRight) : RectPart::None);
 			App::roundRect(p, specialLayerBox, st::boxBg, BoxCorners, nullptr, parts);
 		}
 	}
@@ -289,13 +299,15 @@ void LayerStackWidget::BackgroundWidget::paintEvent(QPaintEvent *e) {
 	}
 	if (!_layerCache.isNull() && layerOpacity > 0) {
 		p.setOpacity(layerOpacity);
-		p.drawPixmapLeft(layerBox.topLeft() - QPoint(st::boxRoundShadow.extend.left(), st::boxRoundShadow.extend.top()), width(), _layerCache);
+		p.drawPixmapLeft(layerBox.topLeft() - QPoint(st::boxRoundShadow.extend.left(), st::boxRoundShadow.extend.top()),
+		                 width(), _layerCache);
 	}
 	if (!_mainMenuCache.isNull() && mainMenuRight > 0) {
 		p.setOpacity(1.);
 		auto shownWidth = mainMenuRight + st::boxRoundShadow.extend.right();
 		auto sourceWidth = shownWidth * cIntRetinaFactor();
-		auto sourceRect = rtlrect(_mainMenuCache.width() - sourceWidth, 0, sourceWidth, _mainMenuCache.height(), _mainMenuCache.width());
+		auto sourceRect = rtlrect(_mainMenuCache.width() - sourceWidth, 0, sourceWidth, _mainMenuCache.height(),
+		                          _mainMenuCache.width());
 		p.drawPixmapLeft(0, 0, shownWidth, height(), width(), _mainMenuCache, sourceRect);
 	}
 }
@@ -313,9 +325,10 @@ void LayerStackWidget::BackgroundWidget::animationCallback() {
 	checkIfDone();
 }
 
-LayerStackWidget::LayerStackWidget(QWidget *parent, Window::Controller *controller) : TWidget(parent)
-, _controller(controller)
-, _background(this) {
+LayerStackWidget::LayerStackWidget(QWidget *parent, Window::Controller *controller)
+    : TWidget(parent)
+    , _controller(controller)
+    , _background(this) {
 	setGeometry(parentWidget()->rect());
 	hide();
 	_background->setDoneCallback([this] { animationDone(); });
@@ -359,17 +372,17 @@ void LayerStackWidget::hideCurrent() {
 }
 
 void LayerStackWidget::hideLayers() {
-	startAnimation([] {}, [this] {
-		clearLayers();
-	}, Action::HideLayer);
+	startAnimation([] {}, [this] { clearLayers(); }, Action::HideLayer);
 }
 
 void LayerStackWidget::hideAll() {
-	startAnimation([] {}, [this] {
-		clearLayers();
-		clearSpecialLayer();
-		_mainMenu.destroyDelayed();
-	}, Action::HideAll);
+	startAnimation([] {},
+	               [this] {
+		               clearLayers();
+		               clearSpecialLayer();
+		               _mainMenu.destroyDelayed();
+	               },
+	               Action::HideAll);
 }
 
 void LayerStackWidget::hideTopLayer() {
@@ -413,7 +426,8 @@ void LayerStackWidget::setCacheImages() {
 	}
 	setAttribute(Qt::WA_OpaquePaintEvent, !bodyCache.isNull());
 	updateLayerBoxes();
-	_background->setCacheImages(std::move(bodyCache), std::move(mainMenuCache), std::move(specialLayerCache), std::move(layerCache));
+	_background->setCacheImages(std::move(bodyCache), std::move(mainMenuCache), std::move(specialLayerCache),
+	                            std::move(layerCache));
 }
 
 void LayerStackWidget::onLayerClosed(LayerWidget *layer) {
@@ -459,9 +473,7 @@ void LayerStackWidget::updateLayerBoxes() {
 		}
 		return QRect();
 	};
-	auto getSpecialLayerBox = [this]() {
-		return _specialLayer ? _specialLayer->geometry() : QRect();
-	};
+	auto getSpecialLayerBox = [this]() { return _specialLayer ? _specialLayer->geometry() : QRect(); };
 	_background->setLayerBoxes(getSpecialLayerBox(), getLayerBox());
 	update();
 }
@@ -593,25 +605,31 @@ void LayerStackWidget::showFinished() {
 }
 
 void LayerStackWidget::showSpecialLayer(object_ptr<LayerWidget> layer) {
-	startAnimation([this, layer = std::move(layer)]() mutable {
-		_specialLayer.destroyDelayed();
-		_specialLayer = std::move(layer);
-		initChildLayer(_specialLayer);
-	}, [this] {
-		clearLayers();
-		_mainMenu.destroyDelayed();
-	}, Action::ShowSpecialLayer);
+	startAnimation(
+	    [this, layer = std::move(layer)]() mutable {
+		    _specialLayer.destroyDelayed();
+		    _specialLayer = std::move(layer);
+		    initChildLayer(_specialLayer);
+	    },
+	    [this] {
+		    clearLayers();
+		    _mainMenu.destroyDelayed();
+	    },
+	    Action::ShowSpecialLayer);
 }
 
 void LayerStackWidget::showMainMenu() {
-	startAnimation([this] {
-		_mainMenu.create(this);
-		_mainMenu->setGeometryToLeft(0, 0, _mainMenu->width(), height());
-		_mainMenu->setParent(this);
-	}, [this] {
-		clearLayers();
-		_specialLayer.destroyDelayed();
-	}, Action::ShowMainMenu);
+	startAnimation(
+	    [this] {
+		    _mainMenu.create(this);
+		    _mainMenu->setGeometryToLeft(0, 0, _mainMenu->width(), height());
+		    _mainMenu->setParent(this);
+	    },
+	    [this] {
+		    clearLayers();
+		    _specialLayer.destroyDelayed();
+	    },
+	    Action::ShowMainMenu);
 }
 
 void LayerStackWidget::appendBox(object_ptr<BoxContent> box) {
@@ -634,9 +652,7 @@ LayerWidget *LayerStackWidget::pushBox(object_ptr<BoxContent> box) {
 			showFinished();
 		}
 	} else {
-		startAnimation([] {}, [this] {
-			_mainMenu.destroyDelayed();
-		}, Action::ShowLayer);
+		startAnimation([] {}, [this] { _mainMenu.destroyDelayed(); }, Action::ShowLayer);
 	}
 
 	return layer.data();
@@ -672,7 +688,7 @@ void LayerStackWidget::initChildLayer(LayerWidget *layer) {
 	layer->setParent(this);
 	layer->setClosedCallback([this, layer] { onLayerClosed(layer); });
 	layer->setResizedCallback([this] { onLayerResized(); });
-	connect(layer, SIGNAL(destroyed(QObject*)), this, SLOT(onLayerDestroyed(QObject*)));
+	connect(layer, SIGNAL(destroyed(QObject *)), this, SLOT(onLayerDestroyed(QObject *)));
 	layer->parentResized();
 }
 
@@ -730,9 +746,10 @@ LayerStackWidget::~LayerStackWidget() {
 	if (App::wnd()) App::wnd()->noLayerStack(this);
 }
 
-MediaPreviewWidget::MediaPreviewWidget(QWidget *parent, not_null<Window::Controller*> controller) : TWidget(parent)
-, _controller(controller)
-, _emojiSize(Ui::Emoji::Size(Ui::Emoji::Index() + 1) / cIntRetinaFactor()) {
+MediaPreviewWidget::MediaPreviewWidget(QWidget *parent, not_null<Window::Controller *> controller)
+    : TWidget(parent)
+    , _controller(controller)
+    , _emojiSize(Ui::Emoji::Size(Ui::Emoji::Index() + 1) / cIntRetinaFactor()) {
 	setAttribute(Qt::WA_TransparentForMouseEvents);
 	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
 }
@@ -767,7 +784,8 @@ void MediaPreviewWidget::paintEvent(QPaintEvent *e) {
 		auto emojiLeft = (width() - emojiWidth) / 2;
 		auto esize = Ui::Emoji::Size(Ui::Emoji::Index() + 1);
 		for (auto emoji : _emojiList) {
-			p.drawPixmapLeft(emojiLeft, (height() - h) / 2 - (_emojiSize * 2), width(), App::emojiLarge(), QRect(emoji->x() * esize, emoji->y() * esize, esize, esize));
+			p.drawPixmapLeft(emojiLeft, (height() - h) / 2 - (_emojiSize * 2), width(), App::emojiLarge(),
+			                 QRect(emoji->x() * esize, emoji->y() * esize, esize, esize));
 			emojiLeft += _emojiSize + st::stickerEmojiSkip;
 		}
 	}
@@ -912,17 +930,18 @@ QPixmap MediaPreviewWidget::currentImage() const {
 			_document->automaticLoad(nullptr);
 			if (_document->loaded()) {
 				if (!_gif && !_gif.isBad()) {
-					auto that = const_cast<MediaPreviewWidget*>(this);
-					that->_gif = Media::Clip::MakeReader(_document, FullMsgId(), [this, that](Media::Clip::Notification notification) {
-						that->clipCallback(notification);
-					});
+					auto that = const_cast<MediaPreviewWidget *>(this);
+					that->_gif = Media::Clip::MakeReader(
+					    _document, FullMsgId(),
+					    [this, that](Media::Clip::Notification notification) { that->clipCallback(notification); });
 					if (_gif) _gif->setAutoplay();
 				}
 			}
 			if (_gif && _gif->started()) {
 				auto s = currentDimensions();
 				auto paused = _controller->isGifPausedAtLeastFor(Window::GifPauseReason::MediaPreview);
-				return _gif->current(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None, ImageRoundCorner::None, paused ? 0 : getms());
+				return _gif->current(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None,
+				                     ImageRoundCorner::None, paused ? 0 : getms());
 			}
 			if (_cacheStatus != CacheThumbLoaded && _document->thumb->loaded()) {
 				QSize s = currentDimensions();
@@ -946,7 +965,6 @@ QPixmap MediaPreviewWidget::currentImage() const {
 				_photo->full->load();
 			}
 		}
-
 	}
 	return _cache;
 }
@@ -975,5 +993,4 @@ void MediaPreviewWidget::clipCallback(Media::Clip::Notification notification) {
 	}
 }
 
-MediaPreviewWidget::~MediaPreviewWidget() {
-}
+MediaPreviewWidget::~MediaPreviewWidget() {}

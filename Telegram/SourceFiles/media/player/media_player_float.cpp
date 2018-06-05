@@ -18,25 +18,27 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QMouseEvent>
-#include <QApplication>
-#include "facades.h"
 #include "media/player/media_player_float.h"
-#include "styles/style_media_player.h"
+#include "app.h"
+#include "facades.h"
 #include "history/history_media.h"
+#include "media/media_audio.h"
 #include "media/media_clip_reader.h"
 #include "media/view/media_clip_playback.h"
-#include "media/media_audio.h"
 #include "styles/style_history.h"
-#include "app.h"
+#include "styles/style_media_player.h"
+#include <QApplication>
+#include <QMouseEvent>
 
 namespace Media {
 namespace Player {
 
-Float::Float(QWidget *parent, HistoryItem *item, base::lambda<void(bool visible)> toggleCallback, base::lambda<void(bool closed)> draggedCallback) : TWidget(parent)
-, _item(item)
-, _toggleCallback(std::move(toggleCallback))
-, _draggedCallback(std::move(draggedCallback)) {
+Float::Float(QWidget *parent, HistoryItem *item, base::lambda<void(bool visible)> toggleCallback,
+             base::lambda<void(bool closed)> draggedCallback)
+    : TWidget(parent)
+    , _item(item)
+    , _toggleCallback(std::move(toggleCallback))
+    , _draggedCallback(std::move(draggedCallback)) {
 	auto media = _item->getMedia();
 	Assert(media != nullptr);
 
@@ -182,8 +184,8 @@ void Float::paintEvent(QPaintEvent *e) {
 			p.drawArc(inner.marginsRemoved(QMargins(stepInside, stepInside, stepInside, stepInside)), from, len);
 		}
 
-		//p.setPen(was);
-		//p.setOpacity(_opacity);
+		// p.setPen(was);
+		// p.setOpacity(_opacity);
 	}
 }
 
@@ -242,9 +244,7 @@ void Float::updatePlayback() {
 	if (_item) {
 		if (!_roundPlayback) {
 			_roundPlayback = std::make_unique<Media::Clip::Playback>();
-			_roundPlayback->setValueChangedCallback([this](double value) {
-				update();
-			});
+			_roundPlayback->setValueChangedCallback([this](double value) { update(); });
 		}
 		auto state = Media::Player::mixer()->currentState(AudioMsgId::Type::Voice);
 		if (state.id.contextId() == _item->fullId()) {

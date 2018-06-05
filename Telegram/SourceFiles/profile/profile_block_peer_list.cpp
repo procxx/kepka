@@ -20,25 +20,26 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_peer_list.h"
 
-#include "ui/effects/ripple_animation.h"
-#include "ui/widgets/popup_menu.h"
+#include "app.h"
+#include "auth_session.h"
 #include "styles/style_profile.h"
 #include "styles/style_widgets.h"
-#include "auth_session.h"
-#include "app.h"
+#include "ui/effects/ripple_animation.h"
+#include "ui/widgets/popup_menu.h"
 
 namespace Profile {
 
-PeerListWidget::Item::Item(PeerData *peer) : peer(peer) {
-}
+PeerListWidget::Item::Item(PeerData *peer)
+    : peer(peer) {}
 
 PeerListWidget::Item::~Item() = default;
 
-PeerListWidget::PeerListWidget(QWidget *parent, PeerData *peer, const QString &title, const style::ProfilePeerListItem &st, const QString &removeText)
-: BlockWidget(parent, peer, title)
-, _st(st)
-, _removeText(removeText)
-, _removeWidth(st::normalFont->width(_removeText)) {
+PeerListWidget::PeerListWidget(QWidget *parent, PeerData *peer, const QString &title,
+                               const style::ProfilePeerListItem &st, const QString &removeText)
+    : BlockWidget(parent, peer, title)
+    , _st(st)
+    , _removeText(removeText)
+    , _removeWidth(st::normalFont->width(_removeText)) {
 	setMouseTracking(true);
 	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
 }
@@ -72,7 +73,8 @@ void PeerListWidget::paintContents(Painter &p) {
 	auto to = ceilclamp(_visibleBottom - top, st::profileMemberHeight, 0, _items.size());
 	for (auto i = from; i < to; ++i) {
 		auto y = top + i * st::profileMemberHeight;
-		auto selected = (_menuRowIndex >= 0) ? (i == _menuRowIndex) : (_pressed >= 0) ? (i == _pressed) : (i == _selected);
+		auto selected =
+		    (_menuRowIndex >= 0) ? (i == _menuRowIndex) : (_pressed >= 0) ? (i == _pressed) : (i == _selected);
 		auto selectedRemove = selected && _selectedRemove;
 		if (_pressed >= 0 && !_pressedRemove) {
 			selectedRemove = false;
@@ -98,7 +100,8 @@ void PeerListWidget::paintItem(Painter &p, int x, int y, Item *item, bool select
 	}
 	int skip = st::profileMemberPhotoPosition.x();
 
-	item->peer->paintUserpicLeft(p, x + st::profileMemberPhotoPosition.x(), y + st::profileMemberPhotoPosition.y(), width(), st::profileMemberPhotoSize);
+	item->peer->paintUserpicLeft(p, x + st::profileMemberPhotoPosition.x(), y + st::profileMemberPhotoPosition.y(),
+	                             width(), st::profileMemberPhotoSize);
 
 	if (item->name.isEmpty()) {
 		item->name.setText(st::msgNameStyle, App::peerName(item->peer), _textNameOptions);
@@ -115,9 +118,9 @@ void PeerListWidget::paintItem(Painter &p, int x, int y, Item *item, bool select
 	if (item->adminState != Item::AdminState::None) {
 		nameWidth -= st::profileMemberAdminIcon.width();
 		auto iconLeft = nameLeft + std::min(nameWidth, item->name.maxWidth());
-		auto &icon = (item->adminState == Item::AdminState::Creator)
-			? (selected ? st::profileMemberCreatorIconOver : st::profileMemberCreatorIcon)
-			: (selected ? st::profileMemberAdminIconOver : st::profileMemberAdminIcon);
+		auto &icon = (item->adminState == Item::AdminState::Creator) ?
+		                 (selected ? st::profileMemberCreatorIconOver : st::profileMemberCreatorIcon) :
+		                 (selected ? st::profileMemberAdminIconOver : st::profileMemberAdminIcon);
 		icon.paint(p, QPoint(iconLeft, nameTop), width());
 	}
 	p.setPen(st::profileMemberNameFg);
@@ -129,7 +132,8 @@ void PeerListWidget::paintItem(Painter &p, int x, int y, Item *item, bool select
 		p.setPen(selected ? _st.statusFgOver : _st.statusFg);
 	}
 	p.setFont(st::normalFont);
-	p.drawTextLeft(x + st::profileMemberStatusPosition.x(), y + st::profileMemberStatusPosition.y(), width(), item->statusText);
+	p.drawTextLeft(x + st::profileMemberStatusPosition.x(), y + st::profileMemberStatusPosition.y(), width(),
+	               item->statusText);
 }
 
 void PeerListWidget::paintOutlinedRect(Painter &p, int x, int y, int w, int h) const {
@@ -156,10 +160,10 @@ void PeerListWidget::mousePressEvent(QMouseEvent *e) {
 		auto item = _items[_pressed];
 		if (!item->ripple) {
 			auto memberRowWidth = rowWidth();
-			auto mask = Ui::RippleAnimation::rectMask(QSize(memberRowWidth - _st.button.outlineWidth, st::profileMemberHeight));
-			item->ripple = std::make_unique<Ui::RippleAnimation>(_st.button.ripple, std::move(mask), [this, index = _pressed] {
-				repaintRow(index);
-			});
+			auto mask =
+			    Ui::RippleAnimation::rectMask(QSize(memberRowWidth - _st.button.outlineWidth, st::profileMemberHeight));
+			item->ripple = std::make_unique<Ui::RippleAnimation>(_st.button.ripple, std::move(mask),
+			                                                     [this, index = _pressed] { repaintRow(index); });
 		}
 		auto left = getListLeft() + _st.button.outlineWidth;
 		auto top = getListTop() + st::profileMemberHeight * _pressed;

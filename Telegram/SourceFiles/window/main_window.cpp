@@ -20,23 +20,23 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/main_window.h"
 
-#include "storage/localstorage.h"
-#include "styles/style_window.h"
-#include "platform/platform_window_title.h"
-#include "window/themes/window_theme.h"
-#include "window/window_controller.h"
+#include "app.h"
+#include "mainwindow.h"
 #include "mediaview.h"
 #include "messenger.h"
-#include "mainwindow.h"
-#include "app.h"
+#include "platform/platform_window_title.h"
+#include "storage/localstorage.h"
+#include "styles/style_window.h"
+#include "window/themes/window_theme.h"
+#include "window/window_controller.h"
 
-#include <QDrag>
-#include <QList>
-#include <QWindow>
-#include <QScreen>
-#include <QDesktopWidget>
-#include <QGuiApplication>
 #include <QApplication>
+#include <QDesktopWidget>
+#include <QDrag>
+#include <QGuiApplication>
+#include <QList>
+#include <QScreen>
+#include <QWindow>
 
 namespace Window {
 
@@ -66,11 +66,12 @@ QIcon CreateIcon() {
 	return result;
 }
 
-MainWindow::MainWindow() : QWidget()
-, _positionUpdatedTimer(this)
-, _body(this)
-, _icon(CreateIcon())
-, _titleText(str_const_toString(AppName)) {
+MainWindow::MainWindow()
+    : QWidget()
+    , _positionUpdatedTimer(this)
+    , _body(this)
+    , _icon(CreateIcon())
+    , _titleText(str_const_toString(AppName)) {
 	subscribe(Theme::Background(), [this](const Theme::BackgroundUpdate &data) {
 		if (data.paletteChanged()) {
 			if (_title) {
@@ -148,7 +149,8 @@ void MainWindow::init() {
 	updateWindowIcon();
 
 	connect(windowHandle(), &QWindow::activeChanged, this, [this] { handleActiveChanged(); }, Qt::QueuedConnection);
-	connect(windowHandle(), &QWindow::windowStateChanged, this, [this](Qt::WindowState state) { handleStateChanged(state); });
+	connect(windowHandle(), &QWindow::windowStateChanged, this,
+	        [this](Qt::WindowState state) { handleStateChanged(state); });
 
 	_positionUpdatedTimer->setSingleShot(true);
 	connect(_positionUpdatedTimer, SIGNAL(timeout()), this, SLOT(savePositionByTimer()));
@@ -177,9 +179,7 @@ void MainWindow::handleActiveChanged() {
 	if (isActiveWindow()) {
 		Messenger::Instance().checkMediaViewActivation();
 	}
-	App::CallDelayed(1, this, [this] {
-		updateTrayMenu();
-	});
+	App::CallDelayed(1, this, [this] { updateTrayMenu(); });
 }
 
 void MainWindow::updatePalette() {
@@ -203,16 +203,27 @@ void MainWindow::initSize() {
 	setMinimumHeight((_title ? _title->height() : 0) + st::windowMinHeight);
 
 	auto position = cWindowPos();
-	DEBUG_LOG(("Window Pos: Initializing first %1, %2, %3, %4 (maximized %5)").arg(position.x).arg(position.y).arg(position.w).arg(position.h).arg(Logs::b(position.maximized)));
+	DEBUG_LOG(("Window Pos: Initializing first %1, %2, %3, %4 (maximized %5)")
+	              .arg(position.x)
+	              .arg(position.y)
+	              .arg(position.w)
+	              .arg(position.h)
+	              .arg(Logs::b(position.maximized)));
 
 	auto avail = QDesktopWidget().availableGeometry();
 	bool maximized = false;
-	auto geom = QRect(avail.x() + (avail.width() - st::windowDefaultWidth) / 2, avail.y() + (avail.height() - st::windowDefaultHeight) / 2, st::windowDefaultWidth, st::windowDefaultHeight);
+	auto geom = QRect(avail.x() + (avail.width() - st::windowDefaultWidth) / 2,
+	                  avail.y() + (avail.height() - st::windowDefaultHeight) / 2, st::windowDefaultWidth,
+	                  st::windowDefaultHeight);
 	if (position.w && position.h) {
 		for (auto screen : QGuiApplication::screens()) {
 			if (position.moncrc == screenNameChecksum(screen->name())) {
 				auto screenGeometry = screen->geometry();
-				DEBUG_LOG(("Window Pos: Screen found, screen geometry: %1, %2, %3, %4").arg(screenGeometry.x()).arg(screenGeometry.y()).arg(screenGeometry.width()).arg(screenGeometry.height()));
+				DEBUG_LOG(("Window Pos: Screen found, screen geometry: %1, %2, %3, %4")
+				              .arg(screenGeometry.x())
+				              .arg(screenGeometry.y())
+				              .arg(screenGeometry.width())
+				              .arg(screenGeometry.height()));
 
 				auto w = screenGeometry.width(), h = screenGeometry.height();
 				if (w >= st::windowMinWidth && h >= st::windowMinHeight) {
@@ -223,8 +234,12 @@ void MainWindow::initSize() {
 					position.x += screenGeometry.x();
 					position.y += screenGeometry.y();
 					if (position.x + st::windowMinWidth <= screenGeometry.x() + screenGeometry.width() &&
-						position.y + st::windowMinHeight <= screenGeometry.y() + screenGeometry.height()) {
-						DEBUG_LOG(("Window Pos: Resulting geometry is %1, %2, %3, %4").arg(position.x).arg(position.y).arg(position.w).arg(position.h));
+					    position.y + st::windowMinHeight <= screenGeometry.y() + screenGeometry.height()) {
+						DEBUG_LOG(("Window Pos: Resulting geometry is %1, %2, %3, %4")
+						              .arg(position.x)
+						              .arg(position.y)
+						              .arg(position.w)
+						              .arg(position.h));
 						geom = QRect(position.x, position.y, position.w, position.h);
 					}
 				}
@@ -233,7 +248,8 @@ void MainWindow::initSize() {
 		}
 		maximized = position.maximized;
 	}
-	DEBUG_LOG(("Window Pos: Setting first %1, %2, %3, %4").arg(geom.x()).arg(geom.y()).arg(geom.width()).arg(geom.height()));
+	DEBUG_LOG(
+	    ("Window Pos: Setting first %1, %2, %3, %4").arg(geom.x()).arg(geom.y()).arg(geom.width()).arg(geom.height()));
 	setGeometry(geom);
 }
 
@@ -307,7 +323,12 @@ void MainWindow::savePosition(Qt::WindowState state) {
 		realPosition.maximized = 0;
 		realPosition.moncrc = 0;
 	}
-	DEBUG_LOG(("Window Pos: Saving position: %1, %2, %3, %4 (maximized %5)").arg(realPosition.x).arg(realPosition.y).arg(realPosition.w).arg(realPosition.h).arg(Logs::b(realPosition.maximized)));
+	DEBUG_LOG(("Window Pos: Saving position: %1, %2, %3, %4 (maximized %5)")
+	              .arg(realPosition.x)
+	              .arg(realPosition.y)
+	              .arg(realPosition.w)
+	              .arg(realPosition.h)
+	              .arg(Logs::b(realPosition.maximized)));
 
 	auto centerX = realPosition.x + realPosition.w / 2;
 	auto centerY = realPosition.y + realPosition.h / 2;
@@ -323,20 +344,26 @@ void MainWindow::savePosition(Qt::WindowState state) {
 	}
 	if (chosen) {
 		auto screenGeometry = chosen->geometry();
-		DEBUG_LOG(("Window Pos: Screen found, geometry: %1, %2, %3, %4").arg(screenGeometry.x()).arg(screenGeometry.y()).arg(screenGeometry.width()).arg(screenGeometry.height()));
+		DEBUG_LOG(("Window Pos: Screen found, geometry: %1, %2, %3, %4")
+		              .arg(screenGeometry.x())
+		              .arg(screenGeometry.y())
+		              .arg(screenGeometry.width())
+		              .arg(screenGeometry.height()));
 		realPosition.x -= screenGeometry.x();
 		realPosition.y -= screenGeometry.y();
 		realPosition.moncrc = screenNameChecksum(chosen->name());
 	}
 
 	if (realPosition.w >= st::windowMinWidth && realPosition.h >= st::windowMinHeight) {
-		if (realPosition.x != savedPosition.x
-			|| realPosition.y != savedPosition.y
-			|| realPosition.w != savedPosition.w
-			|| realPosition.h != savedPosition.h
-			|| realPosition.moncrc != savedPosition.moncrc
-			|| realPosition.maximized != savedPosition.maximized) {
-			DEBUG_LOG(("Window Pos: Writing: %1, %2, %3, %4 (maximized %5)").arg(realPosition.x).arg(realPosition.y).arg(realPosition.w).arg(realPosition.h).arg(Logs::b(realPosition.maximized)));
+		if (realPosition.x != savedPosition.x || realPosition.y != savedPosition.y ||
+		    realPosition.w != savedPosition.w || realPosition.h != savedPosition.h ||
+		    realPosition.moncrc != savedPosition.moncrc || realPosition.maximized != savedPosition.maximized) {
+			DEBUG_LOG(("Window Pos: Writing: %1, %2, %3, %4 (maximized %5)")
+			              .arg(realPosition.x)
+			              .arg(realPosition.y)
+			              .arg(realPosition.w)
+			              .arg(realPosition.h)
+			              .arg(Logs::b(realPosition.maximized)));
 			cSetWindowPos(realPosition);
 			Local::writeSettings();
 		}

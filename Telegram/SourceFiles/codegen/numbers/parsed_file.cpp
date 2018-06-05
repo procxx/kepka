@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/numbers/parsed_file.h"
 
-#include <iostream>
-#include <QtCore/QMap>
-#include <QtCore/QDir>
-#include <QtCore/QRegularExpression>
 #include "codegen/common/basic_tokenized_file.h"
-#include "codegen/common/logging.h"
-#include "codegen/common/clean_file_reader.h"
 #include "codegen/common/checked_utf8_string.h"
+#include "codegen/common/clean_file_reader.h"
+#include "codegen/common/logging.h"
+#include <QtCore/QDir>
+#include <QtCore/QMap>
+#include <QtCore/QRegularExpression>
+#include <iostream>
 
 using BasicToken = codegen::common::BasicTokenizedFile::Token;
 using BasicType = BasicToken::Type;
@@ -59,10 +59,9 @@ QByteArray replaceStrings(const QString &filepath) {
 } // namespace
 
 ParsedFile::ParsedFile(const Options &options)
-: content_(replaceStrings(options.inputPath))
-, file_(content_, options.inputPath)
-, options_(options) {
-}
+    : content_(replaceStrings(options.inputPath))
+    , file_(content_, options.inputPath)
+    , options_(options) {}
 
 bool ParsedFile::read() {
 	if (content_.isEmpty() || !file_.read()) {

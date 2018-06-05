@@ -21,15 +21,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "settings/settings_block_widget.h"
 
 #include "styles/style_settings.h"
-#include "ui/widgets/checkbox.h"
 #include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 
 namespace Settings {
 
-BlockWidget::BlockWidget(QWidget *parent, UserData *self, const QString &title) : TWidget(parent)
-, _self(self)
-, _title(title) {
-}
+BlockWidget::BlockWidget(QWidget *parent, UserData *self, const QString &title)
+    : TWidget(parent)
+    , _self(self)
+    , _title(title) {}
 
 void BlockWidget::setContentLeft(int contentLeft) {
 	_contentLeft = contentLeft;
@@ -74,7 +74,7 @@ void BlockWidget::paintTitle(Painter &p) {
 }
 
 void BlockWidget::addCreatedRow(TWidget *child, const style::margins &margin) {
-	_rows.push_back({ child, margin });
+	_rows.push_back({child, margin});
 }
 
 void BlockWidget::rowHeightUpdated() {
@@ -85,12 +85,14 @@ void BlockWidget::rowHeightUpdated() {
 	}
 }
 
-void BlockWidget::createChildRow(object_ptr<Ui::Checkbox> &child, style::margins &margin, const QString &text, base::lambda<void(bool checked)> callback, bool checked) {
+void BlockWidget::createChildRow(object_ptr<Ui::Checkbox> &child, style::margins &margin, const QString &text,
+                                 base::lambda<void(bool checked)> callback, bool checked) {
 	child.create(this, text, checked, st::defaultBoxCheckbox);
 	subscribe(child->checkedChanged, std::move(callback));
 }
 
-void BlockWidget::createChildRow(object_ptr<Ui::LinkButton> &child, style::margins &margin, const QString &text, const char *slot, const style::LinkButton &st) {
+void BlockWidget::createChildRow(object_ptr<Ui::LinkButton> &child, style::margins &margin, const QString &text,
+                                 const char *slot, const style::LinkButton &st) {
 	child.create(this, text, st);
 	connect(child, SIGNAL(clicked()), this, slot);
 }

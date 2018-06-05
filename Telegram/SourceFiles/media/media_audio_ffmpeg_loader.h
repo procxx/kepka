@@ -34,8 +34,8 @@ extern "C" {
 
 class AbstractFFMpegLoader : public AudioPlayerLoader {
 public:
-	AbstractFFMpegLoader(const FileLocation &file, const QByteArray &data, base::byte_vector &&bytes) : AudioPlayerLoader(file, data, std::move(bytes)) {
-	}
+	AbstractFFMpegLoader(const FileLocation &file, const QByteArray &data, base::byte_vector &&bytes)
+	    : AudioPlayerLoader(file, data, std::move(bytes)) {}
 
 	bool open(qint64 &position) override;
 
@@ -68,7 +68,6 @@ private:
 	static int64_t _seek_bytes(void *opaque, int64_t offset, int whence);
 	static int _read_file(void *opaque, uint8_t *buf, int buf_size);
 	static int64_t _seek_file(void *opaque, int64_t offset, int whence);
-
 };
 
 class FFMpegLoader : public AbstractFFMpegLoader {
@@ -103,5 +102,4 @@ private:
 	AVFrame *frame = nullptr;
 
 	SwrContext *swrContext = nullptr;
-
 };

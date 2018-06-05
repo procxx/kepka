@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/object_ptr.h"
+#include "mtproto/rpc_sender.h"
+#include "scheme.h"
 #include "settings/settings_block_widget.h"
 #include "settings/settings_chat_settings_widget.h"
-#include "mtproto/rpc_sender.h"
-#include "base/object_ptr.h"
-#include "scheme.h"
 
 namespace Settings {
 
@@ -48,7 +48,6 @@ private:
 
 	object_ptr<Ui::LinkButton> _edit;
 	object_ptr<Ui::LinkButton> _turnOff;
-
 };
 
 class CloudPasswordState : public TWidget, private base::Subscriber, public RPCSender {
@@ -80,7 +79,6 @@ private:
 	bool _hasPasswordRecovery = false;
 	QString _curPasswordHint;
 	QByteArray _newPasswordSalt;
-
 };
 
 class PrivacyWidget : public BlockWidget {
@@ -104,16 +102,15 @@ private:
 	void createControls();
 	void autoLockUpdated();
 
-	object_ptr<Ui::LinkButton> _blockedUsers = { nullptr };
-	object_ptr<Ui::LinkButton> _lastSeenPrivacy = { nullptr };
-	object_ptr<Ui::LinkButton> _callsPrivacy = { nullptr };
-	object_ptr<Ui::LinkButton> _groupsInvitePrivacy = { nullptr };
-	object_ptr<LocalPasscodeState> _localPasscodeState = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<LabeledLink>> _autoLock = { nullptr };
-	object_ptr<CloudPasswordState> _cloudPasswordState = { nullptr };
-	object_ptr<Ui::LinkButton> _showAllSessions = { nullptr };
-	object_ptr<Ui::LinkButton> _selfDestruction = { nullptr };
-
+	object_ptr<Ui::LinkButton> _blockedUsers = {nullptr};
+	object_ptr<Ui::LinkButton> _lastSeenPrivacy = {nullptr};
+	object_ptr<Ui::LinkButton> _callsPrivacy = {nullptr};
+	object_ptr<Ui::LinkButton> _groupsInvitePrivacy = {nullptr};
+	object_ptr<LocalPasscodeState> _localPasscodeState = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<LabeledLink>> _autoLock = {nullptr};
+	object_ptr<CloudPasswordState> _cloudPasswordState = {nullptr};
+	object_ptr<Ui::LinkButton> _showAllSessions = {nullptr};
+	object_ptr<Ui::LinkButton> _selfDestruction = {nullptr};
 };
 
 } // namespace Settings

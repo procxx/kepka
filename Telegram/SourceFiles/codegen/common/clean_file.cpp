@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/common/clean_file.h"
 
-#include <iostream>
 #include <QtCore/QDir>
+#include <iostream>
 
 #include "codegen/common/logging.h"
 
@@ -52,15 +52,13 @@ bool readFile(const QString &filepath, QByteArray *outResult) {
 
 
 CleanFile::CleanFile(const QString &filepath)
-: filepath_(filepath)
-, read_(true) {
-}
+    : filepath_(filepath)
+    , read_(true) {}
 
 CleanFile::CleanFile(const QByteArray &content, const QString &filepath)
-: filepath_(filepath)
-, content_(content)
-, read_(false) {
-}
+    : filepath_(filepath)
+    , content_(content)
+    , read_(false) {}
 
 bool CleanFile::read() {
 	if (read_) {

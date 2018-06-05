@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/weak_unique_ptr.h"
 #include "base/timer.h"
-#include "mtproto/sender.h"
+#include "base/weak_unique_ptr.h"
 #include "mtproto/auth_key.h"
+#include "mtproto/sender.h"
 
 namespace Media {
 namespace Audio {
@@ -48,9 +48,9 @@ public:
 	class Delegate {
 	public:
 		virtual DhConfig getDhConfig() const = 0;
-		virtual void callFinished(not_null<Call*> call) = 0;
-		virtual void callFailed(not_null<Call*> call) = 0;
-		virtual void callRedial(not_null<Call*> call) = 0;
+		virtual void callFinished(not_null<Call *> call) = 0;
+		virtual void callFailed(not_null<Call *> call) = 0;
+		virtual void callRedial(not_null<Call *> call) = 0;
 
 		enum class Sound {
 			Connecting,
@@ -58,7 +58,6 @@ public:
 			Ended,
 		};
 		virtual void playSound(Sound sound) = 0;
-
 	};
 
 	static constexpr auto kRandomPowerSize = 256;
@@ -69,12 +68,12 @@ public:
 		Incoming,
 		Outgoing,
 	};
-	Call(not_null<Delegate*> delegate, not_null<UserData*> user, Type type);
+	Call(not_null<Delegate *> delegate, not_null<UserData *> user, Type type);
 
 	Type type() const {
 		return _type;
 	}
-	not_null<UserData*> user() const {
+	not_null<UserData *> user() const {
 		return _user;
 	}
 	bool isIncomingWaiting() const;
@@ -145,8 +144,7 @@ private:
 	void handleControllerStateChange(tgvoip::VoIPController *controller, int state);
 	void createAndStartController(const MTPDphoneCall &call);
 
-	template <typename T>
-	bool checkCallCommonFields(const T &call);
+	template <typename T> bool checkCallCommonFields(const T &call);
 	bool checkCallFields(const MTPDphoneCall &call);
 	bool checkCallFields(const MTPDphoneCallAccepted &call);
 
@@ -157,8 +155,8 @@ private:
 	void setFailedQueued(int error);
 	void destroyController();
 
-	not_null<Delegate*> _delegate;
-	not_null<UserData*> _user;
+	not_null<Delegate *> _delegate;
+	not_null<UserData *> _user;
 	Type _type = Type::Outgoing;
 	State _state = State::Starting;
 	FinishType _finishAfterRequestingCall = FinishType::None;
@@ -186,7 +184,6 @@ private:
 	std::unique_ptr<tgvoip::VoIPController> _controller;
 
 	std::unique_ptr<Media::Audio::Track> _waitingTrack;
-
 };
 
 void UpdateConfig(const std::map<std::string, std::string> &data);

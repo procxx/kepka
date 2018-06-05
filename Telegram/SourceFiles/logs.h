@@ -28,100 +28,106 @@ extern inline bool cDebug();
 class MTPlong;
 namespace Logs {
 
-	void start();
-	bool started();
-	void finish();
+void start();
+bool started();
+void finish();
 
-	bool instanceChecked();
-	void multipleInstances();
+bool instanceChecked();
+void multipleInstances();
 
-	void closeMain();
+void closeMain();
 
-	void writeMain(const QString &v);
+void writeMain(const QString &v);
 
-	void writeDebug(const char *file, qint32 line, const QString &v);
-	void writeTcp(const QString &v);
-	void writeMtp(qint32 dc, const QString &v);
+void writeDebug(const char *file, qint32 line, const QString &v);
+void writeTcp(const QString &v);
+void writeMtp(qint32 dc, const QString &v);
 
-	QString full();
+QString full();
 
-	inline const char *b(bool v) {
-		return v ? "[TRUE]" : "[FALSE]";
-	}
-
-	struct MemoryBuffer {
-		MemoryBuffer(const void *ptr, quint32 size) : p(ptr), s(size) {
-		}
-		QString str() const {
-			QString result;
-			const uchar *buf((const uchar*)p);
-			const char *hex = "0123456789ABCDEF";
-			result.reserve(s * 3);
-			for (quint32 i = 0; i < s; ++i) {
-				result += hex[(buf[i] >> 4)];
-				result += hex[buf[i] & 0x0F];
-				result += ' ';
-			}
-			result.chop(1);
-			return result;
-		}
-
-		const void *p;
-		quint32 s;
-	};
-
-	inline MemoryBuffer mb(const void *ptr, quint32 size) {
-		return MemoryBuffer(ptr, size);
-	}
-
-	QString vector(const QVector<MTPlong> &ids);
-	QString vector(const QVector<quint64> &ids);
-
+inline const char *b(bool v) {
+	return v ? "[TRUE]" : "[FALSE]";
 }
 
+struct MemoryBuffer {
+	MemoryBuffer(const void *ptr, quint32 size)
+	    : p(ptr)
+	    , s(size) {}
+	QString str() const {
+		QString result;
+		const uchar *buf((const uchar *)p);
+		const char *hex = "0123456789ABCDEF";
+		result.reserve(s * 3);
+		for (quint32 i = 0; i < s; ++i) {
+			result += hex[(buf[i] >> 4)];
+			result += hex[buf[i] & 0x0F];
+			result += ' ';
+		}
+		result.chop(1);
+		return result;
+	}
+
+	const void *p;
+	quint32 s;
+};
+
+inline MemoryBuffer mb(const void *ptr, quint32 size) {
+	return MemoryBuffer(ptr, size);
+}
+
+QString vector(const QVector<MTPlong> &ids);
+QString vector(const QVector<quint64> &ids);
+
+} // namespace Logs
+
 #define LOG(msg) (Logs::writeMain(QString msg))
-//usage LOG(("log: %1 %2").arg(1).arg(2))
+// usage LOG(("log: %1 %2").arg(1).arg(2))
 
-#define DEBUG_LOG(msg) { if (cDebug() || !Logs::started()) Logs::writeDebug(__FILE__, __LINE__, QString msg); }
-//usage DEBUG_LOG(("log: %1 %2").arg(1).arg(2))
+#define DEBUG_LOG(msg)                                                                                                 \
+	{                                                                                                                  \
+		if (cDebug() || !Logs::started()) Logs::writeDebug(__FILE__, __LINE__, QString msg);                           \
+	}
+// usage DEBUG_LOG(("log: %1 %2").arg(1).arg(2))
 
-#define TCP_LOG(msg) { if (cDebug() || !Logs::started()) Logs::writeTcp(QString msg); }
-//usage TCP_LOG(("log: %1 %2").arg(1).arg(2))
+#define TCP_LOG(msg)                                                                                                   \
+	{                                                                                                                  \
+		if (cDebug() || !Logs::started()) Logs::writeTcp(QString msg);                                                 \
+	}
+// usage TCP_LOG(("log: %1 %2").arg(1).arg(2))
 
-#define MTP_LOG(dc, msg) { if (cDebug() || !Logs::started()) Logs::writeMtp(dc, QString msg); }
-//usage MTP_LOG(dc, ("log: %1 %2").arg(1).arg(2))
+#define MTP_LOG(dc, msg)                                                                                               \
+	{                                                                                                                  \
+		if (cDebug() || !Logs::started()) Logs::writeMtp(dc, QString msg);                                             \
+	}
+// usage MTP_LOG(dc, ("log: %1 %2").arg(1).arg(2))
 
 namespace SignalHandlers {
 
-	struct dump {
-		~dump();
-	};
-	const dump &operator<<(const dump &stream, const char *str);
-    const dump &operator<<(const dump &stream, const wchar_t *str);
-	const dump &operator<<(const dump &stream, int num);
-	const dump &operator<<(const dump &stream, unsigned int num);
-	const dump &operator<<(const dump &stream, unsigned long num);
-	const dump &operator<<(const dump &stream, unsigned long long num);
-	const dump &operator<<(const dump &stream, double num);
-	enum Status {
-		CantOpen,
-		LastCrashed,
-		Started
-	};
-	Status start();
-	Status restart(); // can be only CantOpen or Started
-	void finish();
+struct dump {
+	~dump();
+};
+const dump &operator<<(const dump &stream, const char *str);
+const dump &operator<<(const dump &stream, const wchar_t *str);
+const dump &operator<<(const dump &stream, int num);
+const dump &operator<<(const dump &stream, unsigned int num);
+const dump &operator<<(const dump &stream, unsigned long num);
+const dump &operator<<(const dump &stream, unsigned long long num);
+const dump &operator<<(const dump &stream, double num);
+enum Status { CantOpen, LastCrashed, Started };
+Status start();
+Status restart(); // can be only CantOpen or Started
+void finish();
 
-	void setCrashAnnotation(const std::string &key, const QString &value);
+void setCrashAnnotation(const std::string &key, const QString &value);
 
-	// Remembers value pointer and tries to add the value to the crash report.
-	// Attention! You should call clearCrashAnnotationRef(key) before destroying value.
-	void setCrashAnnotationRef(const std::string &key, const QString *valuePtr);
-	inline void clearCrashAnnotationRef(const std::string &key) {
-		setCrashAnnotationRef(key, nullptr);
-	}
-
+// Remembers value pointer and tries to add the value to the crash report.
+// Attention! You should call clearCrashAnnotationRef(key) before destroying value.
+void setCrashAnnotationRef(const std::string &key, const QString *valuePtr);
+inline void clearCrashAnnotationRef(const std::string &key) {
+	setCrashAnnotationRef(key, nullptr);
 }
+
+} // namespace SignalHandlers
 
 namespace base {
 namespace assertion {

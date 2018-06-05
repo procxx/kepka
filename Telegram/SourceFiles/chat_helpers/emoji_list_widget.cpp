@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "chat_helpers/emoji_list_widget.h"
 
-#include "ui/widgets/buttons.h"
-#include "styles/style_chat_helpers.h"
-#include "ui/widgets/shadow.h"
-#include "lang/lang_keys.h"
 #include "app.h"
+#include "lang/lang_keys.h"
+#include "styles/style_chat_helpers.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/shadow.h"
 
 namespace ChatHelpers {
 namespace {
@@ -36,7 +36,7 @@ constexpr auto kEmojiPanelRowsPerPage = Ui::Emoji::kPanelRowsPerPage;
 
 class EmojiListWidget::Footer : public TabbedSelector::InnerFooter {
 public:
-	Footer(not_null<EmojiListWidget*> parent);
+	Footer(not_null<EmojiListWidget *> parent);
 
 	void setCurrentSectionIcon(Section section);
 
@@ -47,23 +47,23 @@ private:
 	void prepareSection(int &left, int top, int _width, Ui::IconButton *sectionIcon, Section section);
 	void setActiveSection(Section section);
 
-	not_null<EmojiListWidget*> _pan;
+	not_null<EmojiListWidget *> _pan;
 	std::array<object_ptr<Ui::IconButton>, kEmojiSectionCount> _sections;
-
 };
 
-EmojiListWidget::Footer::Footer(not_null<EmojiListWidget*> parent) : InnerFooter(parent)
-, _pan(parent)
-, _sections { {
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryRecent),
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryPeople),
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryNature),
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryFood),
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryActivity),
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryTravel),
-	object_ptr<Ui::IconButton>(this, st::emojiCategoryObjects),
-	object_ptr<Ui::IconButton>(this, st::emojiCategorySymbols),
-} } {
+EmojiListWidget::Footer::Footer(not_null<EmojiListWidget *> parent)
+    : InnerFooter(parent)
+    , _pan(parent)
+    , _sections{{
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryRecent),
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryPeople),
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryNature),
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryFood),
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryActivity),
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryTravel),
+          object_ptr<Ui::IconButton>(this, st::emojiCategoryObjects),
+          object_ptr<Ui::IconButton>(this, st::emojiCategorySymbols),
+      }} {
 	auto left = (st::emojiPanWidth - _sections.size() * st::emojiCategory.width) / 2;
 	for (auto i = 0; i != _sections.size(); ++i) {
 		auto &button = _sections[i];
@@ -76,20 +76,20 @@ EmojiListWidget::Footer::Footer(not_null<EmojiListWidget*> parent) : InnerFooter
 
 void EmojiListWidget::Footer::processPanelHideFinished() {
 	// Preserve panel state through visibility toggles.
-	//setCurrentSectionIcon(Section::Recent);
+	// setCurrentSectionIcon(Section::Recent);
 }
 
 void EmojiListWidget::Footer::setCurrentSectionIcon(Section section) {
-	std::array<const style::icon *, kEmojiSectionCount> overrides = { {
-		&st::emojiRecentActive,
-		&st::emojiPeopleActive,
-		&st::emojiNatureActive,
-		&st::emojiFoodActive,
-		&st::emojiActivityActive,
-		&st::emojiTravelActive,
-		&st::emojiObjectsActive,
-		&st::emojiSymbolsActive,
-	} };
+	std::array<const style::icon *, kEmojiSectionCount> overrides = {{
+	    &st::emojiRecentActive,
+	    &st::emojiPeopleActive,
+	    &st::emojiNatureActive,
+	    &st::emojiFoodActive,
+	    &st::emojiActivityActive,
+	    &st::emojiTravelActive,
+	    &st::emojiObjectsActive,
+	    &st::emojiSymbolsActive,
+	}};
 	for (auto i = 0; i != _sections.size(); ++i) {
 		_sections[i]->setIconOverride((section == static_cast<Section>(i)) ? overrides[i] : nullptr);
 	}
@@ -99,11 +99,13 @@ void EmojiListWidget::Footer::setActiveSection(Ui::Emoji::Section section) {
 	_pan->showEmojiSection(section);
 }
 
-EmojiColorPicker::EmojiColorPicker(QWidget *parent) : TWidget(parent) {
+EmojiColorPicker::EmojiColorPicker(QWidget *parent)
+    : TWidget(parent) {
 	setMouseTracking(true);
 
 	auto w = st::emojiPanMargins.left() + st::emojiPanSize.width() + st::emojiColorsSep + st::emojiPanMargins.right();
-	auto h = st::emojiPanMargins.top() + 2 * st::emojiColorsPadding + st::emojiPanSize.height() + st::emojiPanMargins.bottom();
+	auto h = st::emojiPanMargins.top() + 2 * st::emojiColorsPadding + st::emojiPanSize.height() +
+	         st::emojiPanMargins.bottom();
 	resize(w, h);
 
 	_hideTimer.setSingleShot(true);
@@ -121,8 +123,10 @@ void EmojiColorPicker::showEmoji(EmojiPtr emoji) {
 		_variants[i] = emoji->variant(i);
 	}
 
-	auto w = st::emojiPanMargins.left() + st::emojiPanSize.width() * _variants.size() + (_variants.size() - 2) * st::emojiColorsPadding + st::emojiColorsSep + st::emojiPanMargins.right();
-	auto h = st::emojiPanMargins.top() + 2 * st::emojiColorsPadding + st::emojiPanSize.height() + st::emojiPanMargins.bottom();
+	auto w = st::emojiPanMargins.left() + st::emojiPanSize.width() * _variants.size() +
+	         (_variants.size() - 2) * st::emojiColorsPadding + st::emojiColorsSep + st::emojiPanMargins.right();
+	auto h = st::emojiPanMargins.top() + 2 * st::emojiColorsPadding + st::emojiPanSize.height() +
+	         st::emojiPanMargins.bottom();
 	resize(w, h);
 
 	if (!_cache.isNull()) _cache = QPixmap();
@@ -154,7 +158,8 @@ void EmojiColorPicker::paintEvent(QPaintEvent *e) {
 
 	auto x = st::emojiPanMargins.left() + 2 * st::emojiColorsPadding + st::emojiPanSize.width();
 	if (rtl()) x = width() - x - st::emojiColorsSep;
-	p.fillRect(x, st::emojiPanMargins.top() + st::emojiColorsPadding, st::emojiColorsSep, inner.height() - st::emojiColorsPadding * 2, st::emojiColorsSepColor);
+	p.fillRect(x, st::emojiPanMargins.top() + st::emojiColorsPadding, st::emojiColorsSep,
+	           inner.height() - st::emojiColorsPadding * 2, st::emojiColorsSepColor);
 
 	if (_variants.isEmpty()) return;
 	for (auto i = 0, count = _variants.size(); i != count; ++i) {
@@ -284,7 +289,10 @@ void EmojiColorPicker::setSelected(int newSelected) {
 	}
 	auto updateSelectedRect = [this] {
 		if (_selected < 0) return;
-		rtlupdate(st::emojiPanMargins.left() + st::emojiColorsPadding + _selected * st::emojiPanSize.width() + (_selected ? 2 * st::emojiColorsPadding + st::emojiColorsSep : 0), st::emojiPanMargins.top() + st::emojiColorsPadding, st::emojiPanSize.width(), st::emojiPanSize.height());
+		rtlupdate(st::emojiPanMargins.left() + st::emojiColorsPadding + _selected * st::emojiPanSize.width() +
+		              (_selected ? 2 * st::emojiColorsPadding + st::emojiColorsSep : 0),
+		          st::emojiPanMargins.top() + st::emojiColorsPadding, st::emojiPanSize.width(),
+		          st::emojiPanSize.height());
 	};
 	updateSelectedRect();
 	_selected = newSelected;
@@ -293,18 +301,23 @@ void EmojiColorPicker::setSelected(int newSelected) {
 }
 
 void EmojiColorPicker::drawVariant(Painter &p, int variant) {
-	QPoint w(st::emojiPanMargins.left() + st::emojiColorsPadding + variant * st::emojiPanSize.width() + (variant ? 2 * st::emojiColorsPadding + st::emojiColorsSep : 0), st::emojiPanMargins.top() + st::emojiColorsPadding);
+	QPoint w(st::emojiPanMargins.left() + st::emojiColorsPadding + variant * st::emojiPanSize.width() +
+	             (variant ? 2 * st::emojiColorsPadding + st::emojiColorsSep : 0),
+	         st::emojiPanMargins.top() + st::emojiColorsPadding);
 	if (variant == _selected) {
 		QPoint tl(w);
 		if (rtl()) tl.setX(width() - tl.x() - st::emojiPanSize.width());
 		App::roundRect(p, QRect(tl, st::emojiPanSize), st::emojiPanHover, StickerHoverCorners);
 	}
 	auto esize = Ui::Emoji::Size(Ui::Emoji::Index() + 1);
-	p.drawPixmapLeft(w.x() + (st::emojiPanSize.width() - (esize / cIntRetinaFactor())) / 2, w.y() + (st::emojiPanSize.height() - (esize / cIntRetinaFactor())) / 2, width(), App::emojiLarge(), QRect(_variants[variant]->x() * esize, _variants[variant]->y() * esize, esize, esize));
+	p.drawPixmapLeft(w.x() + (st::emojiPanSize.width() - (esize / cIntRetinaFactor())) / 2,
+	                 w.y() + (st::emojiPanSize.height() - (esize / cIntRetinaFactor())) / 2, width(), App::emojiLarge(),
+	                 QRect(_variants[variant]->x() * esize, _variants[variant]->y() * esize, esize, esize));
 }
 
-EmojiListWidget::EmojiListWidget(QWidget *parent, not_null<Window::Controller*> controller) : Inner(parent, controller)
-, _picker(this) {
+EmojiListWidget::EmojiListWidget(QWidget *parent, not_null<Window::Controller *> controller)
+    : Inner(parent, controller)
+    , _picker(this) {
 	resize(st::emojiPanWidth - st::emojiScroll.width - st::buttonRadius, countHeight());
 
 	setMouseTracking(true);
@@ -338,8 +351,7 @@ object_ptr<TabbedSelector::InnerFooter> EmojiListWidget::createFooter() {
 	return std::move(result);
 }
 
-template <typename Callback>
-bool EmojiListWidget::enumerateSections(Callback callback) const {
+template <typename Callback> bool EmojiListWidget::enumerateSections(Callback callback) const {
 	auto info = SectionInfo();
 	for (auto i = 0; i != kEmojiSectionCount; ++i) {
 		info.section = i;
@@ -429,7 +441,8 @@ void EmojiListWidget::paintEvent(QPaintEvent *e) {
 		if (info.section > 0 && r.top() < info.rowsTop) {
 			p.setFont(st::emojiPanHeaderFont);
 			p.setPen(st::emojiPanHeaderFg);
-			p.drawTextLeft(st::emojiPanHeaderLeft - st::buttonRadius, info.top + st::emojiPanHeaderTop, width(), lang(LangKey(lng_emoji_category0 + info.section)));
+			p.drawTextLeft(st::emojiPanHeaderLeft - st::buttonRadius, info.top + st::emojiPanHeaderTop, width(),
+			               lang(LangKey(lng_emoji_category0 + info.section)));
 		}
 		if (r.top() + r.height() > info.rowsTop) {
 			ensureLoaded(info.section);
@@ -440,15 +453,18 @@ void EmojiListWidget::paintEvent(QPaintEvent *e) {
 					auto index = i * kEmojiPanelPerRow + j;
 					if (index >= info.count) break;
 
-					auto selected = (!_picker->isHidden() && info.section * MatrixRowShift + index == _pickerSel) || (info.section * MatrixRowShift + index == _selected);
+					auto selected = (!_picker->isHidden() && info.section * MatrixRowShift + index == _pickerSel) ||
+					                (info.section * MatrixRowShift + index == _selected);
 
-					auto w = QPoint(st::emojiPanPadding + j * st::emojiPanSize.width(), info.rowsTop + i * st::emojiPanSize.height());
+					auto w = QPoint(st::emojiPanPadding + j * st::emojiPanSize.width(),
+					                info.rowsTop + i * st::emojiPanSize.height());
 					if (selected) {
 						auto tl = w;
 						if (rtl()) tl.setX(width() - tl.x() - st::emojiPanSize.width());
 						App::roundRect(p, QRect(tl, st::emojiPanSize), st::emojiPanHover, StickerHoverCorners);
 					}
-					auto sourceRect = QRect(_emoji[info.section][index]->x() * _esize, _emoji[info.section][index]->y() * _esize, _esize, _esize);
+					auto sourceRect = QRect(_emoji[info.section][index]->x() * _esize,
+					                        _emoji[info.section][index]->y() * _esize, _esize, _esize);
 					auto imageLeft = w.x() + (st::emojiPanSize.width() - (_esize / cIntRetinaFactor())) / 2;
 					auto imageTop = w.y() + (st::emojiPanSize.height() - (_esize / cIntRetinaFactor())) / 2;
 					p.drawPixmapLeft(imageLeft, imageTop, width(), App::emojiLarge(), sourceRect);
@@ -673,7 +689,8 @@ void EmojiListWidget::updateSelected() {
 	if (p.y() >= info.rowsTop && p.y() < info.rowsBottom) {
 		auto sx = (rtl() ? width() - p.x() : p.x()) - st::emojiPanPadding;
 		if (sx >= 0 && sx < kEmojiPanelPerRow * st::emojiPanSize.width()) {
-			newSelected = std::floor((p.y() - info.rowsTop) / st::emojiPanSize.height()) * kEmojiPanelPerRow + std::floor(sx / st::emojiPanSize.width());
+			newSelected = std::floor((p.y() - info.rowsTop) / st::emojiPanSize.height()) * kEmojiPanelPerRow +
+			              std::floor(sx / st::emojiPanSize.width());
 			if (newSelected >= _emoji[info.section].size()) {
 				newSelected = -1;
 			} else {

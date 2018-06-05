@@ -20,15 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/edit_participant_box.h"
 
-#include "lang/lang_keys.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/labels.h"
-#include "ui/widgets/buttons.h"
-#include "styles/style_boxes.h"
-#include "ui/special_buttons.h"
+#include "app.h" // For App::peerName
 #include "boxes/calendar_box.h"
 #include "facades.h"
-#include "app.h" // For App::peerName
+#include "lang/lang_keys.h"
+#include "styles/style_boxes.h"
+#include "ui/special_buttons.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
+#include "ui/widgets/labels.h"
 
 namespace {
 
@@ -77,12 +77,11 @@ void ApplyDependencies(CheckboxesMap &checkboxes, DependenciesMap &dependencies,
 
 class EditParticipantBox::Inner : public TWidget {
 public:
-	Inner(QWidget *parent, not_null<ChannelData*> channel, not_null<UserData*> user, bool hasAdminRights);
+	Inner(QWidget *parent, not_null<ChannelData *> channel, not_null<UserData *> user, bool hasAdminRights);
 
-	template <typename Widget>
-	QPointer<Widget> addControl(object_ptr<Widget> widget, QMargins margin) {
+	template <typename Widget> QPointer<Widget> addControl(object_ptr<Widget> widget, QMargins margin) {
 		doAddControl(std::move(widget), margin);
-		return static_cast<Widget*>(_rows.back().widget.data());
+		return static_cast<Widget *>(_rows.back().widget.data());
 	}
 
 	void removeControl(QPointer<TWidget> widget);
@@ -94,8 +93,8 @@ protected:
 private:
 	void doAddControl(object_ptr<TWidget> widget, QMargins margin);
 
-	not_null<ChannelData*> _channel;
-	not_null<UserData*> _user;
+	not_null<ChannelData *> _channel;
+	not_null<UserData *> _user;
 	object_ptr<Ui::PeerAvatarButton> _userPhoto;
 	Text _userName;
 	bool _hasAdminRights = false;
@@ -104,22 +103,21 @@ private:
 		QMargins margin;
 	};
 	std::vector<Control> _rows;
-
 };
 
-EditParticipantBox::Inner::Inner(QWidget *parent, not_null<ChannelData*> channel, not_null<UserData*> user, bool hasAdminRights) : TWidget(parent)
-, _channel(channel)
-, _user(user)
-, _userPhoto(this, _user, st::rightsPhotoButton)
-, _hasAdminRights(hasAdminRights) {
+EditParticipantBox::Inner::Inner(QWidget *parent, not_null<ChannelData *> channel, not_null<UserData *> user,
+                                 bool hasAdminRights)
+    : TWidget(parent)
+    , _channel(channel)
+    , _user(user)
+    , _userPhoto(this, _user, st::rightsPhotoButton)
+    , _hasAdminRights(hasAdminRights) {
 	_userName.setText(st::rightsNameStyle, App::peerName(_user), _textNameOptions);
 	_userPhoto->setClickedCallback([this] { Ui::showPeerProfile(_user); });
 }
 
 void EditParticipantBox::Inner::removeControl(QPointer<TWidget> widget) {
-	auto row = std::find_if(_rows.begin(), _rows.end(), [widget](auto &&row) {
-		return (row.widget == widget);
-	});
+	auto row = std::find_if(_rows.begin(), _rows.end(), [widget](auto &&row) { return (row.widget == widget); });
 	Assert(row != _rows.end());
 	row->widget.destroy();
 	_rows.erase(row);
@@ -127,7 +125,7 @@ void EditParticipantBox::Inner::removeControl(QPointer<TWidget> widget) {
 
 void EditParticipantBox::Inner::doAddControl(object_ptr<TWidget> widget, QMargins margin) {
 	widget->setParent(this);
-	_rows.push_back({ std::move(widget), margin });
+	_rows.push_back({std::move(widget), margin});
 	_rows.back().widget->show();
 }
 
@@ -165,18 +163,18 @@ void EditParticipantBox::Inner::paintEvent(QPaintEvent *e) {
 	p.drawTextLeft(namex, st::rightsPhotoMargin.top() + st::rightsStatusTop, width(), statusText());
 }
 
-EditParticipantBox::EditParticipantBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, bool hasAdminRights) : BoxContent()
-, _channel(channel)
-, _user(user)
-, _hasAdminRights(hasAdminRights) {
-}
+EditParticipantBox::EditParticipantBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user,
+                                       bool hasAdminRights)
+    : BoxContent()
+    , _channel(channel)
+    , _user(user)
+    , _hasAdminRights(hasAdminRights) {}
 
 void EditParticipantBox::prepare() {
 	_inner = setInnerWidget(object_ptr<Inner>(this, _channel, _user, hasAdminRights()));
 }
 
-template <typename Widget>
-QPointer<Widget> EditParticipantBox::addControl(object_ptr<Widget> widget, QMargins margin) {
+template <typename Widget> QPointer<Widget> EditParticipantBox::addControl(object_ptr<Widget> widget, QMargins margin) {
 	Expects(_inner != nullptr);
 	return _inner->addControl(std::move(widget), margin);
 }
@@ -191,8 +189,10 @@ void EditParticipantBox::resizeToContent() {
 	setDimensions(_inner->width(), std::min(_inner->height(), st::boxMaxListHeight));
 }
 
-EditAdminBox::EditAdminBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, const MTPChannelAdminRights &rights) : EditParticipantBox(nullptr, channel, user, (rights.c_channelAdminRights().vflags.v != 0))
-, _oldRights(rights) {
+EditAdminBox::EditAdminBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user,
+                           const MTPChannelAdminRights &rights)
+    : EditParticipantBox(nullptr, channel, user, (rights.c_channelAdminRights().vflags.v != 0))
+    , _oldRights(rights) {
 	auto dependency = [this](Flag dependent, Flag dependency) {
 		_dependencies.push_back(std::make_pair(dependent, dependency));
 	};
@@ -200,10 +200,12 @@ EditAdminBox::EditAdminBox(QWidget*, not_null<ChannelData*> channel, not_null<Us
 	dependency(Flag::f_invite_users, Flag::f_invite_link);
 }
 
-MTPChannelAdminRights EditAdminBox::DefaultRights(not_null<ChannelData*> channel) {
-	auto defaultRights = channel->isMegagroup()
-		? (Flag::f_change_info | Flag::f_delete_messages | Flag::f_ban_users | Flag::f_invite_users | Flag::f_invite_link | Flag::f_pin_messages)
-		: (Flag::f_change_info | Flag::f_post_messages | Flag::f_edit_messages | Flag::f_delete_messages | Flag::f_invite_users | Flag::f_invite_link);
+MTPChannelAdminRights EditAdminBox::DefaultRights(not_null<ChannelData *> channel) {
+	auto defaultRights = channel->isMegagroup() ?
+	                         (Flag::f_change_info | Flag::f_delete_messages | Flag::f_ban_users | Flag::f_invite_users |
+	                          Flag::f_invite_link | Flag::f_pin_messages) :
+	                         (Flag::f_change_info | Flag::f_post_messages | Flag::f_edit_messages |
+	                          Flag::f_delete_messages | Flag::f_invite_users | Flag::f_invite_link);
 	return MTP_channelAdminRights(MTP_flags(defaultRights));
 }
 
@@ -214,12 +216,15 @@ void EditAdminBox::prepare() {
 	setTitle(langFactory(hadRights ? lng_rights_edit_admin : lng_channel_add_admin));
 
 	addControl(object_ptr<BoxContentDivider>(this), QMargins());
-	addControl(object_ptr<Ui::FlatLabel>(this, lang(lng_rights_edit_admin_header), Ui::FlatLabel::InitType::Simple, st::rightsHeaderLabel), st::rightsHeaderMargin);
+	addControl(object_ptr<Ui::FlatLabel>(this, lang(lng_rights_edit_admin_header), Ui::FlatLabel::InitType::Simple,
+	                                     st::rightsHeaderLabel),
+	           st::rightsHeaderMargin);
 
 	auto prepareRights = (hadRights ? _oldRights : DefaultRights(channel()));
 	auto addCheckbox = [this, &prepareRights](Flags flags, const QString &text) {
 		auto checked = (prepareRights.c_channelAdminRights().vflags.v & flags) != 0;
-		auto control = addControl(object_ptr<Ui::Checkbox>(this, text, checked, st::rightsCheckbox, st::rightsToggle), st::rightsToggleMargin);
+		auto control = addControl(object_ptr<Ui::Checkbox>(this, text, checked, st::rightsCheckbox, st::rightsToggle),
+		                          st::rightsToggleMargin);
 		subscribe(control->checkedChanged, [this, control](bool checked) {
 			InvokeQueued(this, [this, control] { applyDependencies(control); });
 		});
@@ -237,7 +242,8 @@ void EditAdminBox::prepare() {
 		addCheckbox(Flag::f_change_info, lang(lng_rights_group_info));
 		addCheckbox(Flag::f_delete_messages, lang(lng_rights_group_delete));
 		addCheckbox(Flag::f_ban_users, lang(lng_rights_group_ban));
-		addCheckbox(Flag::f_invite_users | Flag::f_invite_link, lang(channel()->anyoneCanAddMembers() ? lng_rights_group_invite_link : lng_rights_group_invite));
+		addCheckbox(Flag::f_invite_users | Flag::f_invite_link,
+		            lang(channel()->anyoneCanAddMembers() ? lng_rights_group_invite_link : lng_rights_group_invite));
 		addCheckbox(Flag::f_pin_messages, lang(lng_rights_group_pin));
 		addCheckbox(Flag::f_add_admins, lang(lng_rights_add_admins));
 	} else {
@@ -253,9 +259,7 @@ void EditAdminBox::prepare() {
 	if (addAdmins != _checkboxes.end()) {
 		_aboutAddAdmins = addControl(object_ptr<Ui::FlatLabel>(this, st::boxLabel), st::rightsAboutMargin);
 		Assert(addAdmins != _checkboxes.end());
-		subscribe(addAdmins->second->checkedChanged, [this](bool checked) {
-			refreshAboutAddAdminsText();
-		});
+		subscribe(addAdmins->second->checkedChanged, [this](bool checked) { refreshAboutAddAdminsText(); });
 		refreshAboutAddAdminsText();
 	}
 
@@ -310,8 +314,10 @@ void EditAdminBox::refreshAboutAddAdminsText() {
 	resizeToContent();
 }
 
-EditRestrictedBox::EditRestrictedBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, bool hasAdminRights, const MTPChannelBannedRights &rights) : EditParticipantBox(nullptr, channel, user, hasAdminRights)
-, _oldRights(rights) {
+EditRestrictedBox::EditRestrictedBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user,
+                                     bool hasAdminRights, const MTPChannelBannedRights &rights)
+    : EditParticipantBox(nullptr, channel, user, hasAdminRights)
+    , _oldRights(rights) {
 	auto dependency = [this](Flag dependent, Flag dependency) {
 		_dependencies.push_back(std::make_pair(dependent, dependency));
 	};
@@ -333,14 +339,17 @@ void EditRestrictedBox::prepare() {
 	setTitle(langFactory(lng_rights_user_restrictions));
 
 	addControl(object_ptr<BoxContentDivider>(this), QMargins());
-	addControl(object_ptr<Ui::FlatLabel>(this, lang(lng_rights_user_restrictions_header), Ui::FlatLabel::InitType::Simple, st::rightsHeaderLabel), st::rightsHeaderMargin);
+	addControl(object_ptr<Ui::FlatLabel>(this, lang(lng_rights_user_restrictions_header),
+	                                     Ui::FlatLabel::InitType::Simple, st::rightsHeaderLabel),
+	           st::rightsHeaderMargin);
 
 	auto prepareRights = (_oldRights.c_channelBannedRights().vflags.v ? _oldRights : DefaultRights(channel()));
 	_until = prepareRights.c_channelBannedRights().vuntil_date.v;
 
 	auto addCheckbox = [this, &prepareRights](Flags flags, const QString &text) {
 		auto checked = (prepareRights.c_channelBannedRights().vflags.v & flags) == 0;
-		auto control = addControl(object_ptr<Ui::Checkbox>(this, text, checked, st::rightsCheckbox, st::rightsToggle), st::rightsToggleMargin);
+		auto control = addControl(object_ptr<Ui::Checkbox>(this, text, checked, st::rightsCheckbox, st::rightsToggle),
+		                          st::rightsToggleMargin);
 		subscribe(control->checkedChanged, [this, control](bool checked) {
 			InvokeQueued(this, [this, control] { applyDependencies(control); });
 		});
@@ -352,14 +361,17 @@ void EditRestrictedBox::prepare() {
 	addCheckbox(Flag::f_view_messages, lang(lng_rights_chat_read));
 	addCheckbox(Flag::f_send_messages, lang(lng_rights_chat_send_text));
 	addCheckbox(Flag::f_send_media, lang(lng_rights_chat_send_media));
-	addCheckbox(Flag::f_send_stickers | Flag::f_send_gifs | Flag::f_send_games | Flag::f_send_inline, lang(lng_rights_chat_send_stickers));
+	addCheckbox(Flag::f_send_stickers | Flag::f_send_gifs | Flag::f_send_games | Flag::f_send_inline,
+	            lang(lng_rights_chat_send_stickers));
 	addCheckbox(Flag::f_embed_links, lang(lng_rights_chat_send_links));
 
 	addControl(object_ptr<BoxContentDivider>(this), st::rightsUntilMargin);
-	addControl(object_ptr<Ui::FlatLabel>(this, lang(lng_rights_chat_banned_until_header), Ui::FlatLabel::InitType::Simple, st::rightsHeaderLabel), st::rightsHeaderMargin);
+	addControl(object_ptr<Ui::FlatLabel>(this, lang(lng_rights_chat_banned_until_header),
+	                                     Ui::FlatLabel::InitType::Simple, st::rightsHeaderLabel),
+	           st::rightsHeaderMargin);
 	setRestrictUntil(_until);
 
-	//addControl(object_ptr<Ui::LinkButton>(this, lang(lng_rights_chat_banned_block), st::boxLinkButton));
+	// addControl(object_ptr<Ui::LinkButton>(this, lang(lng_rights_chat_banned_block), st::boxLinkButton));
 
 	if (canSave()) {
 		addButton(langFactory(lng_settings_save), [this] {
@@ -393,8 +405,9 @@ void EditRestrictedBox::applyDependencies(QPointer<Ui::Checkbox> changed) {
 	ApplyDependencies(_checkboxes, _dependencies, changed);
 }
 
-MTPChannelBannedRights EditRestrictedBox::DefaultRights(not_null<ChannelData*> channel) {
-	auto defaultRights = Flag::f_send_messages | Flag::f_send_media | Flag::f_embed_links | Flag::f_send_stickers | Flag::f_send_gifs | Flag::f_send_games | Flag::f_send_inline;
+MTPChannelBannedRights EditRestrictedBox::DefaultRights(not_null<ChannelData *> channel) {
+	auto defaultRights = Flag::f_send_messages | Flag::f_send_media | Flag::f_embed_links | Flag::f_send_stickers |
+	                     Flag::f_send_gifs | Flag::f_send_games | Flag::f_send_inline;
 	return MTP_channelBannedRights(MTP_flags(defaultRights), MTP_int(0));
 }
 
@@ -402,7 +415,10 @@ void EditRestrictedBox::showRestrictUntil() {
 	auto tomorrow = QDate::currentDate().addDays(1);
 	auto highlighted = isUntilForever() ? tomorrow : date(getRealUntilValue()).date();
 	auto month = highlighted;
-	_restrictUntilBox = Ui::show(Box<CalendarBox>(month, highlighted, [this](const QDate &date) { setRestrictUntil(static_cast<int>(QDateTime(date).toTime_t())); }), KeepOtherLayers);
+	_restrictUntilBox = Ui::show(
+	    Box<CalendarBox>(month, highlighted,
+	                     [this](const QDate &date) { setRestrictUntil(static_cast<int>(QDateTime(date).toTime_t())); }),
+	    KeepOtherLayers);
 	_restrictUntilBox->setMaxDate(QDate::currentDate().addDays(kMaxRestrictDelayDays));
 	_restrictUntilBox->setMinDate(tomorrow);
 	_restrictUntilBox->addLeftButton(langFactory(lng_rights_chat_banned_forever), [this] { setRestrictUntil(0); });
@@ -442,7 +458,9 @@ void EditRestrictedBox::createUntilVariants() {
 		if (!canSave() && _untilGroup->value() != value) {
 			return;
 		}
-		_untilVariants.push_back(addControl(object_ptr<Ui::Radiobutton>(this, _untilGroup, value, text, st::defaultBoxCheckbox), st::rightsToggleMargin));
+		_untilVariants.push_back(
+		    addControl(object_ptr<Ui::Radiobutton>(this, _untilGroup, value, text, st::defaultBoxCheckbox),
+		               st::rightsToggleMargin));
 		if (!canSave()) {
 			_untilVariants.back()->setDisabled(true);
 		}

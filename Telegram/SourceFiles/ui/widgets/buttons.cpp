@@ -20,17 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/widgets/buttons.h"
 
-#include "ui/effects/ripple_animation.h"
-#include "ui/effects/cross_animation.h"
-#include "lang/lang_instance.h"
 #include "app.h"
+#include "lang/lang_instance.h"
+#include "ui/effects/cross_animation.h"
+#include "ui/effects/ripple_animation.h"
 
 namespace Ui {
 
-LinkButton::LinkButton(QWidget *parent, const QString &text, const style::LinkButton &st) : AbstractButton(parent)
-, _text(text)
-, _textWidth(st.font->width(_text))
-, _st(st) {
+LinkButton::LinkButton(QWidget *parent, const QString &text, const style::LinkButton &st)
+    : AbstractButton(parent)
+    , _text(text)
+    , _textWidth(st.font->width(_text))
+    , _st(st) {
 	resize(_textWidth, _st.font->height);
 	setCursor(style::cur_pointer);
 }
@@ -63,9 +64,9 @@ void LinkButton::onStateChanged(State was, StateChangeSource source) {
 	update();
 }
 
-RippleButton::RippleButton(QWidget *parent, const style::RippleAnimation &st) : AbstractButton(parent)
-, _st(st) {
-}
+RippleButton::RippleButton(QWidget *parent, const style::RippleAnimation &st)
+    : AbstractButton(parent)
+    , _st(st) {}
 
 void RippleButton::setForceRippled(bool rippled, SetForceRippledWay way) {
 	if (_forceRippled != rippled) {
@@ -138,9 +139,10 @@ void RippleButton::resetRipples() {
 
 RippleButton::~RippleButton() = default;
 
-FlatButton::FlatButton(QWidget *parent, const QString &text, const style::FlatButton &st) : RippleButton(parent, st.ripple)
-, _text(text)
-, _st(st) {
+FlatButton::FlatButton(QWidget *parent, const QString &text, const style::FlatButton &st)
+    : RippleButton(parent, st.ripple)
+    , _text(text)
+    , _st(st) {
 	if (_st.width < 0) {
 		_width = textWidth() - _st.width;
 	} else if (!_st.width) {
@@ -233,12 +235,11 @@ private:
 
 	base::lambda<void()> _animationCallback;
 	base::lambda<void()> _widthChangedCallback;
-
 };
 
 RoundButton::Numbers::Numbers(const style::RoundButton &st, base::lambda<void()> animationCallback)
-: _st(st)
-, _animationCallback(std::move(animationCallback)) {
+    : _st(st)
+    , _animationCallback(std::move(animationCallback)) {
 	for (auto ch = '0'; ch != '9'; ++ch) {
 		accumulate_max(_digitWidth, _st.font->m.width(ch));
 	}
@@ -353,9 +354,10 @@ void RoundButton::Numbers::paint(Painter &p, int x, int y, int outerWidth) {
 	p.setOpacity(1.);
 }
 
-RoundButton::RoundButton(QWidget *parent, base::lambda<QString()> textFactory, const style::RoundButton &st) : RippleButton(parent, st.ripple)
-, _textFactory(std::move(textFactory))
-, _st(st) {
+RoundButton::RoundButton(QWidget *parent, base::lambda<QString()> textFactory, const style::RoundButton &st)
+    : RippleButton(parent, st.ripple)
+    , _textFactory(std::move(textFactory))
+    , _st(st) {
 	subscribe(Lang::Current().updated(), [this] { refreshText(); });
 	refreshText();
 }
@@ -429,13 +431,15 @@ void RoundButton::resizeToText() {
 	if (_fullWidthOverride < 0) {
 		resize(innerWidth - _fullWidthOverride, _st.height + _st.padding.top() + _st.padding.bottom());
 	} else if (_st.width <= 0) {
-		resize(innerWidth - _st.width + _st.padding.left() + _st.padding.right(), _st.height + _st.padding.top() + _st.padding.bottom());
+		resize(innerWidth - _st.width + _st.padding.left() + _st.padding.right(),
+		       _st.height + _st.padding.top() + _st.padding.bottom());
 	} else {
 		if (_st.width < innerWidth + (_st.height - _st.font->height)) {
 			_text = _st.font->elided(computeFullText(), std::max(_st.width - (_st.height - _st.font->height), 1));
 			_textWidth = _st.font->width(_text);
 		}
-		resize(_st.width + _st.padding.left() + _st.padding.right(), _st.height + _st.padding.top() + _st.padding.bottom());
+		resize(_st.width + _st.padding.left() + _st.padding.right(),
+		       _st.height + _st.padding.top() + _st.padding.bottom());
 	}
 }
 
@@ -499,8 +503,9 @@ QPoint RoundButton::prepareRippleStartPosition() const {
 
 RoundButton::~RoundButton() = default;
 
-IconButton::IconButton(QWidget *parent, const style::IconButton &st) : RippleButton(parent, st.ripple)
-, _st(st) {
+IconButton::IconButton(QWidget *parent, const style::IconButton &st)
+    : RippleButton(parent, st.ripple)
+    , _st(st) {
 	resize(_st.width, _st.height);
 }
 
@@ -519,7 +524,8 @@ void IconButton::paintEvent(QPaintEvent *e) {
 
 	auto ms = getms();
 
-	paintRipple(p, _st.rippleAreaPosition.x(), _st.rippleAreaPosition.y(), ms, _rippleColorOverride ? &(*_rippleColorOverride)->c : nullptr);
+	paintRipple(p, _st.rippleAreaPosition.x(), _st.rippleAreaPosition.y(), ms,
+	            _rippleColorOverride ? &(*_rippleColorOverride)->c : nullptr);
 
 	auto down = isDown();
 	auto overIconOpacity = (down || forceRippled()) ? 1. : _a_over.current(getms(), isOver() ? 1. : 0.);
@@ -581,12 +587,13 @@ QImage IconButton::prepareRippleMask() const {
 	return RippleAnimation::ellipseMask(QSize(_st.rippleAreaSize, _st.rippleAreaSize));
 }
 
-LeftOutlineButton::LeftOutlineButton(QWidget *parent, const QString &text, const style::OutlineButton &st) : RippleButton(parent, st.ripple)
-, _text(text)
-, _fullText(text)
-, _textWidth(st.font->width(_text))
-, _fullTextWidth(_textWidth)
-, _st(st) {
+LeftOutlineButton::LeftOutlineButton(QWidget *parent, const QString &text, const style::OutlineButton &st)
+    : RippleButton(parent, st.ripple)
+    , _text(text)
+    , _fullText(text)
+    , _textWidth(st.font->width(_text))
+    , _fullTextWidth(_textWidth)
+    , _st(st) {
 	resizeToWidth(_textWidth + _st.padding.left() + _st.padding.right());
 
 	setCursor(style::cur_pointer);
@@ -615,18 +622,21 @@ void LeftOutlineButton::paintEvent(QPaintEvent *e) {
 	auto over = isOver();
 	auto down = isDown();
 	if (width() > _st.outlineWidth) {
-		p.fillRect(rtlrect(_st.outlineWidth, 0, width() - _st.outlineWidth, height(), width()), (over || down) ? _st.textBgOver : _st.textBg);
+		p.fillRect(rtlrect(_st.outlineWidth, 0, width() - _st.outlineWidth, height(), width()),
+		           (over || down) ? _st.textBgOver : _st.textBg);
 		paintRipple(p, 0, 0, getms());
-		p.fillRect(rtlrect(0, 0, _st.outlineWidth, height(), width()), (over || down) ? _st.outlineFgOver : _st.outlineFg);
+		p.fillRect(rtlrect(0, 0, _st.outlineWidth, height(), width()),
+		           (over || down) ? _st.outlineFgOver : _st.outlineFg);
 	}
 	p.setFont(_st.font);
 	p.setPen((over || down) ? _st.textFgOver : _st.textFg);
 	p.drawTextLeft(_st.padding.left(), _st.padding.top(), width(), _text, _textWidth);
 }
 
-CrossButton::CrossButton(QWidget *parent, const style::CrossButton &st) : RippleButton(parent, st.ripple)
-, _st(st)
-, _a_loading(animation(this, &CrossButton::step_loading)) {
+CrossButton::CrossButton(QWidget *parent, const style::CrossButton &st)
+    : RippleButton(parent, st.ripple)
+    , _st(st)
+    , _a_loading(animation(this, &CrossButton::step_loading)) {
 	resize(_st.width, _st.height);
 	setCursor(style::cur_pointer);
 	hide();
@@ -677,7 +687,8 @@ void CrossButton::paintEvent(QPaintEvent *e) {
 			loading = ((ms - _loadingStartMs) % _st.loadingPeriod) / double(_st.loadingPeriod);
 		}
 	}
-	CrossAnimation::paint(p, _st.cross, over ? _st.crossFgOver : _st.crossFg, _st.crossPosition.x(), _st.crossPosition.y(), width(), shown, loading);
+	CrossAnimation::paint(p, _st.cross, over ? _st.crossFgOver : _st.crossFg, _st.crossPosition.x(),
+	                      _st.crossPosition.y(), width(), shown, loading);
 }
 
 bool CrossButton::stopLoadingAnimation(TimeMs ms) {

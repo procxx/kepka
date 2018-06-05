@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_scale_widget.h"
 
+#include "app.h"
+#include "application.h"
+#include "boxes/confirm_box.h"
+#include "facades.h"
+#include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "storage/localstorage.h"
 #include "styles/style_boxes.h"
 #include "styles/style_settings.h"
 #include "ui/widgets/checkbox.h"
-#include "lang/lang_keys.h"
-#include "storage/localstorage.h"
-#include "mainwindow.h"
-#include "boxes/confirm_box.h"
-#include "application.h"
 #include "ui/widgets/discrete_sliders.h"
-#include "facades.h"
-#include "app.h"
 
 namespace Settings {
 namespace {
@@ -41,21 +41,24 @@ QString scaleLabel(DBIScale scale) {
 	case dbisOneAndQuarter: return qsl("125%");
 	case dbisOneAndHalf: return qsl("150%");
 	case dbisTwo: return qsl("200%");
-	case dbisAuto: case dbisScaleCount: assert(false); // temp
+	case dbisAuto:
+	case dbisScaleCount: assert(false); // temp
 	}
 	return QString();
 }
 
 } // namespace
 
-ScaleWidget::ScaleWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_scale)) {
+ScaleWidget::ScaleWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_scale)) {
 	createControls();
 }
 
 void ScaleWidget::createControls() {
 	style::margins margin(0, 0, 0, st::settingsSmallSkip);
 
-	addChildRow(_auto, margin, lng_settings_scale_auto(lt_cur, scaleLabel(cScreenScale())), [this](bool) { onAutoChanged(); }, (cConfigScale() == dbisAuto));
+	addChildRow(_auto, margin, lng_settings_scale_auto(lt_cur, scaleLabel(cScreenScale())),
+	            [this](bool) { onAutoChanged(); }, (cConfigScale() == dbisAuto));
 	addChildRow(_scale, style::margins(0, 0, 0, 0));
 
 	_scale->addSection(scaleLabel(dbisOne));
@@ -77,7 +80,8 @@ void ScaleWidget::onAutoChanged() {
 			case dbisOneAndQuarter: newScale = dbisOne; break;
 			case dbisOneAndHalf: newScale = dbisOneAndQuarter; break;
 			case dbisTwo: newScale = dbisOneAndHalf; break;
-			case dbisAuto: case dbisScaleCount: assert(false); // temp
+			case dbisAuto:
+			case dbisScaleCount: assert(false); // temp
 			}
 		}
 	}
@@ -102,15 +106,16 @@ void ScaleWidget::setScale(DBIScale newScale) {
 	}
 
 	if (cEvalScale(newScale) != cEvalScale(cRealScale())) {
-		Ui::show(Box<ConfirmBox>(lang(lng_settings_need_restart), lang(lng_settings_restart_now), base::lambda_guarded(this, [this] {
-			cSetConfigScale(_newScale);
-			Local::writeSettings();
-			App::restart();
-		}), base::lambda_guarded(this, [this] {
-			App::CallDelayed(st::boxDuration, this, [this] {
-				setScale(cRealScale());
-			});
-		})));
+		Ui::show(Box<ConfirmBox>(lang(lng_settings_need_restart), lang(lng_settings_restart_now),
+		                         base::lambda_guarded(this,
+		                                              [this] {
+			                                              cSetConfigScale(_newScale);
+			                                              Local::writeSettings();
+			                                              App::restart();
+		                                              }),
+		                         base::lambda_guarded(this, [this] {
+			                         App::CallDelayed(st::boxDuration, this, [this] { setScale(cRealScale()); });
+		                         })));
 	} else {
 		cSetConfigScale(newScale);
 		Local::writeSettings();

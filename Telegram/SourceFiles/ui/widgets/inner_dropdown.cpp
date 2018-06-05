@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/widgets/inner_dropdown.h"
 
+#include "app.h"
 #include "mainwindow.h"
+#include "ui/effects/panel_animation.h"
 #include "ui/widgets/scroll_area.h"
 #include "ui/widgets/shadow.h"
-#include "ui/effects/panel_animation.h"
-#include "app.h"
 
 #include <QWindow>
 
@@ -37,9 +37,10 @@ constexpr int kFadeAlphaMax = 160;
 
 namespace Ui {
 
-InnerDropdown::InnerDropdown(QWidget *parent, const style::InnerDropdown &st) : TWidget(parent)
-, _st(st)
-, _scroll(this, _st.scroll) {
+InnerDropdown::InnerDropdown(QWidget *parent, const style::InnerDropdown &st)
+    : TWidget(parent)
+    , _st(st)
+    , _scroll(this, _st.scroll) {
 	_hideTimer.setSingleShot(true);
 	connect(&_hideTimer, SIGNAL(timeout()), this, SLOT(onHideAnimated()));
 
@@ -71,7 +72,7 @@ void InnerDropdown::setMaxHeight(int newMaxHeight) {
 void InnerDropdown::resizeToContent() {
 	auto newWidth = _st.padding.left() + _st.scrollMargin.left() + _st.scrollMargin.right() + _st.padding.right();
 	auto newHeight = _st.padding.top() + _st.scrollMargin.top() + _st.scrollMargin.bottom() + _st.padding.bottom();
-	if (auto widget = static_cast<Container*>(_scroll->widget())) {
+	if (auto widget = static_cast<Container *>(_scroll->widget())) {
 		widget->resizeToContent();
 		newWidth += widget->width();
 		newHeight += widget->height();
@@ -94,14 +95,14 @@ void InnerDropdown::onWindowActiveChanged() {
 
 void InnerDropdown::resizeEvent(QResizeEvent *e) {
 	_scroll->setGeometry(rect().marginsRemoved(_st.padding).marginsRemoved(_st.scrollMargin));
-	if (auto widget = static_cast<TWidget*>(_scroll->widget())) {
+	if (auto widget = static_cast<TWidget *>(_scroll->widget())) {
 		widget->resizeToWidth(_scroll->width());
 		onScroll();
 	}
 }
 
 void InnerDropdown::onScroll() {
-	if (auto widget = static_cast<TWidget*>(_scroll->widget())) {
+	if (auto widget = static_cast<TWidget *>(_scroll->widget())) {
 		int visibleTop = _scroll->scrollTop();
 		int visibleBottom = visibleTop + _scroll->height();
 		widget->setVisibleTopBottom(visibleTop, visibleBottom);
@@ -298,7 +299,8 @@ void InnerDropdown::startShowAnimation() {
 
 		_showAnimation = std::make_unique<PanelAnimation>(_st.animation, _origin);
 		auto inner = rect().marginsRemoved(_st.padding);
-		_showAnimation->setFinalImage(std::move(cache), QRect(inner.topLeft() * cIntRetinaFactor(), inner.size() * cIntRetinaFactor()));
+		_showAnimation->setFinalImage(std::move(cache),
+		                              QRect(inner.topLeft() * cIntRetinaFactor(), inner.size() * cIntRetinaFactor()));
 		auto corners = App::cornersMask(ImageRoundRadius::Small);
 		_showAnimation->setCornerMasks(corners[0], corners[1], corners[2], corners[3]);
 		_showAnimation->start();
@@ -316,7 +318,7 @@ QImage InnerDropdown::grabForPanelAnimation() {
 		Painter p(&result);
 		App::roundRect(p, rect().marginsRemoved(_st.padding), _st.bg, ImageRoundRadius::Small);
 		for (auto child : children()) {
-			if (auto widget = qobject_cast<QWidget*>(child)) {
+			if (auto widget = qobject_cast<QWidget *>(child)) {
 				widget->render(&p, widget->pos(), widget->rect(), QWidget::DrawChildren | QWidget::IgnoreMask);
 			}
 		}
@@ -345,7 +347,7 @@ bool InnerDropdown::eventFilter(QObject *obj, QEvent *e) {
 		otherEnter();
 	} else if (e->type() == QEvent::Leave) {
 		otherLeave();
-	} else if (e->type() == QEvent::MouseButtonRelease && static_cast<QMouseEvent*>(e)->button() == Qt::LeftButton) {
+	} else if (e->type() == QEvent::MouseButtonRelease && static_cast<QMouseEvent *>(e)->button() == Qt::LeftButton) {
 		if (isHidden() || _hiding) {
 			otherEnter();
 		} else {
@@ -357,8 +359,9 @@ bool InnerDropdown::eventFilter(QObject *obj, QEvent *e) {
 
 int InnerDropdown::resizeGetHeight(int newWidth) {
 	auto newHeight = _st.padding.top() + _st.scrollMargin.top() + _st.scrollMargin.bottom() + _st.padding.bottom();
-	if (auto widget = static_cast<TWidget*>(_scroll->widget())) {
-		auto containerWidth = newWidth - _st.padding.left() - _st.padding.right() - _st.scrollMargin.left() - _st.scrollMargin.right();
+	if (auto widget = static_cast<TWidget *>(_scroll->widget())) {
+		auto containerWidth =
+		    newWidth - _st.padding.left() - _st.padding.right() - _st.scrollMargin.left() - _st.scrollMargin.right();
 		widget->resizeToWidth(containerWidth);
 		newHeight += widget->height();
 	}
@@ -368,9 +371,10 @@ int InnerDropdown::resizeGetHeight(int newWidth) {
 	return newHeight;
 }
 
-InnerDropdown::Container::Container(QWidget *parent, object_ptr<TWidget> child, const style::InnerDropdown &st) : TWidget(parent)
-, _child(std::move(child))
-, _st(st) {
+InnerDropdown::Container::Container(QWidget *parent, object_ptr<TWidget> child, const style::InnerDropdown &st)
+    : TWidget(parent)
+    , _child(std::move(child))
+    , _st(st) {
 	_child->setParent(this);
 	_child->moveToLeft(_st.scrollPadding.left(), _st.scrollPadding.top());
 }
@@ -382,7 +386,7 @@ void InnerDropdown::Container::setVisibleTopBottom(int visibleTop, int visibleBo
 void InnerDropdown::Container::resizeToContent() {
 	auto newWidth = _st.scrollPadding.left() + _st.scrollPadding.right();
 	auto newHeight = _st.scrollPadding.top() + _st.scrollPadding.bottom();
-	if (auto child = static_cast<TWidget*>(children().front())) {
+	if (auto child = static_cast<TWidget *>(children().front())) {
 		newWidth += child->width();
 		newHeight += child->height();
 	}

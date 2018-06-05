@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QRect>
-#include <QPoint>
 #include "ui/twidget.h"
+#include <QPoint>
+#include <QRect>
 
 namespace Window {
 
@@ -45,15 +45,13 @@ class TitleWidget : public TWidget {
 public:
 	using TWidget::TWidget;
 
-	virtual void init() {
-	}
+	virtual void init() {}
 	virtual HitTestResult hitTest(const QPoint &p) const {
 		return HitTestResult::None;
 	}
 	virtual QRect iconRect() const {
 		return QRect();
 	}
-
 };
 
 } // namespace Window

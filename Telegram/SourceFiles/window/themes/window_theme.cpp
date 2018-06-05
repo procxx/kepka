@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/themes/window_theme.h"
 
-#include "mainwidget.h"
-#include "storage/localstorage.h"
 #include "base/parse_helper.h"
 #include "base/zlib_help.h"
-#include "styles/style_widgets.h"
-#include "styles/style_history.h"
 #include "boxes/background_box.h"
+#include "mainwidget.h"
+#include "storage/localstorage.h"
+#include "styles/style_history.h"
+#include "styles/style_widgets.h"
 
 #include <QBuffer>
 #include <QImageReader>
@@ -97,8 +97,8 @@ inline uchar readHexUchar(char char1, char char2, bool &error) {
 }
 
 bool readNameAndValue(const char *&from, const char *end, QLatin1String *outName, QLatin1String *outValue) {
-	using base::parse::skipWhitespaces;
 	using base::parse::readName;
+	using base::parse::skipWhitespaces;
 
 	if (!skipWhitespaces(from, end)) return true;
 
@@ -112,7 +112,8 @@ bool readNameAndValue(const char *&from, const char *end, QLatin1String *outName
 		return false;
 	}
 	if (*from != ':') {
-		LOG(("Theme Error: Expected ':' between each name and value in the color scheme (while reading key '%1')").arg(*outName));
+		LOG(("Theme Error: Expected ':' between each name and value in the color scheme (while reading key '%1')")
+		        .arg(*outName));
 		return false;
 	}
 	if (!skipWhitespaces(++from, end)) {
@@ -123,7 +124,9 @@ bool readNameAndValue(const char *&from, const char *end, QLatin1String *outName
 	if (*from == '#') ++from;
 
 	if (readName(from, end).size() == 0) {
-		LOG(("Theme Error: Expected a color value in #rrggbb or #rrggbbaa format in the color scheme (while reading key '%1')").arg(*outName));
+		LOG(("Theme Error: Expected a color value in #rrggbb or #rrggbbaa format in the color scheme (while reading "
+		     "key '%1')")
+		        .arg(*outName));
 		return false;
 	}
 	*outValue = QLatin1String(valueStart, from - valueStart);
@@ -156,7 +159,10 @@ SetResult setColorSchemeValue(QLatin1String name, QLatin1String value, Instance 
 		auto b = readHexUchar(data[5], data[6], error);
 		auto a = (size == 9) ? readHexUchar(data[7], data[8], error) : uchar(255);
 		if (error) {
-			LOG(("Theme Warning: Skipping value '%1: %2' (expected a color value in #rrggbb or #rrggbbaa or a previously defined key in the color scheme)").arg(name).arg(value));
+			LOG(("Theme Warning: Skipping value '%1: %2' (expected a color value in #rrggbb or #rrggbbaa or a "
+			     "previously defined key in the color scheme)")
+			        .arg(name)
+			        .arg(value));
 			return SetResult::Ok;
 		} else if (out) {
 			result = out->palette.setColor(name, r, g, b, a);
@@ -175,10 +181,15 @@ SetResult setColorSchemeValue(QLatin1String name, QLatin1String value, Instance 
 	} else if (result == style::palette::SetResult::KeyNotFound) {
 		return SetResult::NotFound;
 	} else if (result == style::palette::SetResult::ValueNotFound) {
-		LOG(("Theme Warning: Skipping value '%1: %2' (expected a color value in #rrggbb or #rrggbbaa or a previously defined key in the color scheme)").arg(name).arg(value));
+		LOG(("Theme Warning: Skipping value '%1: %2' (expected a color value in #rrggbb or #rrggbbaa or a previously "
+		     "defined key in the color scheme)")
+		        .arg(name)
+		        .arg(value));
 		return SetResult::Ok;
 	} else if (result == style::palette::SetResult::Duplicate) {
-		LOG(("Theme Warning: Color value appears more than once in the color scheme (while applying '%1: %2')").arg(name).arg(value));
+		LOG(("Theme Warning: Color value appears more than once in the color scheme (while applying '%1: %2')")
+		        .arg(name)
+		        .arg(value));
 		return SetResult::Ok;
 	} else {
 		LOG(("Theme Error: Unexpected internal error."));
@@ -279,16 +290,19 @@ bool loadTheme(const QByteArray &content, Cached &cache, Instance *out = nullptr
 	cache = Cached();
 	zlib::FileToRead file(content);
 
-	unz_global_info globalInfo = { 0 };
+	unz_global_info globalInfo = {0};
 	file.getGlobalInfo(&globalInfo);
 	if (file.error() == UNZ_OK) {
-		auto schemeContent = file.readFileContent("colors.tdesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+		auto schemeContent =
+		    file.readFileContent("colors.tdesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 		if (file.error() == UNZ_END_OF_LIST_OF_FILE) {
 			file.clearError();
-			schemeContent = file.readFileContent("colors.tdesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+			schemeContent =
+			    file.readFileContent("colors.tdesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 		}
 		if (file.error() != UNZ_OK) {
-			LOG(("Theme Error: could not read 'colors.tdesktop-theme' or 'colors.tdesktop-palette' in the theme file."));
+			LOG((
+			    "Theme Error: could not read 'colors.tdesktop-theme' or 'colors.tdesktop-palette' in the theme file."));
 			return false;
 		}
 		if (!loadColorScheme(schemeContent, out)) {
@@ -334,7 +348,8 @@ bool loadTheme(const QByteArray &content, Cached &cache, Instance *out = nullptr
 }
 
 QImage prepareBackgroundImage(QImage &&image) {
-	if (image.format() != QImage::Format_ARGB32 && image.format() != QImage::Format_ARGB32_Premultiplied && image.format() != QImage::Format_RGB32) {
+	if (image.format() != QImage::Format_ARGB32 && image.format() != QImage::Format_ARGB32_Premultiplied &&
+	    image.format() != QImage::Format_RGB32) {
 		image = std::move(image).convertToFormat(QImage::Format_RGB32);
 	}
 	image.setDevicePixelRatio(cRetinaFactor());
@@ -350,8 +365,8 @@ void adjustColor(style::color color, double hue, double saturation) {
 void adjustColorsUsingBackground(const QImage &img) {
 	Assert(img.format() == QImage::Format_ARGB32_Premultiplied);
 
-	quint64 components[3] = { 0 };
-	quint64 componentsScroll[3] = { 0 };
+	quint64 components[3] = {0};
+	quint64 componentsScroll[3] = {0};
 	auto w = img.width();
 	auto h = img.height();
 	auto size = w * h;
@@ -410,9 +425,8 @@ void ChatBackground::setImage(qint32 id, QImage &&image) {
 	if (_id == kThemeBackground) {
 		_tile = _themeTile;
 		setPreparedImage(QImage(_themeImage));
-	} else if (_id == internal::kTestingThemeBackground
-		|| _id == internal::kTestingDefaultBackground
-		|| _id == internal::kTestingEditorBackground) {
+	} else if (_id == internal::kTestingThemeBackground || _id == internal::kTestingDefaultBackground ||
+	           _id == internal::kTestingEditorBackground) {
 		if (_id == internal::kTestingDefaultBackground || image.isNull()) {
 			image.load(qsl(":/gui/art/bg.jpg"));
 			_id = internal::kTestingDefaultBackground;
@@ -514,8 +528,7 @@ bool ChatBackground::tile() const {
 }
 
 bool ChatBackground::tileForSave() const {
-	if (_id == internal::kTestingThemeBackground ||
-		_id == internal::kTestingDefaultBackground) {
+	if (_id == internal::kTestingThemeBackground || _id == internal::kTestingDefaultBackground) {
 		return _tileForRevert;
 	}
 	return tile();
@@ -567,9 +580,8 @@ void ChatBackground::saveForRevert() {
 
 void ChatBackground::setTestingTheme(Instance &&theme, ChangeMode mode) {
 	style::main_palette::apply(theme.palette);
-	auto switchToThemeBackground = (mode == ChangeMode::SwitchToThemeBackground && !theme.background.isNull())
-		|| (_id == kThemeBackground)
-		|| (_id == kDefaultBackground && !Local::hasTheme());
+	auto switchToThemeBackground = (mode == ChangeMode::SwitchToThemeBackground && !theme.background.isNull()) ||
+	                               (_id == kThemeBackground) || (_id == kDefaultBackground && !Local::hasTheme());
 	if (AreTestingTheme() && IsPaletteTestingPath(instance->applying.path)) {
 		// Grab current background image if it is not already custom
 		if (_id != kCustomBackground) {
@@ -628,9 +640,8 @@ void ChatBackground::writeNewBackgroundSettings() {
 }
 
 void ChatBackground::revert() {
-	if (_id == internal::kTestingThemeBackground
-		|| _id == internal::kTestingDefaultBackground
-		|| _id == internal::kTestingEditorBackground) {
+	if (_id == internal::kTestingThemeBackground || _id == internal::kTestingDefaultBackground ||
+	    _id == internal::kTestingEditorBackground) {
 		setTile(_tileForRevert);
 		setImage(_idForRevert, std::move(_imageForRevert));
 	} else {
@@ -691,7 +702,8 @@ void SwitchNightTheme(bool enabled) {
 		if (instance->applying.paletteForRevert.isEmpty()) {
 			instance->applying.paletteForRevert = style::main_palette::save();
 		}
-		Background()->setTestingTheme(std::move(preview->instance), ChatBackground::ChangeMode::LeaveCurrentCustomBackground);
+		Background()->setTestingTheme(std::move(preview->instance),
+		                              ChatBackground::ChangeMode::LeaveCurrentCustomBackground);
 	} else {
 		Window::Theme::ApplyDefault();
 	}
@@ -777,7 +789,7 @@ bool LoadFromFile(const QString &path, Instance *out, QByteArray *outContent) {
 		return false;
 	}
 
-	return loadTheme(*outContent,  out->cached, out);
+	return loadTheme(*outContent, out->cached, out);
 }
 
 bool IsPaletteTestingPath(const QString &path) {
@@ -796,7 +808,8 @@ void ComputeBackgroundRects(QRect wholeFill, QSize imageSize, QRect &to, QRect &
 		} else if ((imageSize.width() % 2) != (takewidth % 2)) {
 			++takewidth;
 		}
-		to = QRect(int((wholeFill.width() - takewidth * pxsize) / 2.), 0, std::ceil(takewidth * pxsize), wholeFill.height());
+		to = QRect(int((wholeFill.width() - takewidth * pxsize) / 2.), 0, std::ceil(takewidth * pxsize),
+		           wholeFill.height());
 		from = QRect((imageSize.width() - takewidth) / 2, 0, takewidth, imageSize.height());
 	} else {
 		double pxsize = wholeFill.width() / double(imageSize.width());
@@ -806,7 +819,8 @@ void ComputeBackgroundRects(QRect wholeFill, QSize imageSize, QRect &to, QRect &
 		} else if ((imageSize.height() % 2) != (takeheight % 2)) {
 			++takeheight;
 		}
-		to = QRect(0, int((wholeFill.height() - takeheight * pxsize) / 2.), wholeFill.width(), std::ceil(takeheight * pxsize));
+		to = QRect(0, int((wholeFill.height() - takeheight * pxsize) / 2.), wholeFill.width(),
+		           std::ceil(takeheight * pxsize));
 		from = QRect(0, (imageSize.height() - takeheight) / 2, imageSize.width(), takeheight);
 	}
 }
@@ -816,16 +830,19 @@ bool CopyColorsToPalette(const QString &path, const QByteArray &themeContent) {
 
 	zlib::FileToRead file(themeContent);
 
-	unz_global_info globalInfo = { 0 };
+	unz_global_info globalInfo = {0};
 	file.getGlobalInfo(&globalInfo);
 	if (file.error() == UNZ_OK) {
 		paletteContent = file.readFileContent("colors.tdesktop-theme", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 		if (file.error() == UNZ_END_OF_LIST_OF_FILE) {
 			file.clearError();
-			paletteContent = file.readFileContent("colors.tdesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
+			paletteContent =
+			    file.readFileContent("colors.tdesktop-palette", zlib::kCaseInsensitive, kThemeSchemeSizeLimit);
 		}
 		if (file.error() != UNZ_OK) {
-			LOG(("Theme Error: could not read 'colors.tdesktop-theme' or 'colors.tdesktop-palette' in the theme file, while copying to '%1'.").arg(path));
+			LOG(("Theme Error: could not read 'colors.tdesktop-theme' or 'colors.tdesktop-palette' in the theme file, "
+			     "while copying to '%1'.")
+			        .arg(path));
 			return false;
 		}
 	}
@@ -843,7 +860,8 @@ bool CopyColorsToPalette(const QString &path, const QByteArray &themeContent) {
 	return true;
 }
 
-bool ReadPaletteValues(const QByteArray &content, base::lambda<bool(QLatin1String name, QLatin1String value)> callback) {
+bool ReadPaletteValues(const QByteArray &content,
+                       base::lambda<bool(QLatin1String name, QLatin1String value)> callback) {
 	if (content.size() > kThemeSchemeSizeLimit) {
 		LOG(("Theme Error: color scheme file too large (should be less than 1 MB, got %2)").arg(content.size()));
 		return false;

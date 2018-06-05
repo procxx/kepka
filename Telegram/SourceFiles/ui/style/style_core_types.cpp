@@ -20,5 +20,4 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/style/style_core_types.h"
 
-namespace style {
-} // namespace style
+namespace style {} // namespace style

@@ -48,17 +48,11 @@ bool AnimationsDisabled = false;
 
 namespace anim {
 
-transition linear = [](const double &delta, const double &dt) {
-	return delta * dt;
-};
+transition linear = [](const double &delta, const double &dt) { return delta * dt; };
 
-transition sineInOut = [](const double &delta, const double &dt) {
-	return -(delta / 2) * (cos(M_PI * dt) - 1);
-};
+transition sineInOut = [](const double &delta, const double &dt) { return -(delta / 2) * (cos(M_PI * dt) - 1); };
 
-transition halfSine = [](const double &delta, const double &dt) {
-	return delta * sin(M_PI * dt / 2);
-};
+transition halfSine = [](const double &delta, const double &dt) { return delta * sin(M_PI * dt / 2); };
 
 transition easeOutBack = [](const double &delta, const double &dt) {
 	static constexpr auto s = 1.70158;
@@ -67,18 +61,14 @@ transition easeOutBack = [](const double &delta, const double &dt) {
 	return delta * (t * t * ((s + 1) * t + s) + 1);
 };
 
-transition easeInCirc = [](const double &delta, const double &dt) {
-	return -delta * (sqrt(1 - dt * dt) - 1);
-};
+transition easeInCirc = [](const double &delta, const double &dt) { return -delta * (sqrt(1 - dt * dt) - 1); };
 
 transition easeOutCirc = [](const double &delta, const double &dt) {
 	const double t = dt - 1;
 	return delta * sqrt(1 - t * t);
 };
 
-transition easeInCubic = [](const double &delta, const double &dt) {
-	return delta * dt * dt * dt;
-};
+transition easeInCubic = [](const double &delta, const double &dt) { return delta * dt * dt * dt; };
 
 transition easeOutCubic = [](const double &delta, const double &dt) {
 	const double t = dt - 1;
@@ -109,7 +99,8 @@ void stopManager() {
 }
 
 void registerClipManager(Media::Clip::Manager *manager) {
-	manager->connect(manager, SIGNAL(callback(Media::Clip::Reader*,qint32,qint32)), _manager, SLOT(clipCallback(Media::Clip::Reader*,qint32,qint32)));
+	manager->connect(manager, SIGNAL(callback(Media::Clip::Reader *, qint32, qint32)), _manager,
+	                 SLOT(clipCallback(Media::Clip::Reader *, qint32, qint32)));
 }
 
 bool Disabled() {
@@ -120,7 +111,7 @@ void SetDisabled(bool disabled) {
 	AnimationsDisabled = disabled;
 }
 
-} // anim
+} // namespace anim
 
 void BasicAnimation::start() {
 	if (!_manager) return;
@@ -137,7 +128,9 @@ void BasicAnimation::stop() {
 	_manager->stop(this);
 }
 
-AnimationManager::AnimationManager() : _timer(this), _iterating(false) {
+AnimationManager::AnimationManager()
+    : _timer(this)
+    , _iterating(false) {
 	_timer.setSingleShot(false);
 	connect(&_timer, SIGNAL(timeout()), this, SLOT(timeout()));
 }
@@ -184,15 +177,11 @@ void AnimationManager::timeout() {
 	_iterating = false;
 
 	if (!_starting.isEmpty()) {
-		for_const (auto object, _starting) {
-			_objects.insert(object);
-		}
+		for_const (auto object, _starting) { _objects.insert(object); }
 		_starting.clear();
 	}
 	if (!_stopping.isEmpty()) {
-		for_const (auto object, _stopping) {
-			_objects.remove(object);
-		}
+		for_const (auto object, _stopping) { _objects.remove(object); }
 		_stopping.clear();
 	}
 	if (_objects.empty()) {
@@ -203,4 +192,3 @@ void AnimationManager::timeout() {
 void AnimationManager::clipCallback(Media::Clip::Reader *reader, qint32 threadIndex, qint32 notification) {
 	Media::Clip::Reader::callback(reader, threadIndex, Media::Clip::Notification(notification));
 }
-

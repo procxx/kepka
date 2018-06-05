@@ -27,8 +27,8 @@ namespace Calls {
 class BoxController : public PeerListController, private base::Subscriber, private MTP::Sender {
 public:
 	void prepare() override;
-	void rowClicked(not_null<PeerListRow*> row) override;
-	void rowActionClicked(not_null<PeerListRow*> row) override;
+	void rowClicked(not_null<PeerListRow *> row) override;
+	void rowActionClicked(not_null<PeerListRow *> row) override;
 	void loadMoreRows() override;
 
 private:
@@ -48,7 +48,6 @@ private:
 	MsgId _offsetId = 0;
 	mtpRequestId _loadRequestId = 0;
 	bool _allLoaded = false;
-
 };
 
 } // namespace Calls

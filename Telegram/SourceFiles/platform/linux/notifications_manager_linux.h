@@ -33,8 +33,7 @@ inline bool SkipToast() {
 	return false;
 }
 
-inline void FlashBounce() {
-}
+inline void FlashBounce() {}
 
 void Finish();
 
@@ -49,14 +48,14 @@ public:
 	~Manager();
 
 protected:
-	void doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle, const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) override;
+	void doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle,
+	                              const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) override;
 	void doClearAllFast() override;
 	void doClearFromHistory(History *history) override;
 
 private:
 	class Private;
 	const std::unique_ptr<Private> _private;
-
 };
 
 } // namespace Notifications

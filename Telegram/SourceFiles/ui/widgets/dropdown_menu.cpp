@@ -22,8 +22,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Ui {
 
-DropdownMenu::DropdownMenu(QWidget *parent, const style::DropdownMenu &st) : InnerDropdown(parent, st.wrap)
-, _st(st) {
+DropdownMenu::DropdownMenu(QWidget *parent, const style::DropdownMenu &st)
+    : InnerDropdown(parent, st.wrap)
+    , _st(st) {
 	_menu = setOwnedWidget(object_ptr<Ui::Menu>(this, _st.menu));
 	init();
 }
@@ -44,12 +45,10 @@ void DropdownMenu::init() {
 	InnerDropdown::setHiddenCallback([this] { hideFinish(); });
 
 	_menu->setResizedCallback([this] { resizeToContent(); });
-	_menu->setActivatedCallback([this](QAction *action, int actionTop, TriggeredSource source) {
-		handleActivated(action, actionTop, source);
-	});
-	_menu->setTriggeredCallback([this](QAction *action, int actionTop, TriggeredSource source) {
-		handleTriggered(action, actionTop, source);
-	});
+	_menu->setActivatedCallback(
+	    [this](QAction *action, int actionTop, TriggeredSource source) { handleActivated(action, actionTop, source); });
+	_menu->setTriggeredCallback(
+	    [this](QAction *action, int actionTop, TriggeredSource source) { handleTriggered(action, actionTop, source); });
 	_menu->setKeyPressDelegate([this](int key) { return handleKeyPress(key); });
 	_menu->setMouseMoveDelegate([this](QPoint globalPosition) { handleMouseMove(globalPosition); });
 	_menu->setMousePressDelegate([this](QPoint globalPosition) { handleMousePress(globalPosition); });
@@ -60,11 +59,13 @@ void DropdownMenu::init() {
 	hide();
 }
 
-QAction *DropdownMenu::addAction(const QString &text, const QObject *receiver, const char* member, const style::icon *icon, const style::icon *iconOver) {
+QAction *DropdownMenu::addAction(const QString &text, const QObject *receiver, const char *member,
+                                 const style::icon *icon, const style::icon *iconOver) {
 	return _menu->addAction(text, receiver, member, icon, iconOver);
 }
 
-QAction *DropdownMenu::addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon, const style::icon *iconOver) {
+QAction *DropdownMenu::addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon,
+                                 const style::icon *iconOver) {
 	return _menu->addAction(text, std::move(callback), icon, iconOver);
 }
 
@@ -73,7 +74,7 @@ QAction *DropdownMenu::addSeparator() {
 }
 
 void DropdownMenu::clearActions() {
-	//for (auto submenu : base::take(_submenus)) {
+	// for (auto submenu : base::take(_submenus)) {
 	//	delete submenu;
 	//}
 	return _menu->clearActions();

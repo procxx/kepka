@@ -21,13 +21,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <QBrush>
-#include <QImage>
 #include <QColor>
+#include <QImage>
 #include <QRect>
 #include <QRectF>
 
-#include "ui/style/style_core_types.h"
 #include "settings.h"
+#include "ui/style/style_core_types.h"
 
 inline QPoint rtlpoint(int x, int y, int outerw) {
 	return QPoint(rtl() ? (outerw - x) : x, y);
@@ -48,7 +48,8 @@ inline QRectF rtlrect(const QRectF &r, int outerw) {
 	return rtl() ? QRectF(outerw - r.x() - r.width(), r.y(), r.width(), r.height()) : r;
 }
 inline QRect centerrect(const QRect &inRect, const QRect &rect) {
-	return QRect(inRect.x() + (inRect.width() - rect.width()) / 2, inRect.y() + (inRect.height() - rect.height()) / 2, rect.width(), rect.height());
+	return QRect(inRect.x() + (inRect.width() - rect.width()) / 2, inRect.y() + (inRect.height() - rect.height()) / 2,
+	             rect.width(), rect.height());
 }
 inline QRect centerrect(const QRect &inRect, const style::icon &icon) {
 	return centerrect(inRect, QRect(0, 0, icon.width(), icon.height()));
@@ -78,7 +79,8 @@ void stopManager();
 
 // *outResult must be r.width() x r.height(), ARGB32_Premultiplied.
 // QRect(0, 0, src.width(), src.height()) must contain r.
-void colorizeImage(const QImage &src, QColor c, QImage *outResult, QRect srcRect = QRect(), QPoint dstPoint = QPoint(0, 0));
+void colorizeImage(const QImage &src, QColor c, QImage *outResult, QRect srcRect = QRect(),
+                   QPoint dstPoint = QPoint(0, 0));
 
 inline QImage colorizeImage(const QImage &src, QColor c, QRect srcRect = QRect()) {
 	if (srcRect.isNull()) srcRect = src.rect();

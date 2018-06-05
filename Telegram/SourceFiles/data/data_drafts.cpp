@@ -20,30 +20,30 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "data/data_drafts.h"
 
-#include "ui/widgets/input_fields.h"
 #include "chat_helpers/message_field.h"
 #include "history/history_widget.h"
 #include "mainwidget.h"
 #include "storage/localstorage.h"
+#include "ui/widgets/input_fields.h"
 
 namespace Data {
-namespace {
-
-} // namespace
+namespace {} // namespace
 
 Draft::Draft(const Ui::FlatTextarea *field, MsgId msgId, bool previewCancelled, mtpRequestId saveRequestId)
-	: textWithTags(field->getTextWithTags())
-	, msgId(msgId)
-	, cursor(field)
-	, previewCancelled(previewCancelled) {
-}
+    : textWithTags(field->getTextWithTags())
+    , msgId(msgId)
+    , cursor(field)
+    , previewCancelled(previewCancelled) {}
 
 void applyPeerCloudDraft(PeerId peerId, const MTPDdraftMessage &draft) {
 	auto history = App::history(peerId);
-	auto text = TextWithEntities { qs(draft.vmessage), draft.has_entities() ? TextUtilities::EntitiesFromMTP(draft.ventities.v) : EntitiesInText() };
-	auto textWithTags = TextWithTags { TextUtilities::ApplyEntities(text), ConvertEntitiesToTextTags(text.entities) };
+	auto text =
+	    TextWithEntities{qs(draft.vmessage),
+	                     draft.has_entities() ? TextUtilities::EntitiesFromMTP(draft.ventities.v) : EntitiesInText()};
+	auto textWithTags = TextWithTags{TextUtilities::ApplyEntities(text), ConvertEntitiesToTextTags(text.entities)};
 	auto replyTo = draft.has_reply_to_msg_id() ? draft.vreply_to_msg_id.v : MsgId(0);
-	auto cloudDraft = std::make_unique<Draft>(textWithTags, replyTo, MessageCursor(QFIXED_MAX, QFIXED_MAX, QFIXED_MAX), draft.is_no_webpage());
+	auto cloudDraft = std::make_unique<Draft>(textWithTags, replyTo, MessageCursor(QFIXED_MAX, QFIXED_MAX, QFIXED_MAX),
+	                                          draft.is_no_webpage());
 	cloudDraft->date = ::date(draft.vdate);
 
 	history->setCloudDraft(std::move(cloudDraft));

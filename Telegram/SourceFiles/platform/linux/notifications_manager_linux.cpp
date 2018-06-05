@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/notifications_manager_linux.h"
 
+#include "base/task_queue.h"
 #include "config.h"
-#include "window/notifications_utilities.h"
+#include "lang/lang_keys.h"
 #include "platform/linux/linux_libnotify.h"
 #include "platform/linux/linux_libs.h"
-#include "lang/lang_keys.h"
-#include "base/task_queue.h"
+#include "window/notifications_utilities.h"
 
 namespace Platform {
 namespace Notifications {
@@ -38,8 +38,7 @@ std::unique_ptr<Window::Notifications::Manager> Create(Window::Notifications::Sy
 	return nullptr;
 }
 
-void Finish() {
-}
+void Finish() {}
 
 } // namespace Notifications
 } // namespace Platform

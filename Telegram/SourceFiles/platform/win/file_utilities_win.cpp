@@ -18,26 +18,26 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
+#include <ShlGuid.h>
 #include <windows.h>
 #include <windowsx.h>
-#include <ShlGuid.h>
 
-#include <QDialog>
-#include <QSettings>
-#include <QFileDialog>
-#include <QStandardPaths>
 #include <QDesktopServices>
+#include <QDialog>
+#include <QFileDialog>
+#include <QSettings>
+#include <QStandardPaths>
 
 #include "platform/win/file_utilities_win.h"
 
-#include "mainwindow.h"
-#include "storage/localstorage.h"
-#include "platform/win/windows_dlls.h"
-#include "lang/lang_keys.h"
-#include "messenger.h"
 #include "app.h"
-#include <winerror.h>
+#include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "messenger.h"
+#include "platform/win/windows_dlls.h"
+#include "storage/localstorage.h"
 #include <Shlwapi.h>
+#include <winerror.h>
 
 
 HBITMAP qt_pixmapToWinHBITMAP(const QPixmap &, int hbitmapFormat);
@@ -49,15 +49,13 @@ namespace {
 class OpenWithApp {
 public:
 	OpenWithApp(const QString &name, IAssocHandler *handler, HBITMAP icon = nullptr)
-		: _name(name)
-		, _handler(handler)
-		, _icon(icon) {
-	}
+	    : _name(name)
+	    , _handler(handler)
+	    , _icon(icon) {}
 	OpenWithApp(OpenWithApp &&other)
-		: _name(base::take(other._name))
-		, _handler(base::take(other._handler))
-		, _icon(base::take(other._icon)) {
-	}
+	    : _name(base::take(other._name))
+	    , _handler(base::take(other._handler))
+	    , _icon(base::take(other._icon)) {}
 	OpenWithApp &operator=(OpenWithApp &&other) {
 		_name = base::take(other._name);
 		_icon = base::take(other._icon);
@@ -91,7 +89,6 @@ private:
 	QString _name;
 	IAssocHandler *_handler = nullptr;
 	HBITMAP _icon = nullptr;
-
 };
 
 HBITMAP IconToBitmap(LPWSTR icon, int iconindex) {
@@ -107,7 +104,9 @@ HBITMAP IconToBitmap(LPWSTR icon, int iconindex) {
 		if (!iconindex) { // try to read image
 			QImage img(QString::fromWCharArray(icon));
 			if (!img.isNull()) {
-				return qt_pixmapToWinHBITMAP(App::pixmapFromImageInPlace(img.scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)), /* HBitmapAlpha */ 2);
+				return qt_pixmapToWinHBITMAP(
+				    App::pixmapFromImageInPlace(img.scaled(w, h, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)),
+				    /* HBitmapAlpha */ 2);
 			}
 		}
 		return 0;
@@ -134,7 +133,8 @@ void UnsafeOpenEmailLink(const QString &email) {
 		auto wstringUrl = url.toString(QUrl::FullyEncoded).toStdWString();
 		if (Dlls::SHOpenWithDialog) {
 			OPENASINFO info;
-			info.oaifInFlags = OAIF_ALLOW_REGISTRATION | OAIF_REGISTER_EXT | OAIF_EXEC | OAIF_FILE_IS_URI | OAIF_URL_PROTOCOL;
+			info.oaifInFlags =
+			    OAIF_ALLOW_REGISTRATION | OAIF_REGISTER_EXT | OAIF_EXEC | OAIF_FILE_IS_URI | OAIF_URL_PROTOCOL;
 			info.pcszClass = NULL;
 			info.pcszFile = wstringUrl.c_str();
 			Dlls::SHOpenWithDialog(0, &info);
@@ -161,7 +161,7 @@ bool UnsafeShowOpenWithDropdown(const QString &filepath, QPoint menuPosition) {
 
 	auto result = false;
 	std::vector<OpenWithApp> handlers;
-	IShellItem* pItem = nullptr;
+	IShellItem *pItem = nullptr;
 	if (SUCCEEDED(Dlls::SHCreateItemFromParsingName(wstringPath.c_str(), nullptr, IID_PPV_ARGS(&pItem)))) {
 		IEnumAssocHandlers *assocHandlers = nullptr;
 		if (SUCCEEDED(pItem->BindToHandler(nullptr, BHID_EnumAssocHandlers, IID_PPV_ARGS(&assocHandlers)))) {
@@ -177,7 +177,8 @@ bool UnsafeShowOpenWithDropdown(const QString &filepath, QPoint menuPosition) {
 					LPWSTR icon = 0;
 					int iconindex = 0;
 					if (SUCCEEDED(handler->GetIconLocation(&icon, &iconindex)) && icon) {
-						handlers.push_back(OpenWithApp(QString::fromWCharArray(name), handler, IconToBitmap(icon, iconindex)));
+						handlers.push_back(
+						    OpenWithApp(QString::fromWCharArray(name), handler, IconToBitmap(icon, iconindex)));
 						CoTaskMemFree(icon);
 					} else {
 						handlers.push_back(OpenWithApp(QString::fromWCharArray(name), handler));
@@ -192,11 +193,10 @@ bool UnsafeShowOpenWithDropdown(const QString &filepath, QPoint menuPosition) {
 
 		if (!handlers.empty()) {
 			HMENU menu = CreatePopupMenu();
-			std::sort(handlers.begin(), handlers.end(), [](const OpenWithApp &a, const OpenWithApp &b) {
-				return a.name() < b.name();
-			});
+			std::sort(handlers.begin(), handlers.end(),
+			          [](const OpenWithApp &a, const OpenWithApp &b) { return a.name() < b.name(); });
 			for (qint32 i = 0, l = handlers.size(); i < l; ++i) {
-				MENUITEMINFO menuInfo = { 0 };
+				MENUITEMINFO menuInfo = {0};
 				menuInfo.cbSize = sizeof(menuInfo);
 				menuInfo.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;
 				menuInfo.fType = MFT_STRING;
@@ -214,13 +214,13 @@ bool UnsafeShowOpenWithDropdown(const QString &filepath, QPoint menuPosition) {
 				menuInfo.dwTypeData = nameArr;
 				InsertMenuItem(menu, GetMenuItemCount(menu), TRUE, &menuInfo);
 			}
-			MENUITEMINFO sepInfo = { 0 };
+			MENUITEMINFO sepInfo = {0};
 			sepInfo.cbSize = sizeof(sepInfo);
 			sepInfo.fMask = MIIM_STRING | MIIM_DATA;
 			sepInfo.fType = MFT_SEPARATOR;
 			InsertMenuItem(menu, GetMenuItemCount(menu), true, &sepInfo);
 
-			MENUITEMINFO menuInfo = { 0 };
+			MENUITEMINFO menuInfo = {0};
 			menuInfo.cbSize = sizeof(menuInfo);
 			menuInfo.fMask = MIIM_STRING | MIIM_DATA | MIIM_ID;
 			menuInfo.fType = MFT_STRING;
@@ -234,7 +234,8 @@ bool UnsafeShowOpenWithDropdown(const QString &filepath, QPoint menuPosition) {
 			menuInfo.dwTypeData = nameArr;
 			InsertMenuItem(menu, GetMenuItemCount(menu), TRUE, &menuInfo);
 
-			int sel = TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD, menuPosition.x(), menuPosition.y(), 0, parentHWND, 0);
+			int sel = TrackPopupMenu(menu, TPM_LEFTALIGN | TPM_TOPALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD,
+			                         menuPosition.x(), menuPosition.y(), 0, parentHWND, 0);
 			DestroyMenu(menu);
 
 			if (sel > 0) {
@@ -292,7 +293,8 @@ void UnsafeShowInFolder(const QString &filepath) {
 
 void PostprocessDownloaded(const QString &filepath) {
 	auto wstringZoneFile = QDir::toNativeSeparators(filepath).toStdWString() + L":Zone.Identifier";
-	auto f = CreateFile(wstringZoneFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	auto f = CreateFile(wstringZoneFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+	                    0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 	if (f == INVALID_HANDLE_VALUE) { // :(
 		return;
 	}
@@ -336,12 +338,7 @@ void InitLastPath() {
 		stream >> marker;
 		stream >> v;
 		if (marker == _QFileDialogMagic && v == version) {
-			stream >> splitterState
-				>> bookmarks
-				>> history
-				>> currentDirectory
-				>> headerData
-				>> viewMode;
+			stream >> splitterState >> bookmarks >> history >> currentDirectory >> headerData >> viewMode;
 			cSetDialogLastPath(currentDirectory);
 		}
 	}
@@ -357,7 +354,8 @@ void InitLastPath() {
 	}
 }
 
-bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter, ::FileDialog::internal::Type type, QString startFile) {
+bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter,
+         ::FileDialog::internal::Type type, QString startFile) {
 	if (cDialogLastPath().isEmpty()) {
 		Platform::FileDialog::InitLastPath();
 	}
@@ -431,9 +429,9 @@ bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, 
 		} else {
 			files = dialog.selectedFiles().mid(0, 1);
 		}
-//		if (type == Type::ReadFile || type == Type::ReadFiles) {
-//			remoteContent = dialog.selectedRemoteContent();
-//		}
+		//		if (type == Type::ReadFile || type == Type::ReadFiles) {
+		//			remoteContent = dialog.selectedRemoteContent();
+		//		}
 		return true;
 	}
 

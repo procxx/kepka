@@ -19,21 +19,21 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/connection.h"
-#include "mtproto/rsa_public_key.h"
-#include "mtproto/rpc_sender.h"
-#include "mtproto/dc_options.h"
-#include "mtproto/connection_abstract.h"
-#include "mtproto/facade.h"
-#include "zlib.h"
-#include "lang/lang_keys.h"
 #include "base/openssl_help.h"
+#include "facades.h"
+#include "lang/lang_keys.h"
+#include "mtproto/connection_abstract.h"
+#include "mtproto/dc_options.h"
+#include "mtproto/facade.h"
+#include "mtproto/rpc_sender.h"
+#include "mtproto/rsa_public_key.h"
+#include "zlib.h"
+#include <openssl/aes.h>
 #include <openssl/bn.h>
 #include <openssl/err.h>
-#include <openssl/aes.h>
-#include <openssl/sha.h>
 #include <openssl/md5.h>
 #include <openssl/rand.h>
-#include "facades.h"
+#include <openssl/sha.h>
 
 namespace MTP {
 namespace internal {
@@ -129,22 +129,21 @@ bool IsPrimeAndGoodCheck(const openssl::BigNum &prime, int g) {
 
 bool IsPrimeAndGood(base::const_byte_span primeBytes, int g) {
 	static constexpr unsigned char GoodPrime[] = {
-		0xC7, 0x1C, 0xAE, 0xB9, 0xC6, 0xB1, 0xC9, 0x04, 0x8E, 0x6C, 0x52, 0x2F, 0x70, 0xF1, 0x3F, 0x73,
-		0x98, 0x0D, 0x40, 0x23, 0x8E, 0x3E, 0x21, 0xC1, 0x49, 0x34, 0xD0, 0x37, 0x56, 0x3D, 0x93, 0x0F,
-		0x48, 0x19, 0x8A, 0x0A, 0xA7, 0xC1, 0x40, 0x58, 0x22, 0x94, 0x93, 0xD2, 0x25, 0x30, 0xF4, 0xDB,
-		0xFA, 0x33, 0x6F, 0x6E, 0x0A, 0xC9, 0x25, 0x13, 0x95, 0x43, 0xAE, 0xD4, 0x4C, 0xCE, 0x7C, 0x37,
-		0x20, 0xFD, 0x51, 0xF6, 0x94, 0x58, 0x70, 0x5A, 0xC6, 0x8C, 0xD4, 0xFE, 0x6B, 0x6B, 0x13, 0xAB,
-		0xDC, 0x97, 0x46, 0x51, 0x29, 0x69, 0x32, 0x84, 0x54, 0xF1, 0x8F, 0xAF, 0x8C, 0x59, 0x5F, 0x64,
-		0x24, 0x77, 0xFE, 0x96, 0xBB, 0x2A, 0x94, 0x1D, 0x5B, 0xCD, 0x1D, 0x4A, 0xC8, 0xCC, 0x49, 0x88,
-		0x07, 0x08, 0xFA, 0x9B, 0x37, 0x8E, 0x3C, 0x4F, 0x3A, 0x90, 0x60, 0xBE, 0xE6, 0x7C, 0xF9, 0xA4,
-		0xA4, 0xA6, 0x95, 0x81, 0x10, 0x51, 0x90, 0x7E, 0x16, 0x27, 0x53, 0xB5, 0x6B, 0x0F, 0x6B, 0x41,
-		0x0D, 0xBA, 0x74, 0xD8, 0xA8, 0x4B, 0x2A, 0x14, 0xB3, 0x14, 0x4E, 0x0E, 0xF1, 0x28, 0x47, 0x54,
-		0xFD, 0x17, 0xED, 0x95, 0x0D, 0x59, 0x65, 0xB4, 0xB9, 0xDD, 0x46, 0x58, 0x2D, 0xB1, 0x17, 0x8D,
-		0x16, 0x9C, 0x6B, 0xC4, 0x65, 0xB0, 0xD6, 0xFF, 0x9C, 0xA3, 0x92, 0x8F, 0xEF, 0x5B, 0x9A, 0xE4,
-		0xE4, 0x18, 0xFC, 0x15, 0xE8, 0x3E, 0xBE, 0xA0, 0xF8, 0x7F, 0xA9, 0xFF, 0x5E, 0xED, 0x70, 0x05,
-		0x0D, 0xED, 0x28, 0x49, 0xF4, 0x7B, 0xF9, 0x59, 0xD9, 0x56, 0x85, 0x0C, 0xE9, 0x29, 0x85, 0x1F,
-		0x0D, 0x81, 0x15, 0xF6, 0x35, 0xB1, 0x05, 0xEE, 0x2E, 0x4E, 0x15, 0xD0, 0x4B, 0x24, 0x54, 0xBF,
-		0x6F, 0x4F, 0xAD, 0xF0, 0x34, 0xB1, 0x04, 0x03, 0x11, 0x9C, 0xD8, 0xE3, 0xB9, 0x2F, 0xCC, 0x5B };
+	    0xC7, 0x1C, 0xAE, 0xB9, 0xC6, 0xB1, 0xC9, 0x04, 0x8E, 0x6C, 0x52, 0x2F, 0x70, 0xF1, 0x3F, 0x73, 0x98, 0x0D,
+	    0x40, 0x23, 0x8E, 0x3E, 0x21, 0xC1, 0x49, 0x34, 0xD0, 0x37, 0x56, 0x3D, 0x93, 0x0F, 0x48, 0x19, 0x8A, 0x0A,
+	    0xA7, 0xC1, 0x40, 0x58, 0x22, 0x94, 0x93, 0xD2, 0x25, 0x30, 0xF4, 0xDB, 0xFA, 0x33, 0x6F, 0x6E, 0x0A, 0xC9,
+	    0x25, 0x13, 0x95, 0x43, 0xAE, 0xD4, 0x4C, 0xCE, 0x7C, 0x37, 0x20, 0xFD, 0x51, 0xF6, 0x94, 0x58, 0x70, 0x5A,
+	    0xC6, 0x8C, 0xD4, 0xFE, 0x6B, 0x6B, 0x13, 0xAB, 0xDC, 0x97, 0x46, 0x51, 0x29, 0x69, 0x32, 0x84, 0x54, 0xF1,
+	    0x8F, 0xAF, 0x8C, 0x59, 0x5F, 0x64, 0x24, 0x77, 0xFE, 0x96, 0xBB, 0x2A, 0x94, 0x1D, 0x5B, 0xCD, 0x1D, 0x4A,
+	    0xC8, 0xCC, 0x49, 0x88, 0x07, 0x08, 0xFA, 0x9B, 0x37, 0x8E, 0x3C, 0x4F, 0x3A, 0x90, 0x60, 0xBE, 0xE6, 0x7C,
+	    0xF9, 0xA4, 0xA4, 0xA6, 0x95, 0x81, 0x10, 0x51, 0x90, 0x7E, 0x16, 0x27, 0x53, 0xB5, 0x6B, 0x0F, 0x6B, 0x41,
+	    0x0D, 0xBA, 0x74, 0xD8, 0xA8, 0x4B, 0x2A, 0x14, 0xB3, 0x14, 0x4E, 0x0E, 0xF1, 0x28, 0x47, 0x54, 0xFD, 0x17,
+	    0xED, 0x95, 0x0D, 0x59, 0x65, 0xB4, 0xB9, 0xDD, 0x46, 0x58, 0x2D, 0xB1, 0x17, 0x8D, 0x16, 0x9C, 0x6B, 0xC4,
+	    0x65, 0xB0, 0xD6, 0xFF, 0x9C, 0xA3, 0x92, 0x8F, 0xEF, 0x5B, 0x9A, 0xE4, 0xE4, 0x18, 0xFC, 0x15, 0xE8, 0x3E,
+	    0xBE, 0xA0, 0xF8, 0x7F, 0xA9, 0xFF, 0x5E, 0xED, 0x70, 0x05, 0x0D, 0xED, 0x28, 0x49, 0xF4, 0x7B, 0xF9, 0x59,
+	    0xD9, 0x56, 0x85, 0x0C, 0xE9, 0x29, 0x85, 0x1F, 0x0D, 0x81, 0x15, 0xF6, 0x35, 0xB1, 0x05, 0xEE, 0x2E, 0x4E,
+	    0x15, 0xD0, 0x4B, 0x24, 0x54, 0xBF, 0x6F, 0x4F, 0xAD, 0xF0, 0x34, 0xB1, 0x04, 0x03, 0x11, 0x9C, 0xD8, 0xE3,
+	    0xB9, 0x2F, 0xCC, 0x5B};
 
 	if (!base::compare_bytes(gsl::as_bytes(gsl::make_span(GoodPrime)), primeBytes)) {
 		if (g == 3 || g == 4 || g == 5 || g == 7) {
@@ -155,10 +154,8 @@ bool IsPrimeAndGood(base::const_byte_span primeBytes, int g) {
 	return IsPrimeAndGoodCheck(openssl::BigNum(primeBytes), g);
 }
 
-std::vector<gsl::byte> CreateAuthKey(
-		base::const_byte_span firstBytes,
-		base::const_byte_span randomBytes,
-		base::const_byte_span primeBytes) {
+std::vector<gsl::byte> CreateAuthKey(base::const_byte_span firstBytes, base::const_byte_span randomBytes,
+                                     base::const_byte_span primeBytes) {
 	using openssl::BigNum;
 	BigNum first(firstBytes);
 	BigNum prime(primeBytes);
@@ -169,10 +166,7 @@ std::vector<gsl::byte> CreateAuthKey(
 	return BigNum::ModExp(first, BigNum(randomBytes), prime).getBytes();
 }
 
-ModExpFirst CreateModExp(
-		int g,
-		base::const_byte_span primeBytes,
-		base::const_byte_span randomSeed) {
+ModExpFirst CreateModExp(int g, base::const_byte_span primeBytes, base::const_byte_span randomSeed) {
 	Expects(randomSeed.size() == ModExpFirst::kRandomPowerSize);
 
 	using namespace openssl;
@@ -194,15 +188,17 @@ ModExpFirst CreateModExp(
 	return result;
 }
 
-void wrapInvokeAfter(mtpRequest &to, const mtpRequest &from, const mtpRequestMap &haveSent, qint32 skipBeforeRequest = 0) {
-	mtpMsgId afterId(*(mtpMsgId*)(from->after->data() + 4));
+void wrapInvokeAfter(mtpRequest &to, const mtpRequest &from, const mtpRequestMap &haveSent,
+                     qint32 skipBeforeRequest = 0) {
+	mtpMsgId afterId(*(mtpMsgId *)(from->after->data() + 4));
 	mtpRequestMap::const_iterator i = afterId ? haveSent.constFind(afterId) : haveSent.cend();
 	qint32 size = to->size(), lenInInts = (from.innerLength() >> 2), headlen = 4, fulllen = headlen + lenInInts;
 	if (i == haveSent.constEnd()) { // no invoke after or such msg was not sent or was completed recently
 		to->resize(size + fulllen + skipBeforeRequest);
 		if (skipBeforeRequest) {
 			memcpy(to->data() + size, from->constData() + 4, headlen * sizeof(mtpPrime));
-			memcpy(to->data() + size + headlen + skipBeforeRequest, from->constData() + 4 + headlen, lenInInts * sizeof(mtpPrime));
+			memcpy(to->data() + size + headlen + skipBeforeRequest, from->constData() + 4 + headlen,
+			       lenInInts * sizeof(mtpPrime));
 		} else {
 			memcpy(to->data() + size, from->constData() + 4, fulllen * sizeof(mtpPrime));
 		}
@@ -210,9 +206,10 @@ void wrapInvokeAfter(mtpRequest &to, const mtpRequest &from, const mtpRequestMap
 		to->resize(size + fulllen + skipBeforeRequest + 3);
 		memcpy(to->data() + size, from->constData() + 4, headlen * sizeof(mtpPrime));
 		(*to)[size + 3] += 3 * sizeof(mtpPrime);
-		*((mtpTypeId*)&((*to)[size + headlen + skipBeforeRequest])) = mtpc_invokeAfterMsg;
+		*((mtpTypeId *)&((*to)[size + headlen + skipBeforeRequest])) = mtpc_invokeAfterMsg;
 		memcpy(to->data() + size + headlen + skipBeforeRequest + 1, &afterId, 2 * sizeof(mtpPrime));
-		memcpy(to->data() + size + headlen + skipBeforeRequest + 3, from->constData() + 4 + headlen, lenInInts * sizeof(mtpPrime));
+		memcpy(to->data() + size + headlen + skipBeforeRequest + 3, from->constData() + 4 + headlen,
+		       lenInInts * sizeof(mtpPrime));
 		if (size + 3 != 7) (*to)[7] += 3 * sizeof(mtpPrime);
 	}
 }
@@ -221,7 +218,7 @@ bool parsePQ(const QByteArray &pqStr, QByteArray &pStr, QByteArray &qStr) {
 	if (pqStr.length() > 8) return false; // more than 64 bit pq
 
 	quint64 pq = 0, p, q;
-	const uchar *pqChars = (const uchar*)pqStr.constData();
+	const uchar *pqChars = (const uchar *)pqStr.constData();
 	for (quint32 i = 0, l = pqStr.length(); i < l; ++i) {
 		pq <<= 8;
 		pq |= (quint64)pqChars[i];
@@ -229,7 +226,7 @@ bool parsePQ(const QByteArray &pqStr, QByteArray &pStr, QByteArray &qStr) {
 	quint64 pqSqrt = (quint64)sqrtl((long double)pq), ySqr, y;
 	while (pqSqrt * pqSqrt > pq) --pqSqrt;
 	while (pqSqrt * pqSqrt < pq) ++pqSqrt;
-	for (ySqr = pqSqrt * pqSqrt - pq; ; ++pqSqrt, ySqr = pqSqrt * pqSqrt - pq) {
+	for (ySqr = pqSqrt * pqSqrt - pq;; ++pqSqrt, ySqr = pqSqrt * pqSqrt - pq) {
 		y = (quint64)sqrtl((long double)ySqr);
 		while (y * y > ySqr) --y;
 		while (y * y < ySqr) ++y;
@@ -243,14 +240,14 @@ bool parsePQ(const QByteArray &pqStr, QByteArray &pStr, QByteArray &qStr) {
 	if (p > q) std::swap(p, q);
 
 	pStr.resize(4);
-	uchar *pChars = (uchar*)pStr.data();
+	uchar *pChars = (uchar *)pStr.data();
 	for (quint32 i = 0; i < 4; ++i) {
 		*(pChars + 3 - i) = (uchar)(p & 0xFF);
 		p >>= 8;
 	}
 
 	qStr.resize(4);
-	uchar *qChars = (uchar*)qStr.data();
+	uchar *qChars = (uchar *)qStr.data();
 	for (quint32 i = 0; i < 4; ++i) {
 		*(qChars + 3 - i) = (uchar)(q & 0xFF);
 		q >>= 8;
@@ -261,8 +258,8 @@ bool parsePQ(const QByteArray &pqStr, QByteArray &pStr, QByteArray &qStr) {
 
 } // namespace
 
-Connection::Connection(Instance *instance) : _instance(instance) {
-}
+Connection::Connection(Instance *instance)
+    : _instance(instance) {}
 
 void Connection::start(SessionData *sessionData, ShiftedDcId shiftedDcId) {
 	Expects(thread == nullptr && data == nullptr);
@@ -358,15 +355,17 @@ void ConnectionPrivate::destroyConn(AbstractConnection **conn) {
 	}
 }
 
-ConnectionPrivate::ConnectionPrivate(Instance *instance, QThread *thread, Connection *owner, SessionData *data, ShiftedDcId shiftedDcId) : QObject()
-, _instance(instance)
-, _state(DisconnectedState)
-, _shiftedDcId(shiftedDcId)
-, _owner(owner)
-, _waitForReceived(MTPMinReceiveDelay)
-, _waitForConnected(MTPMinConnectDelay)
-//, sessionDataMutex(QReadWriteLock::Recursive)
-, sessionData(data) {
+ConnectionPrivate::ConnectionPrivate(Instance *instance, QThread *thread, Connection *owner, SessionData *data,
+                                     ShiftedDcId shiftedDcId)
+    : QObject()
+    , _instance(instance)
+    , _state(DisconnectedState)
+    , _shiftedDcId(shiftedDcId)
+    , _owner(owner)
+    , _waitForReceived(MTPMinReceiveDelay)
+    , _waitForConnected(MTPMinConnectDelay)
+    //, sessionDataMutex(QReadWriteLock::Recursive)
+    , sessionData(data) {
 	oldConnectionTimer.moveToThread(thread);
 	_waitForConnectedTimer.moveToThread(thread);
 	_waitForReceivedTimer.moveToThread(thread);
@@ -379,7 +378,8 @@ ConnectionPrivate::ConnectionPrivate(Instance *instance, QThread *thread, Connec
 
 	connect(thread, &QThread::started, this, [this] { connectToServer(); });
 	connect(thread, &QThread::finished, this, [this] { finishAndDestroy(); });
-	connect(this, SIGNAL(finished(internal::Connection*)), _instance, SLOT(connectionFinished(internal::Connection*)), Qt::QueuedConnection);
+	connect(this, SIGNAL(finished(internal::Connection *)), _instance, SLOT(connectionFinished(internal::Connection *)),
+	        Qt::QueuedConnection);
 
 	connect(&retryTimer, SIGNAL(timeout()), this, SLOT(retryByTimer()));
 	connect(&_waitForConnectedTimer, SIGNAL(timeout()), this, SLOT(onWaitConnectedFailed()));
@@ -391,7 +391,8 @@ ConnectionPrivate::ConnectionPrivate(Instance *instance, QThread *thread, Connec
 
 	connect(sessionData->owner(), SIGNAL(needToRestart()), this, SLOT(restartNow()), Qt::QueuedConnection);
 	connect(this, SIGNAL(needToReceive()), sessionData->owner(), SLOT(tryToReceive()), Qt::QueuedConnection);
-	connect(this, SIGNAL(stateChanged(qint32)), sessionData->owner(), SLOT(onConnectionStateChange(qint32)), Qt::QueuedConnection);
+	connect(this, SIGNAL(stateChanged(qint32)), sessionData->owner(), SLOT(onConnectionStateChange(qint32)),
+	        Qt::QueuedConnection);
 	connect(sessionData->owner(), SIGNAL(needToSend()), this, SLOT(tryToSend()), Qt::QueuedConnection);
 	connect(sessionData->owner(), SIGNAL(needToPing()), this, SLOT(onPingSendForce()), Qt::QueuedConnection);
 	connect(this, SIGNAL(sessionResetDone()), sessionData->owner(), SLOT(onResetDone()), Qt::QueuedConnection);
@@ -399,16 +400,21 @@ ConnectionPrivate::ConnectionPrivate(Instance *instance, QThread *thread, Connec
 	static bool _registered = false;
 	if (!_registered) {
 		_registered = true;
-		qRegisterMetaType<QVector<quint64> >("QVector<quint64>");
+		qRegisterMetaType<QVector<quint64>>("QVector<quint64>");
 	}
 
 	connect(this, SIGNAL(needToSendAsync()), sessionData->owner(), SLOT(needToResumeAndSend()), Qt::QueuedConnection);
-	connect(this, SIGNAL(sendAnythingAsync(qint64)), sessionData->owner(), SLOT(sendAnything(qint64)), Qt::QueuedConnection);
+	connect(this, SIGNAL(sendAnythingAsync(qint64)), sessionData->owner(), SLOT(sendAnything(qint64)),
+	        Qt::QueuedConnection);
 	connect(this, SIGNAL(sendHttpWaitAsync()), sessionData->owner(), SLOT(sendAnything()), Qt::QueuedConnection);
-	connect(this, SIGNAL(sendPongAsync(quint64,quint64)), sessionData->owner(), SLOT(sendPong(quint64,quint64)), Qt::QueuedConnection);
-	connect(this, SIGNAL(sendMsgsStateInfoAsync(quint64, QByteArray)), sessionData->owner(), SLOT(sendMsgsStateInfo(quint64,QByteArray)), Qt::QueuedConnection);
-	connect(this, SIGNAL(resendAsync(quint64,qint64,bool,bool)), sessionData->owner(), SLOT(resend(quint64,qint64,bool,bool)), Qt::QueuedConnection);
-	connect(this, SIGNAL(resendManyAsync(QVector<quint64>,qint64,bool,bool)), sessionData->owner(), SLOT(resendMany(QVector<quint64>,qint64,bool,bool)), Qt::QueuedConnection);
+	connect(this, SIGNAL(sendPongAsync(quint64, quint64)), sessionData->owner(), SLOT(sendPong(quint64, quint64)),
+	        Qt::QueuedConnection);
+	connect(this, SIGNAL(sendMsgsStateInfoAsync(quint64, QByteArray)), sessionData->owner(),
+	        SLOT(sendMsgsStateInfo(quint64, QByteArray)), Qt::QueuedConnection);
+	connect(this, SIGNAL(resendAsync(quint64, qint64, bool, bool)), sessionData->owner(),
+	        SLOT(resend(quint64, qint64, bool, bool)), Qt::QueuedConnection);
+	connect(this, SIGNAL(resendManyAsync(QVector<quint64>, qint64, bool, bool)), sessionData->owner(),
+	        SLOT(resendMany(QVector<quint64>, qint64, bool, bool)), Qt::QueuedConnection);
 	connect(this, SIGNAL(resendAllAsync()), sessionData->owner(), SLOT(resendAll()));
 }
 
@@ -483,12 +489,14 @@ void ConnectionPrivate::resetSession() { // recreate all msg_id and msg_seqno
 	Replaces replaces;
 	for (mtpRequestMap::const_iterator i = haveSent.cbegin(), e = haveSent.cend(); i != e; ++i) {
 		if (!mtpRequestData::isSentContainer(i.value())) {
-			if (!*(mtpMsgId*)(i.value()->constData() + 4)) continue;
+			if (!*(mtpMsgId *)(i.value()->constData() + 4)) continue;
 
 			mtpMsgId id = i.key();
 			if (id > newId) {
 				while (true) {
-					if (toResend.constFind(newId) == toResend.cend() && wereAcked.constFind(newId) == wereAcked.cend() && haveSent.constFind(newId) == haveSent.cend()) {
+					if (toResend.constFind(newId) == toResend.cend() &&
+					    wereAcked.constFind(newId) == wereAcked.cend() &&
+					    haveSent.constFind(newId) == haveSent.cend()) {
 						break;
 					}
 					mtpMsgId m = msgid();
@@ -500,22 +508,25 @@ void ConnectionPrivate::resetSession() { // recreate all msg_id and msg_seqno
 				MTP_LOG(_shiftedDcId, ("Replacing msgId %1 to %2!").arg(id).arg(newId));
 				replaces.insert(id, newId);
 				id = newId;
-				*(mtpMsgId*)(i.value()->data() + 4) = id;
+				*(mtpMsgId *)(i.value()->data() + 4) = id;
 			}
 			setSeqNumbers.insert(id, i.value());
 		}
 	}
-	for (mtpRequestIdsMap::const_iterator i = toResend.cbegin(), e = toResend.cend(); i != e; ++i) { // collect all non-container requests
+	for (mtpRequestIdsMap::const_iterator i = toResend.cbegin(), e = toResend.cend(); i != e;
+	     ++i) { // collect all non-container requests
 		mtpPreRequestMap::const_iterator j = toSend.constFind(i.value());
 		if (j == toSend.cend()) continue;
 
 		if (!mtpRequestData::isSentContainer(j.value())) {
-			if (!*(mtpMsgId*)(j.value()->constData() + 4)) continue;
+			if (!*(mtpMsgId *)(j.value()->constData() + 4)) continue;
 
 			mtpMsgId id = i.key();
 			if (id > newId) {
 				while (true) {
-					if (toResend.constFind(newId) == toResend.cend() && wereAcked.constFind(newId) == wereAcked.cend() && haveSent.constFind(newId) == haveSent.cend()) {
+					if (toResend.constFind(newId) == toResend.cend() &&
+					    wereAcked.constFind(newId) == wereAcked.cend() &&
+					    haveSent.constFind(newId) == haveSent.cend()) {
 						break;
 					}
 					mtpMsgId m = msgid();
@@ -527,22 +538,25 @@ void ConnectionPrivate::resetSession() { // recreate all msg_id and msg_seqno
 				MTP_LOG(_shiftedDcId, ("Replacing msgId %1 to %2!").arg(id).arg(newId));
 				replaces.insert(id, newId);
 				id = newId;
-				*(mtpMsgId*)(j.value()->data() + 4) = id;
+				*(mtpMsgId *)(j.value()->data() + 4) = id;
 			}
 			setSeqNumbers.insert(id, j.value());
 		}
 	}
 
 	quint64 session = rand_value<quint64>();
-	DEBUG_LOG(("MTP Info: creating new session after bad_msg_notification, setting random server_session %1").arg(session));
+	DEBUG_LOG(
+	    ("MTP Info: creating new session after bad_msg_notification, setting random server_session %1").arg(session));
 	sessionData->setSession(session);
 
-	for (mtpRequestMap::const_iterator i = setSeqNumbers.cbegin(), e = setSeqNumbers.cend(); i != e; ++i) { // generate new seq_numbers
+	for (mtpRequestMap::const_iterator i = setSeqNumbers.cbegin(), e = setSeqNumbers.cend(); i != e;
+	     ++i) { // generate new seq_numbers
 		bool wasNeedAck = (*(i.value()->data() + 6) & 1);
 		*(i.value()->data() + 6) = sessionData->nextRequestSeqNumber(wasNeedAck);
 	}
 	if (!replaces.isEmpty()) {
-		for (Replaces::const_iterator i = replaces.cbegin(), e = replaces.cend(); i != e; ++i) { // replace msgIds keys in all data structs
+		for (Replaces::const_iterator i = replaces.cbegin(), e = replaces.cend(); i != e;
+		     ++i) { // replace msgIds keys in all data structs
 			mtpRequestMap::iterator j = haveSent.find(i.key());
 			if (j != haveSent.cend()) {
 				mtpRequest req = j.value();
@@ -562,7 +576,8 @@ void ConnectionPrivate::resetSession() { // recreate all msg_id and msg_seqno
 				wereAcked.insert(i.value(), req);
 			}
 		}
-		for (mtpRequestMap::const_iterator i = haveSent.cbegin(), e = haveSent.cend(); i != e; ++i) { // replace msgIds in saved containers
+		for (mtpRequestMap::const_iterator i = haveSent.cbegin(), e = haveSent.cend(); i != e;
+		     ++i) { // replace msgIds in saved containers
 			if (mtpRequestData::isSentContainer(i.value())) {
 				mtpMsgId *ids = (mtpMsgId *)(i.value()->data() + 8);
 				for (quint32 j = 0, l = (i.value()->size() - 8) >> 1; j < l; ++j) {
@@ -587,7 +602,7 @@ void ConnectionPrivate::resetSession() { // recreate all msg_id and msg_seqno
 
 mtpMsgId ConnectionPrivate::prepareToSend(mtpRequest &request, mtpMsgId currentLastId) {
 	if (request->size() < 9) return 0;
-	mtpMsgId msgId = *(mtpMsgId*)(request->constData() + 4);
+	mtpMsgId msgId = *(mtpMsgId *)(request->constData() + 4);
 	if (msgId) { // resending this request
 		QWriteLocker locker(sessionData->toResendMutex());
 		mtpRequestIdsMap &toResend(sessionData->toResendMap());
@@ -596,7 +611,7 @@ mtpMsgId ConnectionPrivate::prepareToSend(mtpRequest &request, mtpMsgId currentL
 			toResend.erase(i);
 		}
 	} else {
-		msgId = *(mtpMsgId*)(request->data() + 4) = currentLastId;
+		msgId = *(mtpMsgId *)(request->data() + 4) = currentLastId;
 		*(request->data() + 6) = sessionData->nextRequestSeqNumber(mtpRequestData::needAck(request));
 	}
 	return msgId;
@@ -605,7 +620,7 @@ mtpMsgId ConnectionPrivate::prepareToSend(mtpRequest &request, mtpMsgId currentL
 mtpMsgId ConnectionPrivate::replaceMsgId(mtpRequest &request, mtpMsgId newId) {
 	if (request->size() < 9) return 0;
 
-	mtpMsgId oldMsgId = *(mtpMsgId*)(request->constData() + 4);
+	mtpMsgId oldMsgId = *(mtpMsgId *)(request->constData() + 4);
 	if (oldMsgId != newId) {
 		if (oldMsgId) {
 			QWriteLocker locker(sessionData->toResendMutex());
@@ -616,7 +631,8 @@ mtpMsgId ConnectionPrivate::replaceMsgId(mtpRequest &request, mtpMsgId newId) {
 			mtpRequestMap &haveSent(sessionData->haveSentMap());
 
 			while (true) {
-				if (toResend.constFind(newId) == toResend.cend() && wereAcked.constFind(newId) == wereAcked.cend() && haveSent.constFind(newId) == haveSent.cend()) {
+				if (toResend.constFind(newId) == toResend.cend() && wereAcked.constFind(newId) == wereAcked.cend() &&
+				    haveSent.constFind(newId) == haveSent.cend()) {
 					break;
 				}
 				mtpMsgId m = msgid();
@@ -660,12 +676,13 @@ mtpMsgId ConnectionPrivate::replaceMsgId(mtpRequest &request, mtpMsgId newId) {
 		} else {
 			*(request->data() + 6) = sessionData->nextRequestSeqNumber(mtpRequestData::needAck(request));
 		}
-		*(mtpMsgId*)(request->data() + 4) = newId;
+		*(mtpMsgId *)(request->data() + 4) = newId;
 	}
 	return newId;
 }
 
-mtpMsgId ConnectionPrivate::placeToContainer(mtpRequest &toSendRequest, mtpMsgId &bigMsgId, mtpMsgId *&haveSentArr, mtpRequest &req) {
+mtpMsgId ConnectionPrivate::placeToContainer(mtpRequest &toSendRequest, mtpMsgId &bigMsgId, mtpMsgId *&haveSentArr,
+                                             mtpRequest &req) {
 	mtpMsgId msgId = prepareToSend(req, bigMsgId);
 	if (msgId > bigMsgId) msgId = replaceMsgId(req, bigMsgId);
 	if (msgId >= bigMsgId) bigMsgId = msgid();
@@ -720,7 +737,8 @@ void ConnectionPrivate::tryToSend() {
 		_pingIdToSend = 0;
 	} else {
 		if (prependOnly) {
-			DEBUG_LOG(("MTP Info: dc %1 not sending, waiting for Connected state, state: %2").arg(_shiftedDcId).arg(state));
+			DEBUG_LOG(
+			    ("MTP Info: dc %1 not sending, waiting for Connected state, state: %2").arg(_shiftedDcId).arg(state));
 			return; // just do nothing, if is not connected yet
 		} else {
 			DEBUG_LOG(("MTP Info: dc %1 trying to send after ping, state: %2").arg(_shiftedDcId).arg(state));
@@ -770,7 +788,7 @@ void ConnectionPrivate::tryToSend() {
 			req.write(*stateRequest);
 
 			stateRequest->msDate = getms(true); // > 0 - can send without container
-			stateRequest->requestId = reqid();// add to haveSent / wereAcked maps, but don't add to requestMap
+			stateRequest->requestId = reqid(); // add to haveSent / wereAcked maps, but don't add to requestMap
 		}
 		if (_conn->usingHttpWait()) {
 			MTPHttpWait req(MTP_http_wait(MTP_int(100), MTP_int(30), MTP_int(25000)));
@@ -791,7 +809,10 @@ void ConnectionPrivate::tryToSend() {
 		auto langPack = "tdesktop";
 		auto deviceModel = (_dcType == DcType::Cdn) ? "n/a" : cApiDeviceModel();
 		auto systemVersion = (_dcType == DcType::Cdn) ? "n/a" : cApiSystemVersion();
-		initWrapper = MTPInitConnection<mtpRequest>(MTP_int(ApiId), MTP_string(deviceModel), MTP_string(systemVersion), MTP_string(str_const_toString(AppVersionStr)), MTP_string(systemLangCode), MTP_string(langPack), MTP_string(cloudLangCode), mtpRequest());
+		initWrapper =
+		    MTPInitConnection<mtpRequest>(MTP_int(ApiId), MTP_string(deviceModel), MTP_string(systemVersion),
+		                                  MTP_string(str_const_toString(AppVersionStr)), MTP_string(systemLangCode),
+		                                  MTP_string(langPack), MTP_string(cloudLangCode), mtpRequest());
 		initSizeInInts = (initWrapper.innerLength() >> 2) + 2;
 		initSize = initSizeInInts * sizeof(mtpPrime);
 	}
@@ -813,7 +834,14 @@ void ConnectionPrivate::tryToSend() {
 
 		if (!toSendCount) return; // nothing to send
 
-		mtpRequest first = pingRequest ? pingRequest : (ackRequest ? ackRequest : (resendRequest ? resendRequest : (stateRequest ? stateRequest : (httpWaitRequest ? httpWaitRequest : toSend.cbegin().value()))));
+		mtpRequest first =
+		    pingRequest ?
+		        pingRequest :
+		        (ackRequest ?
+		             ackRequest :
+		             (resendRequest ? resendRequest :
+		                              (stateRequest ? stateRequest :
+		                                              (httpWaitRequest ? httpWaitRequest : toSend.cbegin().value()))));
 		if (toSendCount == 1 && first->msDate > 0) { // if can send without container
 			toSendRequest = first;
 			if (!prependOnly) {
@@ -847,14 +875,17 @@ void ConnectionPrivate::tryToSend() {
 						toSendRequest = wrappedRequest;
 					}
 					if (needsLayer) {
-						qint32 noWrapSize = (toSendRequest.innerLength() >> 2), toSendSize = noWrapSize + initSizeInInts;
+						qint32 noWrapSize = (toSendRequest.innerLength() >> 2),
+						       toSendSize = noWrapSize + initSizeInInts;
 						mtpRequest wrappedRequest(mtpRequestData::prepare(toSendSize));
-						memcpy(wrappedRequest->data(), toSendRequest->constData(), 7 * sizeof(mtpPrime)); // all except length
+						memcpy(wrappedRequest->data(), toSendRequest->constData(),
+						       7 * sizeof(mtpPrime)); // all except length
 						wrappedRequest->push_back(mtpc_invokeWithLayer);
 						wrappedRequest->push_back(MTP::internal::CurrentLayer);
 						initWrapper.write(*wrappedRequest);
 						wrappedRequest->resize(wrappedRequest->size() + noWrapSize);
-						memcpy(wrappedRequest->data() + wrappedRequest->size() - noWrapSize, toSendRequest->constData() + 8, noWrapSize * sizeof(mtpPrime));
+						memcpy(wrappedRequest->data() + wrappedRequest->size() - noWrapSize,
+						       toSendRequest->constData() + 8, noWrapSize * sizeof(mtpPrime));
 						toSendRequest = wrappedRequest;
 					}
 
@@ -866,7 +897,10 @@ void ConnectionPrivate::tryToSend() {
 			}
 		} else { // send in container
 			bool willNeedInit = false;
-			quint32 containerSize = 1 + 1, idsWrapSize = (toSendCount << 1); // cons + vector size, idsWrapSize - size of "request-like" wrap for msgId vector
+			quint32 containerSize = 1 + 1,
+			        idsWrapSize =
+			            (toSendCount
+			             << 1); // cons + vector size, idsWrapSize - size of "request-like" wrap for msgId vector
 			if (pingRequest) containerSize += mtpRequestData::messageSize(pingRequest);
 			if (ackRequest) containerSize += mtpRequestData::messageSize(ackRequest);
 			if (resendRequest) containerSize += mtpRequestData::messageSize(resendRequest);
@@ -886,7 +920,8 @@ void ConnectionPrivate::tryToSend() {
 				initSerialized.push_back(MTP::internal::CurrentLayer);
 				initWrapper.write(initSerialized);
 			}
-			toSendRequest = mtpRequestData::prepare(containerSize, containerSize + 3 * toSend.size()); // prepare container + each in invoke after
+			toSendRequest = mtpRequestData::prepare(
+			    containerSize, containerSize + 3 * toSend.size()); // prepare container + each in invoke after
 			toSendRequest->push_back(mtpc_msg_container);
 			toSendRequest->push_back(toSendCount);
 
@@ -898,10 +933,11 @@ void ConnectionPrivate::tryToSend() {
 			QWriteLocker locker3(sessionData->wereAckedMutex()); // the fact of this lock is used in replaceMsgId()
 			mtpRequestIdsMap &wereAcked(sessionData->wereAckedMap());
 
-			mtpRequest haveSentIdsWrap(mtpRequestData::prepare(idsWrapSize)); // prepare "request-like" wrap for msgId vector
+			mtpRequest haveSentIdsWrap(
+			    mtpRequestData::prepare(idsWrapSize)); // prepare "request-like" wrap for msgId vector
 			haveSentIdsWrap->requestId = 0;
 			haveSentIdsWrap->resize(haveSentIdsWrap->size() + idsWrapSize);
-			mtpMsgId *haveSentArr = (mtpMsgId*)(haveSentIdsWrap->data() + 8);
+			mtpMsgId *haveSentArr = (mtpMsgId *)(haveSentIdsWrap->data() + 8);
 
 			if (pingRequest) {
 				_pingMsgId = placeToContainer(toSendRequest, bigMsgId, haveSentArr, pingRequest);
@@ -931,7 +967,8 @@ void ConnectionPrivate::tryToSend() {
 							toSendRequest->resize(reqNeedsLayer + initSizeInInts + mtpRequestData::messageSize(req));
 							memcpy(toSendRequest->data() + reqNeedsLayer, req->constData() + 4, 4 * sizeof(mtpPrime));
 							memcpy(toSendRequest->data() + reqNeedsLayer + 4, initSerialized.constData(), initSize);
-							memcpy(toSendRequest->data() + reqNeedsLayer + 4 + initSizeInInts, req->constData() + 8, req.innerLength());
+							memcpy(toSendRequest->data() + reqNeedsLayer + 4 + initSizeInInts, req->constData() + 8,
+							       req.innerLength());
 							*(toSendRequest->data() + reqNeedsLayer + 3) += initSize;
 							added = true;
 						}
@@ -958,7 +995,7 @@ void ConnectionPrivate::tryToSend() {
 			if (httpWaitRequest) placeToContainer(toSendRequest, bigMsgId, haveSentArr, httpWaitRequest);
 
 			mtpMsgId contMsgId = prepareToSend(toSendRequest, bigMsgId);
-			*(mtpMsgId*)(haveSentIdsWrap->data() + 4) = contMsgId;
+			*(mtpMsgId *)(haveSentIdsWrap->data() + 4) = contMsgId;
 			(*haveSentIdsWrap)[6] = 0; // for container, msDate = 0, seqNo = 0
 			haveSent.insert(contMsgId, haveSentIdsWrap);
 			toSend.clear();
@@ -1022,21 +1059,28 @@ void ConnectionPrivate::connectToServer(bool afterConfig) {
 	auto kTcp = Variants::Tcp;
 	auto kHttp = Variants::Http;
 	auto variants = _instance->dcOptions()->lookup(bareDc, _dcType);
-	auto noIPv4 = (_dcType == DcType::Temporary) ? (variants.data[kIPv4][kTcp].port == 0) : (variants.data[kIPv4][kHttp].port == 0);
-	auto noIPv6 = (_dcType == DcType::Temporary) ? true : (!Global::TryIPv6() || (variants.data[kIPv6][kHttp].port == 0));
+	auto noIPv4 = (_dcType == DcType::Temporary) ? (variants.data[kIPv4][kTcp].port == 0) :
+	                                               (variants.data[kIPv4][kHttp].port == 0);
+	auto noIPv6 =
+	    (_dcType == DcType::Temporary) ? true : (!Global::TryIPv6() || (variants.data[kIPv6][kHttp].port == 0));
 	if (noIPv4 && noIPv6) {
 		if (_instance->isKeysDestroyer()) {
 			LOG(("MTP Error: DC %1 options for IPv4 over HTTP not found for auth key destruction!").arg(_shiftedDcId));
-			if (Global::TryIPv6() && noIPv6) LOG(("MTP Error: DC %1 options for IPv6 over HTTP not found for auth key destruction!").arg(_shiftedDcId));
+			if (Global::TryIPv6() && noIPv6)
+				LOG(("MTP Error: DC %1 options for IPv6 over HTTP not found for auth key destruction!")
+				        .arg(_shiftedDcId));
 			emit _instance->keyDestroyed(_shiftedDcId);
 			return;
 		} else if (afterConfig) {
 			LOG(("MTP Error: DC %1 options for IPv4 over HTTP not found right after config load!").arg(_shiftedDcId));
-			if (Global::TryIPv6() && noIPv6) LOG(("MTP Error: DC %1 options for IPv6 over HTTP not found right after config load!").arg(_shiftedDcId));
+			if (Global::TryIPv6() && noIPv6)
+				LOG(("MTP Error: DC %1 options for IPv6 over HTTP not found right after config load!")
+				        .arg(_shiftedDcId));
 			return restart();
 		}
 		DEBUG_LOG(("MTP Info: DC %1 options for IPv4 over HTTP not found, waiting for config").arg(_shiftedDcId));
-		if (Global::TryIPv6() && noIPv6) DEBUG_LOG(("MTP Info: DC %1 options for IPv6 over HTTP not found, waiting for config").arg(_shiftedDcId));
+		if (Global::TryIPv6() && noIPv6)
+			DEBUG_LOG(("MTP Info: DC %1 options for IPv6 over HTTP not found, waiting for config").arg(_shiftedDcId));
 		connect(_instance, SIGNAL(configLoaded()), this, SLOT(onConfigLoaded()), Qt::UniqueConnection);
 		InvokeQueued(_instance, [instance = _instance] { instance->requestConfig(); });
 		return;
@@ -1052,8 +1096,18 @@ void ConnectionPrivate::connectToServer(bool afterConfig) {
 	_pingId = _pingMsgId = _pingIdToSend = _pingSendAt = 0;
 	_pingSender.stop();
 
-	if (!noIPv4) DEBUG_LOG(("MTP Info: creating IPv4 connection to %1:%2 (tcp) and %3:%4 (http)...").arg(variants.data[kIPv4][kTcp].ip.c_str()).arg(variants.data[kIPv4][kTcp].port).arg(variants.data[kIPv4][kHttp].ip.c_str()).arg(variants.data[kIPv4][kHttp].port));
-	if (!noIPv6) DEBUG_LOG(("MTP Info: creating IPv6 connection to [%1]:%2 (tcp) and [%3]:%4 (http)...").arg(variants.data[kIPv6][kTcp].ip.c_str()).arg(variants.data[kIPv6][kTcp].port).arg(variants.data[kIPv4][kHttp].ip.c_str()).arg(variants.data[kIPv4][kHttp].port));
+	if (!noIPv4)
+		DEBUG_LOG(("MTP Info: creating IPv4 connection to %1:%2 (tcp) and %3:%4 (http)...")
+		              .arg(variants.data[kIPv4][kTcp].ip.c_str())
+		              .arg(variants.data[kIPv4][kTcp].port)
+		              .arg(variants.data[kIPv4][kHttp].ip.c_str())
+		              .arg(variants.data[kIPv4][kHttp].port));
+	if (!noIPv6)
+		DEBUG_LOG(("MTP Info: creating IPv6 connection to [%1]:%2 (tcp) and [%3]:%4 (http)...")
+		              .arg(variants.data[kIPv6][kTcp].ip.c_str())
+		              .arg(variants.data[kIPv6][kTcp].port)
+		              .arg(variants.data[kIPv4][kHttp].ip.c_str())
+		              .arg(variants.data[kIPv4][kHttp].port));
 
 	_waitForConnectedTimer.start(_waitForConnected);
 	if (auto conn = _conn4) {
@@ -1142,7 +1196,8 @@ void ConnectionPrivate::onReceivedSome() {
 		qint32 ms = getms(true) - firstSentAt;
 		DEBUG_LOG(("MTP Info: response in %1ms, _waitForReceived: %2ms").arg(ms).arg(_waitForReceived));
 
-		if (ms > 0 && ms * 2 < qint32(_waitForReceived)) _waitForReceived = std::max(ms * 2, qint32(MTPMinReceiveDelay));
+		if (ms > 0 && ms * 2 < qint32(_waitForReceived))
+			_waitForReceived = std::max(ms * 2, qint32(MTPMinReceiveDelay));
 		firstSentAt = -1;
 	}
 }
@@ -1285,8 +1340,8 @@ void ConnectionPrivate::handleReceived() {
 
 			return restartOnError();
 		}
-		if (keyId != *(quint64*)ints) {
-			LOG(("TCP Error: bad auth_key_id %1 instead of %2 received").arg(keyId).arg(*(quint64*)ints));
+		if (keyId != *(quint64 *)ints) {
+			LOG(("TCP Error: bad auth_key_id %1 instead of %2 received").arg(keyId).arg(*(quint64 *)ints));
 			TCP_LOG(("TCP Error: bad message %1").arg(Logs::mb(ints, intsCount * kIntSize).str()));
 
 			return restartOnError();
@@ -1296,7 +1351,7 @@ void ConnectionPrivate::handleReceived() {
 		auto encryptedIntsCount = (intsCount - kExternalHeaderIntsCount);
 		auto encryptedBytesCount = encryptedIntsCount * kIntSize;
 		auto decryptedBuffer = QByteArray(encryptedBytesCount, Qt::Uninitialized);
-		auto msgKey = *(MTPint128*)(ints + 2);
+		auto msgKey = *(MTPint128 *)(ints + 2);
 
 #ifdef TDESKTOP_MTPROTO_OLD
 		aesIgeDecrypt_oldmtp(encryptedInts, decryptedBuffer.data(), encryptedBytesCount, key, msgKey);
@@ -1304,20 +1359,19 @@ void ConnectionPrivate::handleReceived() {
 		aesIgeDecrypt(encryptedInts, decryptedBuffer.data(), encryptedBytesCount, key, msgKey);
 #endif // TDESKTOP_MTPROTO_OLD
 
-		auto decryptedInts = reinterpret_cast<const mtpPrime*>(decryptedBuffer.constData());
-		auto serverSalt = *(quint64*)&decryptedInts[0];
-		auto session = *(quint64*)&decryptedInts[2];
-		auto msgId = *(quint64*)&decryptedInts[4];
-		auto seqNo = *(quint32*)&decryptedInts[6];
+		auto decryptedInts = reinterpret_cast<const mtpPrime *>(decryptedBuffer.constData());
+		auto serverSalt = *(quint64 *)&decryptedInts[0];
+		auto session = *(quint64 *)&decryptedInts[2];
+		auto msgId = *(quint64 *)&decryptedInts[4];
+		auto seqNo = *(quint32 *)&decryptedInts[6];
 		auto needAck = ((seqNo & 0x01) != 0);
 
-		auto messageLength = *(quint32*)&decryptedInts[7];
+		auto messageLength = *(quint32 *)&decryptedInts[7];
 		if (messageLength > kMaxMessageLength) {
 			LOG(("TCP Error: bad messageLength %1").arg(messageLength));
 			TCP_LOG(("TCP Error: bad message %1").arg(Logs::mb(ints, intsCount * kIntSize).str()));
 
 			return restartOnError();
-
 		}
 		auto fullDataLength = kEncryptedHeaderIntsCount * kIntSize + messageLength; // Without padding.
 
@@ -1327,7 +1381,7 @@ void ConnectionPrivate::handleReceived() {
 #ifdef TDESKTOP_MTPROTO_OLD
 		constexpr auto kMinPaddingSize_oldmtp = 0U;
 		constexpr auto kMaxPaddingSize_oldmtp = 15U;
-		auto badMessageLength = (/*paddingSize < kMinPaddingSize_oldmtp || */paddingSize > kMaxPaddingSize_oldmtp);
+		auto badMessageLength = (/*paddingSize < kMinPaddingSize_oldmtp || */ paddingSize > kMaxPaddingSize_oldmtp);
 
 		auto hashedDataLength = badMessageLength ? encryptedBytesCount : fullDataLength;
 		auto sha1ForMsgKeyCheck = hashSha1(decryptedInts, hashedDataLength);
@@ -1344,7 +1398,7 @@ void ConnectionPrivate::handleReceived() {
 		constexpr auto kMaxPaddingSize = 1024U;
 		auto badMessageLength = (paddingSize < kMinPaddingSize || paddingSize > kMaxPaddingSize);
 
-		std::array<uchar, 32> sha256Buffer = { { 0 } };
+		std::array<uchar, 32> sha256Buffer = {{0}};
 
 		SHA256_CTX msgKeyLargeContext;
 		SHA256_Init(&msgKeyLargeContext);
@@ -1368,12 +1422,17 @@ void ConnectionPrivate::handleReceived() {
 			return restartOnError();
 		}
 
-		TCP_LOG(("TCP Info: decrypted message %1,%2,%3 is %4 len").arg(msgId).arg(seqNo).arg(Logs::b(needAck)).arg(fullDataLength));
+		TCP_LOG(("TCP Info: decrypted message %1,%2,%3 is %4 len")
+		            .arg(msgId)
+		            .arg(seqNo)
+		            .arg(Logs::b(needAck))
+		            .arg(fullDataLength));
 
 		quint64 serverSession = sessionData->getSession();
 		if (session != serverSession) {
 			LOG(("MTP Error: bad server session received"));
-			TCP_LOG(("MTP Error: bad server session %1 instead of %2 in message received").arg(session).arg(serverSession));
+			TCP_LOG(
+			    ("MTP Error: bad server session %1 instead of %2 in message received").arg(session).arg(serverSession));
 
 			return restartOnError();
 		}
@@ -1396,7 +1455,9 @@ void ConnectionPrivate::handleReceived() {
 		bool wasConnected = (getState() == ConnectedState);
 		if (serverSalt != mySalt) {
 			if (!badTime) {
-				DEBUG_LOG(("MTP Info: other salt received... received: %1, my salt: %2, updating...").arg(serverSalt).arg(mySalt));
+				DEBUG_LOG(("MTP Info: other salt received... received: %1, my salt: %2, updating...")
+				              .arg(serverSalt)
+				              .arg(mySalt));
 				sessionData->setSalt(serverSalt);
 				if (setState(ConnectedState, ConnectingState)) { // only connected
 					if (restarted) {
@@ -1442,9 +1503,13 @@ void ConnectionPrivate::handleReceived() {
 		bool emitSignal = false;
 		{
 			QReadLocker locker(sessionData->haveReceivedMutex());
-			emitSignal = !sessionData->haveReceivedResponses().isEmpty() || !sessionData->haveReceivedUpdates().isEmpty();
+			emitSignal =
+			    !sessionData->haveReceivedResponses().isEmpty() || !sessionData->haveReceivedUpdates().isEmpty();
 			if (emitSignal) {
-				DEBUG_LOG(("MTP Info: emitting needToReceive() - need to parse in another thread, %1 responses, %2 updates.").arg(sessionData->haveReceivedResponses().size()).arg(sessionData->haveReceivedUpdates().size()));
+				DEBUG_LOG(
+				    ("MTP Info: emitting needToReceive() - need to parse in another thread, %1 responses, %2 updates.")
+				        .arg(sessionData->haveReceivedResponses().size())
+				        .arg(sessionData->haveReceivedUpdates().size()));
 			}
 		}
 
@@ -1475,529 +1540,584 @@ void ConnectionPrivate::handleReceived() {
 	}
 }
 
-ConnectionPrivate::HandleResult ConnectionPrivate::handleOneReceived(const mtpPrime *from, const mtpPrime *end, quint64 msgId, qint32 serverTime, quint64 serverSalt, bool badTime) {
+ConnectionPrivate::HandleResult ConnectionPrivate::handleOneReceived(const mtpPrime *from, const mtpPrime *end,
+                                                                     quint64 msgId, qint32 serverTime,
+                                                                     quint64 serverSalt, bool badTime) {
 	mtpTypeId cons = *from;
 	try {
-
-	switch (cons) {
-
-	case mtpc_gzip_packed: {
-		DEBUG_LOG(("Message Info: gzip container"));
-		mtpBuffer response = ungzip(++from, end);
-		if (!response.size()) {
-			return HandleResult::RestartConnection;
-		}
-		return handleOneReceived(response.data(), response.data() + response.size(), msgId, serverTime, serverSalt, badTime);
-	}
-
-	case mtpc_msg_container: {
-		if (++from >= end) throw mtpErrorInsufficient();
-
-		const mtpPrime *otherEnd;
-		quint32 msgsCount = (quint32)*(from++);
-		DEBUG_LOG(("Message Info: container received, count: %1").arg(msgsCount));
-		for (quint32 i = 0; i < msgsCount; ++i) {
-			if (from + 4 >= end) throw mtpErrorInsufficient();
-			otherEnd = from + 4;
-
-			MTPlong inMsgId;
-			inMsgId.read(from, otherEnd);
-			bool isReply = ((inMsgId.v & 0x03) == 1);
-			if (!isReply && ((inMsgId.v & 0x03) != 3)) {
-				LOG(("Message Error: bad msg_id %1 in contained message received").arg(inMsgId.v));
-				return HandleResult::RestartConnection;
-			}
-
-			MTPint inSeqNo;
-			inSeqNo.read(from, otherEnd);
-			MTPint bytes;
-			bytes.read(from, otherEnd);
-			if ((bytes.v & 0x03) || bytes.v < 4) {
-				LOG(("Message Error: bad length %1 of contained message received").arg(bytes.v));
-				return HandleResult::RestartConnection;
-			}
-
-			bool needAck = (inSeqNo.v & 0x01);
-			if (needAck) ackRequestData.push_back(inMsgId);
-
-			DEBUG_LOG(("Message Info: message from container, msg_id: %1, needAck: %2").arg(inMsgId.v).arg(Logs::b(needAck)));
-
-			otherEnd = from + (bytes.v >> 2);
-			if (otherEnd > end) throw mtpErrorInsufficient();
-
-			bool needToHandle = false;
-			{
-				QWriteLocker lock(sessionData->receivedIdsMutex());
-				needToHandle = sessionData->receivedIdsSet().registerMsgId(inMsgId.v, needAck);
-			}
-			auto res = HandleResult::Success; // if no need to handle, then succeed
-			if (needToHandle) {
-				res = handleOneReceived(from, otherEnd, inMsgId.v, serverTime, serverSalt, badTime);
-				badTime = false;
-			}
-			if (res != HandleResult::Success) {
-				return res;
-			}
-
-			from = otherEnd;
-		}
-	} return HandleResult::Success;
-
-	case mtpc_msgs_ack: {
-		MTPMsgsAck msg;
-		msg.read(from, end);
-		auto &ids = msg.c_msgs_ack().vmsg_ids.v;
-		quint32 idsCount = ids.size();
-
-		DEBUG_LOG(("Message Info: acks received, ids: %1").arg(Logs::vector(ids)));
-		if (!idsCount) return (badTime ? HandleResult::Ignored : HandleResult::Success);
-
-		if (badTime) {
-			if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
-				badTime = false;
-			} else {
-				return HandleResult::Ignored;
-			}
-		}
-		requestsAcked(ids);
-	} return HandleResult::Success;
-
-	case mtpc_bad_msg_notification: {
-		MTPBadMsgNotification msg;
-		msg.read(from, end);
-		const auto &data(msg.c_bad_msg_notification());
-		LOG(("Message Info: bad message notification received (error_code %3) for msg_id = %1, seq_no = %2").arg(data.vbad_msg_id.v).arg(data.vbad_msg_seqno.v).arg(data.verror_code.v));
-
-		mtpMsgId resendId = data.vbad_msg_id.v;
-		if (resendId == _pingMsgId) {
-			_pingId = 0;
-		}
-		qint32 errorCode = data.verror_code.v;
-		if (errorCode == 16 || errorCode == 17 || errorCode == 32 || errorCode == 33 || errorCode == 64) { // can handle
-			bool needResend = (errorCode == 16 || errorCode == 17); // bad msg_id
-			if (errorCode == 64) { // bad container!
-				needResend = true;
-				if (cDebug()) {
-					mtpRequest request;
-					{
-						QWriteLocker locker(sessionData->haveSentMutex());
-						mtpRequestMap &haveSent(sessionData->haveSentMap());
-
-						mtpRequestMap::const_iterator i = haveSent.constFind(resendId);
-						if (i == haveSent.cend()) {
-							LOG(("Message Error: Container not found!"));
-						} else {
-							request = i.value();
-						}
-					}
-					if (request) {
-						if (mtpRequestData::isSentContainer(request)) {
-							QStringList lst;
-							const mtpMsgId *ids = (const mtpMsgId *)(request->constData() + 8);
-							for (quint32 i = 0, l = (request->size() - 8) >> 1; i < l; ++i) {
-								lst.push_back(QString::number(ids[i]));
-							}
-							LOG(("Message Info: bad container received! messages: %1").arg(lst.join(',')));
-						} else {
-							LOG(("Message Error: bad container received, but request is not a container!"));
-						}
-					}
-				}
-			}
-
-			if (!wasSent(resendId)) {
-				DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(resendId));
-				return (badTime ? HandleResult::Ignored : HandleResult::Success);
-			}
-
-			if (needResend) { // bad msg_id
-				if (serverSalt) sessionData->setSalt(serverSalt);
-				unixtimeSet(serverTime, true);
-
-				DEBUG_LOG(("Message Info: unixtime updated, now %1, resending in container...").arg(serverTime));
-
-				resend(resendId, 0, true);
-			} else { // must create new session, because msg_id and msg_seqno are inconsistent
-				if (badTime) {
-					if (serverSalt) sessionData->setSalt(serverSalt);
-					unixtimeSet(serverTime, true);
-					badTime = false;
-				}
-				LOG(("Message Info: bad message notification received, msgId %1, error_code %2").arg(data.vbad_msg_id.v).arg(errorCode));
-				return HandleResult::ResetSession;
-			}
-		} else { // fatal (except 48, but it must not get here)
-			mtpMsgId resendId = data.vbad_msg_id.v;
-			mtpRequestId requestId = wasSent(resendId);
-			if (requestId) {
-				LOG(("Message Error: bad message notification received, msgId %1, error_code %2, fatal: clearing callbacks").arg(data.vbad_msg_id.v).arg(errorCode));
-				_instance->clearCallbacksDelayed(RPCCallbackClears(1, RPCCallbackClear(requestId, -errorCode)));
-			} else {
-				DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(resendId));
-			}
-			return (badTime ? HandleResult::Ignored : HandleResult::Success);
-		}
-	} return HandleResult::Success;
-
-	case mtpc_bad_server_salt: {
-		MTPBadMsgNotification msg;
-		msg.read(from, end);
-		const auto &data(msg.c_bad_server_salt());
-		DEBUG_LOG(("Message Info: bad server salt received (error_code %4) for msg_id = %1, seq_no = %2, new salt: %3").arg(data.vbad_msg_id.v).arg(data.vbad_msg_seqno.v).arg(data.vnew_server_salt.v).arg(data.verror_code.v));
-
-		mtpMsgId resendId = data.vbad_msg_id.v;
-		if (resendId == _pingMsgId) {
-			_pingId = 0;
-		} else if (!wasSent(resendId)) {
-			DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(resendId));
-			return (badTime ? HandleResult::Ignored : HandleResult::Success);
-		}
-
-		quint64 serverSalt = data.vnew_server_salt.v;
-		sessionData->setSalt(serverSalt);
-		unixtimeSet(serverTime);
-
-		if (setState(ConnectedState, ConnectingState)) { // maybe only connected
-			if (restarted) {
-				emit resendAllAsync();
-				restarted = false;
-			}
-		}
-
-		badTime = false;
-
-		DEBUG_LOG(("Message Info: unixtime updated, now %1, server_salt updated, now %2, resending...").arg(serverTime).arg(serverSalt));
-		resend(resendId);
-	} return HandleResult::Success;
-
-	case mtpc_msgs_state_req: {
-		if (badTime) {
-			DEBUG_LOG(("Message Info: skipping with bad time..."));
-			return HandleResult::Ignored;
-		}
-		MTPMsgsStateReq msg;
-		msg.read(from, end);
-		auto &ids = msg.c_msgs_state_req().vmsg_ids.v;
-		auto idsCount = ids.size();
-		DEBUG_LOG(("Message Info: msgs_state_req received, ids: %1").arg(Logs::vector(ids)));
-		if (!idsCount) return HandleResult::Success;
-
-		QByteArray info(idsCount, Qt::Uninitialized);
-		{
-			QReadLocker lock(sessionData->receivedIdsMutex());
-			auto &receivedIds = sessionData->receivedIdsSet();
-			auto minRecv = receivedIds.min();
-			auto maxRecv = receivedIds.max();
-
-			QReadLocker locker(sessionData->wereAckedMutex());
-			const mtpRequestIdsMap &wereAcked(sessionData->wereAckedMap());
-			mtpRequestIdsMap::const_iterator wereAckedEnd(wereAcked.cend());
-
-			for (quint32 i = 0, l = idsCount; i < l; ++i) {
-				char state = 0;
-				quint64 reqMsgId = ids[i].v;
-				if (reqMsgId < minRecv) {
-					state |= 0x01;
-				} else if (reqMsgId > maxRecv) {
-					state |= 0x03;
-				} else {
-					auto msgIdState = receivedIds.lookup(reqMsgId);
-					if (msgIdState == ReceivedMsgIds::State::NotFound) {
-						state |= 0x02;
-					} else {
-						state |= 0x04;
-						if (wereAcked.constFind(reqMsgId) != wereAckedEnd) {
-							state |= 0x80; // we know, that server knows, that we received request
-						}
-						if (msgIdState == ReceivedMsgIds::State::NeedsAck) { // need ack, so we sent ack
-							state |= 0x08;
-						} else {
-							state |= 0x10;
-						}
-					}
-				}
-				info[i] = state;
-			}
-		}
-		emit sendMsgsStateInfoAsync(msgId, info);
-	} return HandleResult::Success;
-
-	case mtpc_msgs_state_info: {
-		MTPMsgsStateInfo msg;
-		msg.read(from, end);
-		auto &data = msg.c_msgs_state_info();
-
-		auto reqMsgId = data.vreq_msg_id.v;
-		auto &states = data.vinfo.v;
-
-		DEBUG_LOG(("Message Info: msg state received, msgId %1, reqMsgId: %2, HEX states %3").arg(msgId).arg(reqMsgId).arg(Logs::mb(states.data(), states.length()).str()));
-		mtpRequest requestBuffer;
-		{ // find this request in session-shared sent requests map
-			QReadLocker locker(sessionData->haveSentMutex());
-			const mtpRequestMap &haveSent(sessionData->haveSentMap());
-			mtpRequestMap::const_iterator replyTo = haveSent.constFind(reqMsgId);
-			if (replyTo == haveSent.cend()) { // do not look in toResend, because we do not resend msgs_state_req requests
-				DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(reqMsgId));
-				return (badTime ? HandleResult::Ignored : HandleResult::Success);
-			}
-			if (badTime) {
-				if (serverSalt) sessionData->setSalt(serverSalt); // requestsFixTimeSalt with no lookup
-				unixtimeSet(serverTime, true);
-
-				DEBUG_LOG(("Message Info: unixtime updated from mtpc_msgs_state_info, now %1").arg(serverTime));
-
-				badTime = false;
-			}
-			requestBuffer = replyTo.value();
-		}
-		QVector<MTPlong> toAckReq(1, MTP_long(reqMsgId)), toAck;
-		requestsAcked(toAck, true);
-
-		if (requestBuffer->size() < 9) {
-			LOG(("Message Error: bad request %1 found in requestMap, size: %2").arg(reqMsgId).arg(requestBuffer->size()));
-			return HandleResult::RestartConnection;
-		}
-		try {
-			const mtpPrime *rFrom = requestBuffer->constData() + 8, *rEnd = requestBuffer->constData() + requestBuffer->size();
-			if (mtpTypeId(*rFrom) == mtpc_msgs_state_req) {
-				MTPMsgsStateReq request;
-				request.read(rFrom, rEnd);
-				handleMsgsStates(request.c_msgs_state_req().vmsg_ids.v, states, toAck);
-			} else {
-				MTPMsgResendReq request;
-				request.read(rFrom, rEnd);
-				handleMsgsStates(request.c_msg_resend_req().vmsg_ids.v, states, toAck);
-			}
-		} catch(Exception &) {
-			LOG(("Message Error: could not parse sent msgs_state_req"));
-			throw;
-		}
-
-		requestsAcked(toAck);
-	} return HandleResult::Success;
-
-	case mtpc_msgs_all_info: {
-		if (badTime) {
-			DEBUG_LOG(("Message Info: skipping with bad time..."));
-			return HandleResult::Ignored;
-		}
-
-		MTPMsgsAllInfo msg;
-		msg.read(from, end);
-		auto &data = msg.c_msgs_all_info();
-		auto &ids = data.vmsg_ids.v;
-		auto &states = data.vinfo.v;
-
-		QVector<MTPlong> toAck;
-
-		DEBUG_LOG(("Message Info: msgs all info received, msgId %1, reqMsgIds: %2, states %3").arg(msgId).arg(Logs::vector(ids)).arg(Logs::mb(states.data(), states.length()).str()));
-		handleMsgsStates(ids, states, toAck);
-
-		requestsAcked(toAck);
-	} return HandleResult::Success;
-
-	case mtpc_msg_detailed_info: {
-		MTPMsgDetailedInfo msg;
-		msg.read(from, end);
-		const auto &data(msg.c_msg_detailed_info());
-
-		DEBUG_LOG(("Message Info: msg detailed info, sent msgId %1, answerId %2, status %3, bytes %4").arg(data.vmsg_id.v).arg(data.vanswer_msg_id.v).arg(data.vstatus.v).arg(data.vbytes.v));
-
-		QVector<MTPlong> ids(1, data.vmsg_id);
-		if (badTime) {
-			if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
-				badTime = false;
-			} else {
-				DEBUG_LOG(("Message Info: error, such message was not sent recently %1").arg(data.vmsg_id.v));
-				return HandleResult::Ignored;
-			}
-		}
-		requestsAcked(ids);
-
-		bool received = false;
-		MTPlong resMsgId = data.vanswer_msg_id;
-		{
-			QReadLocker lock(sessionData->receivedIdsMutex());
-			received = (sessionData->receivedIdsSet().lookup(resMsgId.v) != ReceivedMsgIds::State::NotFound);
-		}
-		if (received) {
-			ackRequestData.push_back(resMsgId);
-		} else {
-			DEBUG_LOG(("Message Info: answer message %1 was not received, requesting...").arg(resMsgId.v));
-			resendRequestData.push_back(resMsgId);
-		}
-	} return HandleResult::Success;
-
-	case mtpc_msg_new_detailed_info: {
-		if (badTime) {
-			DEBUG_LOG(("Message Info: skipping msg_new_detailed_info with bad time..."));
-			return HandleResult::Ignored;
-		}
-		MTPMsgDetailedInfo msg;
-		msg.read(from, end);
-		const auto &data(msg.c_msg_new_detailed_info());
-
-		DEBUG_LOG(("Message Info: msg new detailed info, answerId %2, status %3, bytes %4").arg(data.vanswer_msg_id.v).arg(data.vstatus.v).arg(data.vbytes.v));
-
-		bool received = false;
-		MTPlong resMsgId = data.vanswer_msg_id;
-		{
-			QReadLocker lock(sessionData->receivedIdsMutex());
-			received = (sessionData->receivedIdsSet().lookup(resMsgId.v) != ReceivedMsgIds::State::NotFound);
-		}
-		if (received) {
-			ackRequestData.push_back(resMsgId);
-		} else {
-			DEBUG_LOG(("Message Info: answer message %1 was not received, requesting...").arg(resMsgId.v));
-			resendRequestData.push_back(resMsgId);
-		}
-	} return HandleResult::Success;
-
-	case mtpc_msg_resend_req: {
-		MTPMsgResendReq msg;
-		msg.read(from, end);
-		auto &ids = msg.c_msg_resend_req().vmsg_ids.v;
-
-		auto idsCount = ids.size();
-		DEBUG_LOG(("Message Info: resend of msgs requested, ids: %1").arg(Logs::vector(ids)));
-		if (!idsCount) return (badTime ? HandleResult::Ignored : HandleResult::Success);
-
-		QVector<quint64> toResend(ids.size());
-		for (qint32 i = 0, l = ids.size(); i < l; ++i) {
-			toResend[i] = ids.at(i).v;
-		}
-		resendMany(toResend, 0, false, true);
-	} return HandleResult::Success;
-
-	case mtpc_rpc_result: {
-		if (from + 3 > end) throw mtpErrorInsufficient();
-		auto response = SerializedMessage();
-
-		MTPlong reqMsgId;
-		reqMsgId.read(++from, end);
-		mtpTypeId typeId = from[0];
-
-		DEBUG_LOG(("RPC Info: response received for %1, queueing...").arg(reqMsgId.v));
-
-		QVector<MTPlong> ids(1, reqMsgId);
-		if (badTime) {
-			if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
-				badTime = false;
-			} else {
-				DEBUG_LOG(("Message Info: error, such message was not sent recently %1").arg(reqMsgId.v));
-				return HandleResult::Ignored;
-			}
-		}
-		requestsAcked(ids, true);
-
-		if (typeId == mtpc_gzip_packed) {
-			DEBUG_LOG(("RPC Info: gzip container"));
-			response = ungzip(++from, end);
+		switch (cons) {
+		case mtpc_gzip_packed: {
+			DEBUG_LOG(("Message Info: gzip container"));
+			mtpBuffer response = ungzip(++from, end);
 			if (!response.size()) {
 				return HandleResult::RestartConnection;
 			}
-			typeId = response[0];
-		} else {
-			response.resize(end - from);
-			memcpy(response.data(), from, (end - from) * sizeof(mtpPrime));
-		}
-		if (typeId != mtpc_rpc_error) {
-			// An error could be some RPC_CALL_FAIL or other error inside
-			// the initConnection, so we're not sure yet that it was inited.
-			// Wait till a good response is received.
-			if (!sessionData->layerWasInited()) {
-				sessionData->setLayerWasInited(true);
-				sessionData->owner()->notifyLayerInited(true);
-			}
+			return handleOneReceived(response.data(), response.data() + response.size(), msgId, serverTime, serverSalt,
+			                         badTime);
 		}
 
-		auto requestId = wasSent(reqMsgId.v);
-		if (requestId && requestId != mtpRequestId(0xFFFFFFFF)) {
-			// Save rpc_result for processing in the main thread.
+		case mtpc_msg_container: {
+			if (++from >= end) throw mtpErrorInsufficient();
+
+			const mtpPrime *otherEnd;
+			quint32 msgsCount = (quint32) * (from++);
+			DEBUG_LOG(("Message Info: container received, count: %1").arg(msgsCount));
+			for (quint32 i = 0; i < msgsCount; ++i) {
+				if (from + 4 >= end) throw mtpErrorInsufficient();
+				otherEnd = from + 4;
+
+				MTPlong inMsgId;
+				inMsgId.read(from, otherEnd);
+				bool isReply = ((inMsgId.v & 0x03) == 1);
+				if (!isReply && ((inMsgId.v & 0x03) != 3)) {
+					LOG(("Message Error: bad msg_id %1 in contained message received").arg(inMsgId.v));
+					return HandleResult::RestartConnection;
+				}
+
+				MTPint inSeqNo;
+				inSeqNo.read(from, otherEnd);
+				MTPint bytes;
+				bytes.read(from, otherEnd);
+				if ((bytes.v & 0x03) || bytes.v < 4) {
+					LOG(("Message Error: bad length %1 of contained message received").arg(bytes.v));
+					return HandleResult::RestartConnection;
+				}
+
+				bool needAck = (inSeqNo.v & 0x01);
+				if (needAck) ackRequestData.push_back(inMsgId);
+
+				DEBUG_LOG(("Message Info: message from container, msg_id: %1, needAck: %2")
+				              .arg(inMsgId.v)
+				              .arg(Logs::b(needAck)));
+
+				otherEnd = from + (bytes.v >> 2);
+				if (otherEnd > end) throw mtpErrorInsufficient();
+
+				bool needToHandle = false;
+				{
+					QWriteLocker lock(sessionData->receivedIdsMutex());
+					needToHandle = sessionData->receivedIdsSet().registerMsgId(inMsgId.v, needAck);
+				}
+				auto res = HandleResult::Success; // if no need to handle, then succeed
+				if (needToHandle) {
+					res = handleOneReceived(from, otherEnd, inMsgId.v, serverTime, serverSalt, badTime);
+					badTime = false;
+				}
+				if (res != HandleResult::Success) {
+					return res;
+				}
+
+				from = otherEnd;
+			}
+		}
+			return HandleResult::Success;
+
+		case mtpc_msgs_ack: {
+			MTPMsgsAck msg;
+			msg.read(from, end);
+			auto &ids = msg.c_msgs_ack().vmsg_ids.v;
+			quint32 idsCount = ids.size();
+
+			DEBUG_LOG(("Message Info: acks received, ids: %1").arg(Logs::vector(ids)));
+			if (!idsCount) return (badTime ? HandleResult::Ignored : HandleResult::Success);
+
+			if (badTime) {
+				if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
+					badTime = false;
+				} else {
+					return HandleResult::Ignored;
+				}
+			}
+			requestsAcked(ids);
+		}
+			return HandleResult::Success;
+
+		case mtpc_bad_msg_notification: {
+			MTPBadMsgNotification msg;
+			msg.read(from, end);
+			const auto &data(msg.c_bad_msg_notification());
+			LOG(("Message Info: bad message notification received (error_code %3) for msg_id = %1, seq_no = %2")
+			        .arg(data.vbad_msg_id.v)
+			        .arg(data.vbad_msg_seqno.v)
+			        .arg(data.verror_code.v));
+
+			mtpMsgId resendId = data.vbad_msg_id.v;
+			if (resendId == _pingMsgId) {
+				_pingId = 0;
+			}
+			qint32 errorCode = data.verror_code.v;
+			if (errorCode == 16 || errorCode == 17 || errorCode == 32 || errorCode == 33 ||
+			    errorCode == 64) { // can handle
+				bool needResend = (errorCode == 16 || errorCode == 17); // bad msg_id
+				if (errorCode == 64) { // bad container!
+					needResend = true;
+					if (cDebug()) {
+						mtpRequest request;
+						{
+							QWriteLocker locker(sessionData->haveSentMutex());
+							mtpRequestMap &haveSent(sessionData->haveSentMap());
+
+							mtpRequestMap::const_iterator i = haveSent.constFind(resendId);
+							if (i == haveSent.cend()) {
+								LOG(("Message Error: Container not found!"));
+							} else {
+								request = i.value();
+							}
+						}
+						if (request) {
+							if (mtpRequestData::isSentContainer(request)) {
+								QStringList lst;
+								const mtpMsgId *ids = (const mtpMsgId *)(request->constData() + 8);
+								for (quint32 i = 0, l = (request->size() - 8) >> 1; i < l; ++i) {
+									lst.push_back(QString::number(ids[i]));
+								}
+								LOG(("Message Info: bad container received! messages: %1").arg(lst.join(',')));
+							} else {
+								LOG(("Message Error: bad container received, but request is not a container!"));
+							}
+						}
+					}
+				}
+
+				if (!wasSent(resendId)) {
+					DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(resendId));
+					return (badTime ? HandleResult::Ignored : HandleResult::Success);
+				}
+
+				if (needResend) { // bad msg_id
+					if (serverSalt) sessionData->setSalt(serverSalt);
+					unixtimeSet(serverTime, true);
+
+					DEBUG_LOG(("Message Info: unixtime updated, now %1, resending in container...").arg(serverTime));
+
+					resend(resendId, 0, true);
+				} else { // must create new session, because msg_id and msg_seqno are inconsistent
+					if (badTime) {
+						if (serverSalt) sessionData->setSalt(serverSalt);
+						unixtimeSet(serverTime, true);
+						badTime = false;
+					}
+					LOG(("Message Info: bad message notification received, msgId %1, error_code %2")
+					        .arg(data.vbad_msg_id.v)
+					        .arg(errorCode));
+					return HandleResult::ResetSession;
+				}
+			} else { // fatal (except 48, but it must not get here)
+				mtpMsgId resendId = data.vbad_msg_id.v;
+				mtpRequestId requestId = wasSent(resendId);
+				if (requestId) {
+					LOG(("Message Error: bad message notification received, msgId %1, error_code %2, fatal: clearing "
+					     "callbacks")
+					        .arg(data.vbad_msg_id.v)
+					        .arg(errorCode));
+					_instance->clearCallbacksDelayed(RPCCallbackClears(1, RPCCallbackClear(requestId, -errorCode)));
+				} else {
+					DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(resendId));
+				}
+				return (badTime ? HandleResult::Ignored : HandleResult::Success);
+			}
+		}
+			return HandleResult::Success;
+
+		case mtpc_bad_server_salt: {
+			MTPBadMsgNotification msg;
+			msg.read(from, end);
+			const auto &data(msg.c_bad_server_salt());
+			DEBUG_LOG(
+			    ("Message Info: bad server salt received (error_code %4) for msg_id = %1, seq_no = %2, new salt: %3")
+			        .arg(data.vbad_msg_id.v)
+			        .arg(data.vbad_msg_seqno.v)
+			        .arg(data.vnew_server_salt.v)
+			        .arg(data.verror_code.v));
+
+			mtpMsgId resendId = data.vbad_msg_id.v;
+			if (resendId == _pingMsgId) {
+				_pingId = 0;
+			} else if (!wasSent(resendId)) {
+				DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(resendId));
+				return (badTime ? HandleResult::Ignored : HandleResult::Success);
+			}
+
+			quint64 serverSalt = data.vnew_server_salt.v;
+			sessionData->setSalt(serverSalt);
+			unixtimeSet(serverTime);
+
+			if (setState(ConnectedState, ConnectingState)) { // maybe only connected
+				if (restarted) {
+					emit resendAllAsync();
+					restarted = false;
+				}
+			}
+
+			badTime = false;
+
+			DEBUG_LOG(("Message Info: unixtime updated, now %1, server_salt updated, now %2, resending...")
+			              .arg(serverTime)
+			              .arg(serverSalt));
+			resend(resendId);
+		}
+			return HandleResult::Success;
+
+		case mtpc_msgs_state_req: {
+			if (badTime) {
+				DEBUG_LOG(("Message Info: skipping with bad time..."));
+				return HandleResult::Ignored;
+			}
+			MTPMsgsStateReq msg;
+			msg.read(from, end);
+			auto &ids = msg.c_msgs_state_req().vmsg_ids.v;
+			auto idsCount = ids.size();
+			DEBUG_LOG(("Message Info: msgs_state_req received, ids: %1").arg(Logs::vector(ids)));
+			if (!idsCount) return HandleResult::Success;
+
+			QByteArray info(idsCount, Qt::Uninitialized);
+			{
+				QReadLocker lock(sessionData->receivedIdsMutex());
+				auto &receivedIds = sessionData->receivedIdsSet();
+				auto minRecv = receivedIds.min();
+				auto maxRecv = receivedIds.max();
+
+				QReadLocker locker(sessionData->wereAckedMutex());
+				const mtpRequestIdsMap &wereAcked(sessionData->wereAckedMap());
+				mtpRequestIdsMap::const_iterator wereAckedEnd(wereAcked.cend());
+
+				for (quint32 i = 0, l = idsCount; i < l; ++i) {
+					char state = 0;
+					quint64 reqMsgId = ids[i].v;
+					if (reqMsgId < minRecv) {
+						state |= 0x01;
+					} else if (reqMsgId > maxRecv) {
+						state |= 0x03;
+					} else {
+						auto msgIdState = receivedIds.lookup(reqMsgId);
+						if (msgIdState == ReceivedMsgIds::State::NotFound) {
+							state |= 0x02;
+						} else {
+							state |= 0x04;
+							if (wereAcked.constFind(reqMsgId) != wereAckedEnd) {
+								state |= 0x80; // we know, that server knows, that we received request
+							}
+							if (msgIdState == ReceivedMsgIds::State::NeedsAck) { // need ack, so we sent ack
+								state |= 0x08;
+							} else {
+								state |= 0x10;
+							}
+						}
+					}
+					info[i] = state;
+				}
+			}
+			emit sendMsgsStateInfoAsync(msgId, info);
+		}
+			return HandleResult::Success;
+
+		case mtpc_msgs_state_info: {
+			MTPMsgsStateInfo msg;
+			msg.read(from, end);
+			auto &data = msg.c_msgs_state_info();
+
+			auto reqMsgId = data.vreq_msg_id.v;
+			auto &states = data.vinfo.v;
+
+			DEBUG_LOG(("Message Info: msg state received, msgId %1, reqMsgId: %2, HEX states %3")
+			              .arg(msgId)
+			              .arg(reqMsgId)
+			              .arg(Logs::mb(states.data(), states.length()).str()));
+			mtpRequest requestBuffer;
+			{ // find this request in session-shared sent requests map
+				QReadLocker locker(sessionData->haveSentMutex());
+				const mtpRequestMap &haveSent(sessionData->haveSentMap());
+				mtpRequestMap::const_iterator replyTo = haveSent.constFind(reqMsgId);
+				if (replyTo ==
+				    haveSent.cend()) { // do not look in toResend, because we do not resend msgs_state_req requests
+					DEBUG_LOG(("Message Error: such message was not sent recently %1").arg(reqMsgId));
+					return (badTime ? HandleResult::Ignored : HandleResult::Success);
+				}
+				if (badTime) {
+					if (serverSalt) sessionData->setSalt(serverSalt); // requestsFixTimeSalt with no lookup
+					unixtimeSet(serverTime, true);
+
+					DEBUG_LOG(("Message Info: unixtime updated from mtpc_msgs_state_info, now %1").arg(serverTime));
+
+					badTime = false;
+				}
+				requestBuffer = replyTo.value();
+			}
+			QVector<MTPlong> toAckReq(1, MTP_long(reqMsgId)), toAck;
+			requestsAcked(toAck, true);
+
+			if (requestBuffer->size() < 9) {
+				LOG(("Message Error: bad request %1 found in requestMap, size: %2")
+				        .arg(reqMsgId)
+				        .arg(requestBuffer->size()));
+				return HandleResult::RestartConnection;
+			}
+			try {
+				const mtpPrime *rFrom = requestBuffer->constData() + 8,
+				               *rEnd = requestBuffer->constData() + requestBuffer->size();
+				if (mtpTypeId(*rFrom) == mtpc_msgs_state_req) {
+					MTPMsgsStateReq request;
+					request.read(rFrom, rEnd);
+					handleMsgsStates(request.c_msgs_state_req().vmsg_ids.v, states, toAck);
+				} else {
+					MTPMsgResendReq request;
+					request.read(rFrom, rEnd);
+					handleMsgsStates(request.c_msg_resend_req().vmsg_ids.v, states, toAck);
+				}
+			} catch (Exception &) {
+				LOG(("Message Error: could not parse sent msgs_state_req"));
+				throw;
+			}
+
+			requestsAcked(toAck);
+		}
+			return HandleResult::Success;
+
+		case mtpc_msgs_all_info: {
+			if (badTime) {
+				DEBUG_LOG(("Message Info: skipping with bad time..."));
+				return HandleResult::Ignored;
+			}
+
+			MTPMsgsAllInfo msg;
+			msg.read(from, end);
+			auto &data = msg.c_msgs_all_info();
+			auto &ids = data.vmsg_ids.v;
+			auto &states = data.vinfo.v;
+
+			QVector<MTPlong> toAck;
+
+			DEBUG_LOG(("Message Info: msgs all info received, msgId %1, reqMsgIds: %2, states %3")
+			              .arg(msgId)
+			              .arg(Logs::vector(ids))
+			              .arg(Logs::mb(states.data(), states.length()).str()));
+			handleMsgsStates(ids, states, toAck);
+
+			requestsAcked(toAck);
+		}
+			return HandleResult::Success;
+
+		case mtpc_msg_detailed_info: {
+			MTPMsgDetailedInfo msg;
+			msg.read(from, end);
+			const auto &data(msg.c_msg_detailed_info());
+
+			DEBUG_LOG(("Message Info: msg detailed info, sent msgId %1, answerId %2, status %3, bytes %4")
+			              .arg(data.vmsg_id.v)
+			              .arg(data.vanswer_msg_id.v)
+			              .arg(data.vstatus.v)
+			              .arg(data.vbytes.v));
+
+			QVector<MTPlong> ids(1, data.vmsg_id);
+			if (badTime) {
+				if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
+					badTime = false;
+				} else {
+					DEBUG_LOG(("Message Info: error, such message was not sent recently %1").arg(data.vmsg_id.v));
+					return HandleResult::Ignored;
+				}
+			}
+			requestsAcked(ids);
+
+			bool received = false;
+			MTPlong resMsgId = data.vanswer_msg_id;
+			{
+				QReadLocker lock(sessionData->receivedIdsMutex());
+				received = (sessionData->receivedIdsSet().lookup(resMsgId.v) != ReceivedMsgIds::State::NotFound);
+			}
+			if (received) {
+				ackRequestData.push_back(resMsgId);
+			} else {
+				DEBUG_LOG(("Message Info: answer message %1 was not received, requesting...").arg(resMsgId.v));
+				resendRequestData.push_back(resMsgId);
+			}
+		}
+			return HandleResult::Success;
+
+		case mtpc_msg_new_detailed_info: {
+			if (badTime) {
+				DEBUG_LOG(("Message Info: skipping msg_new_detailed_info with bad time..."));
+				return HandleResult::Ignored;
+			}
+			MTPMsgDetailedInfo msg;
+			msg.read(from, end);
+			const auto &data(msg.c_msg_new_detailed_info());
+
+			DEBUG_LOG(("Message Info: msg new detailed info, answerId %2, status %3, bytes %4")
+			              .arg(data.vanswer_msg_id.v)
+			              .arg(data.vstatus.v)
+			              .arg(data.vbytes.v));
+
+			bool received = false;
+			MTPlong resMsgId = data.vanswer_msg_id;
+			{
+				QReadLocker lock(sessionData->receivedIdsMutex());
+				received = (sessionData->receivedIdsSet().lookup(resMsgId.v) != ReceivedMsgIds::State::NotFound);
+			}
+			if (received) {
+				ackRequestData.push_back(resMsgId);
+			} else {
+				DEBUG_LOG(("Message Info: answer message %1 was not received, requesting...").arg(resMsgId.v));
+				resendRequestData.push_back(resMsgId);
+			}
+		}
+			return HandleResult::Success;
+
+		case mtpc_msg_resend_req: {
+			MTPMsgResendReq msg;
+			msg.read(from, end);
+			auto &ids = msg.c_msg_resend_req().vmsg_ids.v;
+
+			auto idsCount = ids.size();
+			DEBUG_LOG(("Message Info: resend of msgs requested, ids: %1").arg(Logs::vector(ids)));
+			if (!idsCount) return (badTime ? HandleResult::Ignored : HandleResult::Success);
+
+			QVector<quint64> toResend(ids.size());
+			for (qint32 i = 0, l = ids.size(); i < l; ++i) {
+				toResend[i] = ids.at(i).v;
+			}
+			resendMany(toResend, 0, false, true);
+		}
+			return HandleResult::Success;
+
+		case mtpc_rpc_result: {
+			if (from + 3 > end) throw mtpErrorInsufficient();
+			auto response = SerializedMessage();
+
+			MTPlong reqMsgId;
+			reqMsgId.read(++from, end);
+			mtpTypeId typeId = from[0];
+
+			DEBUG_LOG(("RPC Info: response received for %1, queueing...").arg(reqMsgId.v));
+
+			QVector<MTPlong> ids(1, reqMsgId);
+			if (badTime) {
+				if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
+					badTime = false;
+				} else {
+					DEBUG_LOG(("Message Info: error, such message was not sent recently %1").arg(reqMsgId.v));
+					return HandleResult::Ignored;
+				}
+			}
+			requestsAcked(ids, true);
+
+			if (typeId == mtpc_gzip_packed) {
+				DEBUG_LOG(("RPC Info: gzip container"));
+				response = ungzip(++from, end);
+				if (!response.size()) {
+					return HandleResult::RestartConnection;
+				}
+				typeId = response[0];
+			} else {
+				response.resize(end - from);
+				memcpy(response.data(), from, (end - from) * sizeof(mtpPrime));
+			}
+			if (typeId != mtpc_rpc_error) {
+				// An error could be some RPC_CALL_FAIL or other error inside
+				// the initConnection, so we're not sure yet that it was inited.
+				// Wait till a good response is received.
+				if (!sessionData->layerWasInited()) {
+					sessionData->setLayerWasInited(true);
+					sessionData->owner()->notifyLayerInited(true);
+				}
+			}
+
+			auto requestId = wasSent(reqMsgId.v);
+			if (requestId && requestId != mtpRequestId(0xFFFFFFFF)) {
+				// Save rpc_result for processing in the main thread.
+				QWriteLocker locker(sessionData->haveReceivedMutex());
+				sessionData->haveReceivedResponses().insert(requestId, response);
+			} else {
+				DEBUG_LOG(("RPC Info: requestId not found for msgId %1").arg(reqMsgId.v));
+			}
+		}
+			return HandleResult::Success;
+
+		case mtpc_new_session_created: {
+			const mtpPrime *start = from;
+			MTPNewSession msg;
+			msg.read(from, end);
+			const auto &data(msg.c_new_session_created());
+
+			if (badTime) {
+				if (requestsFixTimeSalt(QVector<MTPlong>(1, data.vfirst_msg_id), serverTime, serverSalt)) {
+					badTime = false;
+				} else {
+					DEBUG_LOG(("Message Info: error, such message was not sent recently %1").arg(data.vfirst_msg_id.v));
+					return HandleResult::Ignored;
+				}
+			}
+
+			DEBUG_LOG(("Message Info: new server session created, unique_id %1, first_msg_id %2, server_salt %3")
+			              .arg(data.vunique_id.v)
+			              .arg(data.vfirst_msg_id.v)
+			              .arg(data.vserver_salt.v));
+			sessionData->setSalt(data.vserver_salt.v);
+
+			mtpMsgId firstMsgId = data.vfirst_msg_id.v;
+			QVector<quint64> toResend;
+			{
+				QReadLocker locker(sessionData->haveSentMutex());
+				const mtpRequestMap &haveSent(sessionData->haveSentMap());
+				toResend.reserve(haveSent.size());
+				for (mtpRequestMap::const_iterator i = haveSent.cbegin(), e = haveSent.cend(); i != e; ++i) {
+					if (i.key() >= firstMsgId) break;
+					if (i.value()->requestId) toResend.push_back(i.key());
+				}
+			}
+			resendMany(toResend, 10, true);
+
+			mtpBuffer update(from - start);
+			if (from > start) memcpy(update.data(), start, (from - start) * sizeof(mtpPrime));
+
+			// Notify main process about new session - need to get difference.
 			QWriteLocker locker(sessionData->haveReceivedMutex());
-			sessionData->haveReceivedResponses().insert(requestId, response);
-		} else {
-			DEBUG_LOG(("RPC Info: requestId not found for msgId %1").arg(reqMsgId.v));
+			sessionData->haveReceivedUpdates().push_back(SerializedMessage(update));
 		}
-	} return HandleResult::Success;
+			return HandleResult::Success;
 
-	case mtpc_new_session_created: {
-		const mtpPrime *start = from;
-		MTPNewSession msg;
-		msg.read(from, end);
-		const auto &data(msg.c_new_session_created());
+		case mtpc_ping: {
+			if (badTime) return HandleResult::Ignored;
 
-		if (badTime) {
-			if (requestsFixTimeSalt(QVector<MTPlong>(1, data.vfirst_msg_id), serverTime, serverSalt)) {
-				badTime = false;
-			} else {
-				DEBUG_LOG(("Message Info: error, such message was not sent recently %1").arg(data.vfirst_msg_id.v));
+			MTPPing msg;
+			msg.read(from, end);
+			DEBUG_LOG(("Message Info: ping received, ping_id: %1, sending pong...").arg(msg.vping_id.v));
+
+			emit sendPongAsync(msgId, msg.vping_id.v);
+		}
+			return HandleResult::Success;
+
+		case mtpc_pong: {
+			MTPPong msg;
+			msg.read(from, end);
+			const auto &data(msg.c_pong());
+			DEBUG_LOG(
+			    ("Message Info: pong received, msg_id: %1, ping_id: %2").arg(data.vmsg_id.v).arg(data.vping_id.v));
+
+			if (!wasSent(data.vmsg_id.v)) {
+				DEBUG_LOG(("Message Error: such msg_id %1 ping_id %2 was not sent recently")
+				              .arg(data.vmsg_id.v)
+				              .arg(data.vping_id.v));
 				return HandleResult::Ignored;
 			}
-		}
-
-		DEBUG_LOG(("Message Info: new server session created, unique_id %1, first_msg_id %2, server_salt %3").arg(data.vunique_id.v).arg(data.vfirst_msg_id.v).arg(data.vserver_salt.v));
-		sessionData->setSalt(data.vserver_salt.v);
-
-		mtpMsgId firstMsgId = data.vfirst_msg_id.v;
-		QVector<quint64> toResend;
-		{
-			QReadLocker locker(sessionData->haveSentMutex());
-			const mtpRequestMap &haveSent(sessionData->haveSentMap());
-			toResend.reserve(haveSent.size());
-			for (mtpRequestMap::const_iterator i = haveSent.cbegin(), e = haveSent.cend(); i != e; ++i) {
-				if (i.key() >= firstMsgId) break;
-				if (i.value()->requestId) toResend.push_back(i.key());
-			}
-		}
-		resendMany(toResend, 10, true);
-
-		mtpBuffer update(from - start);
-		if (from > start) memcpy(update.data(), start, (from - start) * sizeof(mtpPrime));
-
-		// Notify main process about new session - need to get difference.
-		QWriteLocker locker(sessionData->haveReceivedMutex());
-		sessionData->haveReceivedUpdates().push_back(SerializedMessage(update));
-	} return HandleResult::Success;
-
-	case mtpc_ping: {
-		if (badTime) return HandleResult::Ignored;
-
-		MTPPing msg;
-		msg.read(from, end);
-		DEBUG_LOG(("Message Info: ping received, ping_id: %1, sending pong...").arg(msg.vping_id.v));
-
-		emit sendPongAsync(msgId, msg.vping_id.v);
-	} return HandleResult::Success;
-
-	case mtpc_pong: {
-		MTPPong msg;
-		msg.read(from, end);
-		const auto &data(msg.c_pong());
-		DEBUG_LOG(("Message Info: pong received, msg_id: %1, ping_id: %2").arg(data.vmsg_id.v).arg(data.vping_id.v));
-
-		if (!wasSent(data.vmsg_id.v)) {
-			DEBUG_LOG(("Message Error: such msg_id %1 ping_id %2 was not sent recently").arg(data.vmsg_id.v).arg(data.vping_id.v));
-			return HandleResult::Ignored;
-		}
-		if (data.vping_id.v == _pingId) {
-			_pingId = 0;
-		} else {
-			DEBUG_LOG(("Message Info: just pong..."));
-		}
-
-		QVector<MTPlong> ids(1, data.vmsg_id);
-		if (badTime) {
-			if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
-				badTime = false;
+			if (data.vping_id.v == _pingId) {
+				_pingId = 0;
 			} else {
-				return HandleResult::Ignored;
+				DEBUG_LOG(("Message Info: just pong..."));
 			}
-		}
-		requestsAcked(ids, true);
-	} return HandleResult::Success;
 
-	}
+			QVector<MTPlong> ids(1, data.vmsg_id);
+			if (badTime) {
+				if (requestsFixTimeSalt(ids, serverTime, serverSalt)) {
+					badTime = false;
+				} else {
+					return HandleResult::Ignored;
+				}
+			}
+			requestsAcked(ids, true);
+		}
+			return HandleResult::Success;
+		}
 
 	} catch (Exception &) {
 		return HandleResult::RestartConnection;
@@ -2016,7 +2136,9 @@ ConnectionPrivate::HandleResult ConnectionPrivate::handleOneReceived(const mtpPr
 		QWriteLocker locker(sessionData->haveReceivedMutex());
 		sessionData->haveReceivedUpdates().push_back(SerializedMessage(update));
 
-		if (cons != mtpc_updatesTooLong && cons != mtpc_updateShortMessage && cons != mtpc_updateShortChatMessage && cons != mtpc_updateShortSentMessage && cons != mtpc_updateShort && cons != mtpc_updatesCombined && cons != mtpc_updates) {
+		if (cons != mtpc_updatesTooLong && cons != mtpc_updateShortMessage && cons != mtpc_updateShortChatMessage &&
+		    cons != mtpc_updateShortSentMessage && cons != mtpc_updateShort && cons != mtpc_updatesCombined &&
+		    cons != mtpc_updates) {
 			LOG(("Message Error: unknown constructor %1").arg(cons)); // maybe new api?..
 		}
 	} else {
@@ -2045,13 +2167,13 @@ mtpBuffer ConnectionPrivate::ungzip(const mtpPrime *from, const mtpPrime *end) c
 		return result;
 	}
 	stream.avail_in = packedLen;
-	stream.next_in = reinterpret_cast<Bytef*>(packed.v.data());
+	stream.next_in = reinterpret_cast<Bytef *>(packed.v.data());
 
 	stream.avail_out = 0;
 	while (!stream.avail_out) {
 		result.resize(result.size() + unpackedChunk);
 		stream.avail_out = unpackedChunk * sizeof(mtpPrime);
-		stream.next_out = (Bytef*)&result[result.size() - unpackedChunk];
+		stream.next_out = (Bytef *)&result[result.size() - unpackedChunk];
 		int res = inflate(&stream, Z_NO_FLUSH);
 		if (res != Z_OK && res != Z_STREAM_END) {
 			inflateEnd(&stream);
@@ -2078,7 +2200,7 @@ bool ConnectionPrivate::requestsFixTimeSalt(const QVector<MTPlong> &ids, qint32 
 	quint32 idsCount = ids.size();
 
 	for (quint32 i = 0; i < idsCount; ++i) {
-		if (wasSent(ids[i].v)) {// found such msg_id in recent acked requests or in recent sent requests
+		if (wasSent(ids[i].v)) { // found such msg_id in recent acked requests or in recent sent requests
 			if (serverSalt) sessionData->setSalt(serverSalt);
 			unixtimeSet(serverTime, true);
 			return true;
@@ -2125,11 +2247,15 @@ void ConnectionPrivate::requestsAcked(const QVector<MTPlong> &ids, bool byRespon
 							wereAcked.insert(msgId, reqId);
 							haveSent.erase(req);
 						} else {
-							DEBUG_LOG(("Message Info: ignoring ACK for msgId %1 because request %2 requires a response").arg(msgId).arg(reqId));
+							DEBUG_LOG(("Message Info: ignoring ACK for msgId %1 because request %2 requires a response")
+							              .arg(msgId)
+							              .arg(reqId));
 						}
 					}
 				} else {
-					DEBUG_LOG(("Message Info: msgId %1 was not found in recent sent, while acking requests, searching in resend...").arg(msgId));
+					DEBUG_LOG(("Message Info: msgId %1 was not found in recent sent, while acking requests, searching "
+					           "in resend...")
+					              .arg(msgId));
 					QWriteLocker locker3(sessionData->toResendMutex());
 					mtpRequestIdsMap &toResend(sessionData->toResendMap());
 					mtpRequestIdsMap::iterator reqIt = toResend.find(msgId);
@@ -2146,17 +2272,27 @@ void ConnectionPrivate::requestsAcked(const QVector<MTPlong> &ids, bool byRespon
 							if (req != toSend.cend()) {
 								wereAcked.insert(msgId, req.value()->requestId);
 								if (req.value()->requestId != reqId) {
-									DEBUG_LOG(("Message Error: for msgId %1 found resent request, requestId %2, contains requestId %3").arg(msgId).arg(reqId).arg(req.value()->requestId));
+									DEBUG_LOG(("Message Error: for msgId %1 found resent request, requestId %2, "
+									           "contains requestId %3")
+									              .arg(msgId)
+									              .arg(reqId)
+									              .arg(req.value()->requestId));
 								} else {
-									DEBUG_LOG(("Message Info: acked msgId %1 that was prepared to resend, requestId %2").arg(msgId).arg(reqId));
+									DEBUG_LOG(("Message Info: acked msgId %1 that was prepared to resend, requestId %2")
+									              .arg(msgId)
+									              .arg(reqId));
 								}
 								toSend.erase(req);
 							} else {
-								DEBUG_LOG(("Message Info: msgId %1 was found in recent resent, requestId %2 was not found in prepared to send").arg(msgId));
+								DEBUG_LOG(("Message Info: msgId %1 was found in recent resent, requestId %2 was not "
+								           "found in prepared to send")
+								              .arg(msgId));
 							}
 							toResend.erase(reqIt);
 						} else {
-							DEBUG_LOG(("Message Info: ignoring ACK for msgId %1 because request %2 requires a response").arg(msgId).arg(reqId));
+							DEBUG_LOG(("Message Info: ignoring ACK for msgId %1 because request %2 requires a response")
+							              .arg(msgId)
+							              .arg(reqId));
 						}
 					} else {
 						DEBUG_LOG(("Message Info: msgId %1 was not found in recent resent either").arg(msgId));
@@ -2186,7 +2322,8 @@ void ConnectionPrivate::requestsAcked(const QVector<MTPlong> &ids, bool byRespon
 	}
 }
 
-void ConnectionPrivate::handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states, QVector<MTPlong> &acked) {
+void ConnectionPrivate::handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states,
+                                         QVector<MTPlong> &acked) {
 	auto idsCount = ids.size();
 	if (!idsCount) {
 		DEBUG_LOG(("Message Info: void ids vector in handleMsgsStates()"));
@@ -2206,15 +2343,22 @@ void ConnectionPrivate::handleMsgsStates(const QVector<MTPlong> &ids, const QByt
 			const mtpRequestMap &haveSent(sessionData->haveSentMap());
 			mtpRequestMap::const_iterator haveSentEnd = haveSent.cend();
 			if (haveSent.find(requestMsgId) == haveSentEnd) {
-				DEBUG_LOG(("Message Info: state was received for msgId %1, but request is not found, looking in resent requests...").arg(requestMsgId));
+				DEBUG_LOG(("Message Info: state was received for msgId %1, but request is not found, looking in resent "
+				           "requests...")
+				              .arg(requestMsgId));
 				QWriteLocker locker2(sessionData->toResendMutex());
 				mtpRequestIdsMap &toResend(sessionData->toResendMap());
 				mtpRequestIdsMap::iterator reqIt = toResend.find(requestMsgId);
 				if (reqIt != toResend.cend()) {
 					if ((state & 0x07) != 0x04) { // was received
-						DEBUG_LOG(("Message Info: state was received for msgId %1, state %2, already resending in container").arg(requestMsgId).arg((qint32)state));
+						DEBUG_LOG(
+						    ("Message Info: state was received for msgId %1, state %2, already resending in container")
+						        .arg(requestMsgId)
+						        .arg((qint32)state));
 					} else {
-						DEBUG_LOG(("Message Info: state was received for msgId %1, state %2, ack, cancelling resend").arg(requestMsgId).arg((qint32)state));
+						DEBUG_LOG(("Message Info: state was received for msgId %1, state %2, ack, cancelling resend")
+						              .arg(requestMsgId)
+						              .arg((qint32)state));
 						acked.push_back(MTP_long(requestMsgId)); // will remove from resend in requestsAcked
 					}
 				} else {
@@ -2224,10 +2368,13 @@ void ConnectionPrivate::handleMsgsStates(const QVector<MTPlong> &ids, const QByt
 			}
 		}
 		if ((state & 0x07) != 0x04) { // was received
-			DEBUG_LOG(("Message Info: state was received for msgId %1, state %2, resending in container").arg(requestMsgId).arg((qint32)state));
+			DEBUG_LOG(("Message Info: state was received for msgId %1, state %2, resending in container")
+			              .arg(requestMsgId)
+			              .arg((qint32)state));
 			resend(requestMsgId, 10, true);
 		} else {
-			DEBUG_LOG(("Message Info: state was received for msgId %1, state %2, ack").arg(requestMsgId).arg((qint32)state));
+			DEBUG_LOG(
+			    ("Message Info: state was received for msgId %1, state %2, ack").arg(requestMsgId).arg((qint32)state));
 			acked.push_back(MTP_long(requestMsgId));
 		}
 	}
@@ -2238,7 +2385,8 @@ void ConnectionPrivate::resend(quint64 msgId, qint64 msCanWait, bool forceContai
 	emit resendAsync(msgId, msCanWait, forceContainer, sendMsgStateInfo);
 }
 
-void ConnectionPrivate::resendMany(QVector<quint64> msgIds, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo) {
+void ConnectionPrivate::resendMany(QVector<quint64> msgIds, qint64 msCanWait, bool forceContainer,
+                                   bool sendMsgStateInfo) {
 	for (qint32 i = 0, l = msgIds.size(); i < l; ++i) {
 		if (msgIds.at(i) == _pingMsgId) {
 			msgIds.remove(i);
@@ -2316,7 +2464,7 @@ void ConnectionPrivate::onDisconnected6() {
 	}
 }
 
-void ConnectionPrivate::updateAuthKey() 	{
+void ConnectionPrivate::updateAuthKey() {
 	QReadLocker lockFinished(&sessionDataMutex);
 	if (!sessionData || !_conn) return;
 
@@ -2337,7 +2485,9 @@ void ConnectionPrivate::updateAuthKey() 	{
 		clearMessages();
 		keyId = newKeyId;
 	}
-	DEBUG_LOG(("AuthKey Info: Connection update key from Session, dc %1 result: %2").arg(_shiftedDcId).arg(Logs::mb(&keyId, sizeof(keyId)).str()));
+	DEBUG_LOG(("AuthKey Info: Connection update key from Session, dc %1 result: %2")
+	              .arg(_shiftedDcId)
+	              .arg(Logs::mb(&keyId, sizeof(keyId)).str()));
 	if (keyId) {
 		return authKeyCreated();
 	}
@@ -2391,12 +2541,15 @@ void ConnectionPrivate::pqAnswered() {
 	auto &res_pq_data = res_pq.c_resPQ();
 	if (res_pq_data.vnonce != _authKeyData->nonce) {
 		LOG(("AuthKey Error: received nonce <> sent nonce (in res_pq)!"));
-		DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&res_pq_data.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+		DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+		              .arg(Logs::mb(&res_pq_data.vnonce, 16).str())
+		              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 		return restart();
 	}
 
 	auto rsaKey = internal::RSAPublicKey();
-	if (!_instance->dcOptions()->getDcRSAKey(bareDcId(_shiftedDcId), res_pq.c_resPQ().vserver_public_key_fingerprints.v, &rsaKey)) {
+	if (!_instance->dcOptions()->getDcRSAKey(bareDcId(_shiftedDcId), res_pq.c_resPQ().vserver_public_key_fingerprints.v,
+	                                         &rsaKey)) {
 		if (_dcType == DcType::Cdn) {
 			LOG(("Warning: CDN public RSA key not found"));
 			requestCDNConfig();
@@ -2419,7 +2572,8 @@ void ConnectionPrivate::pqAnswered() {
 		return restart();
 	}
 
-	auto p_q_inner = MTP_p_q_inner_data(res_pq_data.vpq, MTP_bytes(std::move(p)), MTP_bytes(std::move(q)), _authKeyData->nonce, _authKeyData->server_nonce, _authKeyData->new_nonce);
+	auto p_q_inner = MTP_p_q_inner_data(res_pq_data.vpq, MTP_bytes(std::move(p)), MTP_bytes(std::move(q)),
+	                                    _authKeyData->nonce, _authKeyData->server_nonce, _authKeyData->new_nonce);
 	auto dhEncString = encryptPQInnerRSA(p_q_inner, rsaKey);
 	if (dhEncString.empty()) {
 		return restart();
@@ -2439,7 +2593,8 @@ void ConnectionPrivate::pqAnswered() {
 	sendRequestNotSecure(req_DH_params);
 }
 
-base::byte_vector ConnectionPrivate::encryptPQInnerRSA(const MTPP_Q_inner_data &data, const MTP::internal::RSAPublicKey &key) {
+base::byte_vector ConnectionPrivate::encryptPQInnerRSA(const MTPP_Q_inner_data &data,
+                                                       const MTP::internal::RSAPublicKey &key) {
 	auto p_q_inner_size = data.innerLength();
 	auto encSize = (p_q_inner_size >> 2) + 6;
 	if (encSize >= 65) {
@@ -2482,12 +2637,16 @@ void ConnectionPrivate::dhParamsAnswered() {
 		const auto &encDH(res_DH_params.c_server_DH_params_ok());
 		if (encDH.vnonce != _authKeyData->nonce) {
 			LOG(("AuthKey Error: received nonce <> sent nonce (in server_DH_params_ok)!"));
-			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&encDH.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+			              .arg(Logs::mb(&encDH.vnonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 			return restart();
 		}
 		if (encDH.vserver_nonce != _authKeyData->server_nonce) {
 			LOG(("AuthKey Error: received server_nonce <> sent server_nonce (in server_DH_params_ok)!"));
-			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2").arg(Logs::mb(&encDH.vserver_nonce, 16).str()).arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2")
+			              .arg(Logs::mb(&encDH.vserver_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
 			return restart();
 		}
 
@@ -2495,7 +2654,8 @@ void ConnectionPrivate::dhParamsAnswered() {
 		quint32 encDHLen = encDHStr.length(), encDHBufLen = encDHLen >> 2;
 		if ((encDHLen & 0x03) || encDHBufLen < 6) {
 			LOG(("AuthKey Error: bad encrypted data length %1 (in server_DH_params_ok)!").arg(encDHLen));
-			DEBUG_LOG(("AuthKey Error: received encrypted data %1").arg(Logs::mb(encDHStr.constData(), encDHLen).str()));
+			DEBUG_LOG(
+			    ("AuthKey Error: received encrypted data %1").arg(Logs::mb(encDHStr.constData(), encDHLen).str()));
 			return restart();
 		}
 
@@ -2526,18 +2686,25 @@ void ConnectionPrivate::dhParamsAnswered() {
 		const auto &dh_inner_data(dh_inner.c_server_DH_inner_data());
 		if (dh_inner_data.vnonce != _authKeyData->nonce) {
 			LOG(("AuthKey Error: received nonce <> sent nonce (in server_DH_inner_data)!"));
-			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&dh_inner_data.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+			              .arg(Logs::mb(&dh_inner_data.vnonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 			return restart();
 		}
 		if (dh_inner_data.vserver_nonce != _authKeyData->server_nonce) {
 			LOG(("AuthKey Error: received server_nonce <> sent server_nonce (in server_DH_inner_data)!"));
-			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2").arg(Logs::mb(&dh_inner_data.vserver_nonce, 16).str()).arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2")
+			              .arg(Logs::mb(&dh_inner_data.vserver_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
 			return restart();
 		}
 		uchar sha1Buffer[20];
 		if (memcmp(&decBuffer[0], hashSha1(&decBuffer[5], (to - from) * sizeof(mtpPrime), sha1Buffer), 20)) {
 			LOG(("AuthKey Error: sha1 hash of encrypted part did not match!"));
-			DEBUG_LOG(("AuthKey Error: sha1 did not match, server_nonce: %1, new_nonce %2, encrypted data %3").arg(Logs::mb(&_authKeyData->server_nonce, 16).str()).arg(Logs::mb(&_authKeyData->new_nonce, 16).str()).arg(Logs::mb(encDHStr.constData(), encDHLen).str()));
+			DEBUG_LOG(("AuthKey Error: sha1 did not match, server_nonce: %1, new_nonce %2, encrypted data %3")
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->new_nonce, 16).str())
+			              .arg(Logs::mb(encDHStr.constData(), encDHLen).str()));
 			return restart();
 		}
 		unixtimeSet(dh_inner_data.vserver_time.v);
@@ -2553,29 +2720,36 @@ void ConnectionPrivate::dhParamsAnswered() {
 		_authKeyStrings->g_a = byteVectorFromMTP(dh_inner_data.vg_a);
 		_authKeyData->retry_id = MTP_long(0);
 		_authKeyData->retries = 0;
-	} return dhClientParamsSend();
+	}
+		return dhClientParamsSend();
 
 	case mtpc_server_DH_params_fail: {
 		const auto &encDH(res_DH_params.c_server_DH_params_fail());
 		if (encDH.vnonce != _authKeyData->nonce) {
 			LOG(("AuthKey Error: received nonce <> sent nonce (in server_DH_params_fail)!"));
-			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&encDH.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+			              .arg(Logs::mb(&encDH.vnonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 			return restart();
 		}
 		if (encDH.vserver_nonce != _authKeyData->server_nonce) {
 			LOG(("AuthKey Error: received server_nonce <> sent server_nonce (in server_DH_params_fail)!"));
-			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2").arg(Logs::mb(&encDH.vserver_nonce, 16).str()).arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2")
+			              .arg(Logs::mb(&encDH.vserver_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
 			return restart();
 		}
 		uchar sha1Buffer[20];
-		if (encDH.vnew_nonce_hash != *(MTPint128*)(hashSha1(&_authKeyData->new_nonce, 32, sha1Buffer) + 1)) {
+		if (encDH.vnew_nonce_hash != *(MTPint128 *)(hashSha1(&_authKeyData->new_nonce, 32, sha1Buffer) + 1)) {
 			LOG(("AuthKey Error: received new_nonce_hash did not match!"));
-			DEBUG_LOG(("AuthKey Error: received new_nonce_hash: %1, new_nonce: %2").arg(Logs::mb(&encDH.vnew_nonce_hash, 16).str()).arg(Logs::mb(&_authKeyData->new_nonce, 32).str()));
+			DEBUG_LOG(("AuthKey Error: received new_nonce_hash: %1, new_nonce: %2")
+			              .arg(Logs::mb(&encDH.vnew_nonce_hash, 16).str())
+			              .arg(Logs::mb(&_authKeyData->new_nonce, 32).str()));
 			return restart();
 		}
 		LOG(("AuthKey Error: server_DH_params_fail received!"));
-	} return restart();
-
+	}
+		return restart();
 	}
 	LOG(("AuthKey Error: unknown server_DH_params received, typeId = %1").arg(res_DH_params.type()));
 	return restart();
@@ -2608,7 +2782,8 @@ void ConnectionPrivate::dhClientParamsSend() {
 	memcpy(&_authKeyData->auth_key_aux_hash, auth_key_sha.data(), 8);
 	memcpy(&_authKeyData->auth_key_hash, auth_key_sha.data() + 12, 8);
 
-	auto client_dh_inner = MTP_client_DH_inner_data(_authKeyData->nonce, _authKeyData->server_nonce, _authKeyData->retry_id, MTP_bytes(g_b_data.modexp));
+	auto client_dh_inner = MTP_client_DH_inner_data(_authKeyData->nonce, _authKeyData->server_nonce,
+	                                                _authKeyData->retry_id, MTP_bytes(g_b_data.modexp));
 
 	auto sdhEncString = encryptClientDHInner(client_dh_inner);
 
@@ -2644,7 +2819,8 @@ std::string ConnectionPrivate::encryptClientDHInner(const MTPClient_DH_Inner_Dat
 
 	auto sdhEncString = std::string(encFullSize * 4, ' ');
 
-	aesIgeEncryptRaw(&encBuffer[0], &sdhEncString[0], encFullSize * sizeof(mtpPrime), _authKeyData->aesKey, _authKeyData->aesIV);
+	aesIgeEncryptRaw(&encBuffer[0], &sdhEncString[0], encFullSize * sizeof(mtpPrime), _authKeyData->aesKey,
+	                 _authKeyData->aesIV);
 
 	return sdhEncString;
 }
@@ -2667,23 +2843,29 @@ void ConnectionPrivate::dhClientParamsAnswered() {
 		const auto &resDH(res_client_DH_params.c_dh_gen_ok());
 		if (resDH.vnonce != _authKeyData->nonce) {
 			LOG(("AuthKey Error: received nonce <> sent nonce (in dh_gen_ok)!"));
-			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&resDH.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+			              .arg(Logs::mb(&resDH.vnonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		if (resDH.vserver_nonce != _authKeyData->server_nonce) {
 			LOG(("AuthKey Error: received server_nonce <> sent server_nonce (in dh_gen_ok)!"));
-			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2").arg(Logs::mb(&resDH.vserver_nonce, 16).str()).arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2")
+			              .arg(Logs::mb(&resDH.vserver_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		_authKeyData->new_nonce_buf[32] = 1;
 		uchar sha1Buffer[20];
-		if (resDH.vnew_nonce_hash1 != *(MTPint128*)(hashSha1(_authKeyData->new_nonce_buf, 41, sha1Buffer) + 1)) {
+		if (resDH.vnew_nonce_hash1 != *(MTPint128 *)(hashSha1(_authKeyData->new_nonce_buf, 41, sha1Buffer) + 1)) {
 			LOG(("AuthKey Error: received new_nonce_hash1 did not match!"));
-			DEBUG_LOG(("AuthKey Error: received new_nonce_hash1: %1, new_nonce_buf: %2").arg(Logs::mb(&resDH.vnew_nonce_hash1, 16).str()).arg(Logs::mb(_authKeyData->new_nonce_buf, 41).str()));
+			DEBUG_LOG(("AuthKey Error: received new_nonce_hash1: %1, new_nonce_buf: %2")
+			              .arg(Logs::mb(&resDH.vnew_nonce_hash1, 16).str())
+			              .arg(Logs::mb(_authKeyData->new_nonce_buf, 41).str()));
 
 			lockFinished.unlock();
 			return restart();
@@ -2692,64 +2874,80 @@ void ConnectionPrivate::dhClientParamsAnswered() {
 		quint64 salt1 = _authKeyData->new_nonce.l.l, salt2 = _authKeyData->server_nonce.l, serverSalt = salt1 ^ salt2;
 		sessionData->setSalt(serverSalt);
 
-		auto authKey = std::make_shared<AuthKey>(AuthKey::Type::Generated, bareDcId(_shiftedDcId), _authKeyStrings->auth_key);
+		auto authKey =
+		    std::make_shared<AuthKey>(AuthKey::Type::Generated, bareDcId(_shiftedDcId), _authKeyStrings->auth_key);
 
-		DEBUG_LOG(("AuthKey Info: auth key gen succeed, id: %1, server salt: %2").arg(authKey->keyId()).arg(serverSalt));
+		DEBUG_LOG(
+		    ("AuthKey Info: auth key gen succeed, id: %1, server salt: %2").arg(authKey->keyId()).arg(serverSalt));
 
 		sessionData->owner()->notifyKeyCreated(std::move(authKey)); // slot will call authKeyCreated()
 		sessionData->clear(_instance);
 		unlockKey();
-	} return;
+	}
+		return;
 
 	case mtpc_dh_gen_retry: {
 		const auto &resDH(res_client_DH_params.c_dh_gen_retry());
 		if (resDH.vnonce != _authKeyData->nonce) {
 			LOG(("AuthKey Error: received nonce <> sent nonce (in dh_gen_retry)!"));
-			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&resDH.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+			              .arg(Logs::mb(&resDH.vnonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		if (resDH.vserver_nonce != _authKeyData->server_nonce) {
 			LOG(("AuthKey Error: received server_nonce <> sent server_nonce (in dh_gen_retry)!"));
-			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2").arg(Logs::mb(&resDH.vserver_nonce, 16).str()).arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2")
+			              .arg(Logs::mb(&resDH.vserver_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		_authKeyData->new_nonce_buf[32] = 2;
 		uchar sha1Buffer[20];
-		if (resDH.vnew_nonce_hash2 != *(MTPint128*)(hashSha1(_authKeyData->new_nonce_buf, 41, sha1Buffer) + 1)) {
+		if (resDH.vnew_nonce_hash2 != *(MTPint128 *)(hashSha1(_authKeyData->new_nonce_buf, 41, sha1Buffer) + 1)) {
 			LOG(("AuthKey Error: received new_nonce_hash2 did not match!"));
-			DEBUG_LOG(("AuthKey Error: received new_nonce_hash2: %1, new_nonce_buf: %2").arg(Logs::mb(&resDH.vnew_nonce_hash2, 16).str()).arg(Logs::mb(_authKeyData->new_nonce_buf, 41).str()));
+			DEBUG_LOG(("AuthKey Error: received new_nonce_hash2: %1, new_nonce_buf: %2")
+			              .arg(Logs::mb(&resDH.vnew_nonce_hash2, 16).str())
+			              .arg(Logs::mb(_authKeyData->new_nonce_buf, 41).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		_authKeyData->retry_id = _authKeyData->auth_key_aux_hash;
-	} return dhClientParamsSend();
+	}
+		return dhClientParamsSend();
 
 	case mtpc_dh_gen_fail: {
 		const auto &resDH(res_client_DH_params.c_dh_gen_fail());
 		if (resDH.vnonce != _authKeyData->nonce) {
 			LOG(("AuthKey Error: received nonce <> sent nonce (in dh_gen_fail)!"));
-			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2").arg(Logs::mb(&resDH.vnonce, 16).str()).arg(Logs::mb(&_authKeyData->nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received nonce: %1, sent nonce: %2")
+			              .arg(Logs::mb(&resDH.vnonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->nonce, 16).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		if (resDH.vserver_nonce != _authKeyData->server_nonce) {
 			LOG(("AuthKey Error: received server_nonce <> sent server_nonce (in dh_gen_fail)!"));
-			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2").arg(Logs::mb(&resDH.vserver_nonce, 16).str()).arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
+			DEBUG_LOG(("AuthKey Error: received server_nonce: %1, sent server_nonce: %2")
+			              .arg(Logs::mb(&resDH.vserver_nonce, 16).str())
+			              .arg(Logs::mb(&_authKeyData->server_nonce, 16).str()));
 
 			lockFinished.unlock();
 			return restart();
 		}
 		_authKeyData->new_nonce_buf[32] = 3;
 		uchar sha1Buffer[20];
-		if (resDH.vnew_nonce_hash3 != *(MTPint128*)(hashSha1(_authKeyData->new_nonce_buf, 41, sha1Buffer) + 1)) {
+		if (resDH.vnew_nonce_hash3 != *(MTPint128 *)(hashSha1(_authKeyData->new_nonce_buf, 41, sha1Buffer) + 1)) {
 			LOG(("AuthKey Error: received new_nonce_hash3 did not match!"));
-			DEBUG_LOG(("AuthKey Error: received new_nonce_hash3: %1, new_nonce_buf: %2").arg(Logs::mb(&resDH.vnew_nonce_hash3, 16).str()).arg(Logs::mb(_authKeyData->new_nonce_buf, 41).str()));
+			DEBUG_LOG(("AuthKey Error: received new_nonce_hash3: %1, new_nonce_buf: %2")
+			              .arg(Logs::mb(&resDH.vnew_nonce_hash3, 16).str())
+			              .arg(Logs::mb(_authKeyData->new_nonce_buf, 41).str()));
 
 			lockFinished.unlock();
 			return restart();
@@ -2759,7 +2957,6 @@ void ConnectionPrivate::dhClientParamsAnswered() {
 
 		lockFinished.unlock();
 		return restart();
-
 	}
 	LOG(("AuthKey Error: unknown set_client_DH_params_answer received, typeId = %1").arg(res_client_DH_params.type()));
 
@@ -2790,14 +2987,14 @@ void ConnectionPrivate::clearAuthKeyData() {
 #ifdef Q_OS_WIN2
 		SecureZeroMemory(bytes.data(), bytes.size());
 #else // Q_OS_WIN
-		auto end = reinterpret_cast<char*>(bytes.data()) + bytes.size();
-		for (volatile auto p = reinterpret_cast<volatile char*>(bytes.data()); p != end; ++p) {
+		auto end = reinterpret_cast<char *>(bytes.data()) + bytes.size();
+		for (volatile auto p = reinterpret_cast<volatile char *>(bytes.data()); p != end; ++p) {
 			*p = 0;
 		}
 #endif // Q_OS_WIN
 	};
 	if (_authKeyData) {
-		zeroMemory(gsl::make_span(reinterpret_cast<gsl::byte*>(_authKeyData.get()), sizeof(AuthKeyCreateData)));
+		zeroMemory(gsl::make_span(reinterpret_cast<gsl::byte *>(_authKeyData.get()), sizeof(AuthKeyCreateData)));
 		_authKeyData.reset();
 	}
 	if (_authKeyStrings) {
@@ -2848,7 +3045,8 @@ void ConnectionPrivate::handleError(int errorCode) {
 			emit _instance->keyDestroyed(_shiftedDcId);
 			return;
 		} else if (_dcType == DcType::Cdn) {
-			LOG(("MTP Info: -404 error received in CDN dc %1, assuming it was destroyed, recreating.").arg(_shiftedDcId));
+			LOG(("MTP Info: -404 error received in CDN dc %1, assuming it was destroyed, recreating.")
+			        .arg(_shiftedDcId));
 			clearMessages();
 			keyId = kRecreateKeyId;
 			return restart();
@@ -2858,11 +3056,9 @@ void ConnectionPrivate::handleError(int errorCode) {
 	return restart();
 }
 
-void ConnectionPrivate::onReadyData() {
-}
+void ConnectionPrivate::onReadyData() {}
 
-template <typename TRequest>
-void ConnectionPrivate::sendRequestNotSecure(const TRequest &request) {
+template <typename TRequest> void ConnectionPrivate::sendRequestNotSecure(const TRequest &request) {
 	try {
 		mtpBuffer buffer;
 		quint32 requestSize = request.innerLength() >> 2;
@@ -2880,7 +3076,10 @@ void ConnectionPrivate::sendRequestNotSecure(const TRequest &request) {
 		buffer.push_back(0); // tcp crc32 hash
 		++_authKeyData->msgs_sent;
 
-		DEBUG_LOG(("AuthKey Info: sending request, size: %1, num: %2, time: %3").arg(requestSize).arg(_authKeyData->req_num).arg(buffer[5]));
+		DEBUG_LOG(("AuthKey Info: sending request, size: %1, num: %2, time: %3")
+		              .arg(requestSize)
+		              .arg(_authKeyData->req_num)
+		              .arg(buffer[5]));
 
 		_conn->sendData(buffer);
 
@@ -2891,8 +3090,7 @@ void ConnectionPrivate::sendRequestNotSecure(const TRequest &request) {
 	}
 }
 
-template <typename TResponse>
-bool ConnectionPrivate::readResponseNotSecure(TResponse &response) {
+template <typename TResponse> bool ConnectionPrivate::readResponseNotSecure(TResponse &response) {
 	onReceivedSome();
 
 	try {
@@ -2911,7 +3109,9 @@ bool ConnectionPrivate::readResponseNotSecure(TResponse &response) {
 			DEBUG_LOG(("AuthKey Error: answer bytes %1").arg(Logs::mb(answer, len * sizeof(mtpPrime)).str()));
 			return false;
 		}
-		if (answer[0] != 0 || answer[1] != 0 || (((quint32)answer[2]) & 0x03) != 1/* || (unixtime() - answer[3] > 300) || (answer[3] - unixtime() > 60)*/) { // didnt sync time yet
+		if (answer[0] != 0 || answer[1] != 0 ||
+		    (((quint32)answer[2]) & 0x03) !=
+		        1 /* || (unixtime() - answer[3] > 300) || (answer[3] - unixtime() > 60)*/) { // didnt sync time yet
 			LOG(("AuthKey Error: bad request answer start (%1 %2 %3)").arg(answer[0]).arg(answer[1]).arg(answer[2]));
 			DEBUG_LOG(("AuthKey Error: answer bytes %1").arg(Logs::mb(answer, len * sizeof(mtpPrime)).str()));
 			return false;
@@ -2968,18 +3168,18 @@ bool ConnectionPrivate::sendRequest(mtpRequest &request, bool needAnyResponse, Q
 	quint32 padding = fullSize - 4 - messageSize;
 
 	uchar encryptedSHA[20];
-	MTPint128 &msgKey(*(MTPint128*)(encryptedSHA + 4));
+	MTPint128 &msgKey(*(MTPint128 *)(encryptedSHA + 4));
 	hashSha1(request->constData(), (fullSize - padding) * sizeof(mtpPrime), encryptedSHA);
 
 	mtpBuffer result;
 	result.resize(9 + fullSize);
-	*((quint64*)&result[2]) = keyId;
-	*((MTPint128*)&result[4]) = msgKey;
+	*((quint64 *)&result[2]) = keyId;
+	*((MTPint128 *)&result[4]) = msgKey;
 
 	aesIgeEncrypt_oldmtp(request->constData(), &result[8], fullSize * sizeof(mtpPrime), key, msgKey);
 #else // TDESKTOP_MTPROTO_OLD
 	uchar encryptedSHA256[32];
-	MTPint128 &msgKey(*(MTPint128*)(encryptedSHA256 + 8));
+	MTPint128 &msgKey(*(MTPint128 *)(encryptedSHA256 + 8));
 
 	SHA256_CTX msgKeyLargeContext;
 	SHA256_Init(&msgKeyLargeContext);
@@ -2989,13 +3189,16 @@ bool ConnectionPrivate::sendRequest(mtpRequest &request, bool needAnyResponse, Q
 
 	mtpBuffer result;
 	result.resize(9 + fullSize);
-	*((quint64*)&result[2]) = keyId;
-	*((MTPint128*)&result[4]) = msgKey;
+	*((quint64 *)&result[2]) = keyId;
+	*((MTPint128 *)&result[4]) = msgKey;
 
 	aesIgeEncrypt(request->constData(), &result[8], fullSize * sizeof(mtpPrime), key, msgKey);
 #endif // TDESKTOP_MTPROTO_OLD
 
-	DEBUG_LOG(("MTP Info: sending request, size: %1, num: %2, time: %3").arg(fullSize + 6).arg((*request)[4]).arg((*request)[5]));
+	DEBUG_LOG(("MTP Info: sending request, size: %1, num: %2, time: %3")
+	              .arg(fullSize + 6)
+	              .arg((*request)[4])
+	              .arg((*request)[5]));
 
 	_conn->setSentEncrypted();
 	_conn->sendData(result);
@@ -3070,7 +3273,8 @@ ModExpFirst CreateModExp(int g, base::const_byte_span primeBytes, base::const_by
 	return internal::CreateModExp(g, primeBytes, randomSeed);
 }
 
-std::vector<gsl::byte> CreateAuthKey(base::const_byte_span firstBytes, base::const_byte_span randomBytes, base::const_byte_span primeBytes) {
+std::vector<gsl::byte> CreateAuthKey(base::const_byte_span firstBytes, base::const_byte_span randomBytes,
+                                     base::const_byte_span primeBytes) {
 	return internal::CreateAuthKey(firstBytes, randomBytes, primeBytes);
 }
 

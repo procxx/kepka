@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/numbers/processor.h"
 
+#include "codegen/common/cpp_file.h"
+#include "codegen/numbers/generator.h"
+#include "codegen/numbers/parsed_file.h"
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include "codegen/common/cpp_file.h"
-#include "codegen/numbers/parsed_file.h"
-#include "codegen/numbers/generator.h"
 
 namespace codegen {
 namespace numbers {
@@ -35,9 +35,8 @@ constexpr int kErrorCantWritePath = 851;
 } // namespace
 
 Processor::Processor(const Options &options)
-: parser_(std::make_unique<ParsedFile>(options))
-, options_(options) {
-}
+    : parser_(std::make_unique<ParsedFile>(options))
+    , options_(options) {}
 
 int Processor::launch() {
 	if (!parser_->read()) {
@@ -55,7 +54,8 @@ int Processor::launch() {
 bool Processor::write(const Rules &rules) const {
 	QDir dir(options_.outputPath);
 	if (!dir.mkpath(".")) {
-		common::logError(kErrorCantWritePath, "Command Line") << "can not open path for writing: " << dir.absolutePath().toStdString();
+		common::logError(kErrorCantWritePath, "Command Line")
+		    << "can not open path for writing: " << dir.absolutePath().toStdString();
 		return false;
 	}
 
@@ -63,9 +63,8 @@ bool Processor::write(const Rules &rules) const {
 	QString dstFilePath = dir.absolutePath() + "/numbers";
 
 	common::ProjectInfo project = {
-		"codegen_style",
-		srcFile.fileName(),
-		false, // forceReGenerate
+	    "codegen_style", srcFile.fileName(),
+	    false, // forceReGenerate
 	};
 
 	Generator generator(rules, dstFilePath, project);

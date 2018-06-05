@@ -22,18 +22,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/lambda.h"
 #include "base/observer.h"
-#include "ui/text/text_entity.h"
-#include "ui/widgets/shadow.h"
-#include "ui/twidget.h"
 #include "layerwidget.h"
+#include "ui/text/text_entity.h"
+#include "ui/twidget.h"
+#include "ui/widgets/shadow.h"
 
 namespace Ui {
 class RoundButton;
 class IconButton;
 class ScrollArea;
 class FlatLabel;
-template <typename Widget>
-class WidgetFadeWrap;
+template <typename Widget> class WidgetFadeWrap;
 } // namespace Ui
 
 namespace Window {
@@ -51,15 +50,17 @@ public:
 	virtual void setAdditionalTitle(base::lambda<QString()> additionalFactory) = 0;
 
 	virtual void clearButtons() = 0;
-	virtual QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) = 0;
-	virtual QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) = 0;
+	virtual QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	                                            const style::RoundButton &st) = 0;
+	virtual QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory,
+	                                                base::lambda<void()> clickCallback,
+	                                                const style::RoundButton &st) = 0;
 	virtual void updateButtonsPositions() = 0;
 
 	virtual void setDimensions(int newWidth, int maxHeight) = 0;
 	virtual void setNoContentMargin(bool noContentMargin) = 0;
 	virtual bool isBoxShown() const = 0;
 	virtual void closeBox() = 0;
-
 };
 
 class BoxContent : public TWidget, protected base::Subscriber {
@@ -79,7 +80,7 @@ public:
 
 	void setTitle(base::lambda<QString()> titleFactory) {
 		if (titleFactory) {
-			getDelegate()->setTitle([titleFactory] { return TextWithEntities { titleFactory(), EntitiesInText() }; });
+			getDelegate()->setTitle([titleFactory] { return TextWithEntities{titleFactory(), EntitiesInText()}; });
 		} else {
 			getDelegate()->setTitle(base::lambda<TextWithEntities()>());
 		}
@@ -96,7 +97,8 @@ public:
 	}
 	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback);
 	QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback);
-	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) {
+	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	                                    const style::RoundButton &st) {
 		return getDelegate()->addButton(std::move(textFactory), std::move(clickCallback), st);
 	}
 	void updateButtonsGeometry() {
@@ -152,16 +154,14 @@ protected:
 		return result;
 	}
 
-	template <typename Widget>
-	QPointer<Widget> setInnerWidget(object_ptr<Widget> inner, int topSkip = 0) {
+	template <typename Widget> QPointer<Widget> setInnerWidget(object_ptr<Widget> inner, int topSkip = 0) {
 		auto result = QPointer<Widget>(inner.data());
 		setInnerTopSkip(topSkip);
 		setInner(std::move(inner));
 		return result;
 	}
 
-	template <typename Widget>
-	object_ptr<Widget> takeInnerWidget() {
+	template <typename Widget> object_ptr<Widget> takeInnerWidget() {
 		return static_object_cast<Widget>(doTakeInnerWidget());
 	}
 
@@ -196,13 +196,12 @@ private:
 	bool _preparing = false;
 	bool _noContentMargin = false;
 	int _innerTopSkip = 0;
-	object_ptr<Ui::ScrollArea> _scroll = { nullptr };
-	object_ptr<Ui::WidgetFadeWrap<BoxLayerTitleShadow>> _topShadow = { nullptr };
-	object_ptr<Ui::WidgetFadeWrap<BoxLayerTitleShadow>> _bottomShadow = { nullptr };
+	object_ptr<Ui::ScrollArea> _scroll = {nullptr};
+	object_ptr<Ui::WidgetFadeWrap<BoxLayerTitleShadow>> _topShadow = {nullptr};
+	object_ptr<Ui::WidgetFadeWrap<BoxLayerTitleShadow>> _bottomShadow = {nullptr};
 
-	object_ptr<QTimer> _draggingScrollTimer = { nullptr };
+	object_ptr<QTimer> _draggingScrollTimer = {nullptr};
 	int _draggingScrollDelta = 0;
-
 };
 
 class AbstractBox : public LayerWidget, public BoxContentDelegate, protected base::Subscriber {
@@ -219,8 +218,10 @@ public:
 	void setAdditionalTitle(base::lambda<QString()> additionalFactory) override;
 
 	void clearButtons() override;
-	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) override;
-	QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback, const style::RoundButton &st) override;
+	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	                                    const style::RoundButton &st) override;
+	QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	                                        const style::RoundButton &st) override;
 	void updateButtonsPositions() override;
 
 	void setDimensions(int newWidth, int maxHeight) override;
@@ -274,7 +275,7 @@ private:
 	int _maxContentHeight = 0;
 	object_ptr<BoxContent> _content;
 
-	object_ptr<Ui::FlatLabel> _title = { nullptr };
+	object_ptr<Ui::FlatLabel> _title = {nullptr};
 	base::lambda<TextWithEntities()> _titleFactory;
 	QString _additionalTitle;
 	base::lambda<QString()> _additionalTitleFactory;
@@ -283,14 +284,12 @@ private:
 	bool _layerType = false;
 
 	std::vector<object_ptr<Ui::RoundButton>> _buttons;
-	object_ptr<Ui::RoundButton> _leftButton = { nullptr };
-
+	object_ptr<Ui::RoundButton> _leftButton = {nullptr};
 };
 
 class BoxLayerTitleShadow : public Ui::PlainShadow {
 public:
 	BoxLayerTitleShadow(QWidget *parent);
-
 };
 
 class BoxContentDivider : public TWidget {
@@ -300,7 +299,6 @@ public:
 protected:
 	int resizeGetHeight(int newWidth) override;
 	void paintEvent(QPaintEvent *e) override;
-
 };
 
 enum CreatingGroupType {

@@ -20,19 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QSystemTrayIcon>
-#include <QPaintEvent>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QLabel>
-#include <QCheckBox>
-#include <QNetworkReply>
-#include "platform/platform_specific.h"
-#include "platform/platform_main_window.h"
 #include "core/single_timer.h"
+#include "platform/platform_main_window.h"
+#include "platform/platform_specific.h"
+#include <QCheckBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QNetworkReply>
+#include <QPaintEvent>
+#include <QPushButton>
+#include <QSystemTrayIcon>
 
-#include "ui/twidget.h"
 #include "layerwidget.h"
+#include "ui/twidget.h"
 
 class PasscodeWidget;
 class MainWidget;
@@ -75,7 +75,6 @@ private:
 	QString _text;
 	int _textWidth = 0;
 	object_ptr<Ui::LinkButton> _reconnect;
-
 };
 
 class MediaPreviewWidget;
@@ -93,7 +92,8 @@ public:
 	void clearPasscode();
 	void setupIntro();
 	void setupMain(const MTPUser *user = nullptr);
-	void serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media = MTP_messageMediaEmpty(), qint32 date = 0, bool force = false);
+	void serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media = MTP_messageMediaEmpty(),
+	                         qint32 date = 0, bool force = false);
 	void sendServiceHistoryRequest();
 	void showDelayedServiceMsgs();
 
@@ -194,12 +194,15 @@ private:
 
 	QPixmap grabInner();
 
-	void placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift, style::color color) override;
+	void placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift,
+	                       style::color color) override;
 	QImage icon16, icon32, icon64, iconbig16, iconbig32, iconbig64;
 
 	struct DelayedServiceMsg {
-		DelayedServiceMsg(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date) : message(message), media(media), date(date) {
-		}
+		DelayedServiceMsg(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date)
+		    : message(message)
+		    , media(media)
+		    , date(date) {}
 		TextWithEntities message;
 		MTPMessageMedia media;
 		qint32 date;
@@ -207,22 +210,20 @@ private:
 	QList<DelayedServiceMsg> _delayedServiceMsgs;
 	mtpRequestId _serviceHistoryRequest = 0;
 
-	object_ptr<PasscodeWidget> _passcode = { nullptr };
-	object_ptr<Intro::Widget> _intro = { nullptr };
-	object_ptr<MainWidget> _main = { nullptr };
-	object_ptr<LayerStackWidget> _layerBg = { nullptr };
-	object_ptr<MediaPreviewWidget> _mediaPreview = { nullptr };
+	object_ptr<PasscodeWidget> _passcode = {nullptr};
+	object_ptr<Intro::Widget> _intro = {nullptr};
+	object_ptr<MainWidget> _main = {nullptr};
+	object_ptr<LayerStackWidget> _layerBg = {nullptr};
+	object_ptr<MediaPreviewWidget> _mediaPreview = {nullptr};
 
-	object_ptr<ConnectingWidget> _connecting = { nullptr };
-	object_ptr<Window::Theme::WarningWidget> _testingThemeWarning = { nullptr };
+	object_ptr<ConnectingWidget> _connecting = {nullptr};
+	object_ptr<Window::Theme::WarningWidget> _testingThemeWarning = {nullptr};
 
 	Local::ClearManager *_clearManager = nullptr;
-
 };
 
 class PreLaunchWindow : public TWidget {
 public:
-
 	PreLaunchWindow(QString title = QString());
 	void activate();
 	int basicSize() const {
@@ -233,9 +234,7 @@ public:
 	static PreLaunchWindow *instance();
 
 protected:
-
 	int _size;
-
 };
 
 class PreLaunchLabel : public QLabel {
@@ -268,29 +267,24 @@ public:
 
 class NotStartedWindow : public PreLaunchWindow {
 public:
-
 	NotStartedWindow();
 
 protected:
-
 	void closeEvent(QCloseEvent *e);
 	void resizeEvent(QResizeEvent *e);
 
 private:
-
 	void updateControls();
 
 	PreLaunchLabel _label;
 	PreLaunchLog _log;
 	PreLaunchButton _close;
-
 };
 
 class LastCrashedWindow : public PreLaunchWindow {
-	 Q_OBJECT
+	Q_OBJECT
 
 public:
-
 	LastCrashedWindow();
 
 public slots:
@@ -310,12 +304,10 @@ public slots:
 	void onSendingProgress(qint64 uploaded, qint64 total);
 
 protected:
-
 	void closeEvent(QCloseEvent *e);
 	void resizeEvent(QResizeEvent *e);
 
 private:
-
 	QString minidumpFileName();
 	void updateControls();
 
@@ -357,14 +349,12 @@ private:
 
 	QString getReportField(const QLatin1String &name, const QLatin1String &prefix);
 	void addReportFieldPart(const QLatin1String &name, const QLatin1String &prefix, QHttpMultiPart *multipart);
-
 };
 
 class NetworkSettingsWindow : public PreLaunchWindow {
 	Q_OBJECT
 
 public:
-
 	NetworkSettingsWindow(QWidget *parent, QString host, quint32 port, QString username, QString password);
 
 signals:
@@ -376,12 +366,10 @@ public slots:
 	void onSave();
 
 protected:
-
 	void closeEvent(QCloseEvent *e);
 	void resizeEvent(QResizeEvent *e);
 
 private:
-
 	void updateControls();
 
 	PreLaunchLabel _hostLabel, _portLabel, _usernameLabel, _passwordLabel;
@@ -389,21 +377,16 @@ private:
 	PreLaunchButton _save, _cancel;
 
 	QWidget *_parent;
-
 };
 
 class ShowCrashReportWindow : public PreLaunchWindow {
 public:
-
 	ShowCrashReportWindow(const QString &text);
 
 protected:
-
 	void resizeEvent(QResizeEvent *e);
-    void closeEvent(QCloseEvent *e);
+	void closeEvent(QCloseEvent *e);
 
 private:
-
 	PreLaunchLog _log;
-
 };

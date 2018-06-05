@@ -21,19 +21,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <QPair>
-#include <QTextEdit>
-#include <QTextCursor>
 #include <QScrollBar>
+#include <QTextCursor>
+#include <QTextEdit>
 
 #include "scheme.h"
 #include "ui/images.h"
-#include "ui/twidget.h"
 #include "ui/text/text.h"
+#include "ui/twidget.h"
 
 using MediaKey = QPair<quint64, quint64>;
 
 inline quint64 mediaMix32To64(qint32 a, qint32 b) {
-	return (quint64(*reinterpret_cast<quint32*>(&a)) << 32) | quint64(*reinterpret_cast<quint32*>(&b));
+	return (quint64(*reinterpret_cast<quint32 *>(&a)) << 32) | quint64(*reinterpret_cast<quint32 *>(&b));
 }
 
 enum LocationType {
@@ -46,7 +46,7 @@ enum LocationType {
 };
 
 // Old method, should not be used anymore.
-//inline MediaKey mediaKey(LocationType type, qint32 dc, const quint64 &id) {
+// inline MediaKey mediaKey(LocationType type, qint32 dc, const quint64 &id) {
 //	return MediaKey(mediaMix32To64(type, dc), id);
 //}
 // New method when version was introduced, type is not relevant anymore (all files are Documents).
@@ -66,17 +66,18 @@ static const ChannelId NoChannel = 0;
 typedef qint32 MsgId;
 struct FullMsgId {
 	FullMsgId() = default;
-	FullMsgId(ChannelId channel, MsgId msg) : channel(channel), msg(msg) {
-	}
+	FullMsgId(ChannelId channel, MsgId msg)
+	    : channel(channel)
+	    , msg(msg) {}
 	ChannelId channel = NoChannel;
 	MsgId msg = 0;
 };
 
 typedef quint64 PeerId;
-static const quint64 PeerIdMask         = 0xFFFFFFFFULL;
-static const quint64 PeerIdTypeMask     = 0x300000000ULL;
-static const quint64 PeerIdUserShift    = 0x000000000ULL;
-static const quint64 PeerIdChatShift    = 0x100000000ULL;
+static const quint64 PeerIdMask = 0xFFFFFFFFULL;
+static const quint64 PeerIdTypeMask = 0x300000000ULL;
+static const quint64 PeerIdUserShift = 0x000000000ULL;
+static const quint64 PeerIdChatShift = 0x100000000ULL;
 static const quint64 PeerIdChannelShift = 0x200000000ULL;
 inline bool peerIsUser(const PeerId &id) {
 	return (id & PeerIdTypeMask) == PeerIdUserShift;
@@ -208,8 +209,9 @@ constexpr const MsgId ServerMaxMsgId = 0x3FFFFFFF;
 constexpr const MsgId ShowAtUnreadMsgId = 0;
 
 struct NotifySettings {
-	NotifySettings() : flags(MTPDpeerNotifySettings::Flag::f_show_previews), sound(qsl("default")) {
-	}
+	NotifySettings()
+	    : flags(MTPDpeerNotifySettings::Flag::f_show_previews)
+	    , sound(qsl("default")) {}
 	MTPDpeerNotifySettings::Flags flags;
 	TimeId mute = 0;
 	QString sound;
@@ -267,7 +269,6 @@ private:
 	class Impl;
 	std::unique_ptr<Impl> _impl;
 	friend class Impl;
-
 };
 
 static const PhotoId UnknownPeerPhotoId = 0xFFFFFFFFFFFFFFFFULL;
@@ -281,16 +282,15 @@ class PeerData;
 
 class PeerClickHandler : public ClickHandler {
 public:
-	PeerClickHandler(not_null<PeerData*> peer);
+	PeerClickHandler(not_null<PeerData *> peer);
 	void onClick(Qt::MouseButton button) const override;
 
-	not_null<PeerData*> peer() const {
+	not_null<PeerData *> peer() const {
 		return _peer;
 	}
 
 private:
-	not_null<PeerData*> _peer;
-
+	not_null<PeerData *> _peer;
 };
 
 class UserData;
@@ -429,13 +429,13 @@ private:
 
 	int _colorIndex = 0;
 	TimeMs _lastFullUpdate = 0;
-
 };
 
 class BotCommand {
 public:
-	BotCommand(const QString &command, const QString &description) : command(command), _description(description) {
-	}
+	BotCommand(const QString &command, const QString &description)
+	    : command(command)
+	    , _description(description) {}
 	QString command;
 
 	bool setDescription(const QString &description) {
@@ -452,7 +452,6 @@ public:
 private:
 	QString _description;
 	mutable Text _descriptionText;
-
 };
 
 struct BotInfo {
@@ -462,7 +461,7 @@ struct BotInfo {
 	int version = 0;
 	QString description, inlinePlaceholder;
 	QList<BotCommand> commands;
-	Text text = Text{ int(st::msgMinWidth) }; // description
+	Text text = Text{int(st::msgMinWidth)}; // description
 
 	QString startToken, startGroupToken, shareGameShortName;
 	PeerId inlineReturnPeerId = 0;
@@ -471,12 +470,12 @@ struct BotInfo {
 class PhotoData;
 class UserData : public PeerData {
 public:
-	UserData(const PeerId &id) : PeerData(id) {
-	}
+	UserData(const PeerId &id)
+	    : PeerData(id) {}
 	void setPhoto(const MTPUserProfilePhoto &photo);
 
-	void setName(const QString &newFirstName, const QString &newLastName
-		, const QString &newPhoneName, const QString &newUsername);
+	void setName(const QString &newFirstName, const QString &newLastName, const QString &newPhoneName,
+	             const QString &newUsername);
 
 	void setPhone(const QString &newPhone);
 	void setBotInfoVersion(int version);
@@ -531,7 +530,8 @@ public:
 	QString nameOrPhone;
 	Text phoneText;
 	TimeId onlineTill = 0;
-	qint32 contact = -1; // -1 - not contact, cant add (self, empty, deleted, foreign), 0 - not contact, can add (request), 1 - contact
+	qint32 contact = -1; // -1 - not contact, cant add (self, empty, deleted, foreign), 0 - not contact, can add
+	                     // (request), 1 - contact
 
 	enum class BlockStatus {
 		Unknown,
@@ -558,7 +558,7 @@ public:
 	bool hasCalls() const;
 	void setCallsStatus(CallsStatus callsStatus);
 
-	typedef QList<PhotoData*> Photos;
+	typedef QList<PhotoData *> Photos;
 	Photos photos;
 	int photosCount = -1; // -1 not loaded, 0 all loaded
 
@@ -588,13 +588,13 @@ private:
 	int _commonChatsCount = 0;
 
 	static constexpr const quint64 NoAccess = 0xFFFFFFFFFFFFFFFFULL;
-
 };
 
 class ChatData : public PeerData {
 public:
-	ChatData(const PeerId &id) : PeerData(id), inputChat(MTP_int(bareId())) {
-	}
+	ChatData(const PeerId &id)
+	    : PeerData(id)
+	    , inputChat(MTP_int(bareId())) {}
 	void setPhoto(const MTPChatPhoto &photo, const PhotoId &phId = UnknownPeerPhotoId);
 
 	void setName(const QString &newName);
@@ -650,13 +650,13 @@ public:
 	bool isMigrated() const {
 		return flags & MTPDchat::Flag::f_migrated_to;
 	}
-	QMap<not_null<UserData*>, int> participants;
-	OrderedSet<not_null<UserData*>> invitedByMe;
-	OrderedSet<not_null<UserData*>> admins;
-	QList<not_null<UserData*>> lastAuthors;
-	OrderedSet<not_null<PeerData*>> markupSenders;
+	QMap<not_null<UserData *>, int> participants;
+	OrderedSet<not_null<UserData *>> invitedByMe;
+	OrderedSet<not_null<UserData *>> admins;
+	QList<not_null<UserData *>> lastAuthors;
+	OrderedSet<not_null<PeerData *>> markupSenders;
 	int botStatus = 0; // -1 - no bots, 0 - unknown, 1 - one bot, that sees all history, 2 - other
-//	ImagePtr photoFull;
+	//	ImagePtr photoFull;
 
 	void setInviteLink(const QString &newInviteLink);
 	QString inviteLink() const {
@@ -666,7 +666,6 @@ public:
 private:
 	bool _isForbidden = false;
 	QString _inviteLink;
-
 };
 
 enum PtsSkippedQueue {
@@ -675,16 +674,14 @@ enum PtsSkippedQueue {
 };
 class PtsWaiter {
 public:
-
 	PtsWaiter()
-		: _good(0)
-		, _last(0)
-		, _count(0)
-		, _applySkippedLevel(0)
-		, _requesting(false)
-		, _waitingForSkipped(false)
-		, _waitingForShortPoll(false) {
-	}
+	    : _good(0)
+	    , _last(0)
+	    , _count(0)
+	    , _applySkippedLevel(0)
+	    , _requesting(false)
+	    , _waitingForSkipped(false)
+	    , _waitingForShortPoll(false) {}
 	void init(qint32 pts) {
 		_good = _last = _count = pts;
 		clearSkippedUpdates();
@@ -709,7 +706,7 @@ public:
 	}
 	void setWaitingForSkipped(ChannelData *channel, qint32 ms); // < 0 - not waiting
 	void setWaitingForShortPoll(ChannelData *channel, qint32 ms); // < 0 - not waiting
-	qint32 current() const{
+	qint32 current() const {
 		return _good;
 	}
 	bool updated(ChannelData *channel, qint32 pts, qint32 count, const MTPUpdates &updates);
@@ -722,7 +719,8 @@ public:
 	void clearSkippedUpdates();
 
 private:
-	bool check(ChannelData *channel, qint32 pts, qint32 count); // return false if need to save that update and apply later
+	bool check(ChannelData *channel, qint32 pts,
+	           qint32 count); // return false if need to save that update and apply later
 	quint64 ptsKey(PtsSkippedQueue queue, qint32 pts);
 	void checkForWaiting(ChannelData *channel);
 	QMap<quint64, PtsSkippedQueue> _queue;
@@ -736,23 +734,24 @@ private:
 
 struct MegagroupInfo {
 	struct Admin {
-		explicit Admin(MTPChannelAdminRights rights) : rights(rights) {
-		}
-		Admin(MTPChannelAdminRights rights, bool canEdit) : rights(rights), canEdit(canEdit) {
-		}
+		explicit Admin(MTPChannelAdminRights rights)
+		    : rights(rights) {}
+		Admin(MTPChannelAdminRights rights, bool canEdit)
+		    : rights(rights)
+		    , canEdit(canEdit) {}
 		MTPChannelAdminRights rights;
 		bool canEdit = false;
 	};
 	struct Restricted {
-		explicit Restricted(MTPChannelBannedRights rights) : rights(rights) {
-		}
+		explicit Restricted(MTPChannelBannedRights rights)
+		    : rights(rights) {}
 		MTPChannelBannedRights rights;
 	};
-	QList<not_null<UserData*>> lastParticipants;
-	QMap<not_null<UserData*>, Admin> lastAdmins;
-	QMap<not_null<UserData*>, Restricted> lastRestricted;
-	OrderedSet<not_null<PeerData*>> markupSenders;
-	OrderedSet<not_null<UserData*>> bots;
+	QList<not_null<UserData *>> lastParticipants;
+	QMap<not_null<UserData *>, Admin> lastAdmins;
+	QMap<not_null<UserData *>, Restricted> lastRestricted;
+	OrderedSet<not_null<PeerData *>> markupSenders;
+	OrderedSet<not_null<UserData *>> bots;
 
 	UserData *creator = nullptr; // nullptr means unknown
 	int botStatus = 0; // -1 - no bots, 0 - unknown, 1 - one bot, that sees all history, 2 - other
@@ -761,21 +760,21 @@ struct MegagroupInfo {
 	MTPInputStickerSet stickerSet = MTP_inputStickerSetEmpty();
 
 	enum LastParticipantsStatus {
-		LastParticipantsUpToDate       = 0x00,
+		LastParticipantsUpToDate = 0x00,
 		LastParticipantsAdminsOutdated = 0x01,
-		LastParticipantsCountOutdated  = 0x02,
+		LastParticipantsCountOutdated = 0x02,
 	};
 	mutable int lastParticipantsStatus = LastParticipantsUpToDate;
 	int lastParticipantsCount = 0;
 
 	ChatData *migrateFromPtr = nullptr;
-
 };
 
 class ChannelData : public PeerData {
 public:
-	ChannelData(const PeerId &id) : PeerData(id), inputChannel(MTP_inputChannel(MTP_int(bareId()), MTP_long(0))) {
-	}
+	ChannelData(const PeerId &id)
+	    : PeerData(id)
+	    , inputChannel(MTP_inputChannel(MTP_int(bareId()), MTP_long(0))) {}
 	void setPhoto(const MTPChatPhoto &photo, const PhotoId &phId = UnknownPeerPhotoId);
 
 	void setName(const QString &name, const QString &username);
@@ -836,8 +835,10 @@ public:
 	static bool IsRestrictedForever(TimeId until) {
 		return !until || (until == kRestrictUntilForever);
 	}
-	void applyEditAdmin(not_null<UserData*> user, const MTPChannelAdminRights &oldRights, const MTPChannelAdminRights &newRights);
-	void applyEditBanned(not_null<UserData*> user, const MTPChannelBannedRights &oldRights, const MTPChannelBannedRights &newRights);
+	void applyEditAdmin(not_null<UserData *> user, const MTPChannelAdminRights &oldRights,
+	                    const MTPChannelAdminRights &newRights);
+	void applyEditBanned(not_null<UserData *> user, const MTPChannelBannedRights &oldRights,
+	                     const MTPChannelBannedRights &newRights);
 
 	qint32 date = 0;
 	int version = 0;
@@ -903,7 +904,8 @@ public:
 		return (flags & MTPDchannel::Flag::f_democracy);
 	}
 	bool canAddMembers() const {
-		return adminRights().is_invite_users() || amCreator() || (anyoneCanAddMembers() && amIn() && !hasRestrictedRights());
+		return adminRights().is_invite_users() || amCreator() ||
+		       (anyoneCanAddMembers() && amIn() && !hasRestrictedRights());
 	}
 	bool canAddAdmins() const {
 		return adminRights().is_add_admins() || amCreator();
@@ -939,8 +941,8 @@ public:
 		constexpr auto kDeleteChannelMembersLimit = 1000;
 		return amCreator() && (membersCount() <= kDeleteChannelMembersLimit);
 	}
-	bool canEditAdmin(not_null<UserData*> user) const;
-	bool canRestrictUser(not_null<UserData*> user) const;
+	bool canEditAdmin(not_null<UserData *> user) const;
+	bool canRestrictUser(not_null<UserData *> user) const;
 
 	void setInviteLink(const QString &newInviteLink);
 	QString inviteLink() const {
@@ -996,7 +998,7 @@ public:
 	void setRestrictionReason(const QString &reason);
 
 private:
-	bool canNotEditLastAdmin(not_null<UserData*> user) const;
+	bool canNotEditLastAdmin(not_null<UserData *> user) const;
 
 	PtsWaiter _ptsWaiter;
 
@@ -1013,20 +1015,19 @@ private:
 	QString _about;
 
 	QString _inviteLink;
-
 };
 
 inline bool isUser(const PeerData *peer) {
 	return peer ? peer->isUser() : false;
 }
 inline UserData *PeerData::asUser() {
-	return isUser() ? static_cast<UserData*>(this) : nullptr;
+	return isUser() ? static_cast<UserData *>(this) : nullptr;
 }
 inline UserData *asUser(PeerData *peer) {
 	return peer ? peer->asUser() : nullptr;
 }
 inline const UserData *PeerData::asUser() const {
-	return isUser() ? static_cast<const UserData*>(this) : nullptr;
+	return isUser() ? static_cast<const UserData *>(this) : nullptr;
 }
 inline const UserData *asUser(const PeerData *peer) {
 	return peer ? peer->asUser() : nullptr;
@@ -1035,13 +1036,13 @@ inline bool isChat(const PeerData *peer) {
 	return peer ? peer->isChat() : false;
 }
 inline ChatData *PeerData::asChat() {
-	return isChat() ? static_cast<ChatData*>(this) : nullptr;
+	return isChat() ? static_cast<ChatData *>(this) : nullptr;
 }
 inline ChatData *asChat(PeerData *peer) {
 	return peer ? peer->asChat() : nullptr;
 }
 inline const ChatData *PeerData::asChat() const {
-	return isChat() ? static_cast<const ChatData*>(this) : nullptr;
+	return isChat() ? static_cast<const ChatData *>(this) : nullptr;
 }
 inline const ChatData *asChat(const PeerData *peer) {
 	return peer ? peer->asChat() : nullptr;
@@ -1050,25 +1051,25 @@ inline bool isChannel(const PeerData *peer) {
 	return peer ? peer->isChannel() : false;
 }
 inline ChannelData *PeerData::asChannel() {
-	return isChannel() ? static_cast<ChannelData*>(this) : nullptr;
+	return isChannel() ? static_cast<ChannelData *>(this) : nullptr;
 }
 inline ChannelData *asChannel(PeerData *peer) {
 	return peer ? peer->asChannel() : nullptr;
 }
 inline const ChannelData *PeerData::asChannel() const {
-	return isChannel() ? static_cast<const ChannelData*>(this) : nullptr;
+	return isChannel() ? static_cast<const ChannelData *>(this) : nullptr;
 }
 inline const ChannelData *asChannel(const PeerData *peer) {
 	return peer ? peer->asChannel() : nullptr;
 }
 inline ChannelData *PeerData::asMegagroup() {
-	return isMegagroup() ? static_cast<ChannelData*>(this) : nullptr;
+	return isMegagroup() ? static_cast<ChannelData *>(this) : nullptr;
 }
 inline ChannelData *asMegagroup(PeerData *peer) {
 	return peer ? peer->asMegagroup() : nullptr;
 }
 inline const ChannelData *PeerData::asMegagroup() const {
-	return isMegagroup() ? static_cast<const ChannelData*>(this) : nullptr;
+	return isMegagroup() ? static_cast<const ChannelData *>(this) : nullptr;
 }
 inline const ChannelData *asMegagroup(const PeerData *peer) {
 	return peer ? peer->asMegagroup() : nullptr;
@@ -1083,7 +1084,8 @@ inline ChannelData *PeerData::migrateTo() const {
 	return (isChat() && asChat()->migrateToPtr && asChat()->migrateToPtr->amIn()) ? asChat()->migrateToPtr : nullptr;
 }
 inline const Text &PeerData::dialogName() const {
-	return migrateTo() ? migrateTo()->dialogName() : ((isUser() && !asUser()->phoneText.isEmpty()) ? asUser()->phoneText : nameText);
+	return migrateTo() ? migrateTo()->dialogName() :
+	                     ((isUser() && !asUser()->phoneText.isEmpty()) ? asUser()->phoneText : nameText);
 }
 inline const QString &PeerData::shortName() const {
 	return isUser() ? asUser()->firstName : name;
@@ -1098,20 +1100,17 @@ inline bool PeerData::isMegagroup() const {
 	return isChannel() ? asChannel()->isMegagroup() : false;
 }
 inline bool PeerData::canWrite() const {
-	return isChannel() ? asChannel()->canWrite() : (isChat() ? asChat()->canWrite() : (isUser() ? asUser()->canWrite() : false));
+	return isChannel() ? asChannel()->canWrite() :
+	                     (isChat() ? asChat()->canWrite() : (isUser() ? asUser()->canWrite() : false));
 }
 
-enum ActionOnLoad {
-	ActionOnLoadNone,
-	ActionOnLoadOpen,
-	ActionOnLoadOpenWith,
-	ActionOnLoadPlayInline
-};
+enum ActionOnLoad { ActionOnLoadNone, ActionOnLoadOpen, ActionOnLoadOpenWith, ActionOnLoadPlayInline };
 
 typedef QMap<char, QPixmap> PreparedPhotoThumbs;
 class PhotoData {
 public:
-	PhotoData(const PhotoId &id, const quint64 &access = 0, qint32 date = 0, const ImagePtr &thumb = ImagePtr(), const ImagePtr &medium = ImagePtr(), const ImagePtr &full = ImagePtr());
+	PhotoData(const PhotoId &id, const quint64 &access = 0, qint32 date = 0, const ImagePtr &thumb = ImagePtr(),
+	          const ImagePtr &medium = ImagePtr(), const ImagePtr &full = ImagePtr());
 
 	void automaticLoad(const HistoryItem *item);
 	void automaticLoadSettingsChanged();
@@ -1139,8 +1138,8 @@ public:
 	// geo, caption
 
 	struct UploadingData {
-		UploadingData(int size) : size(size) {
-		}
+		UploadingData(int size)
+		    : size(size) {}
 		int offset = 0;
 		int size = 0;
 	};
@@ -1148,14 +1147,14 @@ public:
 
 private:
 	void notifyLayoutChanged() const;
-
 };
 
 class PhotoClickHandler : public LeftButtonClickHandler {
 public:
-	PhotoClickHandler(not_null<PhotoData*> photo, PeerData *peer = nullptr) : _photo(photo), _peer(peer) {
-	}
-	not_null<PhotoData*> photo() const {
+	PhotoClickHandler(not_null<PhotoData *> photo, PeerData *peer = nullptr)
+	    : _photo(photo)
+	    , _peer(peer) {}
+	not_null<PhotoData *> photo() const {
 		return _photo;
 	}
 	PeerData *peer() const {
@@ -1163,14 +1162,14 @@ public:
 	}
 
 private:
-	not_null<PhotoData*> _photo;
+	not_null<PhotoData *> _photo;
 	PeerData *_peer;
-
 };
 
 class PhotoOpenClickHandler : public PhotoClickHandler {
 public:
 	using PhotoClickHandler::PhotoClickHandler;
+
 protected:
 	void onClickImpl() const override;
 };
@@ -1178,6 +1177,7 @@ protected:
 class PhotoSaveClickHandler : public PhotoClickHandler {
 public:
 	using PhotoClickHandler::PhotoClickHandler;
+
 protected:
 	void onClickImpl() const override;
 };
@@ -1185,6 +1185,7 @@ protected:
 class PhotoCancelClickHandler : public PhotoClickHandler {
 public:
 	using PhotoClickHandler::PhotoClickHandler;
+
 protected:
 	void onClickImpl() const override;
 };
@@ -1198,18 +1199,17 @@ enum FileStatus {
 
 // Don't change the values. This type is used for serialization.
 enum DocumentType {
-	FileDocument       = 0,
-	VideoDocument      = 1,
-	SongDocument       = 2,
-	StickerDocument    = 3,
-	AnimatedDocument   = 4,
-	VoiceDocument      = 5,
+	FileDocument = 0,
+	VideoDocument = 1,
+	SongDocument = 2,
+	StickerDocument = 3,
+	AnimatedDocument = 4,
+	VoiceDocument = 5,
 	RoundVideoDocument = 6,
 };
 
 struct DocumentAdditionalData {
 	virtual ~DocumentAdditionalData() = default;
-
 };
 
 struct StickerData : public DocumentAdditionalData {
@@ -1220,13 +1220,11 @@ struct StickerData : public DocumentAdditionalData {
 	bool setInstalled() const;
 
 	StorageImageLocation loc; // doc thumb location
-
 };
 
 struct SongData : public DocumentAdditionalData {
 	qint32 duration = 0;
 	QString title, performer;
-
 };
 
 typedef QVector<char> VoiceWaveform; // [0] == -1 -- counting, [0] == -2 -- could not count
@@ -1242,12 +1240,13 @@ bool fileIsImage(const QString &name, const QString &mime);
 
 namespace Serialize {
 class Document;
-} // namespace Serialize;
+} // namespace Serialize
 
 class DocumentData {
 public:
 	static DocumentData *create(DocumentId id);
-	static DocumentData *create(DocumentId id, qint32 dc, quint64 accessHash, qint32 version, const QVector<MTPDocumentAttribute> &attributes);
+	static DocumentData *create(DocumentId id, qint32 dc, quint64 accessHash, qint32 version,
+	                            const QVector<MTPDocumentAttribute> &attributes);
 	static DocumentData *create(DocumentId id, const QString &url, const QVector<MTPDocumentAttribute> &attributes);
 
 	void setattributes(const QVector<MTPDocumentAttribute> &attributes);
@@ -1265,7 +1264,8 @@ public:
 	bool loading() const;
 	QString loadingFilePath() const;
 	bool displayLoading() const;
-	void save(const QString &toFile, ActionOnLoad action = ActionOnLoadNone, const FullMsgId &actionMsgId = FullMsgId(), LoadFromCloudSetting fromCloud = LoadFromCloudOrLocal, bool autoLoading = false);
+	void save(const QString &toFile, ActionOnLoad action = ActionOnLoadNone, const FullMsgId &actionMsgId = FullMsgId(),
+	          LoadFromCloudSetting fromCloud = LoadFromCloudOrLocal, bool autoLoading = false);
 	void cancel();
 	double progress() const;
 	qint32 loadOffset() const;
@@ -1285,7 +1285,7 @@ public:
 	ImagePtr makeReplyPreview();
 
 	StickerData *sticker() {
-		return (type == StickerDocument) ? static_cast<StickerData*>(_additional.get()) : nullptr;
+		return (type == StickerDocument) ? static_cast<StickerData *>(_additional.get()) : nullptr;
 	}
 	void checkSticker() {
 		StickerData *s = sticker();
@@ -1305,16 +1305,16 @@ public:
 		}
 	}
 	SongData *song() {
-		return (type == SongDocument) ? static_cast<SongData*>(_additional.get()) : nullptr;
+		return (type == SongDocument) ? static_cast<SongData *>(_additional.get()) : nullptr;
 	}
 	const SongData *song() const {
-		return const_cast<DocumentData*>(this)->song();
+		return const_cast<DocumentData *>(this)->song();
 	}
 	VoiceData *voice() {
-		return (type == VoiceDocument) ? static_cast<VoiceData*>(_additional.get()) : nullptr;
+		return (type == VoiceDocument) ? static_cast<VoiceData *>(_additional.get()) : nullptr;
 	}
 	const VoiceData *voice() const {
-		return const_cast<DocumentData*>(this)->voice();
+		return const_cast<DocumentData *>(this)->voice();
 	}
 	bool isRoundVideo() const {
 		return (type == RoundVideoDocument);
@@ -1326,7 +1326,8 @@ public:
 		return (type == AnimatedDocument) && !mime.compare(qstr("video/mp4"), Qt::CaseInsensitive);
 	}
 	bool isTheme() const {
-		return name.endsWith(qstr(".tdesktop-theme"), Qt::CaseInsensitive) || name.endsWith(qstr(".tdesktop-palette"), Qt::CaseInsensitive);
+		return name.endsWith(qstr(".tdesktop-theme"), Qt::CaseInsensitive) ||
+		       name.endsWith(qstr(".tdesktop-palette"), Qt::CaseInsensitive);
 	}
 	bool tryPlaySong() const {
 		return (song() != nullptr) || mime.startsWith(qstr("audio/"), Qt::CaseInsensitive);
@@ -1402,7 +1403,8 @@ public:
 	}
 
 private:
-	DocumentData(DocumentId id, qint32 dc, quint64 accessHash, qint32 version, const QString &url, const QVector<MTPDocumentAttribute> &attributes);
+	DocumentData(DocumentId id, qint32 dc, quint64 accessHash, qint32 version, const QString &url,
+	             const QVector<MTPDocumentAttribute> &attributes);
 
 	friend class Serialize::Document;
 
@@ -1428,7 +1430,6 @@ private:
 	void notifyLayoutChanged() const;
 
 	void destroyLoaderDelayed(mtpFileLoader *newValue = nullptr) const;
-
 };
 
 VoiceWaveform documentWaveformDecode(const QByteArray &encoded5bit);
@@ -1444,7 +1445,10 @@ public:
 	};
 
 	AudioMsgId() = default;
-	AudioMsgId(DocumentData *audio, const FullMsgId &msgId, quint32 playId = 0) : _audio(audio), _contextId(msgId), _playId(playId) {
+	AudioMsgId(DocumentData *audio, const FullMsgId &msgId, quint32 playId = 0)
+	    : _audio(audio)
+	    , _contextId(msgId)
+	    , _playId(playId) {
 		setTypeFromAudio();
 	}
 
@@ -1482,7 +1486,6 @@ private:
 	Type _type = Type::Unknown;
 	FullMsgId _contextId;
 	quint32 _playId = 0;
-
 };
 
 inline bool operator<(const AudioMsgId &a, const AudioMsgId &b) {
@@ -1506,21 +1509,21 @@ inline bool operator!=(const AudioMsgId &a, const AudioMsgId &b) {
 
 class DocumentClickHandler : public LeftButtonClickHandler {
 public:
-	DocumentClickHandler(DocumentData *document) : _document(document) {
-	}
+	DocumentClickHandler(DocumentData *document)
+	    : _document(document) {}
 	DocumentData *document() const {
 		return _document;
 	}
 
 private:
 	DocumentData *_document;
-
 };
 
 class DocumentSaveClickHandler : public DocumentClickHandler {
 public:
 	using DocumentClickHandler::DocumentClickHandler;
 	static void doSave(DocumentData *document, bool forceSavingAs = false);
+
 protected:
 	void onClickImpl() const override;
 };
@@ -1529,6 +1532,7 @@ class DocumentOpenClickHandler : public DocumentClickHandler {
 public:
 	using DocumentClickHandler::DocumentClickHandler;
 	static void doOpen(DocumentData *document, HistoryItem *context, ActionOnLoad action = ActionOnLoadOpen);
+
 protected:
 	void onClickImpl() const override;
 };
@@ -1536,6 +1540,7 @@ protected:
 class GifOpenClickHandler : public DocumentOpenClickHandler {
 public:
 	using DocumentOpenClickHandler::DocumentOpenClickHandler;
+
 protected:
 	void onClickImpl() const override;
 };
@@ -1543,24 +1548,20 @@ protected:
 class VoiceSeekClickHandler : public DocumentOpenClickHandler {
 public:
 	using DocumentOpenClickHandler::DocumentOpenClickHandler;
+
 protected:
-	void onClickImpl() const override {
-	}
+	void onClickImpl() const override {}
 };
 
 class DocumentCancelClickHandler : public DocumentClickHandler {
 public:
 	using DocumentClickHandler::DocumentClickHandler;
+
 protected:
 	void onClickImpl() const override;
 };
 
-enum WebPageType {
-	WebPagePhoto,
-	WebPageVideo,
-	WebPageProfile,
-	WebPageArticle
-};
+enum WebPageType { WebPagePhoto, WebPageVideo, WebPageProfile, WebPageArticle };
 inline WebPageType toWebPageType(const QString &type) {
 	if (type == qstr("photo")) return WebPagePhoto;
 	if (type == qstr("video")) return WebPageVideo;
@@ -1569,7 +1570,11 @@ inline WebPageType toWebPageType(const QString &type) {
 }
 
 struct WebPageData {
-	WebPageData(const WebPageId &id, WebPageType type = WebPageArticle, const QString &url = QString(), const QString &displayUrl = QString(), const QString &siteName = QString(), const QString &title = QString(), const TextWithEntities &description = TextWithEntities(), DocumentData *doc = nullptr, PhotoData *photo = nullptr, qint32 duration = 0, const QString &author = QString(), qint32 pendingTill = -1);
+	WebPageData(const WebPageId &id, WebPageType type = WebPageArticle, const QString &url = QString(),
+	            const QString &displayUrl = QString(), const QString &siteName = QString(),
+	            const QString &title = QString(), const TextWithEntities &description = TextWithEntities(),
+	            DocumentData *doc = nullptr, PhotoData *photo = nullptr, qint32 duration = 0,
+	            const QString &author = QString(), qint32 pendingTill = -1);
 
 	void forget() {
 		if (document) document->forget();
@@ -1585,11 +1590,12 @@ struct WebPageData {
 	PhotoData *photo;
 	DocumentData *document;
 	qint32 pendingTill;
-
 };
 
 struct GameData {
-	GameData(const GameId &id, const quint64 &accessHash = 0, const QString &shortName = QString(), const QString &title = QString(), const QString &description = QString(), PhotoData *photo = nullptr, DocumentData *doc = nullptr);
+	GameData(const GameId &id, const quint64 &accessHash = 0, const QString &shortName = QString(),
+	         const QString &title = QString(), const QString &description = QString(), PhotoData *photo = nullptr,
+	         DocumentData *doc = nullptr);
 
 	void forget() {
 		if (document) document->forget();
@@ -1601,16 +1607,18 @@ struct GameData {
 	QString shortName, title, description;
 	PhotoData *photo;
 	DocumentData *document;
-
 };
 
-QString saveFileName(const QString &title, const QString &filter, const QString &prefix, QString name, bool savingAs, const QDir &dir = QDir());
+QString saveFileName(const QString &title, const QString &filter, const QString &prefix, QString name, bool savingAs,
+                     const QDir &dir = QDir());
 MsgId clientMsgId();
 
 struct MessageCursor {
 	MessageCursor() = default;
-	MessageCursor(int position, int anchor, int scroll) : position(position), anchor(anchor), scroll(scroll) {
-	}
+	MessageCursor(int position, int anchor, int scroll)
+	    : position(position)
+	    , anchor(anchor)
+	    , scroll(scroll) {}
 	MessageCursor(const QTextEdit *edit) {
 		fillFrom(edit);
 	}
@@ -1633,7 +1641,6 @@ struct MessageCursor {
 	int position = 0;
 	int anchor = 0;
 	int scroll = QFIXED_MAX;
-
 };
 
 inline bool operator==(const MessageCursor &a, const MessageCursor &b) {
@@ -1655,8 +1662,10 @@ struct SendAction {
 		ChooseContact,
 		PlayGame,
 	};
-	SendAction(Type type, TimeMs until, int progress = 0) : type(type), until(until), progress(progress) {
-	}
+	SendAction(Type type, TimeMs until, int progress = 0)
+	    : type(type)
+	    , until(until)
+	    , progress(progress) {}
 	Type type;
 	TimeMs until;
 	int progress;

@@ -20,29 +20,29 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_layer.h"
 
-#include "settings/settings_inner_widget.h"
+#include "application.h"
+#include "boxes/confirm_box.h"
+#include "core/file_utilities.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
 #include "settings/settings_fixed_bar.h"
+#include "settings/settings_inner_widget.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
 #include "styles/style_settings.h"
 #include "styles/style_window.h"
-#include "styles/style_boxes.h"
 #include "ui/effects/widget_fade_wrap.h"
-#include "ui/widgets/scroll_area.h"
 #include "ui/widgets/buttons.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "storage/localstorage.h"
-#include "boxes/confirm_box.h"
-#include "application.h"
-#include "core/file_utilities.h"
+#include "ui/widgets/scroll_area.h"
 #include "window/themes/window_theme.h"
 
 namespace Settings {
 
 Layer::Layer()
-: _scroll(this, st::settingsScroll)
-, _fixedBar(this)
-, _fixedBarClose(this, st::settingsFixedBarClose)
-, _fixedBarShadow(this, object_ptr<BoxLayerTitleShadow>(this)) {
+    : _scroll(this, st::settingsScroll)
+    , _fixedBar(this)
+    , _fixedBarClose(this, st::settingsFixedBarClose)
+    , _fixedBarShadow(this, object_ptr<BoxLayerTitleShadow>(this)) {
 	_fixedBar->moveToLeft(0, st::boxRadius);
 	_fixedBarClose->moveToRight(0, 0);
 	_fixedBarShadow->entity()->resize(width(), st::lineWidth);

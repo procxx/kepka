@@ -54,7 +54,7 @@ public:
 	void setPinCallback(ButtonCallback &&callback);
 	void setCloseCallback(ButtonCallback &&callback);
 
-	void ui_repaintHistoryItem(not_null<const HistoryItem*> item);
+	void ui_repaintHistoryItem(not_null<const HistoryItem *> item);
 
 	int bestPositionFor(int left) const;
 
@@ -90,7 +90,8 @@ private:
 		return width() - contentLeft() - contentRight();
 	}
 	int contentHeight() const {
-		return height() - contentTop() - contentBottom();;
+		return height() - contentTop() - contentBottom();
+		;
 	}
 
 	void startAnimation();
@@ -107,11 +108,10 @@ private:
 	QTimer _hideTimer, _showTimer;
 
 	ButtonCallback _pinCallback, _closeCallback;
-	object_ptr<CoverWidget> _cover = { nullptr };
+	object_ptr<CoverWidget> _cover = {nullptr};
 	object_ptr<Ui::ScrollArea> _scroll;
-	object_ptr<Ui::Shadow> _scrollShadow = { nullptr };
-
+	object_ptr<Ui::Shadow> _scrollShadow = {nullptr};
 };
 
-} // namespace Clip
+} // namespace Player
 } // namespace Media

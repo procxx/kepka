@@ -18,11 +18,11 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "core/single_timer.h"
-#include "ui/twidget.h"
-#include "app.h"
-#include "facades.h"
 #include "ui/widgets/continuous_sliders.h"
+#include "app.h"
+#include "core/single_timer.h"
+#include "facades.h"
+#include "ui/twidget.h"
 
 #include <QMouseEvent>
 
@@ -33,7 +33,8 @@ constexpr auto kByWheelFinishedTimeout = 1000;
 
 } // namespace
 
-ContinuousSlider::ContinuousSlider(QWidget *parent) : TWidget(parent) {
+ContinuousSlider::ContinuousSlider(QWidget *parent)
+    : TWidget(parent) {
 	setCursor(style::cur_pointer);
 }
 
@@ -78,9 +79,8 @@ void ContinuousSlider::mouseMoveEvent(QMouseEvent *e) {
 
 double ContinuousSlider::computeValue(const QPoint &pos) const {
 	auto seekRect = myrtlrect(getSeekRect());
-	auto result = isHorizontal() ?
-		(pos.x() - seekRect.x()) / double(seekRect.width()) :
-		(1. - (pos.y() - seekRect.y()) / double(seekRect.height()));
+	auto result = isHorizontal() ? (pos.x() - seekRect.x()) / double(seekRect.width()) :
+	                               (1. - (pos.y() - seekRect.y()) / double(seekRect.height()));
 	return snap(result, 0., 1.);
 }
 
@@ -154,9 +154,9 @@ void ContinuousSlider::setOver(bool over) {
 	_a_over.start([this] { update(); }, from, to, getOverDuration());
 }
 
-FilledSlider::FilledSlider(QWidget *parent, const style::FilledSlider &st) : ContinuousSlider(parent)
-, _st(st) {
-}
+FilledSlider::FilledSlider(QWidget *parent, const style::FilledSlider &st)
+    : ContinuousSlider(parent)
+    , _st(st) {}
 
 QRect FilledSlider::getSeekRect() const {
 	return QRect(0, 0, width(), height());
@@ -184,10 +184,12 @@ void FilledSlider::paintEvent(QPaintEvent *e) {
 	int from = seekRect.x(), mid = std::round(from + value * seekRect.width()), end = from + seekRect.width();
 	if (mid > from) {
 		p.setOpacity(masterOpacity);
-		p.fillRect(from, height() - lineWidthRounded, (mid - from), lineWidthRounded, disabled ? _st.disabledFg : _st.activeFg);
+		p.fillRect(from, height() - lineWidthRounded, (mid - from), lineWidthRounded,
+		           disabled ? _st.disabledFg : _st.activeFg);
 		if (lineWidthPartial > 0.01) {
 			p.setOpacity(masterOpacity * lineWidthPartial);
-			p.fillRect(from, height() - lineWidthRounded - 1, (mid - from), 1, disabled ? _st.disabledFg : _st.activeFg);
+			p.fillRect(from, height() - lineWidthRounded - 1, (mid - from), 1,
+			           disabled ? _st.disabledFg : _st.activeFg);
 		}
 	}
 	if (end > mid && over > 0) {
@@ -200,14 +202,13 @@ void FilledSlider::paintEvent(QPaintEvent *e) {
 	}
 }
 
-MediaSlider::MediaSlider(QWidget *parent, const style::MediaSlider &st) : ContinuousSlider(parent)
-, _st(st) {
-}
+MediaSlider::MediaSlider(QWidget *parent, const style::MediaSlider &st)
+    : ContinuousSlider(parent)
+    , _st(st) {}
 
 QRect MediaSlider::getSeekRect() const {
-	return isHorizontal()
-		? QRect(_st.seekSize.width() / 2, 0, width() - _st.seekSize.width(), height())
-		: QRect(0, _st.seekSize.height() / 2, width(), height() - _st.seekSize.width());
+	return isHorizontal() ? QRect(_st.seekSize.width() / 2, 0, width() - _st.seekSize.width(), height()) :
+	                        QRect(0, _st.seekSize.height() / 2, width(), height() - _st.seekSize.width());
 }
 
 double MediaSlider::getOverDuration() const {
@@ -242,18 +243,16 @@ void MediaSlider::paintEvent(QPaintEvent *e) {
 	auto inactiveFg = disabled ? _st.inactiveFgDisabled : anim::brush(_st.inactiveFg, _st.inactiveFgOver, over);
 	if (mid > from) {
 		auto fromClipRect = horizontal ? QRect(0, 0, mid, height()) : QRect(0, 0, width(), mid);
-		auto fromRect = horizontal
-			? QRect(from, (height() - _st.width) / 2, mid + radius - from, _st.width)
-			: QRect((width() - _st.width) / 2, from, _st.width, mid + radius - from);
+		auto fromRect = horizontal ? QRect(from, (height() - _st.width) / 2, mid + radius - from, _st.width) :
+		                             QRect((width() - _st.width) / 2, from, _st.width, mid + radius - from);
 		p.setClipRect(fromClipRect);
 		p.setBrush(horizontal ? activeFg : inactiveFg);
 		p.drawRoundedRect(fromRect, radius, radius);
 	}
 	if (end > mid) {
 		auto endClipRect = horizontal ? QRect(mid, 0, width() - mid, height()) : QRect(0, mid, width(), height() - mid);
-		auto endRect = horizontal
-			? QRect(mid - radius, (height() - _st.width) / 2, end - (mid - radius), _st.width)
-			: QRect((width() - _st.width) / 2, mid - radius, _st.width, end - (mid - radius));
+		auto endRect = horizontal ? QRect(mid - radius, (height() - _st.width) / 2, end - (mid - radius), _st.width) :
+		                            QRect((width() - _st.width) / 2, mid - radius, _st.width, end - (mid - radius));
 		p.setClipRect(endClipRect);
 		p.setBrush(horizontal ? inactiveFg : activeFg);
 		p.drawRoundedRect(endRect, radius, radius);
@@ -261,9 +260,10 @@ void MediaSlider::paintEvent(QPaintEvent *e) {
 	auto markerSizeRatio = disabled ? 0. : (_alwaysDisplayMarker ? 1. : over);
 	if (markerSizeRatio > 0) {
 		auto position = std::round(markerFrom + value * markerLength) - (horizontal ? seekRect.x() : seekRect.y());
-		auto seekButton = horizontal
-			? QRect(position, (height() - _st.seekSize.height()) / 2, _st.seekSize.width(), _st.seekSize.height())
-			: QRect((width() - _st.seekSize.width()) / 2, position, _st.seekSize.width(), _st.seekSize.height());
+		auto seekButton =
+		    horizontal ?
+		        QRect(position, (height() - _st.seekSize.height()) / 2, _st.seekSize.width(), _st.seekSize.height()) :
+		        QRect((width() - _st.seekSize.width()) / 2, position, _st.seekSize.width(), _st.seekSize.height());
 		auto size = horizontal ? _st.seekSize.width() : _st.seekSize.height();
 		auto remove = static_cast<int>(((1. - markerSizeRatio) * size) / 2.);
 		if (remove * 2 < size) {

@@ -29,8 +29,7 @@ namespace Libs {
 
 void start();
 
-template <typename Function>
-bool load(QLibrary &lib, const char *name, Function &func) {
+template <typename Function> bool load(QLibrary &lib, const char *name, Function &func) {
 	func = nullptr;
 	if (!lib.isLoaded()) {
 		return false;

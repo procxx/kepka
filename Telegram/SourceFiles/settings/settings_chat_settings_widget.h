@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/observer.h"
 #include "settings/settings_block_widget.h"
 #include "ui/twidget.h"
-#include "base/observer.h"
 
 class QPaintEvent;
 
@@ -50,7 +50,6 @@ protected:
 private:
 	object_ptr<Ui::FlatLabel> _label;
 	object_ptr<Ui::LinkButton> _link;
-
 };
 
 #ifndef OS_WIN_STORE
@@ -86,7 +85,6 @@ private:
 
 	object_ptr<LabeledLink> _path;
 	object_ptr<Ui::LinkButton> _clear;
-
 };
 #endif // OS_WIN_STORE
 
@@ -110,20 +108,19 @@ private:
 	void sendByChanged(SendByType value);
 	void createControls();
 
-	object_ptr<Ui::Checkbox> _replaceEmoji = { nullptr };
-	object_ptr<Ui::Checkbox> _messageFormat = { nullptr };
-	object_ptr<Ui::Checkbox> _dontAskDownloadPath = { nullptr };
+	object_ptr<Ui::Checkbox> _replaceEmoji = {nullptr};
+	object_ptr<Ui::Checkbox> _messageFormat = {nullptr};
+	object_ptr<Ui::Checkbox> _dontAskDownloadPath = {nullptr};
 	void toggleMessageFormat();
 
 #ifndef OS_WIN_STORE
-	object_ptr<Ui::WidgetSlideWrap<DownloadPathState>> _downloadPath = { nullptr };
+	object_ptr<Ui::WidgetSlideWrap<DownloadPathState>> _downloadPath = {nullptr};
 #endif // OS_WIN_STORE
 
-	object_ptr<Ui::Radioenum<SendByType>> _sendByEnter = { nullptr };
-	object_ptr<Ui::Radioenum<SendByType>> _sendByCtrlEnter = { nullptr };
-	object_ptr<Ui::LinkButton> _automaticMediaDownloadSettings = { nullptr };
-	object_ptr<Ui::LinkButton> _manageStickerSets = { nullptr };
-
+	object_ptr<Ui::Radioenum<SendByType>> _sendByEnter = {nullptr};
+	object_ptr<Ui::Radioenum<SendByType>> _sendByCtrlEnter = {nullptr};
+	object_ptr<Ui::LinkButton> _automaticMediaDownloadSettings = {nullptr};
+	object_ptr<Ui::LinkButton> _manageStickerSets = {nullptr};
 };
 
 } // namespace Settings

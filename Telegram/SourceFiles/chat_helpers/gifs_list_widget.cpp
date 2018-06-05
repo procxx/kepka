@@ -20,18 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "chat_helpers/gifs_list_widget.h"
 
-#include "styles/style_chat_helpers.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/input_fields.h"
-#include "ui/effects/ripple_animation.h"
+#include "app.h"
 #include "boxes/stickers_box.h"
-#include "inline_bots/inline_bot_result.h"
 #include "chat_helpers/stickers.h"
-#include "storage/localstorage.h"
+#include "inline_bots/inline_bot_result.h"
 #include "lang/lang_keys.h"
 #include "mainwindow.h"
+#include "storage/localstorage.h"
+#include "styles/style_chat_helpers.h"
+#include "ui/effects/ripple_animation.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/input_fields.h"
 #include "window/window_controller.h"
-#include "app.h"
 #include <QApplication>
 
 namespace ChatHelpers {
@@ -47,7 +47,7 @@ constexpr auto kSearchBotUsername = str_const("gif");
 
 class GifsListWidget::Footer : public TabbedSelector::InnerFooter {
 public:
-	Footer(not_null<GifsListWidget*> parent);
+	Footer(not_null<GifsListWidget *> parent);
 
 	void stealFocus();
 	void returnFocus();
@@ -61,24 +61,24 @@ protected:
 	void processPanelHideFinished() override;
 
 private:
-	not_null<GifsListWidget*> _pan;
+	not_null<GifsListWidget *> _pan;
 
 	object_ptr<Ui::InputField> _field;
 	object_ptr<Ui::CrossButton> _cancel;
 
 	QPointer<QWidget> _focusTakenFrom;
-
 };
 
-GifsListWidget::Footer::Footer(not_null<GifsListWidget*> parent) : InnerFooter(parent)
-, _pan(parent)
-, _field(this, st::gifsSearchField, langFactory(lng_gifs_search))
-, _cancel(this, st::gifsSearchCancel) {
-	_field->resize(width() - st::gifsSearchFieldPosition.x() - st::gifsSearchCancelPosition.x() - st::gifsSearchCancel.width, _field->height());
+GifsListWidget::Footer::Footer(not_null<GifsListWidget *> parent)
+    : InnerFooter(parent)
+    , _pan(parent)
+    , _field(this, st::gifsSearchField, langFactory(lng_gifs_search))
+    , _cancel(this, st::gifsSearchCancel) {
+	_field->resize(width() - st::gifsSearchFieldPosition.x() - st::gifsSearchCancelPosition.x() -
+	                   st::gifsSearchCancel.width,
+	               _field->height());
 	_field->moveToLeft(st::gifsSearchFieldPosition.x(), st::gifsSearchFieldPosition.y());
-	connect(_field, &Ui::InputField::submitted, this, [this](bool ctrlShiftEnter) {
-		_pan->sendInlineRequest();
-	});
+	connect(_field, &Ui::InputField::submitted, this, [this](bool ctrlShiftEnter) { _pan->sendInlineRequest(); });
 	connect(_field, &Ui::InputField::cancelled, this, [this] {
 		if (_field->getLastText().isEmpty()) {
 			emit _pan->cancelled();
@@ -91,9 +91,7 @@ GifsListWidget::Footer::Footer(not_null<GifsListWidget*> parent) : InnerFooter(p
 		_pan->searchForGifs(_field->getLastText());
 	});
 	_cancel->moveToRight(st::gifsSearchCancelPosition.x(), st::gifsSearchCancelPosition.y());
-	_cancel->setClickedCallback([this] {
-		_field->setText(QString());
-	});
+	_cancel->setClickedCallback([this] { _field->setText(QString()); });
 }
 
 void GifsListWidget::Footer::stealFocus() {
@@ -122,8 +120,9 @@ void GifsListWidget::Footer::processPanelHideFinished() {
 	//_field->setText(QString());
 }
 
-GifsListWidget::GifsListWidget(QWidget *parent, not_null<Window::Controller*> controller) : Inner(parent, controller)
-, _section(Section::Gifs) {
+GifsListWidget::GifsListWidget(QWidget *parent, not_null<Window::Controller *> controller)
+    : Inner(parent, controller)
+    , _section(Section::Gifs) {
 	resize(st::emojiPanWidth - st::emojiScroll.width - st::buttonRadius, countHeight());
 
 	setMouseTracking(true);
@@ -138,12 +137,8 @@ GifsListWidget::GifsListWidget(QWidget *parent, not_null<Window::Controller*> co
 	_inlineRequestTimer.setSingleShot(true);
 	connect(&_inlineRequestTimer, &QTimer::timeout, this, [this] { sendInlineRequest(); });
 
-	subscribe(Auth().data().savedGifsUpdated(), [this] {
-		refreshSavedGifs();
-	});
-	subscribe(Auth().downloaderTaskFinished(), [this] {
-		update();
-	});
+	subscribe(Auth().data().savedGifsUpdated(), [this] { refreshSavedGifs(); });
+	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
 	subscribe(controller->gifPauseLevelChanged(), [this] {
 		if (!this->controller()->isGifPausedAtLeastFor(Window::GifPauseReason::SavedGifs)) {
 			update();
@@ -325,7 +320,7 @@ void GifsListWidget::mouseReleaseEvent(QMouseEvent *e) {
 		return;
 	}
 
-	if (dynamic_cast<InlineBots::Layout::SendClickHandler*>(activated.data())) {
+	if (dynamic_cast<InlineBots::Layout::SendClickHandler *>(activated.data())) {
 		int row = _selected / MatrixRowShift, column = _selected % MatrixRowShift;
 		selectInlineResult(row, column);
 	} else {
@@ -411,13 +406,9 @@ void GifsListWidget::processPanelHideFinished() {
 		}
 	};
 	// Preserve panel state through visibility toggles.
-	//clearInlineRows(false);
-	for_const (auto &item, _gifLayouts) {
-		itemForget(item.second);
-	}
-	for_const (auto &item, _inlineLayouts) {
-		itemForget(item.second);
-	}
+	// clearInlineRows(false);
+	for_const (auto &item, _gifLayouts) { itemForget(item.second); }
+	for_const (auto &item, _inlineLayouts) { itemForget(item.second); }
 }
 
 bool GifsListWidget::inlineRowsAddItem(DocumentData *savedGif, InlineResult *result, Row &row, qint32 &sumWidth) {
@@ -468,9 +459,7 @@ void GifsListWidget::refreshSavedGifs() {
 			auto row = Row();
 			row.items.reserve(kInlineItemsMaxPerRow);
 			auto sumWidth = 0;
-			for_const (auto &gif, saved) {
-				inlineRowsAddItem(gif, 0, row, sumWidth);
-			}
+			for_const (auto &gif, saved) { inlineRowsAddItem(gif, 0, row, sumWidth); }
 			inlineRowFinalize(row, sumWidth, true);
 		}
 		deleteUnusedGifLayouts();
@@ -496,9 +485,7 @@ void GifsListWidget::clearInlineRows(bool resultsDeleted) {
 	} else {
 		clearSelection();
 		for_const (auto &row, _rows) {
-			for_const (auto &item, row.items) {
-				item->setPosition(-1);
-			}
+			for_const (auto &item, row.items) { item->setPosition(-1); }
 		}
 	}
 	_rows.clear();
@@ -574,9 +561,8 @@ GifsListWidget::Row &GifsListWidget::layoutInlineRow(Row &row, qint32 sumWidth) 
 	for (auto i = 0; i != count; ++i) {
 		indices[i] = i;
 	}
-	std::sort(indices, indices + count, [&row](int a, int b) -> bool {
-		return row.items.at(a)->maxWidth() < row.items.at(b)->maxWidth();
-	});
+	std::sort(indices, indices + count,
+	          [&row](int a, int b) -> bool { return row.items.at(a)->maxWidth() < row.items.at(b)->maxWidth(); });
 
 	row.height = 0;
 	int availw = width() - (st::inlineResultsLeft - st::buttonRadius);
@@ -810,17 +796,19 @@ void GifsListWidget::searchForGifs(const QString &query) {
 
 	if (!_searchBot && !_searchBotRequestId) {
 		auto username = str_const_toString(kSearchBotUsername);
-		_searchBotRequestId = request(MTPcontacts_ResolveUsername(MTP_string(username))).done([this](const MTPcontacts_ResolvedPeer &result) {
-			Expects(result.type() == mtpc_contacts_resolvedPeer);
-			auto &data = result.c_contacts_resolvedPeer();
-			App::feedUsers(data.vusers);
-			App::feedChats(data.vchats);
-			if (auto peer = App::peerLoaded(peerFromMTP(data.vpeer))) {
-				if (auto user = peer->asUser()) {
-					_searchBot = user;
-				}
-			}
-		}).send();
+		_searchBotRequestId = request(MTPcontacts_ResolveUsername(MTP_string(username)))
+		                          .done([this](const MTPcontacts_ResolvedPeer &result) {
+			                          Expects(result.type() == mtpc_contacts_resolvedPeer);
+			                          auto &data = result.c_contacts_resolvedPeer();
+			                          App::feedUsers(data.vusers);
+			                          App::feedChats(data.vchats);
+			                          if (auto peer = App::peerLoaded(peerFromMTP(data.vpeer))) {
+				                          if (auto user = peer->asUser()) {
+					                          _searchBot = user;
+				                          }
+			                          }
+		                          })
+		                          .send();
 	}
 }
 
@@ -849,13 +837,17 @@ void GifsListWidget::sendInlineRequest() {
 	}
 
 	_footer->setLoading(true);
-	_inlineRequestId = request(MTPmessages_GetInlineBotResults(MTP_flags(0), _searchBot->inputUser, _inlineQueryPeer->input, MTPInputGeoPoint(), MTP_string(_inlineQuery), MTP_string(nextOffset))).done([this](const MTPmessages_BotResults &result, mtpRequestId requestId) {
-		inlineResultsDone(result);
-	}).fail([this](const RPCError &error) {
-		// show error?
-		_footer->setLoading(false);
-		_inlineRequestId = 0;
-	}).handleAllErrors().send();
+	_inlineRequestId =
+	    request(MTPmessages_GetInlineBotResults(MTP_flags(0), _searchBot->inputUser, _inlineQueryPeer->input,
+	                                            MTPInputGeoPoint(), MTP_string(_inlineQuery), MTP_string(nextOffset)))
+	        .done([this](const MTPmessages_BotResults &result, mtpRequestId requestId) { inlineResultsDone(result); })
+	        .fail([this](const RPCError &error) {
+		        // show error?
+		        _footer->setLoading(false);
+		        _inlineRequestId = 0;
+	        })
+	        .handleAllErrors()
+	        .send();
 }
 
 void GifsListWidget::refreshRecent() {

@@ -27,7 +27,7 @@ namespace codegen {
 namespace style {
 
 struct Options {
-	QStringList includePaths = { "." };
+	QStringList includePaths = {"."};
 	QString outputPath = ".";
 	QString inputPath;
 	bool isPalette = false;

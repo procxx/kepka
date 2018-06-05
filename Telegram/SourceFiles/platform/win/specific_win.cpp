@@ -20,21 +20,21 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/win/specific_win.h"
 
+#include "base/task_queue.h"
+#include "history/history_location_manager.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
+#include "passcodewidget.h"
 #include "platform/win/main_window_win.h"
 #include "platform/win/notifications_manager_win.h"
 #include "platform/win/windows_app_user_model_id.h"
 #include "platform/win/windows_dlls.h"
 #include "platform/win/windows_event_filter.h"
-#include "lang/lang_keys.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "history/history_location_manager.h"
 #include "storage/localstorage.h"
-#include "passcodewidget.h"
-#include "base/task_queue.h"
 
 #pragma warning(push)
-#pragma warning(disable:4091)
+#pragma warning(disable : 4091)
 #include <dbghelp.h>
 #include <shlobj.h>
 #pragma warning(pop)
@@ -43,13 +43,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <strsafe.h>
 
 #include <ObjIdl.h>
-#include <wrl/client.h>
 #include <propvarutil.h>
+#include <wrl/client.h>
 
-#include <qpa/qplatformnativeinterface.h>
-#include <QStandardPaths>
 #include <QDesktopServices>
 #include <QDesktopWidget>
+#include <QStandardPaths>
+#include <qpa/qplatformnativeinterface.h>
 
 
 #ifndef DCX_USESTYLE
@@ -57,9 +57,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #endif
 
 #ifndef WM_NCPOINTERUPDATE
-#define WM_NCPOINTERUPDATE              0x0241
-#define WM_NCPOINTERDOWN                0x0242
-#define WM_NCPOINTERUP                  0x0243
+#define WM_NCPOINTERUPDATE 0x0241
+#define WM_NCPOINTERDOWN 0x0242
+#define WM_NCPOINTERUP 0x0243
 #endif
 
 using namespace Microsoft::WRL;
@@ -67,22 +67,22 @@ using namespace Windows::Foundation;
 using namespace Platform;
 
 namespace {
-    QStringList _initLogs;
+QStringList _initLogs;
 
-	bool themeInited = false;
-	bool finished = true;
-	QMargins simpleMargins, margins;
-	HICON bigIcon = 0, smallIcon = 0, overlayIcon = 0;
+bool themeInited = false;
+bool finished = true;
+QMargins simpleMargins, margins;
+HICON bigIcon = 0, smallIcon = 0, overlayIcon = 0;
 
-	class _PsInitializer {
-	public:
-		_PsInitializer() {
-			Dlls::start();
-		}
-	};
-	_PsInitializer _psInitializer;
-
+class _PsInitializer {
+public:
+	_PsInitializer() {
+		Dlls::start();
+	}
 };
+_PsInitializer _psInitializer;
+
+}; // namespace
 
 QAbstractNativeEventFilter *psNativeEventFilter() {
 	return EventFilter::createInstance();
@@ -93,43 +93,35 @@ void psDeleteDir(const QString &dir) {
 	WCHAR path[4096];
 	memcpy(path, wDir.c_str(), (wDir.size() + 1) * sizeof(WCHAR));
 	path[wDir.size() + 1] = 0;
-	SHFILEOPSTRUCT file_op = {
-		NULL,
-		FO_DELETE,
-		path,
-		L"",
-		FOF_NOCONFIRMATION |
-		FOF_NOERRORUI |
-		FOF_SILENT,
-		false,
-		0,
-		L""
-	};
+	SHFILEOPSTRUCT file_op = {NULL,  FO_DELETE, path, L"", FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT,
+	                          false, 0,         L""};
 	int res = SHFileOperation(&file_op);
 }
 
 namespace {
-	BOOL CALLBACK _ActivateProcess(HWND hWnd, LPARAM lParam) {
-		quint64 &processId(*(quint64*)lParam);
+BOOL CALLBACK _ActivateProcess(HWND hWnd, LPARAM lParam) {
+	quint64 &processId(*(quint64 *)lParam);
 
-		DWORD dwProcessId;
-		::GetWindowThreadProcessId(hWnd, &dwProcessId);
+	DWORD dwProcessId;
+	::GetWindowThreadProcessId(hWnd, &dwProcessId);
 
-		if ((quint64)dwProcessId == processId) { // found top-level window
-			static const qint32 nameBufSize = 1024;
-			WCHAR nameBuf[nameBufSize];
-			qint32 len = GetWindowText(hWnd, nameBuf, nameBufSize);
-			if (len && len < nameBufSize) {
-				if (QRegularExpression(qsl("^Telegram(\\s*\\(\\d+\\))?$")).match(QString::fromStdWString(nameBuf)).hasMatch()) {
-					BOOL res = ::SetForegroundWindow(hWnd);
-					::SetFocus(hWnd);
-					return FALSE;
-				}
+	if ((quint64)dwProcessId == processId) { // found top-level window
+		static const qint32 nameBufSize = 1024;
+		WCHAR nameBuf[nameBufSize];
+		qint32 len = GetWindowText(hWnd, nameBuf, nameBufSize);
+		if (len && len < nameBufSize) {
+			if (QRegularExpression(qsl("^Telegram(\\s*\\(\\d+\\))?$"))
+			        .match(QString::fromStdWString(nameBuf))
+			        .hasMatch()) {
+				BOOL res = ::SetForegroundWindow(hWnd);
+				::SetFocus(hWnd);
+				return FALSE;
 			}
 		}
-		return TRUE;
 	}
+	return TRUE;
 }
+} // namespace
 
 namespace {
 
@@ -155,11 +147,11 @@ TimeMs psIdleTime() {
 }
 
 QStringList psInitLogs() {
-    return _initLogs;
+	return _initLogs;
 }
 
 void psClearInitLogs() {
-    _initLogs = QStringList();
+	_initLogs = QStringList();
 }
 
 void psActivateProcess(quint64 pid) {
@@ -211,7 +203,8 @@ QRect psDesktopRect() {
 			MONITORINFOEX info;
 			info.cbSize = sizeof(info);
 			GetMonitorInfo(hMonitor, &info);
-			_monitorRect = QRect(info.rcWork.left, info.rcWork.top, info.rcWork.right - info.rcWork.left, info.rcWork.bottom - info.rcWork.top);
+			_monitorRect = QRect(info.rcWork.left, info.rcWork.top, info.rcWork.right - info.rcWork.left,
+			                     info.rcWork.bottom - info.rcWork.top);
 		} else {
 			_monitorRect = QApplication::desktop()->availableGeometry(App::wnd());
 		}
@@ -219,19 +212,14 @@ QRect psDesktopRect() {
 	return _monitorRect;
 }
 
-void psShowOverAll(QWidget *w, bool canFocus) {
-}
+void psShowOverAll(QWidget *w, bool canFocus) {}
 
-void psBringToBack(QWidget *w) {
-}
+void psBringToBack(QWidget *w) {}
 
 int psCleanup() {
-	__try
-	{
+	__try {
 		psDoCleanup();
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
+	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		return 0;
 	}
 	return 0;
@@ -244,9 +232,11 @@ void psDoFixPrevious() {
 		WCHAR checkStr[bufSize];
 
 		QString appId = str_const_toString(AppId);
-		QString newKeyStr1 = QString("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%1_is1").arg(appId);
+		QString newKeyStr1 =
+		    QString("Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%1_is1").arg(appId);
 		QString newKeyStr2 = QString("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%1_is1").arg(appId);
-		QString oldKeyStr1 = QString("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%1_is1").arg(appId);
+		QString oldKeyStr1 =
+		    QString("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%1_is1").arg(appId);
 		QString oldKeyStr2 = QString("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%1_is1").arg(appId);
 		HKEY newKey1, newKey2, oldKey1, oldKey2;
 		LSTATUS newKeyRes1 = RegOpenKeyEx(HKEY_CURRENT_USER, newKeyStr1.toStdWString().c_str(), 0, KEY_READ, &newKey1);
@@ -254,10 +244,22 @@ void psDoFixPrevious() {
 		LSTATUS oldKeyRes1 = RegOpenKeyEx(HKEY_LOCAL_MACHINE, oldKeyStr1.toStdWString().c_str(), 0, KEY_READ, &oldKey1);
 		LSTATUS oldKeyRes2 = RegOpenKeyEx(HKEY_LOCAL_MACHINE, oldKeyStr2.toStdWString().c_str(), 0, KEY_READ, &oldKey2);
 
-		bool existNew1 = (newKeyRes1 == ERROR_SUCCESS) && (RegQueryValueEx(newKey1, L"InstallDate", 0, &checkType, (BYTE*)checkStr, &checkSize) == ERROR_SUCCESS); checkSize = bufSize * 2;
-		bool existNew2 = (newKeyRes2 == ERROR_SUCCESS) && (RegQueryValueEx(newKey2, L"InstallDate", 0, &checkType, (BYTE*)checkStr, &checkSize) == ERROR_SUCCESS); checkSize = bufSize * 2;
-		bool existOld1 = (oldKeyRes1 == ERROR_SUCCESS) && (RegQueryValueEx(oldKey1, L"InstallDate", 0, &checkType, (BYTE*)checkStr, &checkSize) == ERROR_SUCCESS); checkSize = bufSize * 2;
-		bool existOld2 = (oldKeyRes2 == ERROR_SUCCESS) && (RegQueryValueEx(oldKey2, L"InstallDate", 0, &checkType, (BYTE*)checkStr, &checkSize) == ERROR_SUCCESS); checkSize = bufSize * 2;
+		bool existNew1 =
+		    (newKeyRes1 == ERROR_SUCCESS) &&
+		    (RegQueryValueEx(newKey1, L"InstallDate", 0, &checkType, (BYTE *)checkStr, &checkSize) == ERROR_SUCCESS);
+		checkSize = bufSize * 2;
+		bool existNew2 =
+		    (newKeyRes2 == ERROR_SUCCESS) &&
+		    (RegQueryValueEx(newKey2, L"InstallDate", 0, &checkType, (BYTE *)checkStr, &checkSize) == ERROR_SUCCESS);
+		checkSize = bufSize * 2;
+		bool existOld1 =
+		    (oldKeyRes1 == ERROR_SUCCESS) &&
+		    (RegQueryValueEx(oldKey1, L"InstallDate", 0, &checkType, (BYTE *)checkStr, &checkSize) == ERROR_SUCCESS);
+		checkSize = bufSize * 2;
+		bool existOld2 =
+		    (oldKeyRes2 == ERROR_SUCCESS) &&
+		    (RegQueryValueEx(oldKey2, L"InstallDate", 0, &checkType, (BYTE *)checkStr, &checkSize) == ERROR_SUCCESS);
+		checkSize = bufSize * 2;
 
 		if (newKeyRes1 == ERROR_SUCCESS) RegCloseKey(newKey1);
 		if (newKeyRes2 == ERROR_SUCCESS) RegCloseKey(newKey2);
@@ -265,14 +267,17 @@ void psDoFixPrevious() {
 		if (oldKeyRes2 == ERROR_SUCCESS) RegCloseKey(oldKey2);
 
 		if (existNew1 || existNew2) {
-			oldKeyRes1 = existOld1 ? RegDeleteKey(HKEY_LOCAL_MACHINE, oldKeyStr1.toStdWString().c_str()) : ERROR_SUCCESS;
-			oldKeyRes2 = existOld2 ? RegDeleteKey(HKEY_LOCAL_MACHINE, oldKeyStr2.toStdWString().c_str()) : ERROR_SUCCESS;
+			oldKeyRes1 =
+			    existOld1 ? RegDeleteKey(HKEY_LOCAL_MACHINE, oldKeyStr1.toStdWString().c_str()) : ERROR_SUCCESS;
+			oldKeyRes2 =
+			    existOld2 ? RegDeleteKey(HKEY_LOCAL_MACHINE, oldKeyStr2.toStdWString().c_str()) : ERROR_SUCCESS;
 		}
 
 		QString userDesktopLnk, commonDesktopLnk;
 		WCHAR userDesktopFolder[MAX_PATH], commonDesktopFolder[MAX_PATH];
 		HRESULT userDesktopRes = SHGetFolderPath(0, CSIDL_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, userDesktopFolder);
-		HRESULT commonDesktopRes = SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, commonDesktopFolder);
+		HRESULT commonDesktopRes =
+		    SHGetFolderPath(0, CSIDL_COMMON_DESKTOPDIRECTORY, 0, SHGFP_TYPE_CURRENT, commonDesktopFolder);
 		if (SUCCEEDED(userDesktopRes)) {
 			userDesktopLnk = QString::fromWCharArray(userDesktopFolder) + "\\Telegram.lnk";
 		}
@@ -288,12 +293,9 @@ void psDoFixPrevious() {
 }
 
 int psFixPrevious() {
-	__try
-	{
+	__try {
 		psDoFixPrevious();
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
+	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		return 0;
 	}
 	return 0;
@@ -322,7 +324,7 @@ QString SystemCountry() {
 }
 
 QString CurrentExecutablePath(int argc, char *argv[]) {
-	WCHAR result[MAX_PATH + 1] = { 0 };
+	WCHAR result[MAX_PATH + 1] = {0};
 	auto count = GetModuleFileName(nullptr, result, MAX_PATH + 1);
 	if (count < MAX_PATH + 1) {
 		auto info = QFileInfo(QDir::fromNativeSeparators(QString::fromWCharArray(result)));
@@ -356,13 +358,13 @@ QString GetLangCodeById(unsigned lngId) {
 	case 0x2D: return qsl("eu");
 	case 0x23: return qsl("be");
 	case 0x1A:
-	if (lngId == LANG_CROATIAN) {
-		return qsl("hr");
-	} else if (lngId == LANG_BOSNIAN_NEUTRAL || lngId == LANG_BOSNIAN) {
-		return qsl("bs");
-	}
-	return qsl("sr");
-	break;
+		if (lngId == LANG_CROATIAN) {
+			return qsl("hr");
+		} else if (lngId == LANG_BOSNIAN_NEUTRAL || lngId == LANG_BOSNIAN) {
+			return qsl("bs");
+		}
+		return qsl("sr");
+		break;
 	case 0x7E: return qsl("br");
 	case 0x02: return qsl("bg");
 	case 0x92: return qsl("ku");
@@ -468,7 +470,7 @@ QString SystemLanguage() {
 	auto uiLanguageId = GetUserDefaultUILanguage();
 	auto uiLanguageLength = GetLocaleInfo(uiLanguageId, LOCALE_SNAME, nullptr, 0);
 	if (uiLanguageLength > 0 && uiLanguageLength < kMaxLanguageLength) {
-		WCHAR uiLanguageWideString[kMaxLanguageLength] = { 0 };
+		WCHAR uiLanguageWideString[kMaxLanguageLength] = {0};
 		uiLanguageLength = GetLocaleInfo(uiLanguageId, LOCALE_SNAME, uiLanguageWideString, uiLanguageLength);
 		if (uiLanguageLength <= 0) {
 			return QString();
@@ -477,8 +479,9 @@ QString SystemLanguage() {
 	}
 	auto uiLanguageCodeLength = GetLocaleInfo(uiLanguageId, LOCALE_ILANGUAGE, nullptr, 0);
 	if (uiLanguageCodeLength > 0 && uiLanguageCodeLength < kMaxLanguageLength) {
-		WCHAR uiLanguageCodeWideString[kMaxLanguageLength] = { 0 };
-		uiLanguageCodeLength = GetLocaleInfo(uiLanguageId, LOCALE_ILANGUAGE, uiLanguageCodeWideString, uiLanguageCodeLength);
+		WCHAR uiLanguageCodeWideString[kMaxLanguageLength] = {0};
+		uiLanguageCodeLength =
+		    GetLocaleInfo(uiLanguageId, LOCALE_ILANGUAGE, uiLanguageCodeWideString, uiLanguageCodeLength);
 		if (uiLanguageCodeLength <= 0) {
 			return QString();
 		}
@@ -506,55 +509,64 @@ QString SystemLanguage() {
 } // namespace Platform
 
 namespace {
-	void _psLogError(const char *str, LSTATUS code) {
-		LPTSTR errorText = NULL, errorTextDefault = L"(Unknown error)";
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&errorText, 0, 0);
-		if (!errorText) {
-			errorText = errorTextDefault;
-		}
-		LOG((str).arg(code).arg(QString::fromStdWString(errorText)));
-		if (errorText != errorTextDefault) {
-			LocalFree(errorText);
-		}
+void _psLogError(const char *str, LSTATUS code) {
+	LPTSTR errorText = NULL, errorTextDefault = L"(Unknown error)";
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
+	              code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&errorText, 0, 0);
+	if (!errorText) {
+		errorText = errorTextDefault;
 	}
-
-	bool _psOpenRegKey(LPCWSTR key, PHKEY rkey) {
-		DEBUG_LOG(("App Info: opening reg key %1...").arg(QString::fromStdWString(key)));
-		LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, key, 0, KEY_QUERY_VALUE | KEY_WRITE, rkey);
-		if (status != ERROR_SUCCESS) {
-			if (status == ERROR_FILE_NOT_FOUND) {
-				status = RegCreateKeyEx(HKEY_CURRENT_USER, key, 0, 0, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE | KEY_WRITE, 0, rkey, 0);
-				if (status != ERROR_SUCCESS) {
-					QString msg = qsl("App Error: could not create '%1' registry key, error %2").arg(QString::fromStdWString(key)).arg(qsl("%1: %2"));
-					_psLogError(msg.toUtf8().constData(), status);
-					return false;
-				}
-			} else {
-				QString msg = qsl("App Error: could not open '%1' registry key, error %2").arg(QString::fromStdWString(key)).arg(qsl("%1: %2"));
-				_psLogError(msg.toUtf8().constData(), status);
-				return false;
-			}
-		}
-		return true;
-	}
-
-	bool _psSetKeyValue(HKEY rkey, LPCWSTR value, QString v) {
-		static const int bufSize = 4096;
-		DWORD defaultType, defaultSize = bufSize * 2;
-		WCHAR defaultStr[bufSize] = { 0 };
-		if (RegQueryValueEx(rkey, value, 0, &defaultType, (BYTE*)defaultStr, &defaultSize) != ERROR_SUCCESS || defaultType != REG_SZ || defaultSize != (v.size() + 1) * 2 || QString::fromStdWString(defaultStr) != v) {
-			WCHAR tmp[bufSize] = { 0 };
-			if (!v.isEmpty()) wsprintf(tmp, v.replace(QChar('%'), qsl("%%")).toStdWString().c_str());
-			LSTATUS status = RegSetValueEx(rkey, value, 0, REG_SZ, (BYTE*)tmp, (wcslen(tmp) + 1) * sizeof(WCHAR));
-			if (status != ERROR_SUCCESS) {
-				QString msg = qsl("App Error: could not set %1, error %2").arg(value ? ('\'' + QString::fromStdWString(value) + '\'') : qsl("(Default)")).arg("%1: %2");
-				_psLogError(msg.toUtf8().constData(), status);
-				return false;
-			}
-		}
-		return true;
+	LOG((str).arg(code).arg(QString::fromStdWString(errorText)));
+	if (errorText != errorTextDefault) {
+		LocalFree(errorText);
 	}
 }
+
+bool _psOpenRegKey(LPCWSTR key, PHKEY rkey) {
+	DEBUG_LOG(("App Info: opening reg key %1...").arg(QString::fromStdWString(key)));
+	LSTATUS status = RegOpenKeyEx(HKEY_CURRENT_USER, key, 0, KEY_QUERY_VALUE | KEY_WRITE, rkey);
+	if (status != ERROR_SUCCESS) {
+		if (status == ERROR_FILE_NOT_FOUND) {
+			status = RegCreateKeyEx(HKEY_CURRENT_USER, key, 0, 0, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE | KEY_WRITE,
+			                        0, rkey, 0);
+			if (status != ERROR_SUCCESS) {
+				QString msg = qsl("App Error: could not create '%1' registry key, error %2")
+				                  .arg(QString::fromStdWString(key))
+				                  .arg(qsl("%1: %2"));
+				_psLogError(msg.toUtf8().constData(), status);
+				return false;
+			}
+		} else {
+			QString msg = qsl("App Error: could not open '%1' registry key, error %2")
+			                  .arg(QString::fromStdWString(key))
+			                  .arg(qsl("%1: %2"));
+			_psLogError(msg.toUtf8().constData(), status);
+			return false;
+		}
+	}
+	return true;
+}
+
+bool _psSetKeyValue(HKEY rkey, LPCWSTR value, QString v) {
+	static const int bufSize = 4096;
+	DWORD defaultType, defaultSize = bufSize * 2;
+	WCHAR defaultStr[bufSize] = {0};
+	if (RegQueryValueEx(rkey, value, 0, &defaultType, (BYTE *)defaultStr, &defaultSize) != ERROR_SUCCESS ||
+	    defaultType != REG_SZ || defaultSize != (v.size() + 1) * 2 || QString::fromStdWString(defaultStr) != v) {
+		WCHAR tmp[bufSize] = {0};
+		if (!v.isEmpty()) wsprintf(tmp, v.replace(QChar('%'), qsl("%%")).toStdWString().c_str());
+		LSTATUS status = RegSetValueEx(rkey, value, 0, REG_SZ, (BYTE *)tmp, (wcslen(tmp) + 1) * sizeof(WCHAR));
+		if (status != ERROR_SUCCESS) {
+			QString msg = qsl("App Error: could not set %1, error %2")
+			                  .arg(value ? ('\'' + QString::fromStdWString(value) + '\'') : qsl("(Default)"))
+			                  .arg("%1: %2");
+			_psLogError(msg.toUtf8().constData(), status);
+			return false;
+		}
+	}
+	return true;
+}
+} // namespace
 
 void RegisterCustomScheme() {
 	if (cExeName().isEmpty()) {
@@ -625,14 +637,20 @@ void psExecUpdater() {
 	if (cStartInTray()) targs += qsl(" -startintray");
 	if (cWriteProtected()) targs += qsl(" -writeprotected \"") + cExeDir() + '"';
 
-	QString updaterPath = cWriteProtected() ? (cWorkingDir() + qsl("tupdates/temp/Updater.exe")) : (cExeDir() + qsl("Updater.exe"));
+	QString updaterPath =
+	    cWriteProtected() ? (cWorkingDir() + qsl("tupdates/temp/Updater.exe")) : (cExeDir() + qsl("Updater.exe"));
 
 	QString updater(QDir::toNativeSeparators(updaterPath)), wdir(QDir::toNativeSeparators(cWorkingDir()));
 
 	DEBUG_LOG(("Application Info: executing %1 %2").arg(cExeDir() + "Updater.exe").arg(targs));
-	HINSTANCE r = ShellExecute(0, cWriteProtected() ? L"runas" : 0, updater.toStdWString().c_str(), targs.toStdWString().c_str(), wdir.isEmpty() ? 0 : wdir.toStdWString().c_str(), SW_SHOWNORMAL);
+	HINSTANCE r =
+	    ShellExecute(0, cWriteProtected() ? L"runas" : 0, updater.toStdWString().c_str(), targs.toStdWString().c_str(),
+	                 wdir.isEmpty() ? 0 : wdir.toStdWString().c_str(), SW_SHOWNORMAL);
 	if (long(r) < 32) {
-		DEBUG_LOG(("Application Error: failed to execute %1, working directory: '%2', result: %3").arg(updater).arg(wdir).arg(long(r)));
+		DEBUG_LOG(("Application Error: failed to execute %1, working directory: '%2', result: %3")
+		              .arg(updater)
+		              .arg(wdir)
+		              .arg(long(r)));
 		psDeleteDir(cWorkingDir() + qsl("tupdates/temp"));
 	}
 }
@@ -655,9 +673,13 @@ void psExecTelegram(const QString &crashreport) {
 	DEBUG_LOG(("Application Info: executing %1 %2").arg(cExeDir() + cExeName()).arg(targs));
 	Logs::closeMain();
 	SignalHandlers::finish();
-	HINSTANCE r = ShellExecute(0, 0, telegram.toStdWString().c_str(), targs.toStdWString().c_str(), wdir.isEmpty() ? 0 : wdir.toStdWString().c_str(), SW_SHOWNORMAL);
+	HINSTANCE r = ShellExecute(0, 0, telegram.toStdWString().c_str(), targs.toStdWString().c_str(),
+	                           wdir.isEmpty() ? 0 : wdir.toStdWString().c_str(), SW_SHOWNORMAL);
 	if (long(r) < 32) {
-		DEBUG_LOG(("Application Error: failed to execute %1, working directory: '%2', result: %3").arg(telegram).arg(wdir).arg(long(r)));
+		DEBUG_LOG(("Application Error: failed to execute %1, working directory: '%2', result: %3")
+		              .arg(telegram)
+		              .arg(wdir)
+		              .arg(long(r)));
 	}
 }
 
@@ -675,7 +697,8 @@ void _manageAppLnk(bool create, bool silent, int path_csidl, const wchar_t *args
 			if (SUCCEEDED(hr)) {
 				ComPtr<IPersistFile> persistFile;
 
-				QString exe = QDir::toNativeSeparators(cExeDir() + cExeName()), dir = QDir::toNativeSeparators(QDir(cWorkingDir()).absolutePath());
+				QString exe = QDir::toNativeSeparators(cExeDir() + cExeName()),
+				        dir = QDir::toNativeSeparators(QDir(cWorkingDir()).absolutePath());
 				shellLink->SetArguments(args);
 				shellLink->SetPath(exe.toStdWString().c_str());
 				shellLink->SetWorkingDirectory(dir.toStdWString().c_str());
@@ -713,11 +736,13 @@ void _manageAppLnk(bool create, bool silent, int path_csidl, const wchar_t *args
 }
 
 void psAutoStart(bool start, bool silent) {
-	_manageAppLnk(start, silent, CSIDL_STARTUP, L"-autostart", L"Telegram autorun link.\nYou can disable autorun in Telegram settings.");
+	_manageAppLnk(start, silent, CSIDL_STARTUP, L"-autostart",
+	              L"Telegram autorun link.\nYou can disable autorun in Telegram settings.");
 }
 
 void psSendToMenu(bool send, bool silent) {
-	_manageAppLnk(send, silent, CSIDL_SENDTO, L"-sendpath", L"Telegram send to link.\nYou can disable send to menu item in Telegram settings.");
+	_manageAppLnk(send, silent, CSIDL_SENDTO, L"-sendpath",
+	              L"Telegram send to link.\nYou can disable send to menu item in Telegram settings.");
 }
 
 void psUpdateOverlayed(TWidget *widget) {
@@ -735,108 +760,62 @@ void psUpdateOverlayed(TWidget *widget) {
 
 static const int StackEntryMaxNameLength = MAX_SYM_NAME + 1;
 
-typedef BOOL(FAR STDAPICALLTYPE *t_SymCleanup)(
-	_In_ HANDLE hProcess
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_SymCleanup)(_In_ HANDLE hProcess);
 t_SymCleanup symCleanup = 0;
 
-typedef PVOID (FAR STDAPICALLTYPE *t_SymFunctionTableAccess64)(
-    _In_ HANDLE hProcess,
-    _In_ DWORD64 AddrBase
-);
+typedef PVOID(FAR STDAPICALLTYPE *t_SymFunctionTableAccess64)(_In_ HANDLE hProcess, _In_ DWORD64 AddrBase);
 t_SymFunctionTableAccess64 symFunctionTableAccess64 = 0;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_SymGetLineFromAddr64)(
-    _In_ HANDLE hProcess,
-    _In_ DWORD64 dwAddr,
-    _Out_ PDWORD pdwDisplacement,
-    _Out_ PIMAGEHLP_LINEW64 Line
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_SymGetLineFromAddr64)(_In_ HANDLE hProcess, _In_ DWORD64 dwAddr,
+                                                         _Out_ PDWORD pdwDisplacement, _Out_ PIMAGEHLP_LINEW64 Line);
 t_SymGetLineFromAddr64 symGetLineFromAddr64 = 0;
 
-typedef DWORD64 (FAR STDAPICALLTYPE *t_SymGetModuleBase64)(
-    _In_ HANDLE hProcess,
-    _In_ DWORD64 qwAddr
-);
+typedef DWORD64(FAR STDAPICALLTYPE *t_SymGetModuleBase64)(_In_ HANDLE hProcess, _In_ DWORD64 qwAddr);
 t_SymGetModuleBase64 symGetModuleBase64 = 0;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_SymGetModuleInfo64)(
-    _In_ HANDLE hProcess,
-    _In_ DWORD64 qwAddr,
-    _Out_ PIMAGEHLP_MODULEW64 ModuleInfo
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_SymGetModuleInfo64)(_In_ HANDLE hProcess, _In_ DWORD64 qwAddr,
+                                                       _Out_ PIMAGEHLP_MODULEW64 ModuleInfo);
 t_SymGetModuleInfo64 symGetModuleInfo64 = 0;
 
-typedef DWORD (FAR STDAPICALLTYPE *t_SymGetOptions)(
-	VOID
-);
+typedef DWORD(FAR STDAPICALLTYPE *t_SymGetOptions)(VOID);
 t_SymGetOptions symGetOptions = 0;
 
-typedef DWORD (FAR STDAPICALLTYPE *t_SymSetOptions)(
-    _In_ DWORD SymOptions
-);
+typedef DWORD(FAR STDAPICALLTYPE *t_SymSetOptions)(_In_ DWORD SymOptions);
 t_SymSetOptions symSetOptions = 0;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_SymGetSymFromAddr64)(
-	IN HANDLE hProcess,
-	IN DWORD64 dwAddr,
-	OUT PDWORD64 pdwDisplacement,
-	OUT PIMAGEHLP_SYMBOL64 Symbol
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_SymGetSymFromAddr64)(IN HANDLE hProcess, IN DWORD64 dwAddr,
+                                                        OUT PDWORD64 pdwDisplacement, OUT PIMAGEHLP_SYMBOL64 Symbol);
 t_SymGetSymFromAddr64 symGetSymFromAddr64 = 0;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_SymInitialize)(
-	_In_ HANDLE hProcess,
-	_In_opt_ PCWSTR UserSearchPath,
-	_In_ BOOL fInvadeProcess
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_SymInitialize)(_In_ HANDLE hProcess, _In_opt_ PCWSTR UserSearchPath,
+                                                  _In_ BOOL fInvadeProcess);
 t_SymInitialize symInitialize = 0;
 
-typedef DWORD64 (FAR STDAPICALLTYPE *t_SymLoadModule64)(
-	_In_ HANDLE hProcess,
-	_In_opt_ HANDLE hFile,
-	_In_opt_ PCSTR ImageName,
-	_In_opt_ PCSTR ModuleName,
-	_In_ DWORD64 BaseOfDll,
-	_In_ DWORD SizeOfDll
-);
+typedef DWORD64(FAR STDAPICALLTYPE *t_SymLoadModule64)(_In_ HANDLE hProcess, _In_opt_ HANDLE hFile,
+                                                       _In_opt_ PCSTR ImageName, _In_opt_ PCSTR ModuleName,
+                                                       _In_ DWORD64 BaseOfDll, _In_ DWORD SizeOfDll);
 t_SymLoadModule64 symLoadModule64;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_StackWalk64)(
-	_In_ DWORD MachineType,
-	_In_ HANDLE hProcess,
-	_In_ HANDLE hThread,
-	_Inout_ LPSTACKFRAME64 StackFrame,
-	_Inout_ PVOID ContextRecord,
-	_In_opt_ PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
-	_In_opt_ PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
-	_In_opt_ PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
-	_In_opt_ PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_StackWalk64)(_In_ DWORD MachineType, _In_ HANDLE hProcess, _In_ HANDLE hThread,
+                                                _Inout_ LPSTACKFRAME64 StackFrame, _Inout_ PVOID ContextRecord,
+                                                _In_opt_ PREAD_PROCESS_MEMORY_ROUTINE64 ReadMemoryRoutine,
+                                                _In_opt_ PFUNCTION_TABLE_ACCESS_ROUTINE64 FunctionTableAccessRoutine,
+                                                _In_opt_ PGET_MODULE_BASE_ROUTINE64 GetModuleBaseRoutine,
+                                                _In_opt_ PTRANSLATE_ADDRESS_ROUTINE64 TranslateAddress);
 t_StackWalk64 stackWalk64 = 0;
 
-typedef DWORD (FAR STDAPICALLTYPE *t_UnDecorateSymbolName)(
-	PCSTR DecoratedName,
-	PSTR UnDecoratedName,
-	DWORD UndecoratedLength,
-	DWORD Flags
-);
+typedef DWORD(FAR STDAPICALLTYPE *t_UnDecorateSymbolName)(PCSTR DecoratedName, PSTR UnDecoratedName,
+                                                          DWORD UndecoratedLength, DWORD Flags);
 t_UnDecorateSymbolName unDecorateSymbolName = 0;
 
-typedef BOOL(FAR STDAPICALLTYPE *t_SymGetSearchPath)(
-	_In_ HANDLE hProcess,
-	_Out_writes_(SearchPathLength) PWSTR SearchPath,
-	_In_ DWORD SearchPathLength
-);
+typedef BOOL(FAR STDAPICALLTYPE *t_SymGetSearchPath)(_In_ HANDLE hProcess,
+                                                     _Out_writes_(SearchPathLength) PWSTR SearchPath,
+                                                     _In_ DWORD SearchPathLength);
 t_SymGetSearchPath symGetSearchPath = 0;
 
-BOOL __stdcall ReadProcessMemoryRoutine64(
-	_In_ HANDLE hProcess,
-	_In_ DWORD64 qwBaseAddress,
-	_Out_writes_bytes_(nSize) PVOID lpBuffer,
-	_In_ DWORD nSize,
-	_Out_ LPDWORD lpNumberOfBytesRead
-) {
+BOOL __stdcall ReadProcessMemoryRoutine64(_In_ HANDLE hProcess, _In_ DWORD64 qwBaseAddress,
+                                          _Out_writes_bytes_(nSize) PVOID lpBuffer, _In_ DWORD nSize,
+                                          _Out_ LPDWORD lpNumberOfBytesRead) {
 	SIZE_T st;
 	BOOL bRet = ReadProcessMemory(hProcess, (LPVOID)qwBaseAddress, lpBuffer, nSize, &st);
 	*lpNumberOfBytesRead = (DWORD)st;
@@ -846,32 +825,31 @@ BOOL __stdcall ReadProcessMemoryRoutine64(
 
 // **************************************** ToolHelp32 ************************
 #define MAX_MODULE_NAME32 255
-#define TH32CS_SNAPMODULE   0x00000008
-#pragma pack( push, 8 )
-typedef struct tagMODULEENTRY32
-{
-	DWORD   dwSize;
-	DWORD   th32ModuleID;       // This module
-	DWORD   th32ProcessID;      // owning process
-	DWORD   GlblcntUsage;       // Global usage count on the module
-	DWORD   ProccntUsage;       // Module usage count in th32ProcessID's context
-	BYTE  * modBaseAddr;        // Base address of module in th32ProcessID's context
-	DWORD   modBaseSize;        // Size in bytes of module starting at modBaseAddr
-	HMODULE hModule;            // The hModule of this module in th32ProcessID's context
-	char    szModule[MAX_MODULE_NAME32 + 1];
-	char    szExePath[MAX_PATH];
+#define TH32CS_SNAPMODULE 0x00000008
+#pragma pack(push, 8)
+typedef struct tagMODULEENTRY32 {
+	DWORD dwSize;
+	DWORD th32ModuleID; // This module
+	DWORD th32ProcessID; // owning process
+	DWORD GlblcntUsage; // Global usage count on the module
+	DWORD ProccntUsage; // Module usage count in th32ProcessID's context
+	BYTE *modBaseAddr; // Base address of module in th32ProcessID's context
+	DWORD modBaseSize; // Size in bytes of module starting at modBaseAddr
+	HMODULE hModule; // The hModule of this module in th32ProcessID's context
+	char szModule[MAX_MODULE_NAME32 + 1];
+	char szExePath[MAX_PATH];
 } MODULEENTRY32;
 typedef MODULEENTRY32 *PMODULEENTRY32;
 typedef MODULEENTRY32 *LPMODULEENTRY32;
-#pragma pack( pop )
+#pragma pack(pop)
 
-typedef HANDLE (FAR STDAPICALLTYPE *t_CreateToolhelp32Snapshot)(DWORD dwFlags, DWORD th32ProcessID);
+typedef HANDLE(FAR STDAPICALLTYPE *t_CreateToolhelp32Snapshot)(DWORD dwFlags, DWORD th32ProcessID);
 t_CreateToolhelp32Snapshot createToolhelp32Snapshot = 0;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_Module32First)(HANDLE hSnapshot, LPMODULEENTRY32 lpme);
+typedef BOOL(FAR STDAPICALLTYPE *t_Module32First)(HANDLE hSnapshot, LPMODULEENTRY32 lpme);
 t_Module32First module32First = 0;
 
-typedef BOOL (FAR STDAPICALLTYPE *t_Module32Next)(HANDLE hSnapshot, LPMODULEENTRY32 lpme);
+typedef BOOL(FAR STDAPICALLTYPE *t_Module32Next)(HANDLE hSnapshot, LPMODULEENTRY32 lpme);
 t_Module32Next module32Next = 0;
 
 bool LoadDbgHelp(bool extended = false) {
@@ -883,7 +861,8 @@ bool LoadDbgHelp(bool extended = false) {
 	if (GetModuleFileName(NULL, szTemp, 4096) > 0) {
 		wcscat_s(szTemp, L".local");
 		if (GetFileAttributes(szTemp) == INVALID_FILE_ATTRIBUTES) {
-			// ".local" file does not exist, so we can try to load the dbghelp.dll from the "Debugging Tools for Windows"
+			// ".local" file does not exist, so we can try to load the dbghelp.dll from the "Debugging Tools for
+			// Windows"
 			if (GetEnvironmentVariable(L"ProgramFiles", szTemp, 4096) > 0) {
 				wcscat_s(szTemp, L"\\Debugging Tools for Windows\\dbghelp.dll");
 				// now check if the file exists:
@@ -910,9 +889,7 @@ bool LoadDbgHelp(bool extended = false) {
 	symFunctionTableAccess64 = (t_SymFunctionTableAccess64)GetProcAddress(hDll, "SymFunctionTableAccess64");
 	symGetModuleBase64 = (t_SymGetModuleBase64)GetProcAddress(hDll, "SymGetModuleBase64");
 
-	if (!stackWalk64 ||
-		!symFunctionTableAccess64 ||
-		!symGetModuleBase64) {
+	if (!stackWalk64 || !symFunctionTableAccess64 || !symGetModuleBase64) {
 		stackWalk64 = 0;
 		return false;
 	}
@@ -931,38 +908,31 @@ bool LoadDbgHelp(bool extended = false) {
 		symGetOptions = (t_SymGetOptions)GetProcAddress(hDll, "SymGetOptions");
 		symSetOptions = (t_SymSetOptions)GetProcAddress(hDll, "SymSetOptions");
 		symLoadModule64 = (t_SymLoadModule64)GetProcAddress(hDll, "SymLoadModule64");
-		if (!symGetModuleInfo64 ||
-			!symGetLineFromAddr64 ||
-			!symGetSymFromAddr64 ||
-			!unDecorateSymbolName ||
-			!symInitialize ||
-			!symCleanup ||
-			!symGetOptions ||
-			!symSetOptions ||
-			!symLoadModule64) {
+		if (!symGetModuleInfo64 || !symGetLineFromAddr64 || !symGetSymFromAddr64 || !unDecorateSymbolName ||
+		    !symInitialize || !symCleanup || !symGetOptions || !symSetOptions || !symLoadModule64) {
 			symInitialize = 0;
 			return false;
 		}
 
 		const size_t nSymPathLen = 10 * MAX_PATH;
-		WCHAR szSymPath[nSymPathLen] = { 0 };
+		WCHAR szSymPath[nSymPathLen] = {0};
 
 		wcscat_s(szSymPath, nSymPathLen, L".;..;");
 
-		WCHAR szTemp[MAX_PATH + 1] = { 0 };
-		if (GetCurrentDirectory(MAX_PATH, szTemp) > 0)	{
+		WCHAR szTemp[MAX_PATH + 1] = {0};
+		if (GetCurrentDirectory(MAX_PATH, szTemp) > 0) {
 			wcscat_s(szSymPath, nSymPathLen, szTemp);
 			wcscat_s(szSymPath, nSymPathLen, L";");
 		}
 
 		if (GetModuleFileName(NULL, szTemp, MAX_PATH) > 0) {
 			for (WCHAR *p = (szTemp + wcslen(szTemp) - 1); p >= szTemp; --p) {
-				if ((*p == '\\') || (*p == '/') || (*p == ':'))	{
+				if ((*p == '\\') || (*p == '/') || (*p == ':')) {
 					*p = 0;
 					break;
 				}
 			}
-			if (wcslen(szTemp) > 0)	{
+			if (wcslen(szTemp) > 0) {
 				wcscat_s(szSymPath, nSymPathLen, szTemp);
 				wcscat_s(szSymPath, nSymPathLen, L";");
 			}
@@ -1003,7 +973,7 @@ bool LoadDbgHelp(bool extended = false) {
 		symOptions |= SYMOPT_FAIL_CRITICAL_ERRORS;
 		symOptions = symSetOptions(symOptions);
 
-		const WCHAR *dllname[] = { L"kernel32.dll",  L"tlhelp32.dll" };
+		const WCHAR *dllname[] = {L"kernel32.dll", L"tlhelp32.dll"};
 		HINSTANCE hToolhelp = NULL;
 
 		HANDLE hSnap;
@@ -1016,7 +986,8 @@ bool LoadDbgHelp(bool extended = false) {
 			hToolhelp = LoadLibrary(dllname[i]);
 			if (!hToolhelp) continue;
 
-			createToolhelp32Snapshot = (t_CreateToolhelp32Snapshot)GetProcAddress(hToolhelp, "CreateToolhelp32Snapshot");
+			createToolhelp32Snapshot =
+			    (t_CreateToolhelp32Snapshot)GetProcAddress(hToolhelp, "CreateToolhelp32Snapshot");
 			module32First = (t_Module32First)GetProcAddress(hToolhelp, "Module32First");
 			module32Next = (t_Module32Next)GetProcAddress(hToolhelp, "Module32Next");
 			if (createToolhelp32Snapshot && module32First && module32Next) {
@@ -1031,8 +1002,7 @@ bool LoadDbgHelp(bool extended = false) {
 		}
 
 		hSnap = createToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
-		if (hSnap == (HANDLE)-1)
-			return FALSE;
+		if (hSnap == (HANDLE)-1) return FALSE;
 
 		keepGoing = !!module32First(hSnap, &me);
 		int cnt = 0;
@@ -1051,7 +1021,7 @@ bool LoadDbgHelp(bool extended = false) {
 }
 
 struct StackEntry {
-	DWORD64 offset;  // if 0, we have no valid entry
+	DWORD64 offset; // if 0, we have no valid entry
 	CHAR name[StackEntryMaxNameLength];
 	CHAR undName[StackEntryMaxNameLength];
 	CHAR undFullName[StackEntryMaxNameLength];
@@ -1077,7 +1047,7 @@ BOOL _getModuleInfo(HANDLE hProcess, DWORD64 baseAddr, IMAGEHLP_MODULEW64 *pModu
 	pModuleInfo->SizeOfStruct = sizeof(IMAGEHLP_MODULEW64);
 
 	memcpy(GetModuleInfoData, pModuleInfo, sizeof(IMAGEHLP_MODULEW64));
-	if (symGetModuleInfo64(hProcess, baseAddr, (IMAGEHLP_MODULEW64*)GetModuleInfoData) != FALSE) {
+	if (symGetModuleInfo64(hProcess, baseAddr, (IMAGEHLP_MODULEW64 *)GetModuleInfoData) != FALSE) {
 		// only copy as much memory as is reserved...
 		memcpy(pModuleInfo, GetModuleInfoData, sizeof(IMAGEHLP_MODULEW64));
 		pModuleInfo->SizeOfStruct = sizeof(IMAGEHLP_MODULEW64);
@@ -1086,8 +1056,7 @@ BOOL _getModuleInfo(HANDLE hProcess, DWORD64 baseAddr, IMAGEHLP_MODULEW64 *pModu
 	return FALSE;
 }
 
-void psWriteDump() {
-}
+void psWriteDump() {}
 
 char ImageHlpSymbol64[sizeof(IMAGEHLP_SYMBOL64) + StackEntryMaxNameLength];
 QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
@@ -1103,7 +1072,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	qint32 i = 0, l = lines.size();
 	QString versionstr;
 	quint64 version = 0, betaversion = 0;
-	for (;  i < l; ++i) {
+	for (; i < l; ++i) {
 		result.append(lines.at(i)).append('\n');
 		QString line = lines.at(i).trimmed();
 		if (line.startsWith(qstr("Version: "))) {
@@ -1125,7 +1094,9 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	QString tolaunch;
 	if ((betaversion && betaversion != cBetaVersion()) || (!betaversion && version && version != AppVersion)) {
 		QString path = cExeDir();
-		QRegularExpressionMatch m = QRegularExpression("deploy/\\d+\\.\\d+/\\d+\\.\\d+\\.\\d+(/|\\.dev/|\\.alpha/|_\\d+/)(Telegram/)?$").match(path);
+		QRegularExpressionMatch m =
+		    QRegularExpression("deploy/\\d+\\.\\d+/\\d+\\.\\d+\\.\\d+(/|\\.dev/|\\.alpha/|_\\d+/)(Telegram/)?$")
+		        .match(path);
 		if (m.hasMatch()) {
 			QString base = path.mid(0, m.capturedStart()) + qstr("deploy/");
 			qint32 major = version / 1000000, minor = (version % 1000000) / 1000, micro = (version % 1000);
@@ -1161,7 +1132,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 		IMAGEHLP_MODULEW64 Module;
 		IMAGEHLP_LINEW64 Line;
 
-		pSym = (IMAGEHLP_SYMBOL64*)ImageHlpSymbol64;
+		pSym = (IMAGEHLP_SYMBOL64 *)ImageHlpSymbol64;
 		memset(pSym, 0, sizeof(IMAGEHLP_SYMBOL64) + StackEntryMaxNameLength);
 		pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
 		pSym->MaxNameLength = StackEntryMaxNameLength;
@@ -1236,7 +1207,9 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 				if (csEntry.moduleName[0] == 0) {
 					wcscpy_s(csEntry.moduleName, L"module-name not available");
 				}
-				result.append(csEntry.name).append(qsl(" (%1) 0x%3").arg(QString::fromWCharArray(csEntry.moduleName)).arg(address, 0, 16)).append('\n');
+				result.append(csEntry.name)
+				    .append(qsl(" (%1) 0x%3").arg(QString::fromWCharArray(csEntry.moduleName)).arg(address, 0, 16))
+				    .append('\n');
 			} else {
 				QString file = QString::fromWCharArray(csEntry.lineFileName).toLower();
 				qint32 index = file.indexOf(qstr("tbuild\\tdesktop\\telegram\\"));
@@ -1246,7 +1219,9 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 						file = file.mid(qstr("sourcefiles\\").size());
 					}
 				}
-				result.append(csEntry.name).append(qsl(" (%1 - %2) 0x%3").arg(file).arg(csEntry.lineNumber).arg(address, 0, 16)).append('\n');
+				result.append(csEntry.name)
+				    .append(qsl(" (%1 - %2) 0x%3").arg(file).arg(csEntry.lineNumber).arg(address, 0, 16))
+				    .append('\n');
 			}
 		}
 	}
@@ -1314,7 +1289,8 @@ void psWriteStackTrace() {
 		// assume that either you are done, or that the stack is so hosed that the next
 		// deeper frame could not be found.
 		// CONTEXT need not to be suplied if imageTyp is IMAGE_FILE_MACHINE_I386!
-		if (!stackWalk64(imageType, hProcess, hThread, &s, &c, ReadProcessMemoryRoutine64, symFunctionTableAccess64, symGetModuleBase64, NULL)) {
+		if (!stackWalk64(imageType, hProcess, hThread, &s, &c, ReadProcessMemoryRoutine64, symFunctionTableAccess64,
+		                 symGetModuleBase64, NULL)) {
 			SignalHandlers::dump() << "ERROR: Call to StackWalk64() failed!\n";
 			return;
 		}
@@ -1336,5 +1312,6 @@ void psWriteStackTrace() {
 }
 
 bool psLaunchMaps(const LocationCoords &coords) {
-	return QDesktopServices::openUrl(qsl("bingmaps:?lvl=16&collection=point.%1_%2_Point").arg(coords.latAsString()).arg(coords.lonAsString()));
+	return QDesktopServices::openUrl(
+	    qsl("bingmaps:?lvl=16&collection=point.%1_%2_Point").arg(coords.latAsString()).arg(coords.lonAsString()));
 }

@@ -20,20 +20,21 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "inline_bots/inline_bot_result.h"
 
+#include "core/file_utilities.h"
 #include "inline_bots/inline_bot_layout_item.h"
 #include "inline_bots/inline_bot_send_data.h"
-#include "storage/file_download.h"
-#include "core/file_utilities.h"
 #include "mainwidget.h"
+#include "storage/file_download.h"
 
 namespace InlineBots {
 
-Result::Result(const Creator &creator) : _queryId(creator.queryId), _type(creator.type) {
-}
+Result::Result(const Creator &creator)
+    : _queryId(creator.queryId)
+    , _type(creator.type) {}
 
 std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult &mtpData) {
 	using StringToTypeMap = QMap<QString, Result::Type>;
-	static StaticNeverFreedPointer<StringToTypeMap> stringToTypeMap{ ([]() -> StringToTypeMap* {
+	static StaticNeverFreedPointer<StringToTypeMap> stringToTypeMap{([]() -> StringToTypeMap * {
 		auto result = std::make_unique<StringToTypeMap>();
 		result->insert(qsl("photo"), Result::Type::Photo);
 		result->insert(qsl("video"), Result::Type::Video);
@@ -48,7 +49,7 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 		result->insert(qsl("geo"), Result::Type::Geo);
 		result->insert(qsl("game"), Result::Type::Game);
 		return result.release();
-	})() };
+	})()};
 
 	auto getInlineResultType = [](const MTPBotInlineResult &inlineResult) -> Type {
 		QString type;
@@ -63,7 +64,7 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 		return nullptr;
 	}
 
-	auto result = std::make_unique<Result>(Creator{ queryId, type });
+	auto result = std::make_unique<Result>(Creator{queryId, type});
 	const MTPBotInlineMessage *message = nullptr;
 	switch (mtpData.type()) {
 	case mtpc_botInlineResult: {
@@ -78,7 +79,8 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 		if (r.has_w()) result->_width = r.vw.v;
 		if (r.has_h()) result->_height = r.vh.v;
 		if (r.has_duration()) result->_duration = r.vduration.v;
-		if (!result->_thumb_url.startsWith(qstr("http://"), Qt::CaseInsensitive) && !result->_thumb_url.startsWith(qstr("https://"), Qt::CaseInsensitive)) {
+		if (!result->_thumb_url.startsWith(qstr("http://"), Qt::CaseInsensitive) &&
+		    !result->_thumb_url.startsWith(qstr("https://"), Qt::CaseInsensitive)) {
 			result->_thumb_url = QString();
 		}
 		message = &r.vsend_message;
@@ -97,7 +99,8 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 		message = &r.vsend_message;
 	} break;
 	}
-	bool badAttachment = (result->_photo && !result->_photo->access) || (result->_document && !result->_document->isValid());
+	bool badAttachment =
+	    (result->_photo && !result->_photo->access) || (result->_document && !result->_document->isValid());
 
 	if (!message) {
 		return nullptr;
@@ -140,7 +143,8 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 		result->sendData = std::make_unique<internal::SendText>(qs(r.vmessage), entities, r.is_no_webpage());
 		if (result->_type == Type::Photo) {
 			result->createPhoto();
-		} else if (result->_type == Type::Audio || result->_type == Type::File || result->_type == Type::Video || result->_type == Type::Sticker || result->_type == Type::Gif) {
+		} else if (result->_type == Type::Audio || result->_type == Type::File || result->_type == Type::Video ||
+		           result->_type == Type::Sticker || result->_type == Type::Gif) {
 			result->createDocument();
 		}
 		if (r.has_reply_markup()) {
@@ -163,7 +167,8 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 	case mtpc_botInlineMessageMediaVenue: {
 		auto &r = message->c_botInlineMessageMediaVenue();
 		if (r.vgeo.type() == mtpc_geoPoint) {
-			result->sendData = std::make_unique<internal::SendVenue>(r.vgeo.c_geoPoint(), qs(r.vvenue_id), qs(r.vprovider), qs(r.vtitle), qs(r.vaddress));
+			result->sendData = std::make_unique<internal::SendVenue>(r.vgeo.c_geoPoint(), qs(r.vvenue_id),
+			                                                         qs(r.vprovider), qs(r.vtitle), qs(r.vaddress));
 		} else {
 			badAttachment = true;
 		}
@@ -174,15 +179,14 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 
 	case mtpc_botInlineMessageMediaContact: {
 		auto &r = message->c_botInlineMessageMediaContact();
-		result->sendData = std::make_unique<internal::SendContact>(qs(r.vfirst_name), qs(r.vlast_name), qs(r.vphone_number));
+		result->sendData =
+		    std::make_unique<internal::SendContact>(qs(r.vfirst_name), qs(r.vlast_name), qs(r.vphone_number));
 		if (r.has_reply_markup()) {
 			result->_mtpKeyboard = std::make_unique<MTPReplyMarkup>(r.vreply_markup);
 		}
 	} break;
 
-	default: {
-		badAttachment = true;
-	} break;
+	default: { badAttachment = true; } break;
 	}
 
 	if (badAttachment || !result->sendData || !result->sendData->isValid()) {
@@ -202,7 +206,13 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 			h /= 2;
 		}
 		auto coords = location.latAsString() + ',' + location.lonAsString();
-		QString url = qsl("https://maps.googleapis.com/maps/api/staticmap?center=") + coords + qsl("&zoom=%1&size=%2x%3&maptype=roadmap&scale=%4&markers=color:red|size:big|").arg(zoom).arg(w).arg(h).arg(scale) + coords + qsl("&sensor=false");
+		QString url = qsl("https://maps.googleapis.com/maps/api/staticmap?center=") + coords +
+		              qsl("&zoom=%1&size=%2x%3&maptype=roadmap&scale=%4&markers=color:red|size:big|")
+		                  .arg(zoom)
+		                  .arg(w)
+		                  .arg(h)
+		                  .arg(scale) +
+		              coords + qsl("&sensor=false");
 		result->_locationThumb = ImagePtr(url);
 	}
 
@@ -219,12 +229,8 @@ bool Result::onChoose(Layout::ItemBase *layout) {
 		}
 		return false;
 	}
-	if (_document && (
-		_type == Type::Video ||
-		_type == Type::Audio ||
-		_type == Type::Sticker ||
-		_type == Type::File ||
-		_type == Type::Gif)) {
+	if (_document && (_type == Type::Video || _type == Type::Audio || _type == Type::Sticker || _type == Type::File ||
+	                  _type == Type::Gif)) {
 		if (_type == Type::Gif) {
 			if (_document->loaded()) {
 				return true;
@@ -279,7 +285,8 @@ bool Result::hasThumbDisplay() const {
 	return false;
 };
 
-void Result::addToHistory(History *history, MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate, UserId viaBotId, MsgId replyToId, const QString &postAuthor) const {
+void Result::addToHistory(History *history, MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate,
+                          UserId viaBotId, MsgId replyToId, const QString &postAuthor) const {
 	flags |= MTPDmessage_ClientFlag::f_from_inline_bot;
 
 	MTPReplyMarkup markup = MTPnullMarkup;
@@ -307,8 +314,7 @@ QString Result::getLayoutDescription() const {
 }
 
 // just to make unique_ptr see the destructors.
-Result::~Result() {
-}
+Result::~Result() {}
 
 void Result::createPhoto() {
 	if (_photo) return;
@@ -319,7 +325,7 @@ void Result::createPhoto() {
 	} else {
 		_thumb = ImagePtr(_thumb_url, QSize(320, 320));
 	}
-//	ImagePtr medium = ImagePtr(_content_url, QSize(320, 320));
+	//	ImagePtr medium = ImagePtr(_content_url, QSize(320, 320));
 	QSize mediumsize = shrinkToKeepAspect(_width, _height, 320, 320);
 	ImagePtr medium = ImagePtr(mediumsize.width(), mediumsize.height());
 
@@ -345,10 +351,12 @@ void Result::createDocument() {
 		attributes.push_back(MTP_documentAttributeFilename(MTP_string(filename)));
 		attributes.push_back(MTP_documentAttributeAnimated());
 		auto flags = MTPDdocumentAttributeVideo::Flags(0);
-		attributes.push_back(MTP_documentAttributeVideo(MTP_flags(flags), MTP_int(_duration), MTP_int(_width), MTP_int(_height)));
+		attributes.push_back(
+		    MTP_documentAttributeVideo(MTP_flags(flags), MTP_int(_duration), MTP_int(_width), MTP_int(_height)));
 	} else if (_type == Type::Video) {
 		auto flags = MTPDdocumentAttributeVideo::Flags(0);
-		attributes.push_back(MTP_documentAttributeVideo(MTP_flags(flags), MTP_int(_duration), MTP_int(_width), MTP_int(_height)));
+		attributes.push_back(
+		    MTP_documentAttributeVideo(MTP_flags(flags), MTP_int(_duration), MTP_int(_width), MTP_int(_height)));
 	} else if (_type == Type::Audio) {
 		auto flags = MTPDdocumentAttributeAudio::Flags(0);
 		if (mime == qstr("audio/ogg")) {
@@ -360,11 +368,13 @@ void Result::createDocument() {
 			QString filename = filedialogDefaultName(qsl("inline"), extension, QString(), true);
 			attributes.push_back(MTP_documentAttributeFilename(MTP_string(filename)));
 		}
-		attributes.push_back(MTP_documentAttributeAudio(MTP_flags(flags), MTP_int(_duration), MTPstring(), MTPstring(), MTPbytes()));
+		attributes.push_back(
+		    MTP_documentAttributeAudio(MTP_flags(flags), MTP_int(_duration), MTPstring(), MTPstring(), MTPbytes()));
 	}
 
 	auto documentId = rand_value<DocumentId>();
-	_document = App::documentSet(documentId, nullptr, 0, 0, unixtime(), attributes, mime, _thumb, MTP::maindc(), 0, StorageImageLocation());
+	_document = App::documentSet(documentId, nullptr, 0, 0, unixtime(), attributes, mime, _thumb, MTP::maindc(), 0,
+	                             StorageImageLocation());
 	_document->setContentUrl(_content_url);
 }
 

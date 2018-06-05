@@ -17,22 +17,24 @@
  */
 #pragma once
 
-#include "styles/style_widgets.h"
-#include "ui/widgets/menu.h"
-#include "ui/effects/panel_animation.h"
-#include "ui/animation.h"
-#include "qevent.h"
 #include "base/lambda.h"
+#include "qevent.h"
+#include "styles/style_widgets.h"
+#include "ui/animation.h"
+#include "ui/effects/panel_animation.h"
+#include "ui/widgets/menu.h"
 
 namespace Ui {
 
 class PopupMenu : public TWidget {
 public:
-	PopupMenu(QWidget*, const style::PopupMenu &st = st::defaultPopupMenu);
-	PopupMenu(QWidget*, QMenu *menu, const style::PopupMenu &st = st::defaultPopupMenu);
+	PopupMenu(QWidget *, const style::PopupMenu &st = st::defaultPopupMenu);
+	PopupMenu(QWidget *, QMenu *menu, const style::PopupMenu &st = st::defaultPopupMenu);
 
-	QAction *addAction(const QString &text, const QObject *receiver, const char* member, const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
-	QAction *addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
+	QAction *addAction(const QString &text, const QObject *receiver, const char *member,
+	                   const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
+	QAction *addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon = nullptr,
+	                   const style::icon *iconOver = nullptr);
 	QAction *addSeparator();
 	void clearActions();
 
@@ -114,7 +116,7 @@ private:
 
 	object_ptr<Ui::Menu> _menu;
 
-	using Submenus = QMap<QAction*, SubmenuPointer>;
+	using Submenus = QMap<QAction *, SubmenuPointer>;
 	Submenus _submenus;
 
 	PopupMenu *_parent = nullptr;
@@ -138,7 +140,6 @@ private:
 	bool _deleteLater = false;
 
 	base::lambda<void()> _destroyedCallback;
-
 };
 
 } // namespace Ui

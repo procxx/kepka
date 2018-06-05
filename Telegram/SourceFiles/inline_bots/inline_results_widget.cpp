@@ -19,26 +19,26 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "inline_bots/inline_results_widget.h"
-#include "styles/style_chat_helpers.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/shadow.h"
-#include "ui/effects/ripple_animation.h"
-#include "boxes/confirm_box.h"
-#include "inline_bots/inline_bot_result.h"
-#include "inline_bots/inline_bot_layout_item.h"
-#include "dialogs/dialogs_layout.h"
-#include "storage/localstorage.h"
-#include "lang/lang_keys.h"
-#include "mainwindow.h"
 #include "apiwrap.h"
-#include "mainwidget.h"
 #include "auth_session.h"
-#include "window/window_controller.h"
-#include "ui/widgets/scroll_area.h"
-#include "ui/widgets/labels.h"
+#include "boxes/confirm_box.h"
+#include "dialogs/dialogs_layout.h"
+#include "inline_bots/inline_bot_layout_item.h"
+#include "inline_bots/inline_bot_result.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
 #include "observer_peer.h"
-#include <QWindow>
+#include "storage/localstorage.h"
+#include "styles/style_chat_helpers.h"
+#include "ui/effects/ripple_animation.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/labels.h"
+#include "ui/widgets/scroll_area.h"
+#include "ui/widgets/shadow.h"
+#include "window/window_controller.h"
 #include <QApplication>
+#include <QWindow>
 
 namespace InlineBots {
 namespace Layout {
@@ -49,8 +49,9 @@ constexpr auto kInlineBotRequestDelay = 400;
 
 } // namespace
 
-Inner::Inner(QWidget *parent, not_null<Window::Controller*> controller) : TWidget(parent)
-, _controller(controller) {
+Inner::Inner(QWidget *parent, not_null<Window::Controller *> controller)
+    : TWidget(parent)
+    , _controller(controller) {
 	resize(st::emojiPanWidth - st::emojiScroll.width - st::buttonRadius, st::emojiPanMinHeight);
 
 	setMouseTracking(true);
@@ -62,23 +63,23 @@ Inner::Inner(QWidget *parent, not_null<Window::Controller*> controller) : TWidge
 	_updateInlineItems.setSingleShot(true);
 	connect(&_updateInlineItems, SIGNAL(timeout()), this, SLOT(onUpdateInlineItems()));
 
-	subscribe(Auth().downloaderTaskFinished(), [this] {
-		update();
-	});
+	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
 	subscribe(controller->gifPauseLevelChanged(), [this] {
 		if (!_controller->isGifPausedAtLeastFor(Window::GifPauseReason::InlineResults)) {
 			update();
 		}
 	});
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::ChannelRightsChanged, [this](const Notify::PeerUpdate &update) {
-		if (update.peer == _inlineQueryPeer) {
-			auto isRestricted = (_restrictedLabel != nullptr);
-			if (isRestricted != isRestrictedView()) {
-				auto h = countHeight();
-				if (h != height()) resize(width(), h);
-			}
-		}
-	}));
+	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::ChannelRightsChanged,
+	                                                            [this](const Notify::PeerUpdate &update) {
+		                                                            if (update.peer == _inlineQueryPeer) {
+			                                                            auto isRestricted =
+			                                                                (_restrictedLabel != nullptr);
+			                                                            if (isRestricted != isRestrictedView()) {
+				                                                            auto h = countHeight();
+				                                                            if (h != height()) resize(width(), h);
+			                                                            }
+		                                                            }
+	                                                            }));
 }
 
 void Inner::setVisibleTopBottom(int visibleTop, int visibleBottom) {
@@ -93,7 +94,8 @@ void Inner::checkRestrictedPeer() {
 	if (auto megagroup = _inlineQueryPeer ? _inlineQueryPeer->asMegagroup() : nullptr) {
 		if (megagroup->restrictedRights().is_send_inline()) {
 			if (!_restrictedLabel) {
-				_restrictedLabel.create(this, lang(lng_restricted_send_inline), Ui::FlatLabel::InitType::Simple, st::stickersRestrictedLabel);
+				_restrictedLabel.create(this, lang(lng_restricted_send_inline), Ui::FlatLabel::InitType::Simple,
+				                        st::stickersRestrictedLabel);
 				_restrictedLabel->show();
 				_restrictedLabel->move(st::inlineResultsLeft - st::buttonRadius, st::stickerPanPadding);
 				if (_switchPmButton) {
@@ -152,7 +154,8 @@ void Inner::paintInlineItems(Painter &p, const QRect &r) {
 	if (_rows.isEmpty() && !_switchPmButton) {
 		p.setFont(st::normalFont);
 		p.setPen(st::noContactsColor);
-		p.drawText(QRect(0, 0, width(), (height() / 3) * 2 + st::normalFont->height), lang(lng_inline_bot_no_results), style::al_center);
+		p.drawText(QRect(0, 0, width(), (height() / 3) * 2 + st::normalFont->height), lang(lng_inline_bot_no_results),
+		           style::al_center);
 		return;
 	}
 	auto gifPaused = _controller->isGifPausedAtLeastFor(Window::GifPauseReason::InlineResults);
@@ -221,7 +224,7 @@ void Inner::mouseReleaseEvent(QMouseEvent *e) {
 		return;
 	}
 
-	if (dynamic_cast<InlineBots::Layout::SendClickHandler*>(activated.data())) {
+	if (dynamic_cast<InlineBots::Layout::SendClickHandler *>(activated.data())) {
 		int row = _selected / MatrixRowShift, column = _selected % MatrixRowShift;
 		selectInlineResult(row, column);
 	} else {
@@ -285,9 +288,7 @@ void Inner::hideFinish(bool completely) {
 			}
 		};
 		clearInlineRows(false);
-		for_const (auto &item, _inlineLayouts) {
-			itemForget(item.second);
-		}
+		for_const (auto &item, _inlineLayouts) { itemForget(item.second); }
 	}
 }
 
@@ -334,9 +335,7 @@ void Inner::clearInlineRows(bool resultsDeleted) {
 	} else {
 		clearSelection();
 		for_const (auto &row, _rows) {
-			for_const (auto &item, row.items) {
-				item->setPosition(-1);
-			}
+			for_const (auto &item, row.items) { item->setPosition(-1); }
 		}
 	}
 	_rows.clear();
@@ -384,9 +383,8 @@ Inner::Row &Inner::layoutInlineRow(Row &row, qint32 sumWidth) {
 	for (auto i = 0; i != count; ++i) {
 		indices[i] = i;
 	}
-	std::sort(indices, indices + count, [&row](int a, int b) -> bool {
-		return row.items.at(a)->maxWidth() < row.items.at(b)->maxWidth();
-	});
+	std::sort(indices, indices + count,
+	          [&row](int a, int b) -> bool { return row.items.at(a)->maxWidth() < row.items.at(b)->maxWidth(); });
 
 	row.height = 0;
 	int availw = width() - (st::inlineResultsLeft - st::buttonRadius);
@@ -712,11 +710,12 @@ void Inner::onSwitchPm() {
 
 } // namespace internal
 
-Widget::Widget(QWidget *parent, not_null<Window::Controller*> controller) : TWidget(parent)
-, _controller(controller)
-, _contentMaxHeight(st::emojiPanMaxHeight)
-, _contentHeight(_contentMaxHeight)
-, _scroll(this, st::inlineBotsScroll) {
+Widget::Widget(QWidget *parent, not_null<Window::Controller *> controller)
+    : TWidget(parent)
+    , _controller(controller)
+    , _contentMaxHeight(st::emojiPanMaxHeight)
+    , _contentHeight(_contentMaxHeight)
+    , _scroll(this, st::inlineBotsScroll) {
 	resize(QRect(0, 0, st::emojiPanWidth, _contentHeight).marginsAdded(innerPadding()).size());
 	_width = width();
 	_height = height();
@@ -744,7 +743,8 @@ Widget::Widget(QWidget *parent, not_null<Window::Controller*> controller) : TWid
 	// But we should force it to repaint so that GIFs will continue to animate without update() calls.
 	// We do that by creating a transparent widget above our _inner.
 	auto forceRepaintOnScroll = object_ptr<TWidget>(this);
-	forceRepaintOnScroll->setGeometry(innerRect().x() + st::buttonRadius, innerRect().y() + st::buttonRadius, st::buttonRadius, st::buttonRadius);
+	forceRepaintOnScroll->setGeometry(innerRect().x() + st::buttonRadius, innerRect().y() + st::buttonRadius,
+	                                  st::buttonRadius, st::buttonRadius);
 	forceRepaintOnScroll->setAttribute(Qt::WA_TransparentForMouseEvents);
 	forceRepaintOnScroll->show();
 
@@ -835,7 +835,9 @@ void Widget::paintContent(Painter &p) {
 	auto horizontal = horizontalRect();
 	auto sidesTop = horizontal.y();
 	auto sidesHeight = horizontal.height();
-	p.fillRect(myrtlrect(inner.x() + inner.width() - st::emojiScroll.width, sidesTop, st::emojiScroll.width, sidesHeight), st::emojiPanBg);
+	p.fillRect(
+	    myrtlrect(inner.x() + inner.width() - st::emojiScroll.width, sidesTop, st::emojiScroll.width, sidesHeight),
+	    st::emojiPanBg);
 	p.fillRect(myrtlrect(inner.x(), sidesTop, st::buttonRadius, sidesHeight), st::emojiPanBg);
 }
 
@@ -882,7 +884,8 @@ void Widget::startOpacityAnimation(bool hiding) {
 	prepareCache();
 	_hiding = hiding;
 	hideChildren();
-	_a_opacity.start([this] { opacityAnimationCallback(); }, _hiding ? 1. : 0., _hiding ? 0. : 1., st::emojiPanDuration);
+	_a_opacity.start([this] { opacityAnimationCallback(); }, _hiding ? 1. : 0., _hiding ? 0. : 1.,
+	                 st::emojiPanDuration);
 }
 
 void Widget::startShowAnimation() {
@@ -894,9 +897,11 @@ void Widget::startShowAnimation() {
 		_a_opacity = base::take(opacityAnimation);
 		_cache = base::take(_cache);
 
-		_showAnimation = std::make_unique<Ui::PanelAnimation>(st::emojiPanAnimation, Ui::PanelAnimation::Origin::BottomLeft);
+		_showAnimation =
+		    std::make_unique<Ui::PanelAnimation>(st::emojiPanAnimation, Ui::PanelAnimation::Origin::BottomLeft);
 		auto inner = rect().marginsRemoved(st::emojiPanMargins);
-		_showAnimation->setFinalImage(std::move(image), QRect(inner.topLeft() * cIntRetinaFactor(), inner.size() * cIntRetinaFactor()));
+		_showAnimation->setFinalImage(std::move(image),
+		                              QRect(inner.topLeft() * cIntRetinaFactor(), inner.size() * cIntRetinaFactor()));
 		auto corners = App::cornersMask(ImageRoundRadius::Small);
 		_showAnimation->setCornerMasks(corners[0], corners[1], corners[2], corners[3]);
 		_showAnimation->start();
@@ -988,8 +993,8 @@ bool Widget::overlaps(const QRect &globalRect) const {
 
 	auto testRect = QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size());
 	auto inner = rect().marginsRemoved(st::emojiPanMargins);
-	return inner.marginsRemoved(QMargins(st::buttonRadius, 0, st::buttonRadius, 0)).contains(testRect)
-		|| inner.marginsRemoved(QMargins(0, st::buttonRadius, 0, st::buttonRadius)).contains(testRect);
+	return inner.marginsRemoved(QMargins(st::buttonRadius, 0, st::buttonRadius, 0)).contains(testRect) ||
+	       inner.marginsRemoved(QMargins(0, st::buttonRadius, 0, st::buttonRadius)).contains(testRect);
 }
 
 void Widget::inlineBotChanged() {
@@ -1063,11 +1068,11 @@ void Widget::queryInlineBot(UserData *bot, PeerData *peer, QString query) {
 		inlineBotChanged();
 		_inlineBot = bot;
 		force = true;
-		//if (_inlineBot->isBotInlineGeo()) {
+		// if (_inlineBot->isBotInlineGeo()) {
 		//	Ui::show(Box<InformBox>(lang(lng_bot_inline_geo_unavailable)));
 		//}
 	}
-	//if (_inlineBot && _inlineBot->isBotInlineGeo()) {
+	// if (_inlineBot && _inlineBot->isBotInlineGeo()) {
 	//	return;
 	//}
 
@@ -1099,13 +1104,17 @@ void Widget::onInlineRequest() {
 		if (nextOffset.isEmpty()) return;
 	}
 	Notify::inlineBotRequesting(true);
-	_inlineRequestId = request(MTPmessages_GetInlineBotResults(MTP_flags(0), _inlineBot->inputUser, _inlineQueryPeer->input, MTPInputGeoPoint(), MTP_string(_inlineQuery), MTP_string(nextOffset))).done([this](const MTPmessages_BotResults &result, mtpRequestId requestId) {
-		inlineResultsDone(result);
-	}).fail([this](const RPCError &error) {
-		// show error?
-		Notify::inlineBotRequesting(false);
-		_inlineRequestId = 0;
-	}).handleAllErrors().send();
+	_inlineRequestId =
+	    request(MTPmessages_GetInlineBotResults(MTP_flags(0), _inlineBot->inputUser, _inlineQueryPeer->input,
+	                                            MTPInputGeoPoint(), MTP_string(_inlineQuery), MTP_string(nextOffset)))
+	        .done([this](const MTPmessages_BotResults &result, mtpRequestId requestId) { inlineResultsDone(result); })
+	        .fail([this](const RPCError &error) {
+		        // show error?
+		        Notify::inlineBotRequesting(false);
+		        _inlineRequestId = 0;
+	        })
+	        .handleAllErrors()
+	        .send();
 }
 
 void Widget::onEmptyInlineRows() {

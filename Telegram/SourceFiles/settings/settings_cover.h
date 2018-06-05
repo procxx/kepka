@@ -92,11 +92,11 @@ private:
 	UserData *_self;
 
 	object_ptr<Profile::UserpicButton> _userpicButton;
-	object_ptr<Profile::CoverDropArea> _dropArea = { nullptr };
+	object_ptr<Profile::CoverDropArea> _dropArea = {nullptr};
 
 	object_ptr<Ui::FlatLabel> _name;
 	object_ptr<Ui::IconButton> _editNameInline;
-	object_ptr<Ui::LinkButton> _cancelPhotoUpload = { nullptr };
+	object_ptr<Ui::LinkButton> _cancelPhotoUpload = {nullptr};
 
 	QPoint _statusPosition;
 	QString _statusText;
@@ -107,7 +107,6 @@ private:
 	bool _editNameVisible = true;
 
 	int _dividerTop = 0;
-
 };
 
 } // namespace Settings

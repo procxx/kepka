@@ -26,7 +26,7 @@ class EditColorBox : public BoxContent {
 	Q_OBJECT
 
 public:
-	EditColorBox(QWidget*, const QString &title, QColor current = QColor(255, 255, 255));
+	EditColorBox(QWidget *, const QString &title, QColor current = QColor(255, 255, 255));
 
 	void setSaveCallback(base::lambda<void(QColor)> callback) {
 		_saveCallback = std::move(callback);
@@ -105,5 +105,4 @@ private:
 
 	base::lambda<void(QColor)> _saveCallback;
 	base::lambda<void()> _cancelCallback;
-
 };

@@ -21,22 +21,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "styles/style_widgets.h"
-#include "ui/twidget.h"
 #include "ui/animation.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 
-template <typename Widget>
-class WidgetSlideWrap;
+template <typename Widget> class WidgetSlideWrap;
 
-template <>
-class WidgetSlideWrap<TWidget> : public TWidget {
+template <> class WidgetSlideWrap<TWidget> : public TWidget {
 public:
-	WidgetSlideWrap(QWidget *parent
-		, object_ptr<TWidget> entity
-		, style::margins entityPadding
-		, base::lambda<void()> updateCallback
-		, int duration = st::widgetSlideDuration);
+	WidgetSlideWrap(QWidget *parent, object_ptr<TWidget> entity, style::margins entityPadding,
+	                base::lambda<void()> updateCallback, int duration = st::widgetSlideDuration);
 
 	void showAnimated();
 	void hideAnimated();
@@ -96,29 +91,19 @@ private:
 	int _forceHeight = -1;
 	Animation _a_height;
 	bool _hiding = false;
-
 };
 
-template <typename Widget>
-class WidgetSlideWrap : public WidgetSlideWrap<TWidget> {
+template <typename Widget> class WidgetSlideWrap : public WidgetSlideWrap<TWidget> {
 public:
-	WidgetSlideWrap(QWidget *parent
-		, object_ptr<Widget> entity
-		, style::margins entityPadding
-		, base::lambda<void()> updateCallback
-		, int duration = st::widgetSlideDuration) : WidgetSlideWrap<TWidget>(parent
-			, std::move(entity)
-			, entityPadding
-			, std::move(updateCallback)
-			, duration) {
-	}
+	WidgetSlideWrap(QWidget *parent, object_ptr<Widget> entity, style::margins entityPadding,
+	                base::lambda<void()> updateCallback, int duration = st::widgetSlideDuration)
+	    : WidgetSlideWrap<TWidget>(parent, std::move(entity), entityPadding, std::move(updateCallback), duration) {}
 	Widget *entity() {
-		return static_cast<Widget*>(WidgetSlideWrap<TWidget>::entity());
+		return static_cast<Widget *>(WidgetSlideWrap<TWidget>::entity());
 	}
 	const Widget *entity() const {
-		return static_cast<const Widget*>(WidgetSlideWrap<TWidget>::entity());
+		return static_cast<const Widget *>(WidgetSlideWrap<TWidget>::entity());
 	}
-
 };
 
 } // namespace Ui

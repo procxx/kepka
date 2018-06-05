@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QtCore/QString>
+#include "codegen/style/structure_types.h"
 #include <QtCore/QList>
 #include <QtCore/QMap>
+#include <QtCore/QString>
 #include <vector>
-#include "codegen/style/structure_types.h"
 
 namespace codegen {
 namespace style {
@@ -32,7 +32,6 @@ namespace structure {
 
 class Module {
 public:
-
 	explicit Module(const QString &fullpath);
 
 	QString filepath() const {
@@ -44,8 +43,7 @@ public:
 	bool hasIncludes() const {
 		return !included_.empty();
 	}
-	template <typename F>
-	bool enumIncludes(F functor) const {
+	template <typename F> bool enumIncludes(F functor) const {
 		for (const auto &module : included_) {
 			if (!functor(*module)) {
 				return false;
@@ -62,8 +60,7 @@ public:
 		return !structs_.isEmpty();
 	}
 
-	template <typename F>
-	bool enumStructs(F functor) const {
+	template <typename F> bool enumStructs(F functor) const {
 		for (const auto &value : structs_) {
 			if (!functor(value)) {
 				return false;
@@ -80,8 +77,7 @@ public:
 		return !variables_.isEmpty();
 	}
 
-	template <typename F>
-	bool enumVariables(F functor) const {
+	template <typename F> bool enumVariables(F functor) const {
 		for (const auto &value : variables_) {
 			if (!functor(value)) {
 				return false;
@@ -104,7 +100,6 @@ private:
 	QList<Variable> variables_;
 	QMap<QString, int> structsByName_;
 	QMap<QString, int> variablesByName_;
-
 };
 
 } // namespace structure

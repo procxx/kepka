@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "ui/text/text.h"
 #include "ui/toast/toast.h"
 #include "ui/twidget.h"
-#include "ui/text/text.h"
 
 namespace Ui {
 namespace Toast {
@@ -49,7 +49,6 @@ private:
 	int _maxTextWidth = 0;
 	int _textWidth = 0;
 	Text _text;
-
 };
 
 } // namespace internal

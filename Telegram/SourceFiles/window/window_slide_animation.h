@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QPixmap>
 #include "base/lambda.h"
 #include "ui/animation.h"
 #include "ui/twidget.h"
+#include <QPixmap>
 
 namespace Window {
 
@@ -63,7 +63,6 @@ private:
 
 	RepaintCallback _repaintCallback;
 	FinishedCallback _finishedCallback;
-
 };
 
 } // namespace Window

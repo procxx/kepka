@@ -20,19 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/notifications_box.h"
 
+#include "app.h" // For App::pixmapFromImageInPlace
+#include "auth_session.h"
 #include "config.h"
 #include "lang/lang_keys.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/discrete_sliders.h"
+#include "messenger.h"
+#include "platform/platform_specific.h"
+#include "storage/localstorage.h"
 #include "styles/style_boxes.h"
 #include "styles/style_dialogs.h"
 #include "styles/style_window.h"
-#include "messenger.h"
-#include "storage/localstorage.h"
-#include "auth_session.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/discrete_sliders.h"
 #include "window/notifications_manager.h"
-#include "platform/platform_specific.h"
-#include "app.h" // For App::pixmapFromImageInPlace
 
 namespace {
 
@@ -44,12 +44,14 @@ using ChangeType = Window::Notifications::ChangeType;
 
 class NotificationsBox::SampleWidget : public QWidget {
 public:
-	SampleWidget(NotificationsBox *owner, const QPixmap &cache) : QWidget(nullptr)
-	, _owner(owner)
-	, _cache(cache) {
+	SampleWidget(NotificationsBox *owner, const QPixmap &cache)
+	    : QWidget(nullptr)
+	    , _owner(owner)
+	    , _cache(cache) {
 		resize(cache.width() / cache.devicePixelRatio(), cache.height() / cache.devicePixelRatio());
 
-		setWindowFlags(Qt::WindowFlags(Qt::FramelessWindowHint) | Qt::WindowStaysOnTopHint | Qt::BypassWindowManagerHint | Qt::NoDropShadowWindowHint | Qt::Tool);
+		setWindowFlags(Qt::WindowFlags(Qt::FramelessWindowHint) | Qt::WindowStaysOnTopHint |
+		               Qt::BypassWindowManagerHint | Qt::NoDropShadowWindowHint | Qt::Tool);
 		setAttribute(Qt::WA_MacAlwaysShowToolWindow);
 		setAttribute(Qt::WA_TransparentForMouseEvents);
 		setAttribute(Qt::WA_OpaquePaintEvent);
@@ -111,14 +113,12 @@ private:
 	Animation _opacity;
 	bool _hiding = false;
 	bool _deleted = false;
-
 };
 
 NotificationsBox::NotificationsBox(QWidget *parent)
-: _chosenCorner(Global::NotificationsCorner())
-, _oldCount(snap(Global::NotificationsCount(), 1, kMaxNotificationsCount))
-, _countSlider(this) {
-}
+    : _chosenCorner(Global::NotificationsCorner())
+    , _oldCount(snap(Global::NotificationsCount(), 1, kMaxNotificationsCount))
+    , _countSlider(this) {}
 
 void NotificationsBox::prepare() {
 	addButton(langFactory(lng_close), [this] { closeBox(); });
@@ -151,7 +151,8 @@ void NotificationsBox::paintEvent(QPaintEvent *e) {
 	p.drawTextLeft(contentLeft, st::boxTitlePosition.y(), width(), lang(lng_settings_notifications_position));
 
 	auto screenRect = getScreenRect();
-	p.fillRect(screenRect.x(), screenRect.y(), st::notificationsBoxScreenSize.width(), st::notificationsBoxScreenSize.height(), st::notificationsBoxScreenBg);
+	p.fillRect(screenRect.x(), screenRect.y(), st::notificationsBoxScreenSize.width(),
+	           st::notificationsBoxScreenSize.height(), st::notificationsBoxScreenBg);
 
 	auto monitorTop = st::notificationsBoxMonitorTop;
 	st::notificationsBoxMonitor.paint(p, contentLeft, monitorTop, width());
@@ -160,8 +161,12 @@ void NotificationsBox::paintEvent(QPaintEvent *e) {
 		auto screenCorner = static_cast<Notify::ScreenCorner>(corner);
 		auto isLeft = Notify::IsLeftCorner(screenCorner);
 		auto isTop = Notify::IsTopCorner(screenCorner);
-		auto sampleLeft = isLeft ? (screenRect.x() + st::notificationsSampleSkip) : (screenRect.x() + screenRect.width() - st::notificationsSampleSkip - st::notificationSampleSize.width());
-		auto sampleTop = isTop ? (screenRect.y() + st::notificationsSampleTopSkip) : (screenRect.y() + screenRect.height() - st::notificationsSampleBottomSkip - st::notificationSampleSize.height());
+		auto sampleLeft = isLeft ? (screenRect.x() + st::notificationsSampleSkip) :
+		                           (screenRect.x() + screenRect.width() - st::notificationsSampleSkip -
+		                            st::notificationSampleSize.width());
+		auto sampleTop = isTop ? (screenRect.y() + st::notificationsSampleTopSkip) :
+		                         (screenRect.y() + screenRect.height() - st::notificationsSampleBottomSkip -
+		                          st::notificationSampleSize.height());
 		if (corner == static_cast<int>(_chosenCorner)) {
 			auto count = currentCount();
 			for (int i = 0; i != kMaxNotificationsCount; ++i) {
@@ -209,14 +214,16 @@ int NotificationsBox::getContentLeft() const {
 QRect NotificationsBox::getScreenRect() const {
 	auto screenLeft = (width() - st::notificationsBoxScreenSize.width()) / 2;
 	auto screenTop = st::notificationsBoxMonitorTop + st::notificationsBoxScreenTop;
-	return QRect(screenLeft, screenTop, st::notificationsBoxScreenSize.width(), st::notificationsBoxScreenSize.height());
+	return QRect(screenLeft, screenTop, st::notificationsBoxScreenSize.width(),
+	             st::notificationsBoxScreenSize.height());
 }
 
 void NotificationsBox::resizeEvent(QResizeEvent *e) {
 	BoxContent::resizeEvent(e);
 
 	auto screenRect = getScreenRect();
-	auto sliderTop = screenRect.y() + screenRect.height() + st::notificationsBoxCountLabelTop + st::notificationsBoxCountTop;
+	auto sliderTop =
+	    screenRect.y() + screenRect.height() + st::notificationsBoxCountLabelTop + st::notificationsBoxCountTop;
 	auto contentLeft = getContentLeft();
 	_countSlider->resizeToWidth(width() - 2 * contentLeft);
 	_countSlider->move(contentLeft, sliderTop);
@@ -225,7 +232,8 @@ void NotificationsBox::resizeEvent(QResizeEvent *e) {
 void NotificationsBox::prepareNotificationSampleSmall() {
 	auto width = st::notificationSampleSize.width();
 	auto height = st::notificationSampleSize.height();
-	auto sampleImage = QImage(width * cIntRetinaFactor(), height * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
+	auto sampleImage =
+	    QImage(width * cIntRetinaFactor(), height * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	sampleImage.setDevicePixelRatio(cRetinaFactor());
 	sampleImage.fill(st::notificationBg->c);
 	{
@@ -262,7 +270,9 @@ void NotificationsBox::prepareNotificationSampleSmall() {
 
 void NotificationsBox::prepareNotificationSampleUserpic() {
 	if (_notificationSampleUserpic.isNull()) {
-		_notificationSampleUserpic = App::pixmapFromImageInPlace(Messenger::Instance().logoNoMargin().scaled(st::notifyPhotoSize * cIntRetinaFactor(), st::notifyPhotoSize * cIntRetinaFactor(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+		_notificationSampleUserpic = App::pixmapFromImageInPlace(Messenger::Instance().logoNoMargin().scaled(
+		    st::notifyPhotoSize * cIntRetinaFactor(), st::notifyPhotoSize * cIntRetinaFactor(), Qt::IgnoreAspectRatio,
+		    Qt::SmoothTransformation));
 		_notificationSampleUserpic.setDevicePixelRatio(cRetinaFactor());
 	}
 }
@@ -276,20 +286,24 @@ void NotificationsBox::prepareNotificationSampleLarge() {
 		Painter p(&sampleImage);
 		p.fillRect(0, 0, w - st::notifyBorderWidth, st::notifyBorderWidth, st::notifyBorder->b);
 		p.fillRect(w - st::notifyBorderWidth, 0, st::notifyBorderWidth, h - st::notifyBorderWidth, st::notifyBorder->b);
-		p.fillRect(st::notifyBorderWidth, h - st::notifyBorderWidth, w - st::notifyBorderWidth, st::notifyBorderWidth, st::notifyBorder->b);
+		p.fillRect(st::notifyBorderWidth, h - st::notifyBorderWidth, w - st::notifyBorderWidth, st::notifyBorderWidth,
+		           st::notifyBorder->b);
 		p.fillRect(0, st::notifyBorderWidth, st::notifyBorderWidth, h - st::notifyBorderWidth, st::notifyBorder->b);
 
 		prepareNotificationSampleUserpic();
 		p.drawPixmap(st::notifyPhotoPos.x(), st::notifyPhotoPos.y(), _notificationSampleUserpic);
 
-		int itemWidth = w - st::notifyPhotoPos.x() - st::notifyPhotoSize - st::notifyTextLeft - st::notifyClosePos.x() - st::notifyClose.width;
+		int itemWidth = w - st::notifyPhotoPos.x() - st::notifyPhotoSize - st::notifyTextLeft - st::notifyClosePos.x() -
+		                st::notifyClose.width;
 
-		auto rectForName = rtlrect(st::notifyPhotoPos.x() + st::notifyPhotoSize + st::notifyTextLeft, st::notifyTextTop, itemWidth, st::msgNameFont->height, w);
+		auto rectForName = rtlrect(st::notifyPhotoPos.x() + st::notifyPhotoSize + st::notifyTextLeft, st::notifyTextTop,
+		                           itemWidth, st::msgNameFont->height, w);
 
 		auto notifyText = st::dialogsTextFont->elided(lang(lng_notification_sample), itemWidth);
 		p.setFont(st::dialogsTextFont);
 		p.setPen(st::dialogsTextFgService);
-		p.drawText(st::notifyPhotoPos.x() + st::notifyPhotoSize + st::notifyTextLeft, st::notifyItemTop + st::msgNameFont->height + st::dialogsTextFont->ascent, notifyText);
+		p.drawText(st::notifyPhotoPos.x() + st::notifyPhotoSize + st::notifyTextLeft,
+		           st::notifyItemTop + st::msgNameFont->height + st::dialogsTextFont->ascent, notifyText);
 
 		p.setPen(st::dialogsNameFg);
 		p.setFont(st::msgNameFont);
@@ -297,7 +311,9 @@ void NotificationsBox::prepareNotificationSampleLarge() {
 		auto notifyTitle = st::msgNameFont->elided(str_const_toString(AppName), rectForName.width());
 		p.drawText(rectForName.left(), rectForName.top() + st::msgNameFont->ascent, notifyTitle);
 
-		st::notifyClose.icon.paint(p, w - st::notifyClosePos.x() - st::notifyClose.width + st::notifyClose.iconPosition.x(), st::notifyClosePos.y() + st::notifyClose.iconPosition.y(), w);
+		st::notifyClose.icon.paint(
+		    p, w - st::notifyClosePos.x() - st::notifyClose.width + st::notifyClose.iconPosition.x(),
+		    st::notifyClosePos.y() + st::notifyClose.iconPosition.y(), w);
 	}
 
 	_notificationSampleLarge = App::pixmapFromImageInPlace(std::move(sampleImage));
@@ -322,9 +338,12 @@ void NotificationsBox::mouseMoveEvent(QMouseEvent *e) {
 	auto cornerWidth = screenRect.width() / 3;
 	auto cornerHeight = screenRect.height() / 3;
 	auto topLeft = rtlrect(screenRect.x(), screenRect.y(), cornerWidth, cornerHeight, width());
-	auto topRight = rtlrect(screenRect.x() + screenRect.width() - cornerWidth, screenRect.y(), cornerWidth, cornerHeight, width());
-	auto bottomRight = rtlrect(screenRect.x() + screenRect.width() - cornerWidth, screenRect.y() + screenRect.height() - cornerHeight, cornerWidth, cornerHeight, width());
-	auto bottomLeft = rtlrect(screenRect.x(), screenRect.y() + screenRect.height() - cornerHeight, cornerWidth, cornerHeight, width());
+	auto topRight =
+	    rtlrect(screenRect.x() + screenRect.width() - cornerWidth, screenRect.y(), cornerWidth, cornerHeight, width());
+	auto bottomRight = rtlrect(screenRect.x() + screenRect.width() - cornerWidth,
+	                           screenRect.y() + screenRect.height() - cornerHeight, cornerWidth, cornerHeight, width());
+	auto bottomLeft = rtlrect(screenRect.x(), screenRect.y() + screenRect.height() - cornerHeight, cornerWidth,
+	                          cornerHeight, width());
 	if (topLeft.contains(e->pos())) {
 		setOverCorner(Notify::ScreenCorner::TopLeft);
 	} else if (topRight.contains(e->pos())) {
@@ -347,9 +366,7 @@ void NotificationsBox::setOverCorner(Notify::ScreenCorner corner) {
 		if (corner == _overCorner) {
 			return;
 		}
-		for_const (auto widget, _cornerSamples[static_cast<int>(_overCorner)]) {
-			widget->hideFast();
-		}
+		for_const (auto widget, _cornerSamples[static_cast<int>(_overCorner)]) { widget->hideFast(); }
 	} else {
 		_isOverCorner = true;
 		setCursor(style::cur_pointer);
@@ -369,8 +386,10 @@ void NotificationsBox::setOverCorner(Notify::ScreenCorner corner) {
 		auto r = psDesktopRect();
 		auto isLeft = Notify::IsLeftCorner(_overCorner);
 		auto isTop = Notify::IsTopCorner(_overCorner);
-		auto sampleLeft = (isLeft == rtl()) ? (r.x() + r.width() - st::notifyWidth - st::notifyDeltaX) : (r.x() + st::notifyDeltaX);
-		auto sampleTop = isTop ? (r.y() + st::notifyDeltaY) : (r.y() + r.height() - st::notifyDeltaY - st::notifyMinHeight);
+		auto sampleLeft =
+		    (isLeft == rtl()) ? (r.x() + r.width() - st::notifyWidth - st::notifyDeltaX) : (r.x() + st::notifyDeltaX);
+		auto sampleTop =
+		    isTop ? (r.y() + st::notifyDeltaY) : (r.y() + r.height() - st::notifyDeltaY - st::notifyMinHeight);
 		for (int i = samplesLeave; i != samplesNeeded; ++i) {
 			auto widget = std::make_unique<SampleWidget>(this, _notificationSampleLarge);
 			widget->move(sampleLeft, sampleTop + (isTop ? 1 : -1) * i * (st::notifyMinHeight + st::notifyDeltaY));
@@ -392,9 +411,7 @@ void NotificationsBox::clearOverCorner() {
 		Auth().notifications().settingsChanged().notify(ChangeType::DemoIsShown);
 
 		for_const (auto &samples, _cornerSamples) {
-			for_const (auto widget, samples) {
-				widget->hideFast();
-			}
+			for_const (auto widget, samples) { widget->hideFast(); }
 		}
 	}
 }
@@ -424,9 +441,7 @@ void NotificationsBox::mouseReleaseEvent(QMouseEvent *e) {
 
 NotificationsBox::~NotificationsBox() {
 	for_const (auto &samples, _cornerSamples) {
-		for_const (auto widget, samples) {
-			widget->detach();
-		}
+		for_const (auto widget, samples) { widget->detach(); }
 	}
 	clearOverCorner();
 }

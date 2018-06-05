@@ -23,8 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <cassert>
 #include <cstdint>
 
-#include <QDir>
 #include "core/utils.h"
+#include <QDir>
 void InitFromCommandLine(int argc, char *argv[]);
 
 extern bool gDebug;
@@ -39,20 +39,21 @@ inline void cSetDebug(bool debug) {
 	gDebug = debug;
 }
 
-#define DeclareReadSetting(Type, Name) extern Type g##Name; \
-inline const Type &c##Name() { \
-	return g##Name; \
-}
+#define DeclareReadSetting(Type, Name)                                                                                 \
+	extern Type g##Name;                                                                                               \
+	inline const Type &c##Name() {                                                                                     \
+		return g##Name;                                                                                                \
+	}
 
-#define DeclareSetting(Type, Name) DeclareReadSetting(Type, Name) \
-inline void cSet##Name(const Type &Name) { \
-	g##Name = Name; \
-}
+#define DeclareSetting(Type, Name)                                                                                     \
+	DeclareReadSetting(Type, Name) inline void cSet##Name(const Type &Name) {                                          \
+		g##Name = Name;                                                                                                \
+	}
 
-#define DeclareRefSetting(Type, Name) DeclareSetting(Type, Name) \
-inline Type &cRef##Name() { \
-	return g##Name; \
-}
+#define DeclareRefSetting(Type, Name)                                                                                  \
+	DeclareSetting(Type, Name) inline Type &cRef##Name() {                                                             \
+		return g##Name;                                                                                                \
+	}
 
 DeclareSetting(bool, Rtl);
 DeclareSetting(Qt::LayoutDirection, LangDir);
@@ -86,10 +87,8 @@ inline void cForceWorkingDir(const QString &newDir) {
 	cSetWorkingDir(newDir);
 	if (!gWorkingDir.isEmpty()) {
 		QDir().mkpath(gWorkingDir);
-		QFile::setPermissions(gWorkingDir,
-			QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ExeUser);
+		QFile::setPermissions(gWorkingDir, QFileDevice::ReadUser | QFileDevice::WriteUser | QFileDevice::ExeUser);
 	}
-
 }
 DeclareReadSetting(QString, ExeName);
 DeclareReadSetting(QString, ExeDir);
@@ -144,14 +143,14 @@ inline DBIScale cScale() {
 	return cEvalScale(cRealScale());
 }
 
-template <typename T>
-T convertScale(T v) {
+template <typename T> T convertScale(T v) {
 	switch (cScale()) {
-		case dbisOneAndQuarter: return qRound(double(v) * 1.25 - 0.01);
-		case dbisOneAndHalf: return qRound(double(v) * 1.5 - 0.01);
-		case dbisTwo: return v * 2;
-		case dbisAuto: case dbisOne: return v;
-		case dbisScaleCount: assert(false); // temp
+	case dbisOneAndQuarter: return qRound(double(v) * 1.25 - 0.01);
+	case dbisOneAndHalf: return qRound(double(v) * 1.5 - 0.01);
+	case dbisTwo: return v * 2;
+	case dbisAuto:
+	case dbisOne: return v;
+	case dbisScaleCount: assert(false); // temp
 	}
 	return v;
 }
@@ -162,7 +161,7 @@ class One;
 } // namespace Emoji
 } // namespace Ui
 
-using EmojiPtr = const Ui::Emoji::One*;
+using EmojiPtr = const Ui::Emoji::One *;
 
 using EmojiPack = QVector<EmojiPtr>;
 using RecentEmojiPreloadOldOld = QVector<QPair<quint32, quint16>>;
@@ -176,11 +175,11 @@ DeclareSetting(RecentEmojiPreload, RecentEmojiPreload);
 DeclareRefSetting(EmojiColorVariants, EmojiVariants);
 
 class DocumentData;
-typedef QVector<DocumentData*> StickerPack;
+typedef QVector<DocumentData *> StickerPack;
 
-typedef QList<QPair<DocumentData*, qint16> > RecentStickerPackOld;
-typedef QVector<QPair<quint64, quint16> > RecentStickerPreload;
-typedef QVector<QPair<DocumentData*, quint16> > RecentStickerPack;
+typedef QList<QPair<DocumentData *, qint16>> RecentStickerPackOld;
+typedef QVector<QPair<quint64, quint16>> RecentStickerPreload;
+typedef QVector<QPair<DocumentData *, quint16>> RecentStickerPack;
 DeclareSetting(RecentStickerPreload, RecentStickersPreload);
 DeclareRefSetting(RecentStickerPack, RecentStickers);
 
@@ -188,16 +187,16 @@ RecentStickerPack &cGetRecentStickers();
 
 typedef QMap<EmojiPtr, StickerPack> StickersByEmojiMap;
 
-typedef QVector<DocumentData*> SavedGifs;
+typedef QVector<DocumentData *> SavedGifs;
 DeclareRefSetting(SavedGifs, SavedGifs);
 DeclareSetting(TimeMs, LastSavedGifsUpdate);
 
-typedef QList<QPair<QString, quint16> > RecentHashtagPack;
+typedef QList<QPair<QString, quint16>> RecentHashtagPack;
 DeclareRefSetting(RecentHashtagPack, RecentWriteHashtags);
 DeclareSetting(RecentHashtagPack, RecentSearchHashtags);
 
 class UserData;
-typedef QVector<UserData*> RecentInlineBots;
+typedef QVector<UserData *> RecentInlineBots;
 DeclareRefSetting(RecentInlineBots, RecentInlineBots);
 
 DeclareSetting(bool, PasswordRecovered);
@@ -223,15 +222,15 @@ inline void incrementRecentHashtag(RecentHashtagPack &recent, const QString &tag
 	for (; i != e; ++i) {
 		if (i->first == tag) {
 			++i->second;
-		if (qAbs(i->second) > 0x4000) {
-			for (RecentHashtagPack::iterator j = recent.begin(); j != e; ++j) {
-				if (j->second > 1) {
-					j->second /= 2;
-				} else if (j->second > 0) {
-					j->second = 1;
+			if (qAbs(i->second) > 0x4000) {
+				for (RecentHashtagPack::iterator j = recent.begin(); j != e; ++j) {
+					if (j->second > 1) {
+						j->second /= 2;
+					} else if (j->second > 0) {
+						j->second = 1;
+					}
 				}
 			}
-		}
 			for (; i != recent.begin(); --i) {
 				if (qAbs((i - 1)->second) > qAbs(i->second)) {
 					break;
@@ -268,8 +267,8 @@ DeclareReadSetting(QUrl, UpdateURL);
 DeclareSetting(int, OtherOnline);
 
 class PeerData;
-typedef QMap<PeerData*, QDateTime> SavedPeers;
-typedef QMultiMap<QDateTime, PeerData*> SavedPeersByTime;
+typedef QMap<PeerData *, QDateTime> SavedPeers;
+typedef QMultiMap<QDateTime, PeerData *> SavedPeersByTime;
 DeclareRefSetting(SavedPeers, SavedPeers);
 DeclareRefSetting(SavedPeersByTime, SavedPeersByTime);
 
@@ -278,7 +277,7 @@ DeclareRefSetting(ReportSpamStatuses, ReportSpamStatuses);
 
 enum DBIAutoDownloadFlags {
 	dbiadNoPrivate = 0x01,
-	dbiadNoGroups  = 0x02,
+	dbiadNoGroups = 0x02,
 };
 
 DeclareSetting(qint32, AutoDownloadPhoto);

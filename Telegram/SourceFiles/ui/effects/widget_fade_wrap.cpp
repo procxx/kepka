@@ -19,11 +19,11 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/effects/widget_fade_wrap.h"
-#include "ui/twidget.h"
 #include "app.h"
+#include "ui/twidget.h"
 
-#include <QWidget>
 #include <QPixmap>
+#include <QWidget>
 
 namespace Ui {
 namespace {
@@ -33,9 +33,8 @@ constexpr int kWideScale = 5;
 } // namespace
 
 FadeAnimation::FadeAnimation(TWidget *widget, bool scaled)
-: _widget(widget)
-, _scaled(scaled) {
-}
+    : _widget(widget)
+    , _scaled(scaled) {}
 
 bool FadeAnimation::paint(Painter &p) {
 	if (_cache.isNull()) return false;
@@ -44,7 +43,8 @@ bool FadeAnimation::paint(Painter &p) {
 	p.setOpacity(opacity);
 	if (_scaled) {
 		PainterHighQualityEnabler hq(p);
-		auto targetRect = QRect((1 - kWideScale) / 2 * _size.width(), (1 - kWideScale) / 2 * _size.height(), kWideScale * _size.width(), kWideScale * _size.height());
+		auto targetRect = QRect((1 - kWideScale) / 2 * _size.width(), (1 - kWideScale) / 2 * _size.height(),
+		                        kWideScale * _size.width(), kWideScale * _size.height());
 		auto scale = opacity;
 		auto shownWidth = anim::interpolate((1 - kWideScale) / 2 * _size.width(), 0, scale);
 		auto shownHeight = anim::interpolate((1 - kWideScale) / 2 * _size.height(), 0, scale);
@@ -158,15 +158,13 @@ void FadeAnimation::updateCallback() {
 	}
 }
 
-WidgetFadeWrap<TWidget>::WidgetFadeWrap(QWidget *parent
-, object_ptr<TWidget> entity
-, int duration
-, base::lambda<void()> updateCallback
-, bool scaled) : TWidget(parent)
-, _entity(std::move(entity))
-, _duration(duration)
-, _updateCallback(std::move(updateCallback))
-, _animation(this, scaled) {
+WidgetFadeWrap<TWidget>::WidgetFadeWrap(QWidget *parent, object_ptr<TWidget> entity, int duration,
+                                        base::lambda<void()> updateCallback, bool scaled)
+    : TWidget(parent)
+    , _entity(std::move(entity))
+    , _duration(duration)
+    , _updateCallback(std::move(updateCallback))
+    , _animation(this, scaled) {
 	_animation.show();
 	installCallbacks();
 	_entity->setParent(this);

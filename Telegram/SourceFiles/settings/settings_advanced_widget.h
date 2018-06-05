@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "mtproto/core_types.h"
+#include "mtproto/rpc_sender.h"
+#include "scheme.h"
 #include "settings/settings_block_widget.h"
 #include "settings/settings_chat_settings_widget.h"
-#include "mtproto/rpc_sender.h"
-#include "mtproto/core_types.h"
-#include "scheme.h"
 
 namespace Settings {
 
@@ -55,18 +55,17 @@ private:
 	void supportGot(const MTPhelp_Support &support);
 	QString getNightThemeToggleText() const;
 
-	object_ptr<Ui::LinkButton> _manageLocalStorage = { nullptr };
+	object_ptr<Ui::LinkButton> _manageLocalStorage = {nullptr};
 #ifndef TDESKTOP_DISABLE_NETWORK_PROXY
-	object_ptr<LabeledLink> _connectionType = { nullptr };
+	object_ptr<LabeledLink> _connectionType = {nullptr};
 #endif // !TDESKTOP_DISABLE_NETWORK_PROXY
-	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _useDefaultTheme = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _toggleNightTheme = { nullptr };
-	object_ptr<Ui::LinkButton> _askQuestion = { nullptr };
-	object_ptr<Ui::LinkButton> _telegramFAQ = { nullptr };
-	object_ptr<Ui::LinkButton> _logOut = { nullptr };
+	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _useDefaultTheme = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _toggleNightTheme = {nullptr};
+	object_ptr<Ui::LinkButton> _askQuestion = {nullptr};
+	object_ptr<Ui::LinkButton> _telegramFAQ = {nullptr};
+	object_ptr<Ui::LinkButton> _logOut = {nullptr};
 
 	mtpRequestId _supportGetRequest = 0;
-
 };
 
 } // namespace Settings

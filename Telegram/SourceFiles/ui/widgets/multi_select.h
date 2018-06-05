@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "styles/style_widgets.h"
 #include "base/lambda.h"
 #include "base/object_ptr.h"
+#include "styles/style_widgets.h"
 #include "ui/twidget.h"
 
-#include <QPointer>
 #include "ui/animation.h"
 #include "ui/text/text.h"
+#include <QPointer>
 
 class QPaintEvent;
 class QMouseEvent;
@@ -41,7 +41,8 @@ class ScrollArea;
 
 class MultiSelect : public TWidget {
 public:
-	MultiSelect(QWidget *parent, const style::MultiSelect &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>());
+	MultiSelect(QWidget *parent, const style::MultiSelect &st,
+	            base::lambda<QString()> placeholderFactory = base::lambda<QString()>());
 
 	QString getQuery() const;
 	void setInnerFocus();
@@ -56,7 +57,8 @@ public:
 		SkipAnimation,
 	};
 	using PaintRoundImage = base::lambda<void(Painter &p, int x, int y, int outerWidth, int size)>;
-	void addItem(quint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage, AddItemWay way = AddItemWay::Default);
+	void addItem(quint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage,
+	             AddItemWay way = AddItemWay::Default);
 	void addItemInBunch(quint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage);
 	void finishItemsBunch();
 	void setItemText(quint64 itemId, const QString &text);
@@ -86,7 +88,6 @@ private:
 
 	base::lambda<void()> _resizedCallback;
 	base::lambda<void(const QString &query)> _queryChangedCallback;
-
 };
 
 // This class is hold in header because it requires Qt preprocessing.
@@ -95,7 +96,8 @@ class MultiSelect::Inner : public TWidget {
 
 public:
 	using ScrollCallback = base::lambda<void(int activeTop, int activeBottom)>;
-	Inner(QWidget *parent, const style::MultiSelect &st, base::lambda<QString()> placeholderFactory, ScrollCallback callback);
+	Inner(QWidget *parent, const style::MultiSelect &st, base::lambda<QString()> placeholderFactory,
+	      ScrollCallback callback);
 
 	QString getQuery() const;
 	bool setInnerFocus();
@@ -185,13 +187,13 @@ private:
 	base::lambda<void(bool ctrlShiftEnter)> _submittedCallback;
 	base::lambda<void(quint64 itemId)> _itemRemovedCallback;
 	base::lambda<void(int heightDelta)> _resizedCallback;
-
 };
 
 
 class MultiSelect::Item {
 public:
-	Item(const style::MultiSelectItem &st, quint64 id, const QString &text, style::color color, PaintRoundImage &&paintRoundImage);
+	Item(const style::MultiSelectItem &st, quint64 id, const QString &text, style::color color,
+	     PaintRoundImage &&paintRoundImage);
 
 	quint64 id() const {
 		return _id;
@@ -244,9 +246,9 @@ private:
 	quint64 _id;
 	struct SlideAnimation {
 		SlideAnimation(base::lambda<void()> updateCallback, int fromX, int toX, int y, double duration)
-			: fromX(fromX)
-			, toX(toX)
-			, y(y) {
+		    : fromX(fromX)
+		    , toX(toX)
+		    , y(y) {
 			x.start(updateCallback, fromX, toX, duration);
 		}
 		Animation x;
@@ -268,7 +270,6 @@ private:
 	PaintRoundImage _paintRoundImage;
 	base::lambda<void()> _updateCallback;
 	bool _hiding = false;
-
 };
 
 } // namespace Ui

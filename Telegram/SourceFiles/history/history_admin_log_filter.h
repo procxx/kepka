@@ -27,7 +27,8 @@ namespace AdminLog {
 
 class FilterBox : public BoxContent {
 public:
-	FilterBox(QWidget*, not_null<ChannelData*> channel, const std::vector<not_null<UserData*>> &admins, const FilterValue &filter, base::lambda<void(FilterValue &&filter)> saveCallback);
+	FilterBox(QWidget *, not_null<ChannelData *> channel, const std::vector<not_null<UserData *>> &admins,
+	          const FilterValue &filter, base::lambda<void(FilterValue &&filter)> saveCallback);
 
 protected:
 	void prepare() override;
@@ -36,14 +37,13 @@ private:
 	void resizeToContent();
 	void refreshButtons();
 
-	not_null<ChannelData*> _channel;
-	std::vector<not_null<UserData*>> _admins;
+	not_null<ChannelData *> _channel;
+	std::vector<not_null<UserData *>> _admins;
 	FilterValue _initialFilter;
 	base::lambda<void(FilterValue &&filter)> _saveCallback;
 
 	class Inner;
 	QPointer<Inner> _inner;
-
 };
 
 } // namespace AdminLog

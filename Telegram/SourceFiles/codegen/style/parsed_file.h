@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "codegen/common/basic_tokenized_file.h"
+#include "codegen/style/module.h"
+#include "codegen/style/options.h"
+#include <QtGui/QImage>
+#include <functional>
 #include <memory>
 #include <string>
-#include <functional>
-#include <QtGui/QImage>
-#include "codegen/common/basic_tokenized_file.h"
-#include "codegen/style/options.h"
-#include "codegen/style/module.h"
 
 namespace codegen {
 namespace style {
@@ -122,19 +122,13 @@ private:
 	ModulePtr module_;
 
 	QMap<std::string, structure::Type> typeNames_ = {
-		{ "int"       , { structure::TypeTag::Int } },
-		{ "double"    , { structure::TypeTag::Double } },
-		{ "pixels"    , { structure::TypeTag::Pixels } },
-		{ "string"    , { structure::TypeTag::String } },
-		{ "color"     , { structure::TypeTag::Color } },
-		{ "point"     , { structure::TypeTag::Point } },
-		{ "size"      , { structure::TypeTag::Size } },
-		{ "align"     , { structure::TypeTag::Align } },
-		{ "margins"   , { structure::TypeTag::Margins } },
-		{ "font"      , { structure::TypeTag::Font } },
-		{ "icon"      , { structure::TypeTag::Icon } },
+	    {"int", {structure::TypeTag::Int}},         {"double", {structure::TypeTag::Double}},
+	    {"pixels", {structure::TypeTag::Pixels}},   {"string", {structure::TypeTag::String}},
+	    {"color", {structure::TypeTag::Color}},     {"point", {structure::TypeTag::Point}},
+	    {"size", {structure::TypeTag::Size}},       {"align", {structure::TypeTag::Align}},
+	    {"margins", {structure::TypeTag::Margins}}, {"font", {structure::TypeTag::Font}},
+	    {"icon", {structure::TypeTag::Icon}},
 	};
-
 };
 
 } // namespace style

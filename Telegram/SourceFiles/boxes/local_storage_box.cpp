@@ -20,19 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/local_storage_box.h"
 
-#include "styles/style_boxes.h"
-#include "ui/widgets/buttons.h"
-#include "storage/localstorage.h"
-#include "lang/lang_keys.h"
-#include "mainwindow.h"
+#include "app.h" // For App::wnd
 #include "auth_session.h"
 #include "facades.h"
-#include "app.h" // For App::wnd
+#include "lang/lang_keys.h"
 #include "layout.h" // For formatSizeText
+#include "mainwindow.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
+#include "ui/widgets/buttons.h"
 
 LocalStorageBox::LocalStorageBox(QWidget *parent)
-: _clear(this, lang(lng_local_storage_clear), st::boxLinkButton) {
-}
+    : _clear(this, lang(lng_local_storage_clear), st::boxLinkButton) {}
 
 void LocalStorageBox::prepare() {
 	setTitle(langFactory(lng_local_storage_title));
@@ -87,12 +86,15 @@ void LocalStorageBox::paintEvent(QPaintEvent *e) {
 	checkLocalStoredCounts();
 	auto top = st::localStorageBoxSkip;
 	if (_imagesCount > 0) {
-		auto text = lng_settings_images_cached(lt_count, _imagesCount, lt_size, formatSizeText(Local::storageImagesSize() + Local::storageStickersSize() + Local::storageWebFilesSize()));
+		auto text = lng_settings_images_cached(
+		    lt_count, _imagesCount, lt_size,
+		    formatSizeText(Local::storageImagesSize() + Local::storageStickersSize() + Local::storageWebFilesSize()));
 		p.drawTextLeft(st::boxPadding.left(), top, width(), text);
 		top += st::boxTextFont->height + st::localStorageBoxSkip;
 	}
 	if (_audiosCount > 0) {
-		auto text = lng_settings_audios_cached(lt_count, _audiosCount, lt_size, formatSizeText(Local::storageAudiosSize()));
+		auto text =
+		    lng_settings_audios_cached(lt_count, _audiosCount, lt_size, formatSizeText(Local::storageAudiosSize()));
 		p.drawTextLeft(st::boxPadding.left(), top, width(), text);
 		top += st::boxTextFont->height + st::localStorageBoxSkip;
 	} else if (_imagesCount <= 0) {

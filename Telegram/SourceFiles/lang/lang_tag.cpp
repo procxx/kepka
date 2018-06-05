@@ -29,11 +29,11 @@ namespace {
 // http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
 //
 
-constexpr auto kShiftZero  = ushort(0);
-constexpr auto kShiftOne   = ushort(1);
-constexpr auto kShiftTwo   = ushort(2);
-constexpr auto kShiftFew   = ushort(3);
-constexpr auto kShiftMany  = ushort(4);
+constexpr auto kShiftZero = ushort(0);
+constexpr auto kShiftOne = ushort(1);
+constexpr auto kShiftTwo = ushort(2);
+constexpr auto kShiftFew = ushort(3);
+constexpr auto kShiftMany = ushort(4);
 constexpr auto kShiftOther = ushort(5);
 
 //
@@ -108,18 +108,18 @@ ushort ChoosePluralRu(int n, int i, int v, int w, int f, int t) {
 			return kShiftMany;
 		}
 	}
-	return kShiftMany;// kShiftOther;
+	return kShiftMany; // kShiftOther;
 }
 
 QMap<QString, ChoosePluralMethod> GeneratePluralRulesMap() {
 	auto result = QMap<QString, ChoosePluralMethod>();
 	result.insert(qsl("ar"), ChoosePluralAr);
-//	result.insert(qsl("de"), ChoosePluralEn);
-//	result.insert(qsl("en"), ChoosePluralEn); // En is default, so we don't fill it inside the map.
+	//	result.insert(qsl("de"), ChoosePluralEn);
+	//	result.insert(qsl("en"), ChoosePluralEn); // En is default, so we don't fill it inside the map.
 	result.insert(qsl("es"), ChoosePluralEs);
-//	result.insert(qsl("it"), ChoosePluralEn);
+	//	result.insert(qsl("it"), ChoosePluralEn);
 	result.insert(qsl("ko"), ChoosePluralKo);
-//	result.insert(qsl("nl"), ChoosePluralEn);
+	//	result.insert(qsl("nl"), ChoosePluralEn);
 	result.insert(qsl("pt"), ChoosePluralPt);
 	result.insert(qsl("ru"), ChoosePluralRu);
 	return result;
@@ -132,7 +132,8 @@ ChoosePluralMethod ChoosePlural = ChoosePluralEn;
 int FindTagReplacementPosition(const QString &original, ushort tag) {
 	for (auto s = original.constData(), ch = s, e = ch + original.size(); ch != e;) {
 		if (*ch == TextCommand) {
-			if (ch + kTagReplacementSize <= e && (ch + 1)->unicode() == TextCommandLangTag && *(ch + 3) == TextCommand) {
+			if (ch + kTagReplacementSize <= e && (ch + 1)->unicode() == TextCommandLangTag &&
+			    *(ch + 3) == TextCommand) {
 				if ((ch + 2)->unicode() == 0x0020 + tag) {
 					return ch - s;
 				} else {
@@ -151,7 +152,6 @@ int FindTagReplacementPosition(const QString &original, ushort tag) {
 		}
 	}
 	return -1;
-
 }
 
 PluralResult Plural(ushort keyBase, double value) {
@@ -169,9 +169,9 @@ PluralResult Plural(ushort keyBase, double value) {
 	auto shift = (useNonDefaultPlural ? ChoosePlural : ChoosePluralEn)((integer ? i : -1), i, v, w, f, t);
 	auto string = langpack.getValue(LangKey(keyBase + shift));
 	if (i == std::ceil(n)) {
-		return { string, QString::number(std::round(value)) };
+		return {string, QString::number(std::round(value))};
 	}
-	return { string, QString::number(value) };
+	return {string, QString::number(value)};
 }
 
 void UpdatePluralRules(const QString &languageId) {

@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "window/notifications_manager.h"
 #include "core/single_timer.h"
+#include "window/notifications_manager.h"
 
 namespace Window {
 namespace Notifications {
@@ -56,8 +56,7 @@ private:
 	Images _images;
 	bool _someSavedFlag = false;
 	SingleTimer _clearTimer;
-
 };
 
-} // namesapce Notifications
+} // namespace Notifications
 } // namespace Window
