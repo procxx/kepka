@@ -6,4 +6,4 @@ add_executable(codegen_emoji
     replaces.cpp
 )
 target_link_libraries(codegen_emoji codegen_common Qt5::Core Qt5::Gui)
-qt5_use_modules(codegen_emoji Core)
+

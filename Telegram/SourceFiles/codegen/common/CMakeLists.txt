@@ -5,4 +5,4 @@ add_library(codegen_common STATIC
     cpp_file.cpp
     logging.cpp
 )
-qt5_use_modules(codegen_common Core)
+target_link_libraries(codegen_common Qt5::Core)
