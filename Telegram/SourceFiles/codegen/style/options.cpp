@@ -20,20 +20,20 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/style/options.h"
 
-#include <ostream>
+#include "codegen/common/logging.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
-#include "codegen/common/logging.h"
+#include <ostream>
 
 namespace codegen {
 namespace style {
 namespace {
 
-constexpr int kErrorIncludePathExpected     = 901;
-constexpr int kErrorOutputPathExpected      = 902;
-constexpr int kErrorInputPathExpected       = 903;
+constexpr int kErrorIncludePathExpected = 901;
+constexpr int kErrorOutputPathExpected = 902;
+constexpr int kErrorInputPathExpected = 903;
 constexpr int kErrorSingleInputPathExpected = 904;
-constexpr int kErrorWorkingPathExpected     = 905;
+constexpr int kErrorWorkingPathExpected = 905;
 
 } // namespace
 
@@ -56,7 +56,7 @@ Options parseOptions() {
 		} else if (arg.startsWith("-I")) {
 			result.includePaths.push_back(arg.mid(2));
 
-		// Output path
+			// Output path
 		} else if (arg == "-o") {
 			if (++i == count) {
 				logError(kErrorOutputPathExpected, "Command Line") << "output path expected after -o";
@@ -67,7 +67,7 @@ Options parseOptions() {
 		} else if (arg.startsWith("-o")) {
 			result.outputPath = arg.mid(2);
 
-		// Working path
+			// Working path
 		} else if (arg == "-w") {
 			if (++i == count) {
 				logError(kErrorWorkingPathExpected, "Command Line") << "working path expected after -w";
@@ -78,7 +78,7 @@ Options parseOptions() {
 		} else if (arg.startsWith("-w")) {
 			common::logSetWorkingPath(arg.mid(2));
 
-		// Input path
+			// Input path
 		} else {
 			if (result.inputPath.isEmpty()) {
 				result.inputPath = arg;

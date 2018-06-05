@@ -21,13 +21,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "codegen/common/logging.h"
-#include <vector>
+#include <QtCore/QMap>
+#include <QtCore/QSet>
+#include <QtCore/QString>
+#include <functional>
 #include <map>
 #include <memory>
-#include <functional>
-#include <QtCore/QString>
-#include <QtCore/QSet>
-#include <QtCore/QMap>
+#include <vector>
 
 namespace codegen {
 namespace emoji {

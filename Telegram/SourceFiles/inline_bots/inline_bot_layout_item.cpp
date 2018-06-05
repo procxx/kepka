@@ -21,10 +21,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "inline_bots/inline_bot_layout_item.h"
 
 #include "core/click_handler_types.h"
-#include "inline_bots/inline_bot_result.h"
 #include "inline_bots/inline_bot_layout_internal.h"
-#include "storage/localstorage.h"
+#include "inline_bots/inline_bot_result.h"
 #include "mainwidget.h"
+#include "storage/localstorage.h"
 
 namespace InlineBots {
 namespace Layout {
@@ -50,7 +50,7 @@ PhotoData *ItemBase::getPhoto() const {
 }
 
 DocumentData *ItemBase::getPreviewDocument() const {
-	auto previewDocument = [this]() -> DocumentData* {
+	auto previewDocument = [this]() -> DocumentData * {
 		if (_doc) {
 			return _doc;
 		}
@@ -105,7 +105,7 @@ void ItemBase::layoutChanged() {
 	}
 }
 
-std::unique_ptr<ItemBase> ItemBase::createLayout(not_null<Context*> context, Result *result, bool forceThumb) {
+std::unique_ptr<ItemBase> ItemBase::createLayout(not_null<Context *> context, Result *result, bool forceThumb) {
 	using Type = Result::Type;
 
 	switch (result->_type) {
@@ -124,7 +124,7 @@ std::unique_ptr<ItemBase> ItemBase::createLayout(not_null<Context*> context, Res
 	return nullptr;
 }
 
-std::unique_ptr<ItemBase> ItemBase::createLayoutGif(not_null<Context*> context, DocumentData *document) {
+std::unique_ptr<ItemBase> ItemBase::createLayoutGif(not_null<Context *> context, DocumentData *document) {
 	return std::make_unique<internal::Gif>(context, document, true);
 }
 
@@ -153,7 +153,8 @@ QPixmap ItemBase::getResultContactAvatar(int width, int height) const {
 	if (_result->_type == Result::Type::Contact) {
 		auto result = EmptyUserpic(qHash(_result->_id) % kUserColorsCount, _result->getLayoutTitle()).generate(width);
 		if (result.height() != height * cIntRetinaFactor()) {
-			result = result.scaled(QSize(width, height) * cIntRetinaFactor(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			result = result.scaled(QSize(width, height) * cIntRetinaFactor(), Qt::IgnoreAspectRatio,
+			                       Qt::SmoothTransformation);
 		}
 		return result;
 	}

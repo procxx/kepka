@@ -20,19 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/lang/options.h"
 
-#include <ostream>
+#include "codegen/common/logging.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
-#include "codegen/common/logging.h"
+#include <ostream>
 
 namespace codegen {
 namespace lang {
 namespace {
 
-constexpr int kErrorOutputPathExpected      = 902;
-constexpr int kErrorInputPathExpected       = 903;
+constexpr int kErrorOutputPathExpected = 902;
+constexpr int kErrorInputPathExpected = 903;
 constexpr int kErrorSingleInputPathExpected = 904;
-constexpr int kErrorWorkingPathExpected     = 905;
+constexpr int kErrorWorkingPathExpected = 905;
 
 } // namespace
 
@@ -55,7 +55,7 @@ Options parseOptions() {
 		} else if (arg.startsWith("-o")) {
 			result.outputPath = arg.mid(2);
 
-		// Working path
+			// Working path
 		} else if (arg == "-w") {
 			if (++i == count) {
 				logError(kErrorWorkingPathExpected, "Command Line") << "working path expected after -w";
@@ -66,7 +66,7 @@ Options parseOptions() {
 		} else if (arg.startsWith("-w")) {
 			common::logSetWorkingPath(arg.mid(2));
 
-		// Input path
+			// Input path
 		} else {
 			if (result.inputPath.isEmpty()) {
 				result.inputPath = arg;

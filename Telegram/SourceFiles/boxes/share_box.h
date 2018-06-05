@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "boxes/abstract_box.h"
 #include "base/observer.h"
+#include "boxes/abstract_box.h"
 #include "ui/effects/round_checkbox.h"
 
 namespace Dialogs {
@@ -45,9 +45,9 @@ class ShareBox : public BoxContent, public RPCSender {
 
 public:
 	using CopyCallback = base::lambda<void()>;
-	using SubmitCallback = base::lambda<void(const QVector<PeerData*> &)>;
-	using FilterCallback = base::lambda<bool(PeerData*)>;
-	ShareBox(QWidget*, CopyCallback &&copyCallback, SubmitCallback &&submitCallback, FilterCallback &&filterCallback);
+	using SubmitCallback = base::lambda<void(const QVector<PeerData *> &)>;
+	using FilterCallback = base::lambda<bool(PeerData *)>;
+	ShareBox(QWidget *, CopyCallback &&copyCallback, SubmitCallback &&submitCallback, FilterCallback &&filterCallback);
 
 protected:
 	void prepare() override;
@@ -104,7 +104,6 @@ private:
 	PeopleQueries _peopleQueries;
 
 	Animation _scrollAnimation;
-
 };
 
 // This class is hold in header because it requires Qt preprocessing.
@@ -117,7 +116,7 @@ public:
 	void setPeerSelectedChangedCallback(base::lambda<void(PeerData *peer, bool selected)> callback);
 	void peerUnselected(PeerData *peer);
 
-	QVector<PeerData*> selected() const;
+	QVector<PeerData *> selected() const;
 	bool hasSelected() const;
 
 	void peopleReceived(const QString &query, const QVector<MTPPeer> &people);
@@ -195,12 +194,12 @@ private:
 	ShareBox::FilterCallback _filterCallback;
 	std::unique_ptr<Dialogs::IndexedList> _chatsIndexed;
 	QString _filter;
-	using FilteredDialogs = QVector<Dialogs::Row*>;
+	using FilteredDialogs = QVector<Dialogs::Row *>;
 	FilteredDialogs _filtered;
 
-	using DataMap = QMap<PeerData*, Chat*>;
+	using DataMap = QMap<PeerData *, Chat *>;
 	DataMap _dataMap;
-	using SelectedChats = OrderedSet<PeerData*>;
+	using SelectedChats = OrderedSet<PeerData *>;
 	SelectedChats _selected;
 
 	base::lambda<void(PeerData *peer, bool selected)> _peerSelectedChangedCallback;
@@ -209,9 +208,8 @@ private:
 
 	bool _searching = false;
 	QString _lastQuery;
-	using ByUsernameRows = QVector<PeerData*>;
-	using ByUsernameDatas = QVector<Chat*>;
+	using ByUsernameRows = QVector<PeerData *>;
+	using ByUsernameDatas = QVector<Chat *>;
 	ByUsernameRows _byUsernameFiltered;
 	ByUsernameDatas d_byUsernameFiltered;
-
 };

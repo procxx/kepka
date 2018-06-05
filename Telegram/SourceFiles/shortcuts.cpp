@@ -20,23 +20,23 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "shortcuts.h"
 
-#include "mainwindow.h"
-#include "passcodewidget.h"
-#include "mainwidget.h"
-#include "messenger.h"
-#include "media/player/media_player_instance.h"
-#include "platform/platform_specific.h"
 #include "base/parse_helper.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
+#include "media/player/media_player_instance.h"
+#include "messenger.h"
+#include "passcodewidget.h"
+#include "platform/platform_specific.h"
 
-#include <QJsonObject>
-#include <QJsonDocument>
 #include <QDirIterator>
-#include <QShortcut>
 #include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QShortcut>
 
 namespace ShortcutCommands {
 
-using Handler = bool(*)();
+using Handler = bool (*)();
 
 bool lock_telegram() {
 	if (!App::passcoded() && Global::LocalPasscode()) {
@@ -59,11 +59,11 @@ bool quit_telegram() {
 	return true;
 }
 
-//void start_stop_recording() {
+// void start_stop_recording() {
 
 //}
 
-//void cancel_recording() {
+// void cancel_recording() {
 
 //}
 
@@ -161,7 +161,9 @@ struct DataStruct {
 		}
 
 #define DeclareAlias(keys, command) setShortcut(qsl(keys), qsl(#command))
-#define DeclareCommand(keys, command) createCommand(qsl(#command), ShortcutCommands::command); DeclareAlias(keys, command)
+#define DeclareCommand(keys, command)                                                                                  \
+	createCommand(qsl(#command), ShortcutCommands::command);                                                           \
+	DeclareAlias(keys, command)
 
 		DeclareCommand("ctrl+w", close_telegram);
 		DeclareAlias("ctrl+f4", close_telegram);
@@ -169,9 +171,9 @@ struct DataStruct {
 		DeclareCommand("ctrl+m", minimize_telegram);
 		DeclareCommand("ctrl+q", quit_telegram);
 
-		//DeclareCommand("ctrl+r", start_stop_recording);
-		//DeclareCommand("ctrl+shift+r", cancel_recording);
-		//DeclareCommand("media record", start_stop_recording);
+		// DeclareCommand("ctrl+r", start_stop_recording);
+		// DeclareCommand("ctrl+shift+r", cancel_recording);
+		// DeclareCommand("media record", start_stop_recording);
 
 		DeclareCommand("media play", media_play);
 		DeclareCommand("media pause", media_pause);
@@ -208,13 +210,12 @@ struct DataStruct {
 	QMap<QString, ShortcutCommands::Handler> commands;
 	QMap<ShortcutCommands::Handler, QString> commandnames;
 
-	QMap<QKeySequence, QShortcut*> sequences;
+	QMap<QKeySequence, QShortcut *> sequences;
 	QMap<int, ShortcutCommands::Handler> handlers;
 
-	QSet<QShortcut*> mediaShortcuts;
+	QSet<QShortcut *> mediaShortcuts;
 	QSet<QString> autoRepeatCommands;
 	QSet<QString> mediaCommands;
-
 };
 
 namespace {
@@ -240,7 +241,8 @@ QKeySequence setShortcut(const QString &keys, const QString &command) {
 		if (it == DataPtr->commands.cend()) {
 			LOG(("Warning: could not find shortcut command handler '%1'").arg(command));
 		} else {
-			auto shortcut = std::make_unique<QShortcut>(seq, Messenger::Instance().getActiveWindow(), nullptr, nullptr, Qt::ApplicationShortcut);
+			auto shortcut = std::make_unique<QShortcut>(seq, Messenger::Instance().getActiveWindow(), nullptr, nullptr,
+			                                            Qt::ApplicationShortcut);
 			if (!DataPtr->autoRepeatCommands.contains(command)) {
 				shortcut->setAutoRepeat(false);
 			}
@@ -307,7 +309,7 @@ void start() {
 	bool defaultValid = false;
 	QFile defaultFile(cWorkingDir() + qsl("tdata/shortcuts-default.json"));
 	if (defaultFile.open(QIODevice::ReadOnly)) {
-		QJsonParseError error = { 0, QJsonParseError::NoError };
+		QJsonParseError error = {0, QJsonParseError::NoError};
 		QJsonDocument doc = QJsonDocument::fromJson(base::parse::stripComments(defaultFile.readAll()), &error);
 		defaultFile.close();
 
@@ -316,14 +318,16 @@ void start() {
 			if (!shortcuts.isEmpty() && (*shortcuts.constBegin()).isObject()) {
 				QJsonObject versionObject((*shortcuts.constBegin()).toObject());
 				QJsonObject::const_iterator version = versionObject.constFind(qsl("version"));
-				if (version != versionObject.constEnd() && (*version).isString() && (*version).toString() == QString::number(AppVersion)) {
+				if (version != versionObject.constEnd() && (*version).isString() &&
+				    (*version).toString() == QString::number(AppVersion)) {
 					defaultValid = true;
 				}
 			}
 		}
 	}
 	if (!defaultValid && defaultFile.open(QIODevice::WriteOnly)) {
-		const char *defaultHeader = "\
+		const char *defaultHeader =
+		    "\
 // This is a list of default shortcuts for Kepka\n\
 // Please don't modify it, its content is not used in any way\n\
 // You can place your own shortcuts in the 'shortcuts-custom.json' file\n\n";
@@ -358,7 +362,7 @@ void start() {
 	QFile customFile(cWorkingDir() + qsl("tdata/shortcuts-custom.json"));
 	if (customFile.exists()) {
 		if (customFile.open(QIODevice::ReadOnly)) {
-			QJsonParseError error = { 0, QJsonParseError::NoError };
+			QJsonParseError error = {0, QJsonParseError::NoError};
 			QJsonDocument doc = QJsonDocument::fromJson(base::parse::stripComments(customFile.readAll()), &error);
 			customFile.close();
 
@@ -375,9 +379,12 @@ void start() {
 					} else {
 						QKeySequence seq;
 						QJsonObject entry((*i).toObject());
-						QJsonObject::const_iterator keys = entry.constFind(qsl("keys")), command = entry.constFind(qsl("command"));
-						if (keys == entry.constEnd() || command == entry.constEnd() || !(*keys).isString() || (!(*command).isString() && !(*command).isNull())) {
-							DataPtr->errors.push_back(qsl("Bad entry! {\"keys\": \"...\", \"command\": [ \"...\" | null ]} expected"));
+						QJsonObject::const_iterator keys = entry.constFind(qsl("keys")),
+						                            command = entry.constFind(qsl("command"));
+						if (keys == entry.constEnd() || command == entry.constEnd() || !(*keys).isString() ||
+						    (!(*command).isString() && !(*command).isNull())) {
+							DataPtr->errors.push_back(
+							    qsl("Bad entry! {\"keys\": \"...\", \"command\": [ \"...\" | null ]} expected"));
 						} else if ((*command).isNull()) {
 							seq = removeShortcut((*keys).toString());
 						} else {
@@ -397,7 +404,8 @@ void start() {
 			DataPtr->errors.push_front(qsl("While reading file '%1'...").arg(customFile.fileName()));
 		}
 	} else if (customFile.open(QIODevice::WriteOnly)) {
-		const char *customContent = "\
+		const char *customContent =
+		    "\
 // This is a list of your own shortcuts for Kepka\n\
 // You can see full list of commands in the 'shortcuts-default.json' file\n\
 // Place a null value instead of a command string to switch the shortcut off\n\n\
@@ -443,17 +451,13 @@ bool launch(const QString &command) {
 
 void enableMediaShortcuts() {
 	if (!DataPtr) return;
-	for_const (auto shortcut, DataPtr->mediaShortcuts) {
-		shortcut->setEnabled(true);
-	}
+	for_const (auto shortcut, DataPtr->mediaShortcuts) { shortcut->setEnabled(true); }
 	Platform::SetWatchingMediaKeys(true);
 }
 
 void disableMediaShortcuts() {
 	if (!DataPtr) return;
-	for_const (auto shortcut, DataPtr->mediaShortcuts) {
-		shortcut->setEnabled(false);
-	}
+	for_const (auto shortcut, DataPtr->mediaShortcuts) { shortcut->setEnabled(false); }
 	Platform::SetWatchingMediaKeys(false);
 }
 

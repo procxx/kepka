@@ -18,15 +18,15 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QWindow>
 #include "chat_helpers/tabbed_panel.h"
+#include <QWindow>
 
-#include "ui/widgets/shadow.h"
-#include "styles/style_chat_helpers.h"
-#include "chat_helpers/tabbed_selector.h"
-#include "window/window_controller.h"
-#include "mainwindow.h"
 #include "app.h"
+#include "chat_helpers/tabbed_selector.h"
+#include "mainwindow.h"
+#include "styles/style_chat_helpers.h"
+#include "ui/widgets/shadow.h"
+#include "window/window_controller.h"
 
 namespace ChatHelpers {
 namespace {
@@ -36,12 +36,14 @@ constexpr auto kDelayedHideTimeoutMs = 3000;
 
 } // namespace
 
-TabbedPanel::TabbedPanel(QWidget *parent, not_null<Window::Controller*> controller) : TabbedPanel(parent, controller, object_ptr<TabbedSelector>(nullptr, controller)) {
-}
+TabbedPanel::TabbedPanel(QWidget *parent, not_null<Window::Controller *> controller)
+    : TabbedPanel(parent, controller, object_ptr<TabbedSelector>(nullptr, controller)) {}
 
-TabbedPanel::TabbedPanel(QWidget *parent, not_null<Window::Controller*> controller, object_ptr<TabbedSelector> selector) : TWidget(parent)
-, _controller(controller)
-, _selector(std::move(selector)) {
+TabbedPanel::TabbedPanel(QWidget *parent, not_null<Window::Controller *> controller,
+                         object_ptr<TabbedSelector> selector)
+    : TWidget(parent)
+    , _controller(controller)
+    , _selector(std::move(selector)) {
 	_selector->setParent(this);
 	_selector->setRoundRadius(st::buttonRadius);
 	_selector->setAfterShownCallback([this](SelectorTab tab) {
@@ -70,9 +72,7 @@ TabbedPanel::TabbedPanel(QWidget *parent, not_null<Window::Controller*> controll
 			_hideTimer.callOnce(kDelayedHideTimeoutMs);
 		}
 	});
-	connect(_selector, &TabbedSelector::cancelled, this, [this] {
-		hideAnimated();
-	});
+	connect(_selector, &TabbedSelector::cancelled, this, [this] { hideAnimated(); });
 	connect(_selector, &TabbedSelector::slideFinished, this, [this] {
 		InvokeQueued(this, [this] {
 			if (_hideAfterSlide) {
@@ -256,16 +256,19 @@ void TabbedPanel::startOpacityAnimation(bool hiding) {
 	prepareCache();
 	_hiding = hiding;
 	hideChildren();
-	_a_opacity.start([this] { opacityAnimationCallback(); }, _hiding ? 1. : 0., _hiding ? 0. : 1., st::emojiPanDuration);
+	_a_opacity.start([this] { opacityAnimationCallback(); }, _hiding ? 1. : 0., _hiding ? 0. : 1.,
+	                 st::emojiPanDuration);
 }
 
 void TabbedPanel::startShowAnimation() {
 	if (!_a_show.animating()) {
 		auto image = grabForAnimation();
 
-		_showAnimation = std::make_unique<Ui::PanelAnimation>(st::emojiPanAnimation, Ui::PanelAnimation::Origin::BottomRight);
+		_showAnimation =
+		    std::make_unique<Ui::PanelAnimation>(st::emojiPanAnimation, Ui::PanelAnimation::Origin::BottomRight);
 		auto inner = rect().marginsRemoved(st::emojiPanMargins);
-		_showAnimation->setFinalImage(std::move(image), QRect(inner.topLeft() * cIntRetinaFactor(), inner.size() * cIntRetinaFactor()));
+		_showAnimation->setFinalImage(std::move(image),
+		                              QRect(inner.topLeft() * cIntRetinaFactor(), inner.size() * cIntRetinaFactor()));
 		auto corners = App::cornersMask(ImageRoundRadius::Small);
 		_showAnimation->setCornerMasks(corners[0], corners[1], corners[2], corners[3]);
 		_showAnimation->start();
@@ -413,8 +416,8 @@ bool TabbedPanel::overlaps(const QRect &globalRect) const {
 
 	auto testRect = QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size());
 	auto inner = rect().marginsRemoved(st::emojiPanMargins);
-	return inner.marginsRemoved(QMargins(st::buttonRadius, 0, st::buttonRadius, 0)).contains(testRect)
-		|| inner.marginsRemoved(QMargins(0, st::buttonRadius, 0, st::buttonRadius)).contains(testRect);
+	return inner.marginsRemoved(QMargins(st::buttonRadius, 0, st::buttonRadius, 0)).contains(testRect) ||
+	       inner.marginsRemoved(QMargins(0, st::buttonRadius, 0, st::buttonRadius)).contains(testRect);
 }
 
 TabbedPanel::~TabbedPanel() = default;

@@ -29,7 +29,7 @@ class FlatLabel;
 
 class AboutBox : public BoxContent {
 public:
-	AboutBox(QWidget*);
+	AboutBox(QWidget *);
 
 protected:
 	void prepare() override;
@@ -44,7 +44,6 @@ private:
 	object_ptr<Ui::FlatLabel> _text1;
 	object_ptr<Ui::FlatLabel> _text2;
 	object_ptr<Ui::FlatLabel> _text3;
-
 };
 
 QString telegramFaqLink();

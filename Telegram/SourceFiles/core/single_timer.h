@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <base/lambda.h>
 #include "core/basic_types.h"
 #include "core/utils.h"
+#include <base/lambda.h>
 
 #include <QTimer>
 
@@ -48,5 +48,4 @@ private slots:
 private:
 	TimeMs _finishing = 0;
 	base::lambda<void()> _handler;
-
 };

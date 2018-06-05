@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QByteArray>
 #include "core/utils.h"
 #include "ui/images.h"
+#include <QByteArray>
 
 namespace FFMpeg {
 struct AVPacketDataWrap;
@@ -71,5 +71,4 @@ private:
 	QByteArray _savedSamples;
 	qint64 _savedSamplesCount = 0;
 	bool _holdsSavedSamples = false;
-
 };

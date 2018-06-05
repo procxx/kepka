@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/send_files_box.h"
 
-#include "lang/lang_keys.h"
-#include "storage/localstorage.h"
-#include "mainwidget.h"
-#include "history/history_media_types.h"
 #include "core/file_utilities.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/input_fields.h"
-#include "styles/style_history.h"
-#include "styles/style_boxes.h"
+#include "history/history_media_types.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
 #include "media/media_clip_reader.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
+#include "styles/style_history.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
+#include "ui/widgets/input_fields.h"
 #include "window/window_controller.h"
 
 namespace {
@@ -43,18 +43,18 @@ bool ValidatePhotoDimensions(int width, int height) {
 
 } // namespace
 
-SendFilesBox::SendFilesBox(QWidget*, QImage image, CompressConfirm compressed)
-: _image(image)
-, _compressConfirm(compressed)
-, _caption(this, st::confirmCaptionArea, langFactory(lng_photo_caption)) {
+SendFilesBox::SendFilesBox(QWidget *, QImage image, CompressConfirm compressed)
+    : _image(image)
+    , _compressConfirm(compressed)
+    , _caption(this, st::confirmCaptionArea, langFactory(lng_photo_caption)) {
 	_files.push_back(QString());
 	prepareSingleFileLayout();
 }
 
-SendFilesBox::SendFilesBox(QWidget*, const QStringList &files, CompressConfirm compressed)
-: _files(files)
-, _compressConfirm(compressed)
-, _caption(this, st::confirmCaptionArea, langFactory(_files.size() > 1 ? lng_photos_comment : lng_photo_caption)) {
+SendFilesBox::SendFilesBox(QWidget *, const QStringList &files, CompressConfirm compressed)
+    : _files(files)
+    , _compressConfirm(compressed)
+    , _caption(this, st::confirmCaptionArea, langFactory(_files.size() > 1 ? lng_photos_comment : lng_photo_caption)) {
 	if (_files.size() == 1) {
 		prepareSingleFileLayout();
 	}
@@ -79,8 +79,11 @@ void SendFilesBox::prepareSingleFileLayout() {
 			if (originalWidth > originalHeight) {
 				thumbWidth = (originalWidth * st::msgFileThumbSize) / originalHeight;
 			}
-			auto options = Images::Option::Smooth | Images::Option::RoundedSmall | Images::Option::RoundedTopLeft | Images::Option::RoundedTopRight | Images::Option::RoundedBottomLeft | Images::Option::RoundedBottomRight;
-			_fileThumb = Images::pixmap(image, thumbWidth * cIntRetinaFactor(), 0, options, st::msgFileThumbSize, st::msgFileThumbSize);
+			auto options = Images::Option::Smooth | Images::Option::RoundedSmall | Images::Option::RoundedTopLeft |
+			               Images::Option::RoundedTopRight | Images::Option::RoundedBottomLeft |
+			               Images::Option::RoundedBottomRight;
+			_fileThumb = Images::pixmap(image, thumbWidth * cIntRetinaFactor(), 0, options, st::msgFileThumbSize,
+			                            st::msgFileThumbSize);
 		} else {
 			auto maxW = 0;
 			auto maxH = 0;
@@ -100,7 +103,8 @@ void SendFilesBox::prepareSingleFileLayout() {
 						maxH = limitH;
 					}
 				}
-				image = Images::prepare(image, maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(), Images::Option::Smooth | Images::Option::Blurred, maxW, maxH);
+				image = Images::prepare(image, maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(),
+				                        Images::Option::Smooth | Images::Option::Blurred, maxW, maxH);
 			}
 			auto originalWidth = image.width();
 			auto originalHeight = image.height();
@@ -120,7 +124,8 @@ void SendFilesBox::prepareSingleFileLayout() {
 			}
 			_previewLeft = (st::boxWideWidth - _previewWidth) / 2;
 
-			image = std::move(image).scaled(_previewWidth * cIntRetinaFactor(), _previewHeight * cIntRetinaFactor(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			image = std::move(image).scaled(_previewWidth * cIntRetinaFactor(), _previewHeight * cIntRetinaFactor(),
+			                                Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 			image = Images::prepareOpaque(std::move(image));
 			_preview = App::pixmapFromImageInPlace(std::move(image));
 			_preview.setDevicePixelRatio(cRetinaFactor());
@@ -145,9 +150,8 @@ void SendFilesBox::prepareGifPreview() {
 		return _animated;
 	};
 	if (createGifPreview()) {
-		_gifPreview = Media::Clip::MakeReader(_files.front(), [this](Media::Clip::Notification notification) {
-			clipCallback(notification);
-		});
+		_gifPreview = Media::Clip::MakeReader(
+		    _files.front(), [this](Media::Clip::Notification notification) { clipCallback(notification); });
 		if (_gifPreview) _gifPreview->setAutoplay();
 	}
 }
@@ -162,7 +166,8 @@ void SendFilesBox::clipCallback(Media::Clip::Notification notification) {
 
 		if (_gifPreview && _gifPreview->ready() && !_gifPreview->started()) {
 			auto s = QSize(_previewWidth, _previewHeight);
-			_gifPreview->start(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None, ImageRoundCorner::None);
+			_gifPreview->start(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None,
+			                   ImageRoundCorner::None);
 		}
 
 		update();
@@ -219,10 +224,10 @@ void SendFilesBox::tryToReadSingleFile() {
 	}
 }
 
-SendFilesBox::SendFilesBox(QWidget*, const QString &phone, const QString &firstname, const QString &lastname)
-: _contactPhone(phone)
-, _contactFirstName(firstname)
-, _contactLastName(lastname) {
+SendFilesBox::SendFilesBox(QWidget *, const QString &phone, const QString &firstname, const QString &lastname)
+    : _contactPhone(phone)
+    , _contactFirstName(firstname)
+    , _contactLastName(lastname) {
 	auto name = lng_full_name(lt_first_name, _contactFirstName, lt_last_name, _contactLastName);
 	_nameText.setText(st::semiboldTextStyle, name, _textNameOptions);
 	_statusText = _contactPhone;
@@ -241,7 +246,8 @@ void SendFilesBox::prepare() {
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });
 
 	if (_compressConfirm != CompressConfirm::None) {
-		auto compressed = (_compressConfirm == CompressConfirm::Auto) ? cCompressPastedImage() : (_compressConfirm == CompressConfirm::Yes);
+		auto compressed = (_compressConfirm == CompressConfirm::Auto) ? cCompressPastedImage() :
+		                                                                (_compressConfirm == CompressConfirm::Yes);
 		auto text = lng_send_images_compress(lt_count, _files.size());
 		_compressed.create(this, text, compressed, st::defaultBoxCheckbox);
 		subscribe(_compressed->checkedChanged, [this](bool checked) { onCompressedChange(); });
@@ -286,7 +292,8 @@ void SendFilesBox::onCaptionResized() {
 }
 
 void SendFilesBox::updateTitleText() {
-	_titleText = (_compressConfirm == CompressConfirm::None) ? lng_send_files_selected(lt_count, _files.size()) : lng_send_images_selected(lt_count, _files.size());
+	_titleText = (_compressConfirm == CompressConfirm::None) ? lng_send_files_selected(lt_count, _files.size()) :
+	                                                           lng_send_images_selected(lt_count, _files.size());
 	update();
 }
 
@@ -295,11 +302,13 @@ void SendFilesBox::updateBoxSize() {
 	if (!_preview.isNull()) {
 		newHeight += st::boxPhotoPadding.top() + _previewHeight;
 	} else if (!_fileThumb.isNull()) {
-		newHeight += st::boxPhotoPadding.top() + st::msgFileThumbPadding.top() + st::msgFileThumbSize + st::msgFileThumbPadding.bottom();
+		newHeight += st::boxPhotoPadding.top() + st::msgFileThumbPadding.top() + st::msgFileThumbSize +
+		             st::msgFileThumbPadding.bottom();
 	} else if (_files.size() > 1) {
 		newHeight += 0;
 	} else {
-		newHeight += st::boxPhotoPadding.top() + st::msgFilePadding.top() + st::msgFileSize + st::msgFilePadding.bottom();
+		newHeight +=
+		    st::boxPhotoPadding.top() + st::msgFilePadding.top() + st::msgFileSize + st::msgFilePadding.bottom();
 	}
 	if (_compressed) {
 		newHeight += st::boxPhotoCompressedSkip + _compressed->heightNoMargins();
@@ -312,7 +321,8 @@ void SendFilesBox::updateBoxSize() {
 
 void SendFilesBox::keyPressEvent(QKeyEvent *e) {
 	if (e->key() == Qt::Key_Enter || e->key() == Qt::Key_Return) {
-		onSend((e->modifiers().testFlag(Qt::ControlModifier) || e->modifiers().testFlag(Qt::MetaModifier)) && e->modifiers().testFlag(Qt::ShiftModifier));
+		onSend((e->modifiers().testFlag(Qt::ControlModifier) || e->modifiers().testFlag(Qt::MetaModifier)) &&
+		       e->modifiers().testFlag(Qt::ShiftModifier));
 	} else {
 		BoxContent::keyPressEvent(e);
 	}
@@ -331,21 +341,27 @@ void SendFilesBox::paintEvent(QPaintEvent *e) {
 
 	if (!_preview.isNull()) {
 		if (_previewLeft > st::boxPhotoPadding.left()) {
-			p.fillRect(st::boxPhotoPadding.left(), st::boxPhotoPadding.top(), _previewLeft - st::boxPhotoPadding.left(), _previewHeight, st::confirmBg);
+			p.fillRect(st::boxPhotoPadding.left(), st::boxPhotoPadding.top(), _previewLeft - st::boxPhotoPadding.left(),
+			           _previewHeight, st::confirmBg);
 		}
 		if (_previewLeft + _previewWidth < width() - st::boxPhotoPadding.right()) {
-			p.fillRect(_previewLeft + _previewWidth, st::boxPhotoPadding.top(), width() - st::boxPhotoPadding.right() - _previewLeft - _previewWidth, _previewHeight, st::confirmBg);
+			p.fillRect(_previewLeft + _previewWidth, st::boxPhotoPadding.top(),
+			           width() - st::boxPhotoPadding.right() - _previewLeft - _previewWidth, _previewHeight,
+			           st::confirmBg);
 		}
 		if (_gifPreview && _gifPreview->started()) {
 			auto s = QSize(_previewWidth, _previewHeight);
 			auto paused = controller()->isGifPausedAtLeastFor(Window::GifPauseReason::Layer);
-			auto frame = _gifPreview->current(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None, ImageRoundCorner::None, paused ? 0 : getms());
+			auto frame = _gifPreview->current(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None,
+			                                  ImageRoundCorner::None, paused ? 0 : getms());
 			p.drawPixmap(_previewLeft, st::boxPhotoPadding.top(), frame);
 		} else {
 			p.drawPixmap(_previewLeft, st::boxPhotoPadding.top(), _preview);
 		}
 		if (_animated && !_gifPreview) {
-			auto inner = QRect(_previewLeft + (_previewWidth - st::msgFileSize) / 2, st::boxPhotoPadding.top() + (_previewHeight - st::msgFileSize) / 2, st::msgFileSize, st::msgFileSize);
+			auto inner = QRect(_previewLeft + (_previewWidth - st::msgFileSize) / 2,
+			                   st::boxPhotoPadding.top() + (_previewHeight - st::msgFileSize) / 2, st::msgFileSize,
+			                   st::msgFileSize);
 			p.setPen(Qt::NoPen);
 			p.setBrush(st::msgDateImgBg);
 
@@ -359,7 +375,9 @@ void SendFilesBox::paintEvent(QPaintEvent *e) {
 		}
 	} else if (_files.size() < 2) {
 		auto w = width() - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
-		auto h = _fileThumb.isNull() ? (st::msgFilePadding.top() + st::msgFileSize + st::msgFilePadding.bottom()) : (st::msgFileThumbPadding.top() + st::msgFileThumbSize + st::msgFileThumbPadding.bottom());
+		auto h = _fileThumb.isNull() ?
+		             (st::msgFilePadding.top() + st::msgFileSize + st::msgFilePadding.bottom()) :
+		             (st::msgFileThumbPadding.top() + st::msgFileThumbSize + st::msgFileThumbPadding.bottom());
 		auto nameleft = 0, nametop = 0, nameright = 0, statustop = 0, linktop = 0;
 		if (_fileThumb.isNull()) {
 			nameleft = st::msgFilePadding.left() + st::msgFileSize + st::msgFilePadding.right();
@@ -373,14 +391,16 @@ void SendFilesBox::paintEvent(QPaintEvent *e) {
 			statustop = st::msgFileThumbStatusTop;
 			linktop = st::msgFileThumbLinkTop;
 		}
-		auto namewidth = w - nameleft - (_fileThumb.isNull() ? st::msgFilePadding.left() : st::msgFileThumbPadding.left());
+		auto namewidth =
+		    w - nameleft - (_fileThumb.isNull() ? st::msgFilePadding.left() : st::msgFileThumbPadding.left());
 		qint32 x = (width() - w) / 2, y = st::boxPhotoPadding.top();
 
 		App::roundRect(p, x, y, w, h, st::msgOutBg, MessageOutCorners, &st::msgOutShadow);
 
 		if (_fileThumb.isNull()) {
 			if (_contactPhone.isNull()) {
-				QRect inner(rtlrect(x + st::msgFilePadding.left(), y + st::msgFilePadding.top(), st::msgFileSize, st::msgFileSize, width()));
+				QRect inner(rtlrect(x + st::msgFilePadding.left(), y + st::msgFilePadding.top(), st::msgFileSize,
+				                    st::msgFileSize, width()));
 				p.setPen(Qt::NoPen);
 				p.setBrush(st::msgFileOutBg);
 
@@ -389,13 +409,16 @@ void SendFilesBox::paintEvent(QPaintEvent *e) {
 					p.drawEllipse(inner);
 				}
 
-				auto &icon = _fileIsAudio ? st::historyFileOutPlay : _fileIsImage ? st::historyFileOutImage : st::historyFileOutDocument;
+				auto &icon = _fileIsAudio ? st::historyFileOutPlay :
+				                            _fileIsImage ? st::historyFileOutImage : st::historyFileOutDocument;
 				icon.paintInCenter(p, inner);
 			} else {
-				_contactPhotoEmpty.paint(p, x + st::msgFilePadding.left(), y + st::msgFilePadding.top(), width(), st::msgFileSize);
+				_contactPhotoEmpty.paint(p, x + st::msgFilePadding.left(), y + st::msgFilePadding.top(), width(),
+				                         st::msgFileSize);
 			}
 		} else {
-			QRect rthumb(rtlrect(x + st::msgFileThumbPadding.left(), y + st::msgFileThumbPadding.top(), st::msgFileThumbSize, st::msgFileThumbSize, width()));
+			QRect rthumb(rtlrect(x + st::msgFileThumbPadding.left(), y + st::msgFileThumbPadding.top(),
+			                     st::msgFileThumbSize, st::msgFileThumbSize, width()));
 			p.drawPixmap(rthumb.topLeft(), _fileThumb);
 		}
 		p.setFont(st::semiboldFont);
@@ -417,7 +440,8 @@ void SendFilesBox::resizeEvent(QResizeEvent *e) {
 void SendFilesBox::updateControlsGeometry() {
 	auto bottom = height();
 	if (_caption) {
-		_caption->resize(st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right(), _caption->height());
+		_caption->resize(st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right(),
+		                 _caption->height());
 		_caption->moveToLeft(st::boxPhotoPadding.left(), bottom - _caption->height());
 		bottom -= st::boxPhotoCaptionSkip + _caption->height();
 	}
@@ -443,13 +467,17 @@ void SendFilesBox::onSend(bool ctrlShiftEnter) {
 	_confirmed = true;
 	if (_confirmedCallback) {
 		auto compressed = _compressed ? _compressed->checked() : false;
-		auto caption = _caption ? TextUtilities::PrepareForSending(_caption->getLastText(), TextUtilities::PrepareTextOption::CheckLinks) : QString();
-		_confirmedCallback(_files, _animated ? QImage() : _image, std::move(_information), compressed, caption, ctrlShiftEnter);
+		auto caption = _caption ? TextUtilities::PrepareForSending(_caption->getLastText(),
+		                                                           TextUtilities::PrepareTextOption::CheckLinks) :
+		                          QString();
+		_confirmedCallback(_files, _animated ? QImage() : _image, std::move(_information), compressed, caption,
+		                   ctrlShiftEnter);
 	}
 	closeBox();
 }
 
-EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) : _msgId(msgId) {
+EditCaptionBox::EditCaptionBox(QWidget *, HistoryMedia *media, FullMsgId msgId)
+    : _msgId(msgId) {
 	Expects(media->canEditCaption());
 
 	QSize dimensions;
@@ -460,21 +488,21 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 	switch (media->type()) {
 	case MediaTypeGif: {
 		_animated = true;
-		doc = static_cast<HistoryGif*>(media)->getDocument();
+		doc = static_cast<HistoryGif *>(media)->getDocument();
 		dimensions = doc->dimensions;
 		image = doc->thumb;
 	} break;
 
 	case MediaTypePhoto: {
 		_photo = true;
-		auto photo = static_cast<HistoryPhoto*>(media)->photo();
+		auto photo = static_cast<HistoryPhoto *>(media)->photo();
 		dimensions = QSize(photo->full->width(), photo->full->height());
 		image = photo->full;
 	} break;
 
 	case MediaTypeVideo: {
 		_animated = true;
-		doc = static_cast<HistoryVideo*>(media)->getDocument();
+		doc = static_cast<HistoryVideo *>(media)->getDocument();
 		dimensions = doc->dimensions;
 		image = doc->thumb;
 	} break;
@@ -483,7 +511,7 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 	case MediaTypeMusicFile:
 	case MediaTypeVoiceFile: {
 		_doc = true;
-		doc = static_cast<HistoryDocument*>(media)->getDocument();
+		doc = static_cast<HistoryDocument *>(media)->getDocument();
 		image = doc->thumb;
 	} break;
 	}
@@ -499,8 +527,11 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 			} else {
 				_thumbw = st::msgFileThumbSize;
 			}
-			auto options = Images::Option::Smooth | Images::Option::RoundedSmall | Images::Option::RoundedTopLeft | Images::Option::RoundedTopRight | Images::Option::RoundedBottomLeft | Images::Option::RoundedBottomRight;
-			_thumb = Images::pixmap(image->pix().toImage(), _thumbw * cIntRetinaFactor(), 0, options, st::msgFileThumbSize, st::msgFileThumbSize);
+			auto options = Images::Option::Smooth | Images::Option::RoundedSmall | Images::Option::RoundedTopLeft |
+			               Images::Option::RoundedTopRight | Images::Option::RoundedBottomLeft |
+			               Images::Option::RoundedBottomRight;
+			_thumb = Images::pixmap(image->pix().toImage(), _thumbw * cIntRetinaFactor(), 0, options,
+			                        st::msgFileThumbSize, st::msgFileThumbSize);
 		}
 
 		if (doc) {
@@ -532,12 +563,14 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 					maxH = limitH;
 				}
 			}
-			_thumb = image->pixNoCache(maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(), Images::Option::Smooth | Images::Option::Blurred, maxW, maxH);
+			_thumb = image->pixNoCache(maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(),
+			                           Images::Option::Smooth | Images::Option::Blurred, maxW, maxH);
 			prepareGifPreview(doc);
 		} else {
 			maxW = dimensions.width();
 			maxH = dimensions.height();
-			_thumb = image->pixNoCache(maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(), Images::Option::Smooth, maxW, maxH);
+			_thumb = image->pixNoCache(maxW * cIntRetinaFactor(), maxH * cIntRetinaFactor(), Images::Option::Smooth,
+			                           maxW, maxH);
 		}
 		qint32 tw = _thumb.width(), th = _thumb.height();
 		if (!tw || !th) {
@@ -558,7 +591,9 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 		}
 		_thumbx = (st::boxWideWidth - _thumbw) / 2;
 
-		_thumb = App::pixmapFromImageInPlace(_thumb.toImage().scaled(_thumbw * cIntRetinaFactor(), _thumbh * cIntRetinaFactor(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+		_thumb = App::pixmapFromImageInPlace(_thumb.toImage().scaled(_thumbw * cIntRetinaFactor(),
+		                                                             _thumbh * cIntRetinaFactor(),
+		                                                             Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 		_thumb.setDevicePixelRatio(cRetinaFactor());
 	}
 	Assert(_animated || _photo || _doc);
@@ -569,14 +604,11 @@ EditCaptionBox::EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId) :
 }
 
 void EditCaptionBox::prepareGifPreview(DocumentData *document) {
-	auto createGifPreview = [document] {
-		return (document && document->isAnimation());
-	};
+	auto createGifPreview = [document] { return (document && document->isAnimation()); };
 	auto createGifPreviewResult = createGifPreview(); // Clang freeze workaround.
 	if (createGifPreviewResult) {
-		_gifPreview = Media::Clip::MakeReader(document, _msgId, [this](Media::Clip::Notification notification) {
-			clipCallback(notification);
-		});
+		_gifPreview = Media::Clip::MakeReader(
+		    document, _msgId, [this](Media::Clip::Notification notification) { clipCallback(notification); });
 		if (_gifPreview) _gifPreview->setAutoplay();
 	}
 }
@@ -591,7 +623,8 @@ void EditCaptionBox::clipCallback(Media::Clip::Notification notification) {
 
 		if (_gifPreview && _gifPreview->ready() && !_gifPreview->started()) {
 			auto s = QSize(_thumbw, _thumbh);
-			_gifPreview->start(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None, ImageRoundCorner::None);
+			_gifPreview->start(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None,
+			                   ImageRoundCorner::None);
 		}
 
 		update();
@@ -626,7 +659,8 @@ void EditCaptionBox::onCaptionResized() {
 }
 
 void EditCaptionBox::updateBoxSize() {
-	auto newHeight = st::boxPhotoPadding.top() + st::boxPhotoCaptionSkip + _field->height() + errorTopSkip() + st::normalFont->height;
+	auto newHeight = st::boxPhotoPadding.top() + st::boxPhotoCaptionSkip + _field->height() + errorTopSkip() +
+	                 st::normalFont->height;
 	if (_photo || _animated) {
 		newHeight += _thumbh;
 	} else if (_thumbw) {
@@ -650,21 +684,25 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 
 	if (_photo || _animated) {
 		if (_thumbx > st::boxPhotoPadding.left()) {
-			p.fillRect(st::boxPhotoPadding.left(), st::boxPhotoPadding.top(), _thumbx - st::boxPhotoPadding.left(), _thumbh, st::confirmBg);
+			p.fillRect(st::boxPhotoPadding.left(), st::boxPhotoPadding.top(), _thumbx - st::boxPhotoPadding.left(),
+			           _thumbh, st::confirmBg);
 		}
 		if (_thumbx + _thumbw < width() - st::boxPhotoPadding.right()) {
-			p.fillRect(_thumbx + _thumbw, st::boxPhotoPadding.top(), width() - st::boxPhotoPadding.right() - _thumbx - _thumbw, _thumbh, st::confirmBg);
+			p.fillRect(_thumbx + _thumbw, st::boxPhotoPadding.top(),
+			           width() - st::boxPhotoPadding.right() - _thumbx - _thumbw, _thumbh, st::confirmBg);
 		}
 		if (_gifPreview && _gifPreview->started()) {
 			auto s = QSize(_thumbw, _thumbh);
 			auto paused = controller()->isGifPausedAtLeastFor(Window::GifPauseReason::Layer);
-			auto frame = _gifPreview->current(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None, ImageRoundCorner::None, paused ? 0 : getms());
+			auto frame = _gifPreview->current(s.width(), s.height(), s.width(), s.height(), ImageRoundRadius::None,
+			                                  ImageRoundCorner::None, paused ? 0 : getms());
 			p.drawPixmap(_thumbx, st::boxPhotoPadding.top(), frame);
 		} else {
 			p.drawPixmap(_thumbx, st::boxPhotoPadding.top(), _thumb);
 		}
 		if (_animated && !_gifPreview) {
-			QRect inner(_thumbx + (_thumbw - st::msgFileSize) / 2, st::boxPhotoPadding.top() + (_thumbh - st::msgFileSize) / 2, st::msgFileSize, st::msgFileSize);
+			QRect inner(_thumbx + (_thumbw - st::msgFileSize) / 2,
+			            st::boxPhotoPadding.top() + (_thumbh - st::msgFileSize) / 2, st::msgFileSize, st::msgFileSize);
 			p.setPen(Qt::NoPen);
 			p.setBrush(st::msgDateImgBg);
 
@@ -693,12 +731,12 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 		}
 		qint32 namewidth = w - nameleft - 0;
 		if (namewidth > _statusw) {
-			//w -= (namewidth - _statusw);
-			//namewidth = _statusw;
+			// w -= (namewidth - _statusw);
+			// namewidth = _statusw;
 		}
 		qint32 x = (width() - w) / 2, y = st::boxPhotoPadding.top();
 
-//		App::roundRect(p, x, y, w, h, st::msgInBg, MessageInCorners, &st::msgInShadow);
+		//		App::roundRect(p, x, y, w, h, st::msgInBg, MessageInCorners, &st::msgInShadow);
 
 		if (_thumbw) {
 			QRect rthumb(rtlrect(x + 0, y + 0, st::msgFileThumbSize, st::msgFileThumbSize, width()));
@@ -713,7 +751,8 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 				p.drawEllipse(inner);
 			}
 
-			auto icon = &(_isAudio ? st::historyFileInPlay : _isImage ? st::historyFileInImage : st::historyFileInDocument);
+			auto icon =
+			    &(_isAudio ? st::historyFileInPlay : _isImage ? st::historyFileInImage : st::historyFileInDocument);
 			icon->paintInCenter(p, inner);
 		}
 		p.setFont(st::semiboldFont);
@@ -740,7 +779,8 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 void EditCaptionBox::resizeEvent(QResizeEvent *e) {
 	BoxContent::resizeEvent(e);
 	_field->resize(st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right(), _field->height());
-	_field->moveToLeft(st::boxPhotoPadding.left(), height() - st::normalFont->height - errorTopSkip() - _field->height());
+	_field->moveToLeft(st::boxPhotoPadding.left(),
+	                   height() - st::normalFont->height - errorTopSkip() - _field->height());
 }
 
 void EditCaptionBox::setInnerFocus() {
@@ -766,7 +806,10 @@ void EditCaptionBox::onSave(bool ctrlShiftEnter) {
 		flags |= MTPmessages_EditMessage::Flag::f_entities;
 	}
 	auto text = TextUtilities::PrepareForSending(_field->getLastText(), TextUtilities::PrepareTextOption::CheckLinks);
-	_saveRequestId = MTP::send(MTPmessages_EditMessage(MTP_flags(flags), item->history()->peer->input, MTP_int(item->id), MTP_string(text), MTPnullMarkup, sentEntities), rpcDone(&EditCaptionBox::saveDone), rpcFail(&EditCaptionBox::saveFail));
+	_saveRequestId =
+	    MTP::send(MTPmessages_EditMessage(MTP_flags(flags), item->history()->peer->input, MTP_int(item->id),
+	                                      MTP_string(text), MTPnullMarkup, sentEntities),
+	              rpcDone(&EditCaptionBox::saveDone), rpcFail(&EditCaptionBox::saveFail));
 }
 
 void EditCaptionBox::saveDone(const MTPUpdates &updates) {
@@ -782,7 +825,8 @@ bool EditCaptionBox::saveFail(const RPCError &error) {
 
 	_saveRequestId = 0;
 	QString err = error.type();
-	if (err == qstr("MESSAGE_ID_INVALID") || err == qstr("CHAT_ADMIN_REQUIRED") || err == qstr("MESSAGE_EDIT_TIME_EXPIRED")) {
+	if (err == qstr("MESSAGE_ID_INVALID") || err == qstr("CHAT_ADMIN_REQUIRED") ||
+	    err == qstr("MESSAGE_EDIT_TIME_EXPIRED")) {
 		_error = lang(lng_edit_error);
 	} else if (err == qstr("MESSAGE_NOT_MODIFIED")) {
 		closeBox();

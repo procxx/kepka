@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QWidget>
 #include <QScrollArea>
 #include <QTimer>
 #include <QTouchEvent>
+#include <QWidget>
 
+#include "styles/style_widgets.h"
 #include "ui/animation.h"
 #include "ui/twidget.h"
-#include "styles/style_widgets.h"
 
 namespace Ui {
 
@@ -43,7 +43,6 @@ class ScrollShadow : public QWidget {
 	Q_OBJECT
 
 public:
-
 	ScrollShadow(ScrollArea *parent, const style::ScrollArea *st);
 
 	void paintEvent(QPaintEvent *e);
@@ -53,9 +52,7 @@ public slots:
 	void changeVisibility(bool shown);
 
 private:
-
 	const style::ScrollArea *_st;
-
 };
 
 class ScrollBar : public TWidget {
@@ -123,7 +120,8 @@ class SplittedWidget : public TWidget {
 	Q_OBJECT
 
 public:
-	SplittedWidget(QWidget *parent) : TWidget(parent) {
+	SplittedWidget(QWidget *parent)
+	    : TWidget(parent) {
 		setAttribute(Qt::WA_OpaquePaintEvent);
 	}
 	void setHeight(qint32 newHeight) {
@@ -133,8 +131,8 @@ public:
 	void update(int x, int y, int w, int h) {
 		update(QRect(x, y, w, h));
 	}
-	void update(const QRect&);
-	void update(const QRegion&);
+	void update(const QRect &);
+	void update(const QRegion &);
 	void rtlupdate(const QRect &r) {
 		update(myrtlrect(r));
 	}
@@ -149,8 +147,8 @@ public slots:
 
 signals:
 	void resizeOther();
-	void updateOther(const QRect&);
-	void updateOther(const QRegion&);
+	void updateOther(const QRect &);
+	void updateOther(const QRegion &);
 
 protected:
 	void paintEvent(QPaintEvent *e) override; // paintEvent done through paintRegion
@@ -173,7 +171,6 @@ private:
 	}
 	friend class ScrollArea;
 	friend class SplittedWidgetOther;
-
 };
 
 class SplittedWidgetOther;
@@ -190,14 +187,12 @@ public:
 	int scrollLeft() const;
 	int scrollTop() const;
 
-	template <typename Widget>
-	QPointer<Widget> setOwnedWidget(object_ptr<Widget> widget) {
+	template <typename Widget> QPointer<Widget> setOwnedWidget(object_ptr<Widget> widget) {
 		auto result = QPointer<Widget>(widget);
 		doSetOwnedWidget(std::move(widget));
 		return result;
 	}
-	template <typename Widget>
-	object_ptr<Widget> takeWidget() {
+	template <typename Widget> object_ptr<Widget> takeWidget() {
 		return static_object_cast<Widget>(doTakeWidget());
 	}
 
@@ -231,8 +226,8 @@ public slots:
 	void onTouchScrollTimer();
 
 	void onResizeOther();
-	void onUpdateOther(const QRect&);
-	void onUpdateOther(const QRegion&);
+	void onUpdateOther(const QRect &);
+	void onUpdateOther(const QRegion &);
 	void onVerticalScroll();
 
 signals:
@@ -286,21 +281,20 @@ private:
 	bool _widgetAcceptsTouch = false;
 
 	friend class SplittedWidgetOther;
-	object_ptr<SplittedWidgetOther> _other = { nullptr };
+	object_ptr<SplittedWidgetOther> _other = {nullptr};
 
-	object_ptr<TWidget> _widget = { nullptr };
-
+	object_ptr<TWidget> _widget = {nullptr};
 };
 
 class SplittedWidgetOther : public TWidget {
 public:
-	SplittedWidgetOther(ScrollArea *parent) : TWidget(parent) {
+	SplittedWidgetOther(ScrollArea *parent)
+	    : TWidget(parent) {
 		setAttribute(Qt::WA_OpaquePaintEvent);
 	}
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
-
 };
 
 } // namespace Ui

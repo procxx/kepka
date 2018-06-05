@@ -18,8 +18,8 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QTimerEvent>
 #include "base/timer.h"
+#include <QTimerEvent>
 
 namespace base {
 namespace {
@@ -31,10 +31,11 @@ QObject *TimersAdjuster() {
 
 } // namespace
 
-Timer::Timer(base::lambda<void()> callback) : QObject(nullptr)
-, _callback(std::move(callback))
-, _type(Qt::PreciseTimer)
-, _adjusted(false) {
+Timer::Timer(base::lambda<void()> callback)
+    : QObject(nullptr)
+    , _callback(std::move(callback))
+    , _type(Qt::PreciseTimer)
+    , _adjusted(false) {
 	setRepeat(Repeat::Interval);
 	connect(TimersAdjuster(), &QObject::destroyed, this, [this] { adjust(); }, Qt::QueuedConnection);
 }

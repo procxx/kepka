@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/common/cpp_file.h"
 
-#include <QtCore/QFileInfo>
 #include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 
 namespace codegen {
 namespace common {
@@ -31,7 +31,8 @@ void writeLicense(QTextStream &stream, const ProjectInfo &project) {
 	stream << "\
 /*\n\
 WARNING! All changes made in this file will be lost!\n\
-Created from '" << project.source << "' by '" << project.name << "'\n\
+Created from '"
+	       << project.source << "' by '" << project.name << "'\n\
 \n\
 This file is part of Telegram Desktop,\n\
 the official desktop version of Telegram messaging app, see https://telegram.org\n\
@@ -57,8 +58,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org\n\
 } // namespace
 
 CppFile::CppFile(const QString &path, const ProjectInfo &project)
-: stream_(&content_)
-, forceReGenerate_(project.forceReGenerate) {
+    : stream_(&content_)
+    , forceReGenerate_(project.forceReGenerate) {
 	bool cpp = path.toLower().endsWith(".cpp");
 
 	QFileInfo info(path);
@@ -74,11 +75,11 @@ CppFile::CppFile(const QString &path, const ProjectInfo &project)
 	}
 }
 
-CppFile &CppFile::include(const QString &header, bool global ) {
-    if (global)
-        stream() << QString("#include <%1>").arg(header);
-    else
-        stream() << QString("#include \"%1\"").arg(header);
+CppFile &CppFile::include(const QString &header, bool global) {
+	if (global)
+		stream() << QString("#include <%1>").arg(header);
+	else
+		stream() << QString("#include \"%1\"").arg(header);
 	return newline();
 }
 

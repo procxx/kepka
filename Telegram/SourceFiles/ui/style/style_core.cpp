@@ -26,23 +26,19 @@ namespace style {
 namespace internal {
 namespace {
 
-using ModulesList = QList<internal::ModuleBase*>;
+using ModulesList = QList<internal::ModuleBase *>;
 NeverFreedPointer<ModulesList> styleModules;
 
 void startModules() {
 	if (!styleModules) return;
 
-	for_const (auto module, *styleModules) {
-		module->start();
-	}
+	for_const (auto module, *styleModules) { module->start(); }
 }
 
 void stopModules() {
 	if (!styleModules) return;
 
-	for_const (auto module, *styleModules) {
-		module->stop();
-	}
+	for_const (auto module, *styleModules) { module->stop(); }
 }
 
 } // namespace
@@ -92,7 +88,8 @@ void colorizeImage(const QImage &src, QColor c, QImage *outResult, QRect srcRect
 	constexpr auto resultIntsPerPixel = 1;
 	auto resultIntsPerLine = (outResult->bytesPerLine() >> 2);
 	auto resultIntsAdded = resultIntsPerLine - width * resultIntsPerPixel;
-	auto resultInts = reinterpret_cast<quint32*>(outResult->bits()) + dstPoint.y() * resultIntsPerLine + dstPoint.x() * resultIntsPerPixel;
+	auto resultInts = reinterpret_cast<quint32 *>(outResult->bits()) + dstPoint.y() * resultIntsPerLine +
+	                  dstPoint.x() * resultIntsPerPixel;
 	Assert(resultIntsAdded >= 0);
 	Assert(outResult->depth() == static_cast<int>((resultIntsPerPixel * sizeof(quint32)) << 3));
 	Assert(outResult->bytesPerLine() == (resultIntsPerLine << 2));
@@ -128,7 +125,6 @@ QBrush transparentPlaceholderBrush() {
 	}
 	transparent.setDevicePixelRatio(cRetinaFactor());
 	return QBrush(transparent);
-
 }
 
 namespace internal {

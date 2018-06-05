@@ -21,9 +21,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "history/history_item.h"
+#include "structs.h"
 #include "ui/twidget.h"
 #include "ui/widgets/tooltip.h"
-#include "structs.h"
 
 class HistoryItem;
 
@@ -90,25 +90,25 @@ private:
 
 	class Style : public ReplyKeyboard::Style {
 	public:
-		Style(BotKeyboard *parent, const style::BotKeyboardButton &st) : ReplyKeyboard::Style(st), _parent(parent) {
-		}
+		Style(BotKeyboard *parent, const style::BotKeyboardButton &st)
+		    : ReplyKeyboard::Style(st)
+		    , _parent(parent) {}
 
 		int buttonRadius() const override;
 
 		void startPaint(Painter &p) const override;
 		const style::TextStyle &textStyle() const override;
-		void repaint(not_null<const HistoryItem*> item) const override;
+		void repaint(not_null<const HistoryItem *> item) const override;
 
 	protected:
 		void paintButtonBg(Painter &p, const QRect &rect, double howMuchOver) const override;
-		void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth, HistoryMessageReplyMarkup::Button::Type type) const override;
+		void paintButtonIcon(Painter &p, const QRect &rect, int outerWidth,
+		                     HistoryMessageReplyMarkup::Button::Type type) const override;
 		void paintButtonLoading(Painter &p, const QRect &rect) const override;
 		int minButtonWidth(HistoryMessageReplyMarkup::Button::Type type) const override;
 
 	private:
 		BotKeyboard *_parent;
-
 	};
 	const style::BotKeyboardButton *_st = nullptr;
-
 };

@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "boxes/abstract_box.h"
 #include "base/timer.h"
+#include "boxes/abstract_box.h"
 #include "mtproto/sender.h"
 
 class ConfirmBox;
@@ -46,8 +46,8 @@ public:
 		Featured,
 		Archived,
 	};
-	StickersBox(QWidget*, Section section);
-	StickersBox(QWidget*, not_null<ChannelData*> megagroup);
+	StickersBox(QWidget *, Section section);
+	StickersBox(QWidget *, not_null<ChannelData *> megagroup);
 
 	void setInnerFocus() override;
 
@@ -65,8 +65,7 @@ private:
 	public:
 		Tab() = default;
 
-		template <typename ...Args>
-		Tab(int index, Args&&... args);
+		template <typename... Args> Tab(int index, Args &&... args);
 
 		object_ptr<Inner> takeWidget();
 		void returnWidget(object_ptr<Inner> widget);
@@ -85,10 +84,9 @@ private:
 
 	private:
 		int _index = 0;
-		object_ptr<Inner> _widget = { nullptr };
+		object_ptr<Inner> _widget = {nullptr};
 		QPointer<Inner> _weak;
 		int _scrollTop = 0;
-
 	};
 
 	void handleStickersUpdated();
@@ -110,11 +108,11 @@ private:
 	void loadMoreArchived();
 	void getArchivedDone(quint64 offsetId, const MTPmessages_ArchivedStickers &result);
 
-	object_ptr<Ui::SettingsSlider> _tabs = { nullptr };
+	object_ptr<Ui::SettingsSlider> _tabs = {nullptr};
 	QList<Section> _tabIndices;
 
 	class CounterWidget;
-	object_ptr<CounterWidget> _unreadBadge = { nullptr };
+	object_ptr<CounterWidget> _unreadBadge = {nullptr};
 
 	Section _section;
 
@@ -126,7 +124,7 @@ private:
 	ChannelData *_megagroupSet = nullptr;
 
 	std::unique_ptr<Ui::SlideAnimation> _slideAnimation;
-	object_ptr<BoxLayerTitleShadow> _titleShadow = { nullptr };
+	object_ptr<BoxLayerTitleShadow> _titleShadow = {nullptr};
 
 	mtpRequestId _archivedRequestId = 0;
 	bool _archivedLoaded = false;
@@ -135,7 +133,6 @@ private:
 
 	Stickers::Order _localOrder;
 	Stickers::Order _localRemoved;
-
 };
 
 int stickerPacksCount(bool includeArchivedOfficial = false);
@@ -147,7 +144,7 @@ class StickersBox::Inner : public TWidget, private base::Subscriber, private MTP
 public:
 	using Section = StickersBox::Section;
 	Inner(QWidget *parent, Section section);
-	Inner(QWidget *parent, not_null<ChannelData*> megagroup);
+	Inner(QWidget *parent, not_null<ChannelData *> megagroup);
 
 	base::Observable<int> scrollToY;
 	void setInnerFocus();
@@ -199,7 +196,8 @@ public slots:
 
 private:
 	struct Row {
-		Row(quint64 id, DocumentData *sticker, qint32 count, const QString &title, int titleWidth, bool installed, bool official, bool unread, bool archived, bool removed, qint32 pixw, qint32 pixh);
+		Row(quint64 id, DocumentData *sticker, qint32 count, const QString &title, int titleWidth, bool installed,
+		    bool official, bool unread, bool archived, bool removed, qint32 pixw, qint32 pixh);
 		bool isRecentSet() const {
 			return (id == Stickers::CloudRecentSetId);
 		}
@@ -221,8 +219,7 @@ private:
 		std::unique_ptr<Ui::RippleAnimation> ripple;
 	};
 
-	template <typename Check>
-	Stickers::Order collectSets(Check check) const;
+	template <typename Check> Stickers::Order collectSets(Check check) const;
 
 	void checkLoadMore();
 	void updateScrollbarWidth();
@@ -250,7 +247,8 @@ private:
 	void fillSetCover(const Stickers::Set &set, DocumentData **outSticker, int *outWidth, int *outHeight) const;
 	int fillSetCount(const Stickers::Set &set) const;
 	QString fillSetTitle(const Stickers::Set &set, int maxNameWidth, int *outTitleWidth) const;
-	void fillSetFlags(const Stickers::Set &set, bool *outInstalled, bool *outOfficial, bool *outUnread, bool *outArchived);
+	void fillSetFlags(const Stickers::Set &set, bool *outInstalled, bool *outOfficial, bool *outUnread,
+	                  bool *outArchived);
 	void rebuildMegagroupSet();
 	void handleMegagroupSetAddressChange();
 	void setMegagroupSelectedSet(const MTPInputStickerSet &set);
@@ -299,12 +297,11 @@ private:
 	ChannelData *_megagroupSet = nullptr;
 	MTPInputStickerSet _megagroupSetInput = MTP_inputStickerSetEmpty();
 	std::unique_ptr<Row> _megagroupSelectedSet;
-	object_ptr<Ui::UsernameInput> _megagroupSetField = { nullptr };
-	object_ptr<BoxLayerTitleShadow> _megagroupSelectedShadow = { nullptr };
-	object_ptr<Ui::CrossButton> _megagroupSelectedRemove = { nullptr };
-	object_ptr<BoxContentDivider> _megagroupDivider = { nullptr };
-	object_ptr<Ui::FlatLabel> _megagroupSubTitle = { nullptr };
+	object_ptr<Ui::UsernameInput> _megagroupSetField = {nullptr};
+	object_ptr<BoxLayerTitleShadow> _megagroupSelectedShadow = {nullptr};
+	object_ptr<Ui::CrossButton> _megagroupSelectedRemove = {nullptr};
+	object_ptr<BoxContentDivider> _megagroupDivider = {nullptr};
+	object_ptr<Ui::FlatLabel> _megagroupSubTitle = {nullptr};
 	base::Timer _megagroupSetAddressChangedTimer;
 	mtpRequestId _megagroupSetRequestId = 0;
-
 };

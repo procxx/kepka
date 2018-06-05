@@ -20,15 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/rate_call_box.h"
 
+#include "boxes/confirm_box.h"
 #include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
 #include "styles/style_boxes.h"
 #include "styles/style_calls.h"
-#include "boxes/confirm_box.h"
-#include "ui/widgets/labels.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/input_fields.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
+#include "ui/widgets/labels.h"
 
 namespace {
 
@@ -36,10 +36,9 @@ constexpr auto kMaxRating = 5;
 
 } // namespace
 
-RateCallBox::RateCallBox(QWidget*, quint64 callId, quint64 callAccessHash)
-: _callId(callId)
-, _callAccessHash(callAccessHash) {
-}
+RateCallBox::RateCallBox(QWidget *, quint64 callId, quint64 callAccessHash)
+    : _callId(callId)
+    , _callAccessHash(callAccessHash) {}
 
 void RateCallBox::prepare() {
 	setTitle(langFactory(lng_call_rate_label));
@@ -88,7 +87,8 @@ void RateCallBox::ratingChanged(int value) {
 			_comment->show();
 			_comment->setCtrlEnterSubmit(Ui::CtrlEnterSubmit::Both);
 			_comment->setMaxLength(MaxPhotoCaption);
-			_comment->resize(width() - (st::callRatingPadding.left() + st::callRatingPadding.right()), _comment->height());
+			_comment->resize(width() - (st::callRatingPadding.left() + st::callRatingPadding.right()),
+			                 _comment->height());
 
 			updateMaxHeight();
 			connect(_comment, SIGNAL(resized()), this, SLOT(onCommentResized()));
@@ -121,14 +121,19 @@ void RateCallBox::onSend() {
 		return;
 	}
 	auto comment = _comment ? _comment->getLastText().trimmed() : QString();
-	_requestId = request(MTPphone_SetCallRating(MTP_inputPhoneCall(MTP_long(_callId), MTP_long(_callAccessHash)), MTP_int(_rating), MTP_string(comment))).done([this](const MTPUpdates &updates) {
-		App::main()->sentUpdatesReceived(updates);
-		closeBox();
-	}).fail([this](const RPCError &error) { closeBox(); }).send();
+	_requestId = request(MTPphone_SetCallRating(MTP_inputPhoneCall(MTP_long(_callId), MTP_long(_callAccessHash)),
+	                                            MTP_int(_rating), MTP_string(comment)))
+	                 .done([this](const MTPUpdates &updates) {
+		                 App::main()->sentUpdatesReceived(updates);
+		                 closeBox();
+	                 })
+	                 .fail([this](const RPCError &error) { closeBox(); })
+	                 .send();
 }
 
 void RateCallBox::updateMaxHeight() {
-	auto newHeight = st::callRatingPadding.top() + st::callRatingStarTop + _stars.back()->heightNoMargins() + st::callRatingPadding.bottom();
+	auto newHeight = st::callRatingPadding.top() + st::callRatingStarTop + _stars.back()->heightNoMargins() +
+	                 st::callRatingPadding.bottom();
 	if (_comment) {
 		newHeight += st::callRatingCommentTop + _comment->height();
 	}

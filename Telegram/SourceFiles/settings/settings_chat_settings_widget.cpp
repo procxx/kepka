@@ -20,25 +20,27 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_chat_settings_widget.h"
 
-#include "styles/style_settings.h"
+#include "boxes/confirm_box.h"
+#include "boxes/connection_box.h"
+#include "boxes/download_path_box.h"
+#include "boxes/stickers_box.h"
 #include "lang/lang_keys.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/labels.h"
-#include "storage/localstorage.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
-#include "boxes/stickers_box.h"
-#include "boxes/download_path_box.h"
-#include "boxes/connection_box.h"
-#include "boxes/confirm_box.h"
+#include "storage/localstorage.h"
+#include "styles/style_settings.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
+#include "ui/widgets/labels.h"
 
 namespace Settings {
 
-LabeledLink::LabeledLink(QWidget *parent, const QString &label, const QString &text, Type type, const char *slot) : TWidget(parent)
-, _label(this, label, Ui::FlatLabel::InitType::Simple, (type == Type::Primary) ? st::settingsPrimaryLabel : st::defaultFlatLabel)
-, _link(this, text, (type == Type::Primary) ? st::boxLinkButton : st::defaultLinkButton) {
+LabeledLink::LabeledLink(QWidget *parent, const QString &label, const QString &text, Type type, const char *slot)
+    : TWidget(parent)
+    , _label(this, label, Ui::FlatLabel::InitType::Simple,
+             (type == Type::Primary) ? st::settingsPrimaryLabel : st::defaultFlatLabel)
+    , _link(this, text, (type == Type::Primary) ? st::boxLinkButton : st::defaultLinkButton) {
 	connect(_link, SIGNAL(clicked()), parent, slot);
 }
 
@@ -58,9 +60,11 @@ int LabeledLink::resizeGetHeight(int newWidth) {
 }
 
 #ifndef OS_WIN_STORE
-DownloadPathState::DownloadPathState(QWidget *parent) : TWidget(parent)
-, _path(this, lang(lng_download_path_label), downloadPathText(), LabeledLink::Type::Secondary, SLOT(onDownloadPath()))
-, _clear(this, lang(lng_download_path_clear)) {
+DownloadPathState::DownloadPathState(QWidget *parent)
+    : TWidget(parent)
+    , _path(this, lang(lng_download_path_label), downloadPathText(), LabeledLink::Type::Secondary,
+            SLOT(onDownloadPath()))
+    , _clear(this, lang(lng_download_path_clear)) {
 	connect(_clear, SIGNAL(clicked()), this, SLOT(onClear()));
 	connect(App::wnd(), SIGNAL(tempDirCleared(int)), this, SLOT(onTempDirCleared(int)));
 	connect(App::wnd(), SIGNAL(tempDirClearFailed(int)), this, SLOT(onTempDirClearFailed(int)));
@@ -121,11 +125,11 @@ void DownloadPathState::onDownloadPath() {
 
 void DownloadPathState::onClear() {
 	Ui::show(Box<ConfirmBox>(lang(lng_sure_clear_downloads), base::lambda_guarded(this, [this] {
-		Ui::hideLayer();
-		App::wnd()->tempDirDelete(Local::ClearManagerDownloads);
-		_state = State::Clearing;
-		updateControls();
-	})));
+		                         Ui::hideLayer();
+		                         App::wnd()->tempDirDelete(Local::ClearManagerDownloads);
+		                         _state = State::Clearing;
+		                         updateControls();
+	                         })));
 }
 
 void DownloadPathState::onTempDirCleared(int task) {
@@ -143,7 +147,8 @@ void DownloadPathState::onTempDirClearFailed(int task) {
 }
 #endif // OS_WIN_STORE
 
-ChatSettingsWidget::ChatSettingsWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_chat_settings)) {
+ChatSettingsWidget::ChatSettingsWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_chat_settings)) {
 	createControls();
 }
 
@@ -153,32 +158,38 @@ void ChatSettingsWidget::createControls() {
 	style::margins marginSub(0, 0, 0, st::settingsSubSkip);
 	style::margins slidedPadding(0, marginSub.bottom() / 2, 0, marginSub.bottom() - (marginSub.bottom() / 2));
 
-	addChildRow(_replaceEmoji, marginSkip, lang(lng_settings_replace_emojis), [this](bool) { onReplaceEmoji(); }, cReplaceEmojis());
-	addChildRow(_messageFormat, marginSkip, lang(lng_settings_message_formatting), [this](bool) { toggleMessageFormat(); }, cMessageFormatting());
+	addChildRow(_replaceEmoji, marginSkip, lang(lng_settings_replace_emojis), [this](bool) { onReplaceEmoji(); },
+	            cReplaceEmojis());
+	addChildRow(_messageFormat, marginSkip, lang(lng_settings_message_formatting),
+	            [this](bool) { toggleMessageFormat(); }, cMessageFormatting());
 
 #ifndef OS_WIN_STORE
 	auto pathMargin = marginSub;
 #else // OS_WIN_STORE
 	auto pathMargin = marginSkip;
 #endif // OS_WIN_STORE
-	addChildRow(_dontAskDownloadPath, pathMargin, lang(lng_download_path_dont_ask), [this](bool) { onDontAskDownloadPath(); }, !Global::AskDownloadPath());
+	addChildRow(_dontAskDownloadPath, pathMargin, lang(lng_download_path_dont_ask),
+	            [this](bool) { onDontAskDownloadPath(); }, !Global::AskDownloadPath());
 
 #ifndef OS_WIN_STORE
-	style::margins marginPath(st::defaultCheck.diameter + st::defaultBoxCheckbox.textPosition.x(), 0, 0, st::settingsSkip);
+	style::margins marginPath(st::defaultCheck.diameter + st::defaultBoxCheckbox.textPosition.x(), 0, 0,
+	                          st::settingsSkip);
 	addChildRow(_downloadPath, marginPath, slidedPadding);
 	if (Global::AskDownloadPath()) {
 		_downloadPath->hideFast();
 	}
 #endif // OS_WIN_STORE
 
-	auto group = std::make_shared<Ui::RadioenumGroup<SendByType>>(cCtrlEnter() ? SendByType::CtrlEnter : SendByType::Enter);
+	auto group =
+	    std::make_shared<Ui::RadioenumGroup<SendByType>>(cCtrlEnter() ? SendByType::CtrlEnter : SendByType::Enter);
 	addChildRow(_sendByEnter, marginSmall, group, SendByType::Enter, lang(lng_settings_send_enter));
-	addChildRow(_sendByCtrlEnter, marginSkip, group, SendByType::CtrlEnter, lang((cPlatform() == dbipMac || cPlatform() == dbipMacOld) ? lng_settings_send_cmdenter : lng_settings_send_ctrlenter));
-	group->setChangedCallback([this](SendByType value) {
-		sendByChanged(value);
-	});
+	addChildRow(_sendByCtrlEnter, marginSkip, group, SendByType::CtrlEnter,
+	            lang((cPlatform() == dbipMac || cPlatform() == dbipMacOld) ? lng_settings_send_cmdenter :
+	                                                                         lng_settings_send_ctrlenter));
+	group->setChangedCallback([this](SendByType value) { sendByChanged(value); });
 
-	addChildRow(_automaticMediaDownloadSettings, marginSmall, lang(lng_media_auto_settings), SLOT(onAutomaticMediaDownloadSettings()));
+	addChildRow(_automaticMediaDownloadSettings, marginSmall, lang(lng_media_auto_settings),
+	            SLOT(onAutomaticMediaDownloadSettings()));
 	addChildRow(_manageStickerSets, marginSmall, lang(lng_stickers_you_have), SLOT(onManageStickerSets()));
 }
 

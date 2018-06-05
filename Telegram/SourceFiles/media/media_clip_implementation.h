@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QBuffer>
 #include <QByteArray>
 #include <QImage>
 #include <QSize>
-#include <QBuffer>
 #include <core/utils.h>
 
 class FileLocation;
@@ -35,9 +35,8 @@ namespace internal {
 class ReaderImplementation {
 public:
 	ReaderImplementation(FileLocation *location, QByteArray *data)
-		: _location(location)
-		, _data(data) {
-	}
+	    : _location(location)
+	    , _data(data) {}
 	enum class Mode {
 		Silent,
 		Normal,
@@ -64,8 +63,7 @@ public:
 
 	virtual bool start(Mode mode, TimeMs &positionMs) = 0;
 
-	virtual ~ReaderImplementation() {
-	}
+	virtual ~ReaderImplementation() {}
 	qint64 dataSize() const {
 		return _dataSize;
 	}
@@ -79,7 +77,6 @@ protected:
 	qint64 _dataSize = 0;
 
 	void initDevice();
-
 };
 
 } // namespace internal

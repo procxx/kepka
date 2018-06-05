@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/style/style_core_font.h"
 
+#include "core/basic_types.h"
+#include "ui/twidget.h"
 #include <QMap>
 #include <QString>
 #include <QVector>
-#include "ui/twidget.h"
-#include "core/basic_types.h"
 
 namespace style {
 namespace internal {
@@ -36,7 +36,7 @@ FontFamilyMap fontFamilyMap;
 typedef QVector<QString> FontFamilies;
 FontFamilies fontFamilies;
 
-typedef QMap<quint32, FontData*> FontDatas;
+typedef QMap<quint32, FontData *> FontDatas;
 FontDatas fontsMap;
 
 quint32 fontKey(int size, quint32 flags, int family) {
@@ -63,11 +63,11 @@ int registerFontFamily(const QString &family) {
 }
 
 FontData::FontData(int size, quint32 flags, int family, Font *other)
-: f(Fonts::GetOverride(fontFamilies[family]))
-, m(f)
-, _size(size)
-, _flags(flags)
-, _family(family) {
+    : f(Fonts::GetOverride(fontFamilies[family]))
+    , m(f)
+    , _size(size)
+    , _flags(flags)
+    , _family(family) {
 	if (other) {
 		memcpy(modified, other, sizeof(modified));
 	} else {

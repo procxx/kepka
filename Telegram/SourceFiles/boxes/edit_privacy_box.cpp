@@ -18,52 +18,52 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "base/lambda_guard.h"
 #include "boxes/edit_privacy_box.h"
+#include "base/lambda_guard.h"
 
+#include "apiwrap.h"
+#include "app.h" // For App::user, App::feedUsers
+#include "auth_session.h"
+#include "boxes/peer_list_controllers.h"
+#include "lang/lang_keys.h"
 #include "styles/style_boxes.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
 #include "ui/widgets/labels.h"
-#include "ui/widgets/buttons.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "boxes/peer_list_controllers.h"
-#include "apiwrap.h"
-#include "auth_session.h"
-#include "lang/lang_keys.h"
-#include "app.h" // For App::user, App::feedUsers
 
 namespace {
 
 class PrivacyExceptionsBoxController : public ChatsListBoxController {
 public:
-	PrivacyExceptionsBoxController(base::lambda<QString()> titleFactory, const std::vector<not_null<UserData*>> &selected);
-	void rowClicked(not_null<PeerListRow*> row) override;
+	PrivacyExceptionsBoxController(base::lambda<QString()> titleFactory,
+	                               const std::vector<not_null<UserData *>> &selected);
+	void rowClicked(not_null<PeerListRow *> row) override;
 
-	std::vector<not_null<UserData*>> getResult() const;
+	std::vector<not_null<UserData *>> getResult() const;
 
 protected:
 	void prepareViewHook() override;
-	std::unique_ptr<Row> createRow(not_null<History*> history) override;
+	std::unique_ptr<Row> createRow(not_null<History *> history) override;
 
 private:
 	base::lambda<QString()> _titleFactory;
-	std::vector<not_null<UserData*>> _selected;
-
+	std::vector<not_null<UserData *>> _selected;
 };
 
-PrivacyExceptionsBoxController::PrivacyExceptionsBoxController(base::lambda<QString()> titleFactory, const std::vector<not_null<UserData*>> &selected)
-: _titleFactory(std::move(titleFactory))
-, _selected(selected) {
-}
+PrivacyExceptionsBoxController::PrivacyExceptionsBoxController(base::lambda<QString()> titleFactory,
+                                                               const std::vector<not_null<UserData *>> &selected)
+    : _titleFactory(std::move(titleFactory))
+    , _selected(selected) {}
 
 void PrivacyExceptionsBoxController::prepareViewHook() {
 	delegate()->peerListSetTitle(_titleFactory);
 	delegate()->peerListAddSelectedRows(_selected);
 }
 
-std::vector<not_null<UserData*>> PrivacyExceptionsBoxController::getResult() const {
+std::vector<not_null<UserData *>> PrivacyExceptionsBoxController::getResult() const {
 	auto peers = delegate()->peerListCollectSelectedRows();
-	auto users = std::vector<not_null<UserData*>>();
+	auto users = std::vector<not_null<UserData *>>();
 	if (!peers.empty()) {
 		users.reserve(peers.size());
 		for_const (auto peer, peers) {
@@ -75,11 +75,12 @@ std::vector<not_null<UserData*>> PrivacyExceptionsBoxController::getResult() con
 	return users;
 }
 
-void PrivacyExceptionsBoxController::rowClicked(not_null<PeerListRow*> row) {
+void PrivacyExceptionsBoxController::rowClicked(not_null<PeerListRow *> row) {
 	delegate()->peerListSetRowChecked(row, !row->checked());
 }
 
-std::unique_ptr<PrivacyExceptionsBoxController::Row> PrivacyExceptionsBoxController::createRow(not_null<History*> history) {
+std::unique_ptr<PrivacyExceptionsBoxController::Row>
+PrivacyExceptionsBoxController::createRow(not_null<History *> history) {
 	if (history->peer->isSelf()) {
 		return nullptr;
 	}
@@ -91,10 +92,10 @@ std::unique_ptr<PrivacyExceptionsBoxController::Row> PrivacyExceptionsBoxControl
 
 } // namespace
 
-EditPrivacyBox::EditPrivacyBox(QWidget*, std::unique_ptr<Controller> controller) : BoxContent()
-, _controller(std::move(controller))
-, _loading(this, lang(lng_contacts_loading), Ui::FlatLabel::InitType::Simple, st::membersAbout) {
-}
+EditPrivacyBox::EditPrivacyBox(QWidget *, std::unique_ptr<Controller> controller)
+    : BoxContent()
+    , _controller(std::move(controller))
+    , _loading(this, lang(lng_contacts_loading), Ui::FlatLabel::InitType::Simple, st::membersAbout) {}
 
 void EditPrivacyBox::prepare() {
 	_controller->setView(this);
@@ -177,34 +178,34 @@ int EditPrivacyBox::countDefaultHeight(int newWidth) {
 }
 
 void EditPrivacyBox::editExceptionUsers(Exception exception) {
-	auto controller = std::make_unique<PrivacyExceptionsBoxController>(base::lambda_guarded(this, [this, exception] {
-		return _controller->exceptionBoxTitle(exception);
-	}), exceptionUsers(exception));
-	auto initBox = [this, exception, controller = controller.get()](not_null<PeerListBox*> box) {
+	auto controller = std::make_unique<PrivacyExceptionsBoxController>(
+	    base::lambda_guarded(this, [this, exception] { return _controller->exceptionBoxTitle(exception); }),
+	    exceptionUsers(exception));
+	auto initBox = [this, exception, controller = controller.get()](not_null<PeerListBox *> box) {
 		box->addButton(langFactory(lng_settings_save), base::lambda_guarded(this, [this, box, exception, controller] {
-			exceptionUsers(exception) = controller->getResult();
-			exceptionLink(exception)->entity()->setText(exceptionLinkText(exception));
-			auto removeFrom = ([exception] {
-				switch (exception) {
-				case Exception::Always: return Exception::Never;
-				case Exception::Never: return Exception::Always;
-				}
-				Unexpected("Invalid exception value.");
-			})();
-			auto &removeFromUsers = exceptionUsers(removeFrom);
-			auto removedSome = false;
-			for (auto user : exceptionUsers(exception)) {
-				auto removedStart = std::remove(removeFromUsers.begin(), removeFromUsers.end(), user);
-				if (removedStart != removeFromUsers.end()) {
-					removeFromUsers.erase(removedStart, removeFromUsers.end());
-					removedSome = true;
-				}
-			}
-			if (removedSome) {
-				exceptionLink(removeFrom)->entity()->setText(exceptionLinkText(removeFrom));
-			}
-			box->closeBox();
-		}));
+			               exceptionUsers(exception) = controller->getResult();
+			               exceptionLink(exception)->entity()->setText(exceptionLinkText(exception));
+			               auto removeFrom = ([exception] {
+				               switch (exception) {
+				               case Exception::Always: return Exception::Never;
+				               case Exception::Never: return Exception::Always;
+				               }
+				               Unexpected("Invalid exception value.");
+			               })();
+			               auto &removeFromUsers = exceptionUsers(removeFrom);
+			               auto removedSome = false;
+			               for (auto user : exceptionUsers(exception)) {
+				               auto removedStart = std::remove(removeFromUsers.begin(), removeFromUsers.end(), user);
+				               if (removedStart != removeFromUsers.end()) {
+					               removeFromUsers.erase(removedStart, removeFromUsers.end());
+					               removedSome = true;
+				               }
+			               }
+			               if (removedSome) {
+				               exceptionLink(removeFrom)->entity()->setText(exceptionLinkText(removeFrom));
+			               }
+			               box->closeBox();
+		               }));
 		box->addButton(langFactory(lng_cancel), [box] { box->closeBox(); });
 	};
 	Ui::show(Box<PeerListBox>(std::move(controller), std::move(initBox)), KeepOtherLayers);
@@ -246,7 +247,7 @@ style::margins EditPrivacyBox::exceptionLinkMargins() const {
 	return st::editPrivacyLinkMargin;
 }
 
-std::vector<not_null<UserData*>> &EditPrivacyBox::exceptionUsers(Exception exception) {
+std::vector<not_null<UserData *>> &EditPrivacyBox::exceptionUsers(Exception exception) {
 	switch (exception) {
 	case Exception::Always: return _alwaysUsers;
 	case Exception::Never: return _neverUsers;
@@ -286,9 +287,8 @@ void EditPrivacyBox::createWidgets() {
 		widget.create(this, text, Ui::FlatLabel::InitType::Simple, st);
 	};
 	auto createExceptionLink = [this](Exception exception) {
-		exceptionLink(exception).create(this, object_ptr<Ui::LinkButton>(this, exceptionLinkText(exception)), exceptionLinkMargins(), [this] {
-			resizeGetHeight(width());
-		});
+		exceptionLink(exception).create(this, object_ptr<Ui::LinkButton>(this, exceptionLinkText(exception)),
+		                                exceptionLinkMargins(), [this] { resizeGetHeight(width()); });
 		exceptionLink(exception)->entity()->setClickedCallback([this, exception] { editExceptionUsers(exception); });
 	};
 
@@ -306,9 +306,9 @@ void EditPrivacyBox::createWidgets() {
 	addButton(langFactory(lng_settings_save), [this] {
 		auto someAreDisallowed = (_option != Option::Everyone) || !_neverUsers.empty();
 		_controller->confirmSave(someAreDisallowed, base::lambda_guarded(this, [this] {
-			Auth().api().savePrivacy(_controller->key(), collectResult());
-			closeBox();
-		}));
+			                         Auth().api().savePrivacy(_controller->key(), collectResult());
+			                         closeBox();
+		                         }));
 	});
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });
 
@@ -326,53 +326,54 @@ void EditPrivacyBox::createWidgets() {
 }
 
 void EditPrivacyBox::loadData() {
-        request(MTPaccount_GetPrivacy(_controller->key())).done([this](const MTPaccount_PrivacyRules &result) {
-		Expects(result.type() == mtpc_account_privacyRules);
-		auto &rules = result.c_account_privacyRules();
-		App::feedUsers(rules.vusers);
+	request(MTPaccount_GetPrivacy(_controller->key()))
+	    .done([this](const MTPaccount_PrivacyRules &result) {
+		    Expects(result.type() == mtpc_account_privacyRules);
+		    auto &rules = result.c_account_privacyRules();
+		    App::feedUsers(rules.vusers);
 
-		// This is simplified version of privacy rules interpretation.
-		// But it should be fine for all the apps that use the same subset of features.
-		auto optionSet = false;
-		auto setOption = [this, &optionSet](Option option) {
-			if (optionSet) return;
-			optionSet = true;
-			_option = option;
-		};
-		auto feedRule = [this, &setOption](const MTPPrivacyRule &rule) {
-			switch (rule.type()) {
-			case mtpc_privacyValueAllowAll: setOption(Option::Everyone); break;
-			case mtpc_privacyValueAllowContacts: setOption(Option::Contacts); break;
-			case mtpc_privacyValueAllowUsers: {
-				auto &users = rule.c_privacyValueAllowUsers().vusers.v;
-				_alwaysUsers.reserve(_alwaysUsers.size() + users.size());
-				for (auto &userId : users) {
-					auto user = App::user(UserId(userId.v));
-					if (!base::contains(_neverUsers, user) && !base::contains(_alwaysUsers, user)) {
-						_alwaysUsers.push_back(user);
-					}
-				}
-			} break;
-			case mtpc_privacyValueDisallowContacts: // not supported, fall through
-			case mtpc_privacyValueDisallowAll: setOption(Option::Nobody); break;
-			case mtpc_privacyValueDisallowUsers: {
-				auto &users = rule.c_privacyValueDisallowUsers().vusers.v;
-				_neverUsers.reserve(_neverUsers.size() + users.size());
-				for (auto &userId : users) {
-					auto user = App::user(UserId(userId.v));
-					if (!base::contains(_alwaysUsers, user) && !base::contains(_neverUsers, user)) {
-						_neverUsers.push_back(user);
-					}
-				}
-			} break;
-			}
-		};
-		for (auto &rule : rules.vrules.v) {
-			feedRule(rule);
-		}
-		feedRule(MTP_privacyValueDisallowAll()); // disallow by default.
+		    // This is simplified version of privacy rules interpretation.
+		    // But it should be fine for all the apps that use the same subset of features.
+		    auto optionSet = false;
+		    auto setOption = [this, &optionSet](Option option) {
+			    if (optionSet) return;
+			    optionSet = true;
+			    _option = option;
+		    };
+		    auto feedRule = [this, &setOption](const MTPPrivacyRule &rule) {
+			    switch (rule.type()) {
+			    case mtpc_privacyValueAllowAll: setOption(Option::Everyone); break;
+			    case mtpc_privacyValueAllowContacts: setOption(Option::Contacts); break;
+			    case mtpc_privacyValueAllowUsers: {
+				    auto &users = rule.c_privacyValueAllowUsers().vusers.v;
+				    _alwaysUsers.reserve(_alwaysUsers.size() + users.size());
+				    for (auto &userId : users) {
+					    auto user = App::user(UserId(userId.v));
+					    if (!base::contains(_neverUsers, user) && !base::contains(_alwaysUsers, user)) {
+						    _alwaysUsers.push_back(user);
+					    }
+				    }
+			    } break;
+			    case mtpc_privacyValueDisallowContacts: // not supported, fall through
+			    case mtpc_privacyValueDisallowAll: setOption(Option::Nobody); break;
+			    case mtpc_privacyValueDisallowUsers: {
+				    auto &users = rule.c_privacyValueDisallowUsers().vusers.v;
+				    _neverUsers.reserve(_neverUsers.size() + users.size());
+				    for (auto &userId : users) {
+					    auto user = App::user(UserId(userId.v));
+					    if (!base::contains(_alwaysUsers, user) && !base::contains(_neverUsers, user)) {
+						    _neverUsers.push_back(user);
+					    }
+				    }
+			    } break;
+			    }
+		    };
+		    for (auto &rule : rules.vrules.v) {
+			    feedRule(rule);
+		    }
+		    feedRule(MTP_privacyValueDisallowAll()); // disallow by default.
 
-		createWidgets();
-        }).send();
+		    createWidgets();
+	    })
+	    .send();
 }
-

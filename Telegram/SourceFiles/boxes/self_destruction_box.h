@@ -33,16 +33,14 @@ class SelfDestructionBox : public BoxContent, private MTP::Sender {
 	Q_OBJECT
 
 public:
-	SelfDestructionBox(QWidget*) {
-	}
+	SelfDestructionBox(QWidget*) {}
 
 protected:
 	void prepare() override;
 
 private:
 	std::vector<int> _ttlValues;
-	object_ptr<Ui::FlatLabel> _description = { nullptr };
+	object_ptr<Ui::FlatLabel> _description = {nullptr};
 	std::shared_ptr<Ui::RadiobuttonGroup> _ttlGroup;
 	std::vector<object_ptr<Ui::Radiobutton>> _options;
-
 };

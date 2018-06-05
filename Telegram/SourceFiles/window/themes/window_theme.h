@@ -19,10 +19,10 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
-#include "base/observer.h"
 #include "QImage"
-#include "styles/palette.h"
 #include "QPixmap"
+#include "base/observer.h"
+#include "styles/palette.h"
 
 namespace Window {
 namespace Theme {
@@ -87,8 +87,9 @@ struct BackgroundUpdate {
 		ApplyingTheme,
 	};
 
-	BackgroundUpdate(Type type, bool tiled) : type(type), tiled(tiled) {
-	}
+	BackgroundUpdate(Type type, bool tiled)
+	    : type(type)
+	    , tiled(tiled) {}
 	bool paletteChanged() const {
 		return (type == Type::TestingTheme || type == Type::RevertingTheme);
 	}
@@ -143,7 +144,6 @@ private:
 	qint32 _idForRevert = internal::kUninitializedBackground;
 	QImage _imageForRevert;
 	bool _tileForRevert = false;
-
 };
 
 ChatBackground *Background();

@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/abstract_button.h"
 #include "styles/style_widgets.h"
+#include "ui/abstract_button.h"
 #include "ui/animation.h"
 #include <memory>
 
@@ -46,7 +46,6 @@ private:
 	QString _text;
 	int _textWidth = 0;
 	const style::LinkButton &_st;
-
 };
 
 class RippleButton : public AbstractButton {
@@ -85,7 +84,6 @@ private:
 	const style::RippleAnimation &_st;
 	std::unique_ptr<RippleAnimation> _ripple;
 	bool _forceRippled = false;
-
 };
 
 class FlatButton : public RippleButton {
@@ -107,7 +105,6 @@ private:
 	int _width;
 
 	const style::FlatButton &_st;
-
 };
 
 class RoundButton : public RippleButton, private base::Subscriber {
@@ -163,7 +160,6 @@ private:
 	const style::RoundButton &_st;
 
 	TextTransform _transform = TextTransform::ToUpper;
-
 };
 
 class IconButton : public RippleButton {
@@ -189,12 +185,12 @@ private:
 	const style::color *_rippleColorOverride = nullptr;
 
 	Animation _a_over;
-
 };
 
 class LeftOutlineButton : public RippleButton {
 public:
-	LeftOutlineButton(QWidget *parent, const QString &text, const style::OutlineButton &st = st::defaultLeftOutlineButton);
+	LeftOutlineButton(QWidget *parent, const QString &text,
+	                  const style::OutlineButton &st = st::defaultLeftOutlineButton);
 
 	void setText(const QString &text);
 
@@ -208,7 +204,6 @@ private:
 	int _textWidth, _fullTextWidth;
 
 	const style::OutlineButton &_st;
-
 };
 
 class CrossButton : public RippleButton {
@@ -259,7 +254,6 @@ private:
 	TimeMs _loadingStartMs = 0;
 	TimeMs _loadingStopMs = 0;
 	BasicAnimation _a_loading;
-
 };
 
 } // namespace Ui

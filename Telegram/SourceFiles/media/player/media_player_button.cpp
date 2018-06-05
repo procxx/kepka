@@ -26,9 +26,8 @@ namespace Media {
 namespace Player {
 
 PlayButtonLayout::PlayButtonLayout(const style::MediaPlayerButton &st, base::lambda<void()> callback)
-: _st(st)
-, _callback(std::move(callback)) {
-}
+    : _st(st)
+    , _callback(std::move(callback)) {}
 
 void PlayButtonLayout::setState(State state) {
 	if (_nextState == state) return;
@@ -121,30 +120,30 @@ void PlayButtonLayout::paintPlayToPause(Painter &p, const QBrush &brush, double 
 	PainterHighQualityEnabler hq(p);
 
 	QPointF pathLeftPause[] = {
-		{ pauseLeft, pauseTop },
-		{ pauseLeft + pauseStroke, pauseTop },
-		{ pauseLeft + pauseStroke, pauseTop + pauseHeight },
-		{ pauseLeft, pauseTop + pauseHeight },
+	    {pauseLeft, pauseTop},
+	    {pauseLeft + pauseStroke, pauseTop},
+	    {pauseLeft + pauseStroke, pauseTop + pauseHeight},
+	    {pauseLeft, pauseTop + pauseHeight},
 	};
 	QPointF pathLeftPlay[] = {
-		{ playLeft, playTop },
-		{ playLeft + (playWidth / 2.), playTop + (playHeight / 4.) },
-		{ playLeft + (playWidth / 2.), playTop + (3 * playHeight / 4.) },
-		{ playLeft, playTop + playHeight },
+	    {playLeft, playTop},
+	    {playLeft + (playWidth / 2.), playTop + (playHeight / 4.)},
+	    {playLeft + (playWidth / 2.), playTop + (3 * playHeight / 4.)},
+	    {playLeft, playTop + playHeight},
 	};
 	p.fillPath(anim::interpolate(pathLeftPlay, pathLeftPause, progress), brush);
 
 	QPointF pathRightPause[] = {
-		{ pauseLeft + pauseWidth - pauseStroke, pauseTop },
-		{ pauseLeft + pauseWidth, pauseTop },
-		{ pauseLeft + pauseWidth, pauseTop + pauseHeight },
-		{ pauseLeft + pauseWidth - pauseStroke, pauseTop + pauseHeight },
+	    {pauseLeft + pauseWidth - pauseStroke, pauseTop},
+	    {pauseLeft + pauseWidth, pauseTop},
+	    {pauseLeft + pauseWidth, pauseTop + pauseHeight},
+	    {pauseLeft + pauseWidth - pauseStroke, pauseTop + pauseHeight},
 	};
 	QPointF pathRightPlay[] = {
-		{ playLeft + (playWidth / 2.), playTop + (playHeight / 4.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + (playWidth / 2.), playTop + (3 * playHeight / 4.) },
+	    {playLeft + (playWidth / 2.), playTop + (playHeight / 4.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + (playWidth / 2.), playTop + (3 * playHeight / 4.)},
 	};
 	p.fillPath(anim::interpolate(pathRightPlay, pathRightPause, progress), brush);
 }
@@ -167,32 +166,32 @@ void PlayButtonLayout::paintPlayToCancel(Painter &p, const QBrush &brush, double
 	PainterHighQualityEnabler hq(p);
 
 	QPointF pathPlay[] = {
-		{ playLeft, playTop },
-		{ playLeft, playTop },
-		{ playLeft + (playWidth / 2.), playTop + (playHeight / 4.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + playWidth, playTop + (playHeight / 2.) },
-		{ playLeft + (playWidth / 2.), playTop + (3 * playHeight / 4.) },
-		{ playLeft, playTop + playHeight },
-		{ playLeft, playTop + playHeight },
-		{ playLeft, playTop + (playHeight / 2.) },
+	    {playLeft, playTop},
+	    {playLeft, playTop},
+	    {playLeft + (playWidth / 2.), playTop + (playHeight / 4.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + playWidth, playTop + (playHeight / 2.)},
+	    {playLeft + (playWidth / 2.), playTop + (3 * playHeight / 4.)},
+	    {playLeft, playTop + playHeight},
+	    {playLeft, playTop + playHeight},
+	    {playLeft, playTop + (playHeight / 2.)},
 	};
 	QPointF pathCancel[] = {
-		{ cancelLeft, cancelTop + cancelStroke },
-		{ cancelLeft + cancelStroke, cancelTop },
-		{ cancelLeft + (cancelWidth / 2.), cancelTop + (cancelHeight / 2.) - cancelStroke },
-		{ cancelLeft + cancelWidth - cancelStroke, cancelTop },
-		{ cancelLeft + cancelWidth, cancelTop + cancelStroke },
-		{ cancelLeft + (cancelWidth / 2.) + cancelStroke, cancelTop + (cancelHeight / 2.) },
-		{ cancelLeft + cancelWidth, cancelTop + cancelHeight - cancelStroke },
-		{ cancelLeft + cancelWidth - cancelStroke, cancelTop + cancelHeight },
-		{ cancelLeft + (cancelWidth / 2.), cancelTop + (cancelHeight / 2.) + cancelStroke },
-		{ cancelLeft + cancelStroke, cancelTop + cancelHeight },
-		{ cancelLeft, cancelTop + cancelHeight - cancelStroke },
-		{ cancelLeft + (cancelWidth / 2.) - cancelStroke, cancelTop + (cancelHeight / 2.) },
+	    {cancelLeft, cancelTop + cancelStroke},
+	    {cancelLeft + cancelStroke, cancelTop},
+	    {cancelLeft + (cancelWidth / 2.), cancelTop + (cancelHeight / 2.) - cancelStroke},
+	    {cancelLeft + cancelWidth - cancelStroke, cancelTop},
+	    {cancelLeft + cancelWidth, cancelTop + cancelStroke},
+	    {cancelLeft + (cancelWidth / 2.) + cancelStroke, cancelTop + (cancelHeight / 2.)},
+	    {cancelLeft + cancelWidth, cancelTop + cancelHeight - cancelStroke},
+	    {cancelLeft + cancelWidth - cancelStroke, cancelTop + cancelHeight},
+	    {cancelLeft + (cancelWidth / 2.), cancelTop + (cancelHeight / 2.) + cancelStroke},
+	    {cancelLeft + cancelStroke, cancelTop + cancelHeight},
+	    {cancelLeft, cancelTop + cancelHeight - cancelStroke},
+	    {cancelLeft + (cancelWidth / 2.) - cancelStroke, cancelTop + (cancelHeight / 2.)},
 	};
 	p.fillPath(anim::interpolate(pathPlay, pathCancel, progress), brush);
 }
@@ -216,30 +215,30 @@ void PlayButtonLayout::paintPauseToCancel(Painter &p, const QBrush &brush, doubl
 	PainterHighQualityEnabler hq(p);
 
 	QPointF pathLeftPause[] = {
-		{ pauseLeft, pauseTop },
-		{ pauseLeft + pauseStroke, pauseTop },
-		{ pauseLeft + pauseStroke, pauseTop + pauseHeight },
-		{ pauseLeft, pauseTop + pauseHeight },
+	    {pauseLeft, pauseTop},
+	    {pauseLeft + pauseStroke, pauseTop},
+	    {pauseLeft + pauseStroke, pauseTop + pauseHeight},
+	    {pauseLeft, pauseTop + pauseHeight},
 	};
 	QPointF pathLeftCancel[] = {
-		{ cancelLeft, cancelTop + cancelStroke },
-		{ cancelLeft + cancelStroke, cancelTop },
-		{ cancelLeft + cancelWidth, cancelTop + cancelHeight - cancelStroke },
-		{ cancelLeft + cancelWidth - cancelStroke, cancelTop + cancelHeight },
+	    {cancelLeft, cancelTop + cancelStroke},
+	    {cancelLeft + cancelStroke, cancelTop},
+	    {cancelLeft + cancelWidth, cancelTop + cancelHeight - cancelStroke},
+	    {cancelLeft + cancelWidth - cancelStroke, cancelTop + cancelHeight},
 	};
 	p.fillPath(anim::interpolate(pathLeftPause, pathLeftCancel, progress), brush);
 
 	QPointF pathRightPause[] = {
-		{ pauseLeft + pauseWidth - pauseStroke, pauseTop },
-		{ pauseLeft + pauseWidth, pauseTop },
-		{ pauseLeft + pauseWidth, pauseTop + pauseHeight },
-		{ pauseLeft + pauseWidth - pauseStroke, pauseTop + pauseHeight },
+	    {pauseLeft + pauseWidth - pauseStroke, pauseTop},
+	    {pauseLeft + pauseWidth, pauseTop},
+	    {pauseLeft + pauseWidth, pauseTop + pauseHeight},
+	    {pauseLeft + pauseWidth - pauseStroke, pauseTop + pauseHeight},
 	};
 	QPointF pathRightCancel[] = {
-		{ cancelLeft + cancelWidth - cancelStroke, cancelTop },
-		{ cancelLeft + cancelWidth, cancelTop + cancelStroke },
-		{ cancelLeft + cancelStroke, cancelTop + cancelHeight },
-		{ cancelLeft, cancelTop + cancelHeight - cancelStroke },
+	    {cancelLeft + cancelWidth - cancelStroke, cancelTop},
+	    {cancelLeft + cancelWidth, cancelTop + cancelStroke},
+	    {cancelLeft + cancelStroke, cancelTop + cancelHeight},
+	    {cancelLeft, cancelTop + cancelHeight - cancelStroke},
 	};
 	p.fillPath(anim::interpolate(pathRightPause, pathRightCancel, progress), brush);
 }

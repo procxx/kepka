@@ -27,10 +27,8 @@ class InputField;
 class PortInput;
 class PasswordInput;
 class Checkbox;
-template <typename Enum>
-class RadioenumGroup;
-template <typename Enum>
-class Radioenum;
+template <typename Enum> class RadioenumGroup;
+template <typename Enum> class Radioenum;
 } // namespace Ui
 
 class ConnectionBox : public BoxContent {
@@ -67,7 +65,6 @@ private:
 	object_ptr<Ui::Radioenum<DBIConnectionType>> _httpProxyRadio;
 	object_ptr<Ui::Radioenum<DBIConnectionType>> _tcpProxyRadio;
 	object_ptr<Ui::Checkbox> _tryIPv6;
-
 };
 
 class AutoDownloadBox : public BoxContent {
@@ -95,5 +92,4 @@ private:
 	object_ptr<Ui::Checkbox> _gifPlay;
 
 	int _sectionHeight = 0;
-
 };

@@ -18,15 +18,15 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "application.h"
 #include "twidget.h"
-#include "mainwindow.h"
-#include "window/main_window.h"
-#include "messenger.h"
 #include "app.h"
+#include "application.h"
+#include "mainwindow.h"
+#include "messenger.h"
+#include "window/main_window.h"
 
-#include <QWindow>
 #include <QFontDatabase>
+#include <QWindow>
 
 namespace Fonts {
 namespace {
@@ -121,7 +121,7 @@ QString GetOverride(const QString &familyName) {
 	return familyName;
 }
 
-} // Fonts
+} // namespace Fonts
 
 namespace {
 
@@ -131,7 +131,7 @@ void _sendResizeEvents(QWidget *target) {
 
 	const QObjectList children = target->children();
 	for (int i = 0; i < children.size(); ++i) {
-		QWidget *child = static_cast<QWidget*>(children.at(i));
+		QWidget *child = static_cast<QWidget *>(children.at(i));
 		if (child->isWidgetType() && !child->isWindow() && child->testAttribute(Qt::WA_PendingResizeEvent)) {
 			_sendResizeEvents(child);
 		}
@@ -154,8 +154,8 @@ QPixmap myGrab(TWidget *target, QRect rect, QColor bg) {
 	myEnsureResized(target);
 	if (rect.isNull()) rect = target->rect();
 
-    auto result = QPixmap(rect.size() * cIntRetinaFactor());
-    result.setDevicePixelRatio(cRetinaFactor());
+	auto result = QPixmap(rect.size() * cIntRetinaFactor());
+	result.setDevicePixelRatio(cRetinaFactor());
 	if (!target->testAttribute(Qt::WA_OpaquePaintEvent)) {
 		result.fill(bg);
 	}
@@ -189,15 +189,11 @@ QImage myGrabImage(TWidget *target, QRect rect, QColor bg) {
 void sendSynteticMouseEvent(QWidget *widget, QEvent::Type type, Qt::MouseButton button, const QPoint &globalPoint) {
 	if (auto windowHandle = widget->window()->windowHandle()) {
 		auto localPoint = windowHandle->mapFromGlobal(globalPoint);
-		QMouseEvent ev(type
-			, localPoint
-			, localPoint
-			, globalPoint
-			, button
-			, QGuiApplication::mouseButtons() | button
-			, QGuiApplication::keyboardModifiers()
+		QMouseEvent ev(type, localPoint, localPoint, globalPoint, button, QGuiApplication::mouseButtons() | button,
+		               QGuiApplication::keyboardModifiers()
 #if !defined(OS_MAC_OLD) && QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-			, Qt::MouseEventSynthesizedByApplication
+		                   ,
+		               Qt::MouseEventSynthesizedByApplication
 #endif
 		);
 		ev.setTimestamp(getms());

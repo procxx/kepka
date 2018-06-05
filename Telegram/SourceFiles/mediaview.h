@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/widgets/dropdown_menu.h"
-#include "ui/effects/radial_animation.h"
 #include "core/click_handler.h"
-#include "ui/images.h"
-#include "structs.h"
 #include "history/history.h"
+#include "structs.h"
+#include "ui/effects/radial_animation.h"
+#include "ui/images.h"
+#include "ui/widgets/dropdown_menu.h"
 
 class PeerData;
 class PhotoData;
@@ -233,7 +233,7 @@ private:
 	bool updateOverState(OverState newState);
 	double overLevel(OverState control) const;
 
-	MsgId getMsgIdFromOverview(not_null<History*> history, int index) const;
+	MsgId getMsgIdFromOverview(not_null<History *> history, int index) const;
 
 	QBrush _transparentBrush;
 
@@ -251,7 +251,7 @@ private:
 	QString _dateText;
 	QString _headerText;
 
-	object_ptr<Media::Clip::Controller> _clipController = { nullptr };
+	object_ptr<Media::Clip::Controller> _clipController = {nullptr};
 	DocumentData *_autoplayVideoDocument = nullptr;
 	bool _fullScreenVideo = false;
 	int _fullScreenZoomCache = 0;
@@ -380,7 +380,6 @@ private:
 	quint64 _themePreviewId = 0;
 	QRect _themePreviewRect;
 	std::unique_ptr<Window::Theme::Preview> _themePreview;
-	object_ptr<Ui::RoundButton> _themeApply = { nullptr };
-	object_ptr<Ui::RoundButton> _themeCancel = { nullptr };
-
+	object_ptr<Ui::RoundButton> _themeApply = {nullptr};
+	object_ptr<Ui::RoundButton> _themeCancel = {nullptr};
 };

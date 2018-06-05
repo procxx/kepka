@@ -86,15 +86,14 @@ private:
 	object_ptr<Ui::IconButton> _close;
 	object_ptr<Ui::MediaSlider> _playbackSlider;
 	std::unique_ptr<Clip::Playback> _playback;
-	object_ptr<Ui::IconButton> _previousTrack = { nullptr };
+	object_ptr<Ui::IconButton> _previousTrack = {nullptr};
 	object_ptr<PlayButton> _playPause;
-	object_ptr<Ui::IconButton> _nextTrack = { nullptr };
+	object_ptr<Ui::IconButton> _nextTrack = {nullptr};
 	object_ptr<Ui::IconButton> _volumeToggle;
 	object_ptr<VolumeController> _volumeController;
 	object_ptr<Ui::IconButton> _pinPlayer;
 	object_ptr<Ui::IconButton> _repeatTrack;
-
 };
 
-} // namespace Clip
+} // namespace Player
 } // namespace Media

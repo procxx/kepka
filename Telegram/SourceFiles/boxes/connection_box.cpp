@@ -21,52 +21,58 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/connection_box.h"
 
 #include "boxes/confirm_box.h"
+#include "history/history_location_manager.h"
 #include "lang/lang_keys.h"
-#include "storage/localstorage.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/input_fields.h"
-#include "history/history_location_manager.h"
+#include "storage/localstorage.h"
 #include "styles/style_boxes.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
+#include "ui/widgets/input_fields.h"
 
 void ConnectionBox::ShowApplyProxyConfirmation(const QMap<QString, QString> &fields) {
 	auto server = fields.value(qsl("server"));
 	auto port = fields.value(qsl("port")).toInt();
 	if (!server.isEmpty() && port != 0) {
 		auto weakBox = std::make_shared<QPointer<ConfirmBox>>(nullptr);
-		auto box = Ui::show(Box<ConfirmBox>(lng_sure_enable_socks(lt_server, server, lt_port, QString::number(port)), lang(lng_sure_enable), [fields, weakBox] {
-			auto p = ProxyData();
-			p.host = fields.value(qsl("server"));
-			p.user = fields.value(qsl("user"));
-			p.password = fields.value(qsl("pass"));
-			p.port = fields.value(qsl("port")).toInt();
-			Global::SetConnectionType(dbictTcpProxy);
-			Global::SetLastProxyType(dbictTcpProxy);
-			Global::SetConnectionProxy(p);
-			Local::writeSettings();
-			Global::RefConnectionTypeChanged().notify();
-			MTP::restart();
-			reinitLocationManager();
-			reinitWebLoadManager();
-			if (*weakBox) (*weakBox)->closeBox();
-		}), KeepOtherLayers);
+		auto box = Ui::show(Box<ConfirmBox>(lng_sure_enable_socks(lt_server, server, lt_port, QString::number(port)),
+		                                    lang(lng_sure_enable),
+		                                    [fields, weakBox] {
+			                                    auto p = ProxyData();
+			                                    p.host = fields.value(qsl("server"));
+			                                    p.user = fields.value(qsl("user"));
+			                                    p.password = fields.value(qsl("pass"));
+			                                    p.port = fields.value(qsl("port")).toInt();
+			                                    Global::SetConnectionType(dbictTcpProxy);
+			                                    Global::SetLastProxyType(dbictTcpProxy);
+			                                    Global::SetConnectionProxy(p);
+			                                    Local::writeSettings();
+			                                    Global::RefConnectionTypeChanged().notify();
+			                                    MTP::restart();
+			                                    reinitLocationManager();
+			                                    reinitWebLoadManager();
+			                                    if (*weakBox) (*weakBox)->closeBox();
+		                                    }),
+		                    KeepOtherLayers);
 		*weakBox = box;
 	}
 }
 
 ConnectionBox::ConnectionBox(QWidget *parent)
-: _hostInput(this, st::connectionHostInputField, langFactory(lng_connection_host_ph), Global::ConnectionProxy().host)
-, _portInput(this, st::connectionPortInputField, langFactory(lng_connection_port_ph), QString::number(Global::ConnectionProxy().port))
-, _userInput(this, st::connectionUserInputField, langFactory(lng_connection_user_ph), Global::ConnectionProxy().user)
-, _passwordInput(this, st::connectionPasswordInputField, langFactory(lng_connection_password_ph), Global::ConnectionProxy().password)
-, _typeGroup(std::make_shared<Ui::RadioenumGroup<DBIConnectionType>>(Global::ConnectionType()))
-, _autoRadio(this, _typeGroup, dbictAuto, lang(lng_connection_auto_rb), st::defaultBoxCheckbox)
-, _httpProxyRadio(this, _typeGroup, dbictHttpProxy, lang(lng_connection_http_proxy_rb), st::defaultBoxCheckbox)
-, _tcpProxyRadio(this, _typeGroup, dbictTcpProxy, lang(lng_connection_tcp_proxy_rb), st::defaultBoxCheckbox)
-, _tryIPv6(this, lang(lng_connection_try_ipv6), Global::TryIPv6(), st::defaultBoxCheckbox) {
-}
+    : _hostInput(this, st::connectionHostInputField, langFactory(lng_connection_host_ph),
+                 Global::ConnectionProxy().host)
+    , _portInput(this, st::connectionPortInputField, langFactory(lng_connection_port_ph),
+                 QString::number(Global::ConnectionProxy().port))
+    , _userInput(this, st::connectionUserInputField, langFactory(lng_connection_user_ph),
+                 Global::ConnectionProxy().user)
+    , _passwordInput(this, st::connectionPasswordInputField, langFactory(lng_connection_password_ph),
+                     Global::ConnectionProxy().password)
+    , _typeGroup(std::make_shared<Ui::RadioenumGroup<DBIConnectionType>>(Global::ConnectionType()))
+    , _autoRadio(this, _typeGroup, dbictAuto, lang(lng_connection_auto_rb), st::defaultBoxCheckbox)
+    , _httpProxyRadio(this, _typeGroup, dbictHttpProxy, lang(lng_connection_http_proxy_rb), st::defaultBoxCheckbox)
+    , _tcpProxyRadio(this, _typeGroup, dbictTcpProxy, lang(lng_connection_tcp_proxy_rb), st::defaultBoxCheckbox)
+    , _tryIPv6(this, lang(lng_connection_try_ipv6), Global::TryIPv6(), st::defaultBoxCheckbox) {}
 
 void ConnectionBox::prepare() {
 	setTitle(langFactory(lng_connection_header));
@@ -93,7 +99,10 @@ bool ConnectionBox::badProxyValue() const {
 }
 
 void ConnectionBox::updateControlsVisibility() {
-	auto newHeight = st::boxOptionListPadding.top() + _autoRadio->heightNoMargins() + st::boxOptionListSkip + _httpProxyRadio->heightNoMargins() + st::boxOptionListSkip + _tcpProxyRadio->heightNoMargins() + st::boxOptionListSkip + st::connectionIPv6Skip + _tryIPv6->heightNoMargins() + st::defaultCheckbox.margin.bottom() + st::boxOptionListPadding.bottom() + st::boxPadding.bottom();
+	auto newHeight = st::boxOptionListPadding.top() + _autoRadio->heightNoMargins() + st::boxOptionListSkip +
+	                 _httpProxyRadio->heightNoMargins() + st::boxOptionListSkip + _tcpProxyRadio->heightNoMargins() +
+	                 st::boxOptionListSkip + st::connectionIPv6Skip + _tryIPv6->heightNoMargins() +
+	                 st::defaultCheckbox.margin.bottom() + st::boxOptionListPadding.bottom() + st::boxPadding.bottom();
 	if (_typeGroup->value() == dbictAuto && badProxyValue()) {
 		_hostInput->hide();
 		_portInput->hide();
@@ -127,31 +136,42 @@ void ConnectionBox::resizeEvent(QResizeEvent *e) {
 
 void ConnectionBox::updateControlsPosition() {
 	auto type = _typeGroup->value();
-	_autoRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(), _autoRadio->getMargins().top() + st::boxOptionListPadding.top());
-	_httpProxyRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(), _autoRadio->bottomNoMargins() + st::boxOptionListSkip);
+	_autoRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(),
+	                       _autoRadio->getMargins().top() + st::boxOptionListPadding.top());
+	_httpProxyRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(),
+	                            _autoRadio->bottomNoMargins() + st::boxOptionListSkip);
 
 	auto inputy = 0;
 	auto fieldsVisible = (type != dbictAuto) || (!badProxyValue() && Global::LastProxyType() != dbictAuto);
-	auto fieldsBelowHttp = fieldsVisible && (type == dbictHttpProxy || (type == dbictAuto && Global::LastProxyType() == dbictHttpProxy));
-	auto fieldsBelowTcp = fieldsVisible && (type == dbictTcpProxy || (type == dbictAuto && Global::LastProxyType() == dbictTcpProxy));
+	auto fieldsBelowHttp =
+	    fieldsVisible && (type == dbictHttpProxy || (type == dbictAuto && Global::LastProxyType() == dbictHttpProxy));
+	auto fieldsBelowTcp =
+	    fieldsVisible && (type == dbictTcpProxy || (type == dbictAuto && Global::LastProxyType() == dbictTcpProxy));
 	if (fieldsBelowHttp) {
 		inputy = _httpProxyRadio->bottomNoMargins() + st::boxOptionInputSkip;
-		_tcpProxyRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(), inputy + st::boxOptionInputSkip + 2 * _hostInput->height() + st::boxOptionListSkip);
+		_tcpProxyRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(),
+		                           inputy + st::boxOptionInputSkip + 2 * _hostInput->height() + st::boxOptionListSkip);
 	} else {
-		_tcpProxyRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(), _httpProxyRadio->bottomNoMargins() + st::boxOptionListSkip);
+		_tcpProxyRadio->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(),
+		                           _httpProxyRadio->bottomNoMargins() + st::boxOptionListSkip);
 		if (fieldsBelowTcp) {
 			inputy = _tcpProxyRadio->bottomNoMargins() + st::boxOptionInputSkip;
 		}
 	}
 
 	if (inputy) {
-		_hostInput->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left() + st::defaultCheck.diameter + st::defaultBoxCheckbox.textPosition.x() - st::defaultInputField.textMargins.left(), inputy);
+		_hostInput->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left() + st::defaultCheck.diameter +
+		                           st::defaultBoxCheckbox.textPosition.x() - st::defaultInputField.textMargins.left(),
+		                       inputy);
 		_portInput->moveToRight(st::boxPadding.right(), inputy);
-		_userInput->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left() + st::defaultCheck.diameter + st::defaultBoxCheckbox.textPosition.x() - st::defaultInputField.textMargins.left(), _hostInput->y() + _hostInput->height() + st::boxOptionInputSkip);
+		_userInput->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left() + st::defaultCheck.diameter +
+		                           st::defaultBoxCheckbox.textPosition.x() - st::defaultInputField.textMargins.left(),
+		                       _hostInput->y() + _hostInput->height() + st::boxOptionInputSkip);
 		_passwordInput->moveToRight(st::boxPadding.right(), _userInput->y());
 	}
 
-	auto tryipv6y = (fieldsBelowTcp ? _userInput->bottomNoMargins() : _tcpProxyRadio->bottomNoMargins()) + st::boxOptionListSkip + st::connectionIPv6Skip;
+	auto tryipv6y = (fieldsBelowTcp ? _userInput->bottomNoMargins() : _tcpProxyRadio->bottomNoMargins()) +
+	                st::boxOptionListSkip + st::connectionIPv6Skip;
 	_tryIPv6->moveToLeft(st::boxPadding.left() + st::boxOptionListPadding.left(), tryipv6y);
 }
 
@@ -162,7 +182,8 @@ void ConnectionBox::typeChanged(DBIConnectionType type) {
 	updateControlsVisibility();
 	if (type != dbictAuto) {
 		Global::SetLastProxyType(type);
-		if (!_hostInput->hasFocus() && !_portInput->hasFocus() && !_userInput->hasFocus() && !_passwordInput->hasFocus()) {
+		if (!_hostInput->hasFocus() && !_portInput->hasFocus() && !_userInput->hasFocus() &&
+		    !_passwordInput->hasFocus()) {
 			_hostInput->setFocusFast();
 		}
 		if ((type == dbictHttpProxy) && !_portInput->getLastText().toInt()) {
@@ -257,21 +278,24 @@ void ConnectionBox::onSave() {
 }
 
 AutoDownloadBox::AutoDownloadBox(QWidget *parent)
-: _photoPrivate(this, lang(lng_media_auto_private_chats), !(cAutoDownloadPhoto() & dbiadNoPrivate), st::defaultBoxCheckbox)
-, _photoGroups(this,  lang(lng_media_auto_groups), !(cAutoDownloadPhoto() & dbiadNoGroups), st::defaultBoxCheckbox)
-, _audioPrivate(this, lang(lng_media_auto_private_chats), !(cAutoDownloadAudio() & dbiadNoPrivate), st::defaultBoxCheckbox)
-, _audioGroups(this, lang(lng_media_auto_groups), !(cAutoDownloadAudio() & dbiadNoGroups), st::defaultBoxCheckbox)
-, _gifPrivate(this, lang(lng_media_auto_private_chats), !(cAutoDownloadGif() & dbiadNoPrivate), st::defaultBoxCheckbox)
-, _gifGroups(this, lang(lng_media_auto_groups), !(cAutoDownloadGif() & dbiadNoGroups), st::defaultBoxCheckbox)
-, _gifPlay(this, lang(lng_media_auto_play), cAutoPlayGif(), st::defaultBoxCheckbox)
-, _sectionHeight(st::boxTitleHeight + 2 * (st::defaultCheck.diameter + st::setLittleSkip)) {
-}
+    : _photoPrivate(this, lang(lng_media_auto_private_chats), !(cAutoDownloadPhoto() & dbiadNoPrivate),
+                    st::defaultBoxCheckbox)
+    , _photoGroups(this, lang(lng_media_auto_groups), !(cAutoDownloadPhoto() & dbiadNoGroups), st::defaultBoxCheckbox)
+    , _audioPrivate(this, lang(lng_media_auto_private_chats), !(cAutoDownloadAudio() & dbiadNoPrivate),
+                    st::defaultBoxCheckbox)
+    , _audioGroups(this, lang(lng_media_auto_groups), !(cAutoDownloadAudio() & dbiadNoGroups), st::defaultBoxCheckbox)
+    , _gifPrivate(this, lang(lng_media_auto_private_chats), !(cAutoDownloadGif() & dbiadNoPrivate),
+                  st::defaultBoxCheckbox)
+    , _gifGroups(this, lang(lng_media_auto_groups), !(cAutoDownloadGif() & dbiadNoGroups), st::defaultBoxCheckbox)
+    , _gifPlay(this, lang(lng_media_auto_play), cAutoPlayGif(), st::defaultBoxCheckbox)
+    , _sectionHeight(st::boxTitleHeight + 2 * (st::defaultCheck.diameter + st::setLittleSkip)) {}
 
 void AutoDownloadBox::prepare() {
 	addButton(langFactory(lng_connection_save), [this] { onSave(); });
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });
 
-	setDimensions(st::boxWidth, 3 * _sectionHeight - st::autoDownloadTopDelta + st::setLittleSkip + _gifPlay->heightNoMargins() + st::setLittleSkip);
+	setDimensions(st::boxWidth, 3 * _sectionHeight - st::autoDownloadTopDelta + st::setLittleSkip +
+	                                _gifPlay->heightNoMargins() + st::setLittleSkip);
 }
 
 void AutoDownloadBox::paintEvent(QPaintEvent *e) {
@@ -281,9 +305,12 @@ void AutoDownloadBox::paintEvent(QPaintEvent *e) {
 
 	p.setPen(st::boxTitleFg);
 	p.setFont(st::autoDownloadTitleFont);
-	p.drawTextLeft(st::autoDownloadTitlePosition.x(), st::autoDownloadTitlePosition.y(), width(), lang(lng_media_auto_photo));
-	p.drawTextLeft(st::autoDownloadTitlePosition.x(), _sectionHeight + st::autoDownloadTitlePosition.y(), width(), lang(lng_media_auto_audio));
-	p.drawTextLeft(st::autoDownloadTitlePosition.x(), 2 * _sectionHeight + st::autoDownloadTitlePosition.y(), width(), lang(lng_media_auto_gif));
+	p.drawTextLeft(st::autoDownloadTitlePosition.x(), st::autoDownloadTitlePosition.y(), width(),
+	               lang(lng_media_auto_photo));
+	p.drawTextLeft(st::autoDownloadTitlePosition.x(), _sectionHeight + st::autoDownloadTitlePosition.y(), width(),
+	               lang(lng_media_auto_audio));
+	p.drawTextLeft(st::autoDownloadTitlePosition.x(), 2 * _sectionHeight + st::autoDownloadTitlePosition.y(), width(),
+	               lang(lng_media_auto_gif));
 }
 
 void AutoDownloadBox::resizeEvent(QResizeEvent *e) {
@@ -303,7 +330,8 @@ void AutoDownloadBox::resizeEvent(QResizeEvent *e) {
 
 void AutoDownloadBox::onSave() {
 	bool changed = false;
-	qint32 autoDownloadPhoto = (_photoPrivate->checked() ? 0 : dbiadNoPrivate) | (_photoGroups->checked() ? 0 : dbiadNoGroups);
+	qint32 autoDownloadPhoto =
+	    (_photoPrivate->checked() ? 0 : dbiadNoPrivate) | (_photoGroups->checked() ? 0 : dbiadNoGroups);
 	if (cAutoDownloadPhoto() != autoDownloadPhoto) {
 		bool enabledPrivate = ((cAutoDownloadPhoto() & dbiadNoPrivate) && !(autoDownloadPhoto & dbiadNoPrivate));
 		bool enabledGroups = ((cAutoDownloadPhoto() & dbiadNoGroups) && !(autoDownloadPhoto & dbiadNoGroups));
@@ -316,7 +344,8 @@ void AutoDownloadBox::onSave() {
 		}
 		changed = true;
 	}
-	qint32 autoDownloadAudio = (_audioPrivate->checked() ? 0 : dbiadNoPrivate) | (_audioGroups->checked() ? 0 : dbiadNoGroups);
+	qint32 autoDownloadAudio =
+	    (_audioPrivate->checked() ? 0 : dbiadNoPrivate) | (_audioGroups->checked() ? 0 : dbiadNoGroups);
 	if (cAutoDownloadAudio() != autoDownloadAudio) {
 		bool enabledPrivate = ((cAutoDownloadAudio() & dbiadNoPrivate) && !(autoDownloadAudio & dbiadNoPrivate));
 		bool enabledGroups = ((cAutoDownloadAudio() & dbiadNoGroups) && !(autoDownloadAudio & dbiadNoGroups));
@@ -330,7 +359,8 @@ void AutoDownloadBox::onSave() {
 		}
 		changed = true;
 	}
-	qint32 autoDownloadGif = (_gifPrivate->checked() ? 0 : dbiadNoPrivate) | (_gifGroups->checked() ? 0 : dbiadNoGroups);
+	qint32 autoDownloadGif =
+	    (_gifPrivate->checked() ? 0 : dbiadNoPrivate) | (_gifGroups->checked() ? 0 : dbiadNoGroups);
 	if (cAutoDownloadGif() != autoDownloadGif) {
 		bool enabledPrivate = ((cAutoDownloadGif() & dbiadNoPrivate) && !(autoDownloadGif & dbiadNoPrivate));
 		bool enabledGroups = ((cAutoDownloadGif() & dbiadNoGroups) && !(autoDownloadGif & dbiadNoGroups));

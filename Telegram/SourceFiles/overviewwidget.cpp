@@ -18,55 +18,54 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "styles/style_overview.h"
-#include "styles/style_dialogs.h"
-#include "styles/style_window.h"
-#include "styles/style_settings.h"
+#include "overviewwidget.h"
+#include "application.h"
+#include "auth_session.h"
 #include "boxes/add_contact_box.h"
 #include "boxes/confirm_box.h"
 #include "boxes/photo_crop_box.h"
 #include "core/file_utilities.h"
-#include "ui/widgets/popup_menu.h"
-#include "ui/widgets/tooltip.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/input_fields.h"
-#include "window/top_bar_widget.h"
-#include "window/themes/window_theme.h"
-#include "lang/lang_keys.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "overviewwidget.h"
-#include "application.h"
-#include "overview/overview_layout.h"
-#include "history/history_message.h"
 #include "history/history_media_types.h"
+#include "history/history_message.h"
 #include "history/history_service_layout.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
 #include "media/media_audio.h"
 #include "observer_peer.h"
-#include "auth_session.h"
+#include "overview/overview_layout.h"
 #include "storage/file_download.h"
+#include "styles/style_dialogs.h"
+#include "styles/style_overview.h"
+#include "styles/style_settings.h"
+#include "styles/style_window.h"
+#include "ui/widgets/buttons.h"
 #include "ui/widgets/dropdown_menu.h"
+#include "ui/widgets/input_fields.h"
+#include "ui/widgets/popup_menu.h"
+#include "ui/widgets/tooltip.h"
+#include "window/themes/window_theme.h"
+#include "window/top_bar_widget.h"
 
 // flick scroll taken from http://qt-project.org/doc/qt-4.8/demos-embedded-anomaly-src-flickcharm-cpp.html
 
-OverviewInner::OverviewInner(OverviewWidget *overview, Ui::ScrollArea *scroll, PeerData *peer, MediaOverviewType type) : TWidget(nullptr)
-, _overview(overview)
-, _scroll(scroll)
-, _peer(peer->migrateTo() ? peer->migrateTo() : peer)
-, _type(type)
-, _reversed(_type != OverviewFiles && _type != OverviewLinks)
-, _history(App::history(_peer))
-, _migrated(_history->migrateFrom())
-, _channel(peerToChannel(_peer->id))
-, _rowWidth(st::msgMinWidth)
-, _search(this, st::overviewFilter, langFactory(lng_dlg_filter))
-, _cancelSearch(this, st::dialogsCancelSearch)
-, _itemsToBeLoaded(LinksOverviewPerPage * 2)
-, _width(st::windowMinWidth) {
+OverviewInner::OverviewInner(OverviewWidget *overview, Ui::ScrollArea *scroll, PeerData *peer, MediaOverviewType type)
+    : TWidget(nullptr)
+    , _overview(overview)
+    , _scroll(scroll)
+    , _peer(peer->migrateTo() ? peer->migrateTo() : peer)
+    , _type(type)
+    , _reversed(_type != OverviewFiles && _type != OverviewLinks)
+    , _history(App::history(_peer))
+    , _migrated(_history->migrateFrom())
+    , _channel(peerToChannel(_peer->id))
+    , _rowWidth(st::msgMinWidth)
+    , _search(this, st::overviewFilter, langFactory(lng_dlg_filter))
+    , _cancelSearch(this, st::dialogsCancelSearch)
+    , _itemsToBeLoaded(LinksOverviewPerPage * 2)
+    , _width(st::windowMinWidth) {
 	subscribe(Auth().downloader().taskFinished(), [this] { update(); });
-	subscribe(Global::RefItemRemoved(), [this](HistoryItem *item) {
-		itemRemoved(item);
-	});
+	subscribe(Global::RefItemRemoved(), [this](HistoryItem *item) { itemRemoved(item); });
 
 	resize(_width, st::windowMinHeight);
 
@@ -93,12 +92,9 @@ OverviewInner::OverviewInner(OverviewWidget *overview, Ui::ScrollArea *scroll, P
 			invalidateCache();
 		}
 	});
-	subscribe(App::wnd()->dragFinished(), [this] {
-		dragActionUpdate(QCursor::pos());
-	});
-	subscribe(Auth().messageIdChanging, [this](std::pair<HistoryItem*, MsgId> update) {
-		changingMsgId(update.first, update.second);
-	});
+	subscribe(App::wnd()->dragFinished(), [this] { dragActionUpdate(QCursor::pos()); });
+	subscribe(Auth().messageIdChanging,
+	          [this](std::pair<HistoryItem *, MsgId> update) { changingMsgId(update.first, update.second); });
 
 	if (_type == OverviewLinks || _type == OverviewFiles) {
 		_search->show();
@@ -108,17 +104,14 @@ OverviewInner::OverviewInner(OverviewWidget *overview, Ui::ScrollArea *scroll, P
 }
 
 void OverviewInner::invalidateCache() {
-	for_const (auto item, _layoutItems) {
-		item->invalidateCache();
-	}
-	for_const (auto item, _layoutDates) {
-		item->invalidateCache();
-	}
+	for_const (auto item, _layoutItems) { item->invalidateCache(); }
+	for_const (auto item, _layoutDates) { item->invalidateCache(); }
 }
 
 bool OverviewInner::event(QEvent *e) {
-	if (e->type() == QEvent::TouchBegin || e->type() == QEvent::TouchUpdate || e->type() == QEvent::TouchEnd || e->type() == QEvent::TouchCancel) {
-		QTouchEvent *ev = static_cast<QTouchEvent*>(e);
+	if (e->type() == QEvent::TouchBegin || e->type() == QEvent::TouchUpdate || e->type() == QEvent::TouchEnd ||
+	    e->type() == QEvent::TouchCancel) {
+		QTouchEvent *ev = static_cast<QTouchEvent *>(e);
 		if (ev->device()->type() == QTouchDevice::TouchScreen) {
 			touchEvent(ev);
 			return true;
@@ -143,8 +136,9 @@ void OverviewInner::touchUpdateSpeed() {
 			if (_touchScrollState == Ui::TouchScrollState::Auto) {
 				const int oldSpeedY = _touchSpeed.y();
 				const int oldSpeedX = _touchSpeed.x();
-				if ((oldSpeedY <= 0 && newSpeedY <= 0) || ((oldSpeedY >= 0 && newSpeedY >= 0)
-					&& (oldSpeedX <= 0 && newSpeedX <= 0)) || (oldSpeedX >= 0 && newSpeedX >= 0)) {
+				if ((oldSpeedY <= 0 && newSpeedY <= 0) ||
+				    ((oldSpeedY >= 0 && newSpeedY >= 0) && (oldSpeedX <= 0 && newSpeedX <= 0)) ||
+				    (oldSpeedX >= 0 && newSpeedX >= 0)) {
 					_touchSpeed.setY(snap((oldSpeedY + (newSpeedY / 4)), -MaxScrollAccelerated, +MaxScrollAccelerated));
 					_touchSpeed.setX(snap((oldSpeedX + (newSpeedX / 4)), -MaxScrollAccelerated, +MaxScrollAccelerated));
 				} else {
@@ -153,8 +147,10 @@ void OverviewInner::touchUpdateSpeed() {
 			} else {
 				// we average the speed to avoid strange effects with the last delta
 				if (!_touchSpeed.isNull()) {
-					_touchSpeed.setX(snap((_touchSpeed.x() / 4) + (newSpeedX * 3 / 4), -MaxScrollFlick, +MaxScrollFlick));
-					_touchSpeed.setY(snap((_touchSpeed.y() / 4) + (newSpeedY * 3 / 4), -MaxScrollFlick, +MaxScrollFlick));
+					_touchSpeed.setX(
+					    snap((_touchSpeed.x() / 4) + (newSpeedX * 3 / 4), -MaxScrollFlick, +MaxScrollFlick));
+					_touchSpeed.setY(
+					    snap((_touchSpeed.y() / 4) + (newSpeedY * 3 / 4), -MaxScrollFlick, +MaxScrollFlick));
 				} else {
 					_touchSpeed = QPoint(newSpeedX, newSpeedY);
 				}
@@ -235,7 +231,9 @@ void OverviewInner::searchReceived(SearchRequestType type, const MTPmessages_Mes
 			if (_peer && _peer->isChannel()) {
 				_peer->asChannel()->ptsReceived(d.vpts.v);
 			} else {
-				LOG(("API Error: received messages.channelMessages when no channel was passed! (OverviewInner::searchReceived)"));
+				LOG(
+				    ("API Error: received messages.channelMessages when no channel was passed! "
+				     "(OverviewInner::searchReceived)"));
 			}
 			App::feedUsers(d.vusers);
 			App::feedChats(d.vchats);
@@ -528,7 +526,8 @@ void OverviewInner::dragActionFinish(const QPoint &screenPos, Qt::MouseButton bu
 		App::activateClickHandler(activated, button);
 		return;
 	}
-	if (_dragAction == PrepareSelect && !_dragWasInactive && !_selected.isEmpty() && _selected.cbegin().value() == FullSelection) {
+	if (_dragAction == PrepareSelect && !_dragWasInactive && !_selected.isEmpty() &&
+	    _selected.cbegin().value() == FullSelection) {
 		SelectedItems::iterator i = _selected.find(_dragItem);
 		if (i == _selected.cend() && itemMsgId(_dragItem) > 0) {
 			if (_selected.size() < MaxSelectedItems) {
@@ -546,7 +545,8 @@ void OverviewInner::dragActionFinish(const QPoint &screenPos, Qt::MouseButton bu
 		if (i != _selected.cend() && i.value() == FullSelection) {
 			_selected.erase(i);
 			repaintItem(_dragItem, _dragItemIndex);
-		} else if (i == _selected.cend() && itemMsgId(_dragItem) > 0 && !_selected.isEmpty() && _selected.cbegin().value() == FullSelection) {
+		} else if (i == _selected.cend() && itemMsgId(_dragItem) > 0 && !_selected.isEmpty() &&
+		           _selected.cbegin().value() == FullSelection) {
 			if (_selected.size() < MaxSelectedItems) {
 				_selected.insert(_dragItem, FullSelection);
 				repaintItem(_dragItem, _dragItemIndex);
@@ -595,7 +595,7 @@ void OverviewInner::performDrag() {
 		}
 	} else if (pressedHandler) {
 		sel = pressedHandler->dragText();
-		//if (!sel.isEmpty() && sel.at(0) != '/' && sel.at(0) != '@' && sel.at(0) != '#') {
+		// if (!sel.isEmpty() && sel.at(0) != '/' && sel.at(0) != '@' && sel.at(0) != '#') {
 		//	urls.push_back(QUrl::fromEncoded(sel.toUtf8())); // Google Chrome crashes in Mac OS X O_o
 		//}
 	}
@@ -729,7 +729,9 @@ void OverviewInner::clear() {
 qint32 OverviewInner::itemTop(const FullMsgId &msgId) const {
 	if (_type == OverviewMusicFiles) {
 		qint32 itemIndex = -1;
-		fixItemIndex(itemIndex, (msgId.channel == _channel) ? msgId.msg : ((_migrated && msgId.channel == _migrated->channelId()) ? -msgId.msg : 0));
+		fixItemIndex(itemIndex, (msgId.channel == _channel) ?
+		                            msgId.msg :
+		                            ((_migrated && msgId.channel == _migrated->channelId()) ? -msgId.msg : 0));
 		if (itemIndex >= 0) {
 			qint32 top = _items.at(itemIndex)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) top = _height - top;
@@ -744,12 +746,25 @@ void OverviewInner::preloadMore() {
 		if (!_searchRequest) {
 			auto filter = (_type == OverviewLinks) ? MTP_inputMessagesFilterUrl() : MTP_inputMessagesFilterDocument();
 			if (!_searchFull) {
-				_searchRequest = MTP::send(MTPmessages_Search(MTP_flags(0), _history->peer->input, MTP_string(_searchQuery), MTP_inputUserEmpty(), filter, MTP_int(0), MTP_int(0), MTP_int(_lastSearchId), MTP_int(0), MTP_int(SearchPerPage), MTP_int(0), MTP_int(0)), rpcDone(&OverviewInner::searchReceived, _lastSearchId ? SearchFromOffset : SearchFromStart), rpcFail(&OverviewInner::searchFailed, _lastSearchId ? SearchFromOffset : SearchFromStart));
+				_searchRequest = MTP::send(
+				    MTPmessages_Search(MTP_flags(0), _history->peer->input, MTP_string(_searchQuery),
+				                       MTP_inputUserEmpty(), filter, MTP_int(0), MTP_int(0), MTP_int(_lastSearchId),
+				                       MTP_int(0), MTP_int(SearchPerPage), MTP_int(0), MTP_int(0)),
+				    rpcDone(&OverviewInner::searchReceived, _lastSearchId ? SearchFromOffset : SearchFromStart),
+				    rpcFail(&OverviewInner::searchFailed, _lastSearchId ? SearchFromOffset : SearchFromStart));
 				if (!_lastSearchId) {
 					_searchQueries.insert(_searchRequest, _searchQuery);
 				}
 			} else if (_migrated && !_searchFullMigrated) {
-				_searchRequest = MTP::send(MTPmessages_Search(MTP_flags(0), _migrated->peer->input, MTP_string(_searchQuery), MTP_inputUserEmpty(), filter, MTP_int(0), MTP_int(0), MTP_int(_lastSearchMigratedId), MTP_int(0), MTP_int(SearchPerPage), MTP_int(0), MTP_int(0)), rpcDone(&OverviewInner::searchReceived, _lastSearchMigratedId ? SearchMigratedFromOffset : SearchMigratedFromStart), rpcFail(&OverviewInner::searchFailed, _lastSearchMigratedId ? SearchMigratedFromOffset : SearchMigratedFromStart));
+				_searchRequest =
+				    MTP::send(MTPmessages_Search(MTP_flags(0), _migrated->peer->input, MTP_string(_searchQuery),
+				                                 MTP_inputUserEmpty(), filter, MTP_int(0), MTP_int(0),
+				                                 MTP_int(_lastSearchMigratedId), MTP_int(0), MTP_int(SearchPerPage),
+				                                 MTP_int(0), MTP_int(0)),
+				              rpcDone(&OverviewInner::searchReceived,
+				                      _lastSearchMigratedId ? SearchMigratedFromOffset : SearchMigratedFromStart),
+				              rpcFail(&OverviewInner::searchFailed,
+				                      _lastSearchMigratedId ? SearchMigratedFromOffset : SearchMigratedFromStart));
 			}
 		}
 	} else if (App::main()) {
@@ -776,7 +791,7 @@ TextSelection OverviewInner::itemSelectedValue(qint32 index) const {
 	}
 	if (_items.at(index)->toMediaItem()) { // draw item
 		if (index >= _dragSelToIndex && index <= _dragSelFromIndex && _dragSelToIndex >= 0) {
-			return (_dragSelecting && _items.at(index)->msgId() > 0) ? FullSelection : TextSelection{ 0, 0 };
+			return (_dragSelecting && _items.at(index)->msgId() > 0) ? FullSelection : TextSelection{0, 0};
 		} else if (!_selected.isEmpty()) {
 			SelectedItems::const_iterator j = _selected.constFind(complexMsgId(_items.at(index)->getItem()));
 			if (j != _selected.cend()) {
@@ -784,7 +799,7 @@ TextSelection OverviewInner::itemSelectedValue(qint32 index) const {
 			}
 		}
 	}
-	return { 0, 0 };
+	return {0, 0};
 }
 
 void OverviewInner::paintEvent(QPaintEvent *e) {
@@ -800,10 +815,12 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 	auto ms = getms();
 	Overview::Layout::PaintContext context(ms, _selMode);
 
-	if (_history->overview(_type).isEmpty() && (!_migrated || !_history->overviewLoaded(_type) || _migrated->overview(_type).isEmpty())) {
+	if (_history->overview(_type).isEmpty() &&
+	    (!_migrated || !_history->overviewLoaded(_type) || _migrated->overview(_type).isEmpty())) {
 		HistoryLayout::paintEmpty(p, _width, height());
 		return;
-	} else if (_inSearch && _searchResults.isEmpty() && _searchFull && (!_migrated || _searchFullMigrated) && !_searchTimer.isActive()) {
+	} else if (_inSearch && _searchResults.isEmpty() && _searchFull && (!_migrated || _searchFullMigrated) &&
+	           !_searchTimer.isActive()) {
 		p.setFont(st::noContactsFont->f);
 		p.setPen(st::noContactsColor->p);
 		p.drawText(QRect(_rowsLeft, _marginTop, _rowWidth, _marginTop), lang(lng_search_no_results), style::al_center);
@@ -821,8 +838,10 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		qint32 count = _items.size(), rowsCount = count / _photosInRow + ((count % _photosInRow) ? 1 : 0);
-		qint32 rowFrom = floorclamp(r.y() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
-		qint32 rowTo = ceilclamp(r.y() + r.height() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
+		qint32 rowFrom =
+		    floorclamp(r.y() - _marginTop - st::overviewPhotoSkip, _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
+		qint32 rowTo = ceilclamp(r.y() + r.height() - _marginTop - st::overviewPhotoSkip,
+		                         _rowWidth + st::overviewPhotoSkip, 0, rowsCount);
 		double w = double(_width - st::overviewPhotoSkip) / _photosInRow;
 		for (qint32 row = rowFrom; row < rowTo; ++row) {
 			if (row * _photosInRow >= count) break;
@@ -831,7 +850,8 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 				if (i < 0) continue;
 				if (i >= count) break;
 
-				QPoint pos(qint32(col * w + st::overviewPhotoSkip), _marginTop + row * (_rowWidth + st::overviewPhotoSkip) + st::overviewPhotoSkip);
+				QPoint pos(qint32(col * w + st::overviewPhotoSkip),
+				           _marginTop + row * (_rowWidth + st::overviewPhotoSkip) + st::overviewPhotoSkip);
 				p.translate(pos.x(), pos.y());
 				_items.at(i)->paint(p, r.translated(-pos.x(), -pos.y()), itemSelectedValue(i), &context);
 				p.translate(-pos.x(), -pos.y());
@@ -842,7 +862,8 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 		qint32 y = 0, w = _rowWidth;
 		for (qint32 j = 0, l = _items.size(); j < l; ++j) {
 			qint32 i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
-			qint32 nextItemTop = (j + 1 == l) ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
+			qint32 nextItemTop =
+			    (j + 1 == l) ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) nextItemTop = _height - nextItemTop;
 			if (_marginTop + nextItemTop > r.top()) {
 				auto info = _items.at(i)->Get<Overview::Layout::Info>();
@@ -900,7 +921,9 @@ void OverviewInner::onUpdateSelected() {
 				item = media->getItem();
 				index = i;
 				if (upon) {
-					media->getState(lnk, cursorState, m - QPoint(col * w + st::overviewPhotoSkip, _marginTop + row * vsize + st::overviewPhotoSkip));
+					media->getState(
+					    lnk, cursorState,
+					    m - QPoint(col * w + st::overviewPhotoSkip, _marginTop + row * vsize + st::overviewPhotoSkip));
 					lnkhost = media;
 				}
 			}
@@ -909,7 +932,8 @@ void OverviewInner::onUpdateSelected() {
 		for (qint32 j = 0, l = _items.size(); j < l; ++j) {
 			bool lastItem = (j + 1 == l);
 			qint32 i = _reversed ? (l - j - 1) : j, nexti = _reversed ? (i - 1) : (i + 1);
-			qint32 nextItemTop = lastItem ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
+			qint32 nextItemTop =
+			    lastItem ? (_reversed ? 0 : _height) : _items.at(nexti)->Get<Overview::Layout::Info>()->top;
 			if (_reversed) nextItemTop = _height - nextItemTop;
 			if (_marginTop + nextItemTop > m.y() || lastItem) {
 				qint32 top = _items.at(i)->Get<Overview::Layout::Info>()->top;
@@ -992,33 +1016,47 @@ void OverviewInner::onUpdateSelected() {
 		}
 		if (_dragAction == Selecting) {
 			bool canSelectMany = (_peer != 0);
-			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() && _selected.cbegin().value() != FullSelection) {
+			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() &&
+			    _selected.cbegin().value() != FullSelection) {
 				bool afterSymbol = false, uponSymbol = false;
 				quint16 second = 0;
-				_selected[_dragItem] = { 0, 0 };
+				_selected[_dragItem] = {0, 0};
 				updateDragSelection(0, -1, 0, -1, false);
 			} else if (canSelectMany) {
-				bool selectingDown = (_reversed ? (_mousedItemIndex < _dragItemIndex) : (_mousedItemIndex > _dragItemIndex)) || (_mousedItemIndex == _dragItemIndex && ((_type == OverviewPhotos || _type == OverviewVideos) ? (_dragStartPos.x() < m.x()) : (_dragStartPos.y() < m.y())));
+				bool selectingDown =
+				    (_reversed ? (_mousedItemIndex < _dragItemIndex) : (_mousedItemIndex > _dragItemIndex)) ||
+				    (_mousedItemIndex == _dragItemIndex &&
+				     ((_type == OverviewPhotos || _type == OverviewVideos) ? (_dragStartPos.x() < m.x()) :
+				                                                             (_dragStartPos.y() < m.y())));
 				MsgId dragSelFrom = _dragItem, dragSelTo = _mousedItem;
 				qint32 dragSelFromIndex = _dragItemIndex, dragSelToIndex = _mousedItemIndex;
-				if (!itemHasPoint(dragSelFrom, dragSelFromIndex, _dragStartPos.x(), _dragStartPos.y())) { // maybe exclude dragSelFrom
+				if (!itemHasPoint(dragSelFrom, dragSelFromIndex, _dragStartPos.x(),
+				                  _dragStartPos.y())) { // maybe exclude dragSelFrom
 					if (selectingDown) {
 						if (_type == OverviewPhotos || _type == OverviewVideos) {
-							if (_dragStartPos.x() >= _rowWidth || ((_mousedItem == dragSelFrom) && (m.x() < _dragStartPos.x() + QApplication::startDragDistance()))) {
+							if (_dragStartPos.x() >= _rowWidth ||
+							    ((_mousedItem == dragSelFrom) &&
+							     (m.x() < _dragStartPos.x() + QApplication::startDragDistance()))) {
 								moveToNextItem(dragSelFrom, dragSelFromIndex, dragSelTo, 1);
 							}
 						} else {
-							if (_dragStartPos.y() >= itemHeight(dragSelFrom, dragSelFromIndex) || ((_mousedItem == dragSelFrom) && (m.y() < _dragStartPos.y() + QApplication::startDragDistance()))) {
+							if (_dragStartPos.y() >= itemHeight(dragSelFrom, dragSelFromIndex) ||
+							    ((_mousedItem == dragSelFrom) &&
+							     (m.y() < _dragStartPos.y() + QApplication::startDragDistance()))) {
 								moveToNextItem(dragSelFrom, dragSelFromIndex, dragSelTo, _reversed ? -1 : 1);
 							}
 						}
 					} else {
 						if (_type == OverviewPhotos || _type == OverviewVideos) {
-							if (_dragStartPos.x() < 0 || ((_mousedItem == dragSelFrom) && (m.x() >= _dragStartPos.x() - QApplication::startDragDistance()))) {
+							if (_dragStartPos.x() < 0 ||
+							    ((_mousedItem == dragSelFrom) &&
+							     (m.x() >= _dragStartPos.x() - QApplication::startDragDistance()))) {
 								moveToNextItem(dragSelFrom, dragSelFromIndex, dragSelTo, -1);
 							}
 						} else {
-							if (_dragStartPos.y() < 0 || ((_mousedItem == dragSelFrom) && (m.y() >= _dragStartPos.y() - QApplication::startDragDistance()))) {
+							if (_dragStartPos.y() < 0 ||
+							    ((_mousedItem == dragSelFrom) &&
+							     (m.y() >= _dragStartPos.y() - QApplication::startDragDistance()))) {
 								moveToNextItem(dragSelFrom, dragSelFromIndex, dragSelTo, _reversed ? 1 : -1);
 							}
 						}
@@ -1051,7 +1089,8 @@ void OverviewInner::onUpdateSelected() {
 				MsgId dragFirstAffected = dragSelFrom;
 				qint32 dragFirstAffectedIndex = dragSelFromIndex;
 				while (dragFirstAffectedIndex >= 0 && itemMsgId(dragFirstAffected) <= 0) {
-					moveToNextItem(dragFirstAffected, dragFirstAffectedIndex, dragSelTo, selectingDown ? (_reversed ? -1 : 1) : (_reversed ? 1 : -1));
+					moveToNextItem(dragFirstAffected, dragFirstAffectedIndex, dragSelTo,
+					               selectingDown ? (_reversed ? -1 : 1) : (_reversed ? 1 : -1));
 				}
 				if (dragFirstAffectedIndex >= 0) {
 					SelectedItems::const_iterator i = _selected.constFind(dragFirstAffected);
@@ -1097,8 +1136,10 @@ QString OverviewInner::tooltipText() const {
 	return QString();
 }
 
-void OverviewInner::updateDragSelection(MsgId dragSelFrom, qint32 dragSelFromIndex, MsgId dragSelTo, qint32 dragSelToIndex, bool dragSelecting) {
-	if (_dragSelFrom != dragSelFrom || _dragSelFromIndex != dragSelFromIndex || _dragSelTo != dragSelTo || _dragSelToIndex != dragSelToIndex || _dragSelecting != dragSelecting) {
+void OverviewInner::updateDragSelection(MsgId dragSelFrom, qint32 dragSelFromIndex, MsgId dragSelTo,
+                                        qint32 dragSelToIndex, bool dragSelecting) {
+	if (_dragSelFrom != dragSelFrom || _dragSelFromIndex != dragSelFromIndex || _dragSelTo != dragSelTo ||
+	    _dragSelToIndex != dragSelToIndex || _dragSelecting != dragSelecting) {
 		_dragSelFrom = dragSelFrom;
 		_dragSelFromIndex = dragSelFromIndex;
 		_dragSelTo = dragSelTo;
@@ -1185,7 +1226,10 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		isUponSelected = -1;
 		if (_selected.cbegin().value() == FullSelection) {
 			hasSelected = 2;
-			if (!ignoreMousedItem && App::mousedItem() && _selected.constFind(App::mousedItem()->history() == _migrated ? -App::mousedItem()->id : App::mousedItem()->id) != _selected.cend()) {
+			if (!ignoreMousedItem && App::mousedItem() &&
+			    _selected.constFind(App::mousedItem()->history() == _migrated ?
+			                            -App::mousedItem()->id :
+			                            App::mousedItem()->id) != _selected.cend()) {
 				isUponSelected = 2;
 			} else {
 				isUponSelected = -2;
@@ -1197,8 +1241,8 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 	}
 
 	_contextMenuLnk = ClickHandler::getActive();
-	PhotoClickHandler *lnkPhoto = dynamic_cast<PhotoClickHandler*>(_contextMenuLnk.data());
-	DocumentClickHandler *lnkDocument = dynamic_cast<DocumentClickHandler*>(_contextMenuLnk.data());
+	PhotoClickHandler *lnkPhoto = dynamic_cast<PhotoClickHandler *>(_contextMenuLnk.data());
+	DocumentClickHandler *lnkDocument = dynamic_cast<DocumentClickHandler *>(_contextMenuLnk.data());
 	bool lnkIsVideo = lnkDocument ? lnkDocument->document()->isVideo() : false;
 	bool lnkIsAudio = lnkDocument ? (lnkDocument->document()->voice() != nullptr) : false;
 	bool lnkIsSong = lnkDocument ? (lnkDocument->document()->song() != nullptr) : false;
@@ -1211,14 +1255,25 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		} else {
 			if (auto document = lnkDocument->document()) {
 				if (document->loading()) {
-					_menu->addAction(lang(lng_context_cancel_download), this, SLOT(cancelContextDownload()))->setEnabled(true);
+					_menu->addAction(lang(lng_context_cancel_download), this, SLOT(cancelContextDownload()))
+					    ->setEnabled(true);
 				} else {
 					if (!document->filepath(DocumentData::FilePathResolveChecked).isEmpty()) {
-						_menu->addAction(lang((cPlatform() == dbipMac || cPlatform() == dbipMacOld) ? lng_context_show_in_finder : lng_context_show_in_folder), this, SLOT(showContextInFolder()))->setEnabled(true);
+						_menu
+						    ->addAction(lang((cPlatform() == dbipMac || cPlatform() == dbipMacOld) ?
+						                         lng_context_show_in_finder :
+						                         lng_context_show_in_folder),
+						                this, SLOT(showContextInFolder()))
+						    ->setEnabled(true);
 					}
-					_menu->addAction(lang(lnkIsVideo ? lng_context_save_video : (lnkIsAudio ? lng_context_save_audio : (lnkIsSong ? lng_context_save_audio_file : lng_context_save_file))), App::LambdaDelayed(st::defaultDropdownMenu.menu.ripple.hideDuration, this, [this, document] {
-						saveDocumentToFile(document);
-					}))->setEnabled(true);
+					_menu
+					    ->addAction(lang(lnkIsVideo ? lng_context_save_video :
+					                                  (lnkIsAudio ? lng_context_save_audio :
+					                                                (lnkIsSong ? lng_context_save_audio_file :
+					                                                             lng_context_save_file))),
+					                App::LambdaDelayed(st::defaultDropdownMenu.menu.ripple.hideDuration, this,
+					                                   [this, document] { saveDocumentToFile(document); }))
+					    ->setEnabled(true);
 				}
 			}
 		}
@@ -1227,9 +1282,8 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(lang(lng_context_forward_selected), _overview, SLOT(onForwardSelected()));
 			}
 			if (selectedState.count > 0 && selectedState.count == selectedState.canDeleteCount) {
-				_menu->addAction(lang(lng_context_delete_selected), base::lambda_guarded(this, [this] {
-					_overview->confirmDeleteSelectedItems();
-				}));
+				_menu->addAction(lang(lng_context_delete_selected),
+				                 base::lambda_guarded(this, [this] { _overview->confirmDeleteSelectedItems(); }));
 			}
 			_menu->addAction(lang(lng_context_clear_selection), _overview, SLOT(onClearSelected()));
 		} else if (App::hoveredLinkItem()) {
@@ -1238,9 +1292,8 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(lang(lng_context_forward_msg), this, SLOT(forwardMessage()))->setEnabled(true);
 				}
 				if (App::hoveredLinkItem()->canDelete()) {
-					_menu->addAction(lang(lng_context_delete_msg), base::lambda_guarded(this, [this] {
-						_overview->confirmDeleteContextItem();
-					}));
+					_menu->addAction(lang(lng_context_delete_msg),
+					                 base::lambda_guarded(this, [this] { _overview->confirmDeleteContextItem(); }));
 				}
 			}
 			if (App::hoveredLinkItem()->id > 0) {
@@ -1250,9 +1303,11 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		App::contextItem(App::hoveredLinkItem());
 		repaintItem(App::contextItem());
 		if (_selectedMsgId) repaintItem(_selectedMsgId, -1);
-	} else if (!ignoreMousedItem && App::mousedItem() && App::mousedItem()->channelId() == itemChannel(_mousedItem) && App::mousedItem()->id == itemMsgId(_mousedItem)) {
+	} else if (!ignoreMousedItem && App::mousedItem() && App::mousedItem()->channelId() == itemChannel(_mousedItem) &&
+	           App::mousedItem()->id == itemMsgId(_mousedItem)) {
 		_menu = new Ui::PopupMenu(nullptr);
-		QString linkCopyToClipboardText = _contextMenuLnk ? _contextMenuLnk->copyToClipboardContextItemText() : QString();
+		QString linkCopyToClipboardText =
+		    _contextMenuLnk ? _contextMenuLnk->copyToClipboardContextItemText() : QString();
 		if (!linkCopyToClipboardText.isEmpty()) {
 			_menu->addAction(linkCopyToClipboardText, this, SLOT(copyContextUrl()))->setEnabled(true);
 		}
@@ -1262,9 +1317,8 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(lang(lng_context_forward_selected), _overview, SLOT(onForwardSelected()));
 			}
 			if (selectedState.count > 0 && selectedState.count == selectedState.canDeleteCount) {
-				_menu->addAction(lang(lng_context_delete_selected), base::lambda_guarded(this, [this] {
-					_overview->confirmDeleteSelectedItems();
-				}));
+				_menu->addAction(lang(lng_context_delete_selected),
+				                 base::lambda_guarded(this, [this] { _overview->confirmDeleteSelectedItems(); }));
 			}
 			_menu->addAction(lang(lng_context_clear_selection), _overview, SLOT(onClearSelected()));
 		} else {
@@ -1273,9 +1327,8 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(lang(lng_context_forward_msg), this, SLOT(forwardMessage()))->setEnabled(true);
 				}
 				if (App::mousedItem()->canDelete()) {
-					_menu->addAction(lang(lng_context_delete_msg), base::lambda_guarded(this, [this] {
-						_overview->confirmDeleteContextItem();
-					}));
+					_menu->addAction(lang(lng_context_delete_msg),
+					                 base::lambda_guarded(this, [this] { _overview->confirmDeleteContextItem(); }));
 				}
 			}
 			if (App::mousedItem()->id > 0) {
@@ -1287,7 +1340,7 @@ void OverviewInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 		if (_selectedMsgId) repaintItem(_selectedMsgId, -1);
 	}
 	if (_menu) {
-		connect(_menu, SIGNAL(destroyed(QObject*)), this, SLOT(onMenuDestroy(QObject*)));
+		connect(_menu, SIGNAL(destroyed(QObject *)), this, SLOT(onMenuDestroy(QObject *)));
 		_menu->popup(e->globalPos());
 		e->accept();
 	}
@@ -1297,14 +1350,17 @@ qint32 OverviewInner::resizeToWidth(qint32 nwidth, qint32 scrollTop, qint32 minH
 	if (!force && _width == nwidth && minHeight == _minHeight) return scrollTop;
 
 	if ((_type == OverviewPhotos || _type == OverviewVideos) && _resizeIndex < 0) {
-		_resizeIndex = _photosInRow * ((scrollTop + minHeight) / qint32(_rowWidth + st::overviewPhotoSkip)) + _photosInRow - 1;
-		_resizeSkip = (scrollTop + minHeight) - ((scrollTop + minHeight) / qint32(_rowWidth + st::overviewPhotoSkip)) * qint32(_rowWidth + st::overviewPhotoSkip);
+		_resizeIndex =
+		    _photosInRow * ((scrollTop + minHeight) / qint32(_rowWidth + st::overviewPhotoSkip)) + _photosInRow - 1;
+		_resizeSkip = (scrollTop + minHeight) - ((scrollTop + minHeight) / qint32(_rowWidth + st::overviewPhotoSkip)) *
+		                                            qint32(_rowWidth + st::overviewPhotoSkip);
 	}
 
 	_width = nwidth;
 	_minHeight = minHeight;
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-		_photosInRow = qint32(_width - st::overviewPhotoSkip) / qint32(st::overviewPhotoMinSize + st::overviewPhotoSkip);
+		_photosInRow =
+		    qint32(_width - st::overviewPhotoSkip) / qint32(st::overviewPhotoMinSize + st::overviewPhotoSkip);
 		_rowWidth = (qint32(_width - st::overviewPhotoSkip) / _photosInRow) - st::overviewPhotoSkip;
 		_rowsLeft = st::overviewPhotoSkip;
 	} else {
@@ -1316,7 +1372,8 @@ qint32 OverviewInner::resizeToWidth(qint32 nwidth, qint32 scrollTop, qint32 minH
 		}
 		auto widthWithMin = st::windowMinWidth;
 		auto widthWithMax = st::overviewFileLayout.maxWidth + 2 * contentLeftMax;
-		_rowsLeft = anim::interpolate(contentLeftMax, contentLeftMin, std::max(widthWithMax - _width, 0) / double(widthWithMax - widthWithMin));
+		_rowsLeft = anim::interpolate(contentLeftMax, contentLeftMin,
+		                              std::max(widthWithMax - _width, 0) / double(widthWithMax - widthWithMin));
 		_rowWidth = std::min(_width - 2 * _rowsLeft, st::overviewFileLayout.maxWidth);
 	}
 
@@ -1329,10 +1386,10 @@ qint32 OverviewInner::resizeToWidth(qint32 nwidth, qint32 scrollTop, qint32 minH
 	resize(_width, _marginTop + _height + _marginBottom);
 
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
-        qint32 newRow = _resizeIndex / _photosInRow;
-        return newRow * qint32(_rowWidth + st::overviewPhotoSkip) + _resizeSkip - minHeight;
-    }
-    return scrollTop;
+		qint32 newRow = _resizeIndex / _photosInRow;
+		return newRow * qint32(_rowWidth + st::overviewPhotoSkip) + _resizeSkip - minHeight;
+	}
+	return scrollTop;
 }
 
 void OverviewInner::resizeItems() {
@@ -1446,14 +1503,14 @@ void OverviewInner::selectMessage() {
 }
 
 void OverviewInner::cancelContextDownload() {
-	DocumentClickHandler *lnkDocument = dynamic_cast<DocumentClickHandler*>(_contextMenuLnk.data());
+	DocumentClickHandler *lnkDocument = dynamic_cast<DocumentClickHandler *>(_contextMenuLnk.data());
 	if (lnkDocument) {
 		lnkDocument->document()->cancel();
 	}
 }
 
 void OverviewInner::showContextInFolder() {
-	if (auto lnkDocument = dynamic_cast<DocumentClickHandler*>(_contextMenuLnk.data())) {
+	if (auto lnkDocument = dynamic_cast<DocumentClickHandler *>(_contextMenuLnk.data())) {
 		auto filepath = lnkDocument->document()->filepath(DocumentData::FilePathResolveChecked);
 		if (!filepath.isEmpty()) {
 			File::ShowInFolder(filepath);
@@ -1485,7 +1542,11 @@ bool OverviewInner::onSearchMessages(bool searchCache) {
 		_searchQuery = q;
 		_searchFull = _searchFullMigrated = false;
 		auto filter = (_type == OverviewLinks) ? MTP_inputMessagesFilterUrl() : MTP_inputMessagesFilterDocument();
-		_searchRequest = MTP::send(MTPmessages_Search(MTP_flags(0), _history->peer->input, MTP_string(_searchQuery), MTP_inputUserEmpty(), filter, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(SearchPerPage), MTP_int(0), MTP_int(0)), rpcDone(&OverviewInner::searchReceived, SearchFromStart), rpcFail(&OverviewInner::searchFailed, SearchFromStart));
+		_searchRequest = MTP::send(MTPmessages_Search(MTP_flags(0), _history->peer->input, MTP_string(_searchQuery),
+		                                              MTP_inputUserEmpty(), filter, MTP_int(0), MTP_int(0), MTP_int(0),
+		                                              MTP_int(0), MTP_int(SearchPerPage), MTP_int(0), MTP_int(0)),
+		                           rpcDone(&OverviewInner::searchReceived, SearchFromStart),
+		                           rpcFail(&OverviewInner::searchFailed, SearchFromStart));
 		_searchQueries.insert(_searchRequest, _searchQuery);
 	}
 	return false;
@@ -1553,7 +1614,7 @@ void OverviewInner::onMenuDestroy(QObject *obj) {
 }
 
 Window::TopBarWidget::SelectedState OverviewInner::getSelectionState() const {
-	auto result = Window::TopBarWidget::SelectedState {};
+	auto result = Window::TopBarWidget::SelectedState{};
 	for (auto i = _selected.cbegin(), e = _selected.cend(); i != e; ++i) {
 		if (i.value() == FullSelection) {
 			if (auto item = App::histItemById(itemChannel(i.key()), itemMsgId(i.key()))) {
@@ -1604,10 +1665,12 @@ void OverviewInner::onTouchSelect() {
 
 void OverviewInner::onTouchScrollTimer() {
 	auto nowTime = getms();
-	if (_touchScrollState == Ui::TouchScrollState::Acceleration && _touchWaitingAcceleration && (nowTime - _touchAccelerationTime) > 40) {
+	if (_touchScrollState == Ui::TouchScrollState::Acceleration && _touchWaitingAcceleration &&
+	    (nowTime - _touchAccelerationTime) > 40) {
 		_touchScrollState = Ui::TouchScrollState::Manual;
 		touchResetSpeed();
-	} else if (_touchScrollState == Ui::TouchScrollState::Auto || _touchScrollState == Ui::TouchScrollState::Acceleration) {
+	} else if (_touchScrollState == Ui::TouchScrollState::Auto ||
+	           _touchScrollState == Ui::TouchScrollState::Acceleration) {
 		qint32 elapsed = qint32(nowTime - _touchTime);
 		QPoint delta = _touchSpeed * elapsed / 1000;
 		bool hasScrolled = _overview->touchScroll(delta);
@@ -1704,7 +1767,8 @@ void OverviewInner::mediaOverviewUpdated() {
 					++count;
 					continue;
 				}
-				if (_items.size() > count + 1 && !_items.at(count)->toMediaItem() && complexMsgId(_items.at(count + 1)->getItem()) == msgid) { // day item
+				if (_items.size() > count + 1 && !_items.at(count)->toMediaItem() &&
+				    complexMsgId(_items.at(count + 1)->getItem()) == msgid) { // day item
 					++count;
 					if (withDates) prevDate = _items.at(count)->getItem()->date.date();
 					top = _items.at(count)->Get<Overview::Layout::Info>()->top;
@@ -1722,7 +1786,9 @@ void OverviewInner::mediaOverviewUpdated() {
 
 			if (withDates) {
 				QDate date = item->date.date();
-				if (!count || (count > 0 && (dateEveryMonth ? (date.month() != prevDate.month() || date.year() != prevDate.year()) : (date != prevDate)))) {
+				if (!count || (count > 0 &&
+				               (dateEveryMonth ? (date.month() != prevDate.month() || date.year() != prevDate.year()) :
+				                                 (date != prevDate)))) {
 					top += setLayoutItem(count, layoutPrepare(date, dateEveryMonth), top);
 					++count;
 					prevDate = date;
@@ -1888,7 +1954,8 @@ Overview::Layout::ItemBase *OverviewInner::layoutPrepare(HistoryItem *item) {
 	if (_type == OverviewPhotos) {
 		if (media && media->type() == MediaTypePhoto) {
 			if ((i = _layoutItems.constFind(item)) == _layoutItems.cend()) {
-				i = _layoutItems.insert(item, new Overview::Layout::Photo(static_cast<HistoryPhoto*>(media)->photo(), item));
+				i = _layoutItems.insert(item,
+				                        new Overview::Layout::Photo(static_cast<HistoryPhoto *>(media)->photo(), item));
 				i.value()->initDimensions();
 			}
 		}
@@ -1902,14 +1969,17 @@ Overview::Layout::ItemBase *OverviewInner::layoutPrepare(HistoryItem *item) {
 	} else if (_type == OverviewVoiceFiles) {
 		if (media && (media->type() == MediaTypeVoiceFile)) {
 			if ((i = _layoutItems.constFind(item)) == _layoutItems.cend()) {
-				i = _layoutItems.insert(item, new Overview::Layout::Voice(media->getDocument(), item, st::overviewFileLayout));
+				i = _layoutItems.insert(
+				    item, new Overview::Layout::Voice(media->getDocument(), item, st::overviewFileLayout));
 				i.value()->initDimensions();
 			}
 		}
 	} else if (_type == OverviewFiles || _type == OverviewMusicFiles) {
-		if (media && (media->type() == MediaTypeFile || media->type() == MediaTypeMusicFile || media->type() == MediaTypeGif)) {
+		if (media &&
+		    (media->type() == MediaTypeFile || media->type() == MediaTypeMusicFile || media->type() == MediaTypeGif)) {
 			if ((i = _layoutItems.constFind(item)) == _layoutItems.cend()) {
-				i = _layoutItems.insert(item, new Overview::Layout::Document(media->getDocument(), item, st::overviewFileLayout));
+				i = _layoutItems.insert(
+				    item, new Overview::Layout::Document(media->getDocument(), item, st::overviewFileLayout));
 				i.value()->initDimensions();
 			}
 		}
@@ -1950,11 +2020,13 @@ OverviewInner::~OverviewInner() {
 	clear();
 }
 
-OverviewWidget::OverviewWidget(QWidget *parent, not_null<Window::Controller*> controller, PeerData *peer, MediaOverviewType type) : Window::AbstractSectionWidget(parent, controller)
-, _topBar(this, controller)
-, _scroll(this, st::settingsScroll, false)
-, _mediaType(this, st::defaultDropdownMenu)
-, _topShadow(this, st::shadowFg) {
+OverviewWidget::OverviewWidget(QWidget *parent, not_null<Window::Controller *> controller, PeerData *peer,
+                               MediaOverviewType type)
+    : Window::AbstractSectionWidget(parent, controller)
+    , _topBar(this, controller)
+    , _scroll(this, st::settingsScroll, false)
+    , _mediaType(this, st::defaultDropdownMenu)
+    , _topShadow(this, st::shadowFg) {
 	_inner = _scroll->setOwnedWidget(object_ptr<OverviewInner>(this, _scroll, peer, type));
 	_scroll->move(0, 0);
 	_inner->move(0, 0);
@@ -1984,7 +2056,9 @@ void OverviewWidget::onScroll() {
 	qint32 preloadThreshold = _scroll->height() * 5;
 	bool needToPreload = false;
 	do {
-		needToPreload = (type() == OverviewMusicFiles || type() == OverviewVoiceFiles) ? (_scroll->scrollTop() < preloadThreshold) : (_scroll->scrollTop() + preloadThreshold > _scroll->scrollTopMax());
+		needToPreload = (type() == OverviewMusicFiles || type() == OverviewVoiceFiles) ?
+		                    (_scroll->scrollTop() < preloadThreshold) :
+		                    (_scroll->scrollTop() + preloadThreshold > _scroll->scrollTopMax());
 		if (!needToPreload || !_inner->preloadLocal()) {
 			break;
 		}
@@ -2027,16 +2101,19 @@ void OverviewWidget::paintEvent(QPaintEvent *e) {
 	if (_a_show.animating()) {
 		auto retina = cIntRetinaFactor();
 		auto fromLeft = (_showDirection == Window::SlideDirection::FromLeft);
-		auto coordUnder = fromLeft ? anim::interpolate(-st::slideShift, 0, progress) : anim::interpolate(0, -st::slideShift, progress);
+		auto coordUnder = fromLeft ? anim::interpolate(-st::slideShift, 0, progress) :
+		                             anim::interpolate(0, -st::slideShift, progress);
 		auto coordOver = fromLeft ? anim::interpolate(0, width(), progress) : anim::interpolate(width(), 0, progress);
 		auto shadow = fromLeft ? (1. - progress) : progress;
 		if (coordOver > 0) {
-			p.drawPixmap(QRect(0, 0, coordOver, height()), _cacheUnder, QRect(-coordUnder * retina, 0, coordOver * retina, height() * retina));
+			p.drawPixmap(QRect(0, 0, coordOver, height()), _cacheUnder,
+			             QRect(-coordUnder * retina, 0, coordOver * retina, height() * retina));
 			p.setOpacity(shadow);
 			p.fillRect(0, 0, coordOver, height(), st::slideFadeOutBg);
 			p.setOpacity(1);
 		}
-		p.drawPixmap(QRect(coordOver, 0, _cacheOver.width() / retina, height()), _cacheOver, QRect(0, 0, _cacheOver.width(), height() * retina));
+		p.drawPixmap(QRect(coordOver, 0, _cacheOver.width() / retina, height()), _cacheOver,
+		             QRect(0, 0, _cacheOver.width(), height() * retina));
 		p.setOpacity(shadow);
 		st::slideShadow.fill(p, QRect(coordOver - st::slideShadow.width(), 0, st::slideShadow.width(), height()));
 		return;
@@ -2062,10 +2139,12 @@ void OverviewWidget::scrollReset() {
 }
 
 bool OverviewWidget::paintTopBar(Painter &p, int decreaseWidth) {
-	st::topBarBack.paint(p, (st::topBarArrowPadding.left() - st::topBarBack.width()) / 2, (st::topBarHeight - st::topBarBack.height()) / 2, width());
+	st::topBarBack.paint(p, (st::topBarArrowPadding.left() - st::topBarBack.width()) / 2,
+	                     (st::topBarHeight - st::topBarBack.height()) / 2, width());
 	p.setFont(st::defaultLightButton.font);
 	p.setPen(st::defaultLightButton.textFg);
-	p.drawTextLeft(st::topBarArrowPadding.left(), st::topBarButton.padding.top() + st::topBarButton.textTop, width(), _header);
+	p.drawTextLeft(st::topBarArrowPadding.left(), st::topBarButton.padding.top() + st::topBarButton.textTop, width(),
+	               _header);
 	return true;
 }
 
@@ -2101,7 +2180,7 @@ void OverviewWidget::switchType(MediaOverviewType type) {
 	_header = _header.toUpper();
 
 	noSelectingScroll();
-	_topBar->showSelected(Window::TopBarWidget::SelectedState {});
+	_topBar->showSelected(Window::TopBarWidget::SelectedState{});
 	updateTopBarSelection();
 	scrollReset();
 
@@ -2159,7 +2238,10 @@ qint32 OverviewWidget::countBestScroll() const {
 		if (state.id) {
 			qint32 top = _inner->itemTop(state.id.contextId());
 			if (top >= 0) {
-				return snap(top - int(_scroll->height() - (st::msgPadding.top() + st::mediaThumbSize + st::msgPadding.bottom())) / 2, 0, _scroll->scrollTopMax());
+				return snap(top - int(_scroll->height() -
+				                      (st::msgPadding.top() + st::mediaThumbSize + st::msgPadding.bottom())) /
+				                      2,
+				            0, _scroll->scrollTopMax());
 			}
 		}
 	} else if (type() == OverviewLinks || type() == OverviewFiles) {
@@ -2237,7 +2319,8 @@ void OverviewWidget::mediaOverviewUpdated(const Notify::PeerUpdate &update) {
 		updateTopBarSelection();
 	}
 	qint32 mask = 0;
-	History *h = update.peer ? App::historyLoaded(update.peer->migrateTo() ? update.peer->migrateTo() : update.peer) : nullptr;
+	History *h =
+	    update.peer ? App::historyLoaded(update.peer->migrateTo() ? update.peer->migrateTo() : update.peer) : nullptr;
 	History *m = (update.peer && update.peer->migrateFrom()) ? App::historyLoaded(update.peer->migrateFrom()->id) : 0;
 	if (h) {
 		for (qint32 i = 0; i < OverviewCount; ++i) {
@@ -2290,7 +2373,7 @@ void OverviewWidget::grabFinish() {
 	_topShadow->show();
 }
 
-void OverviewWidget::ui_repaintHistoryItem(not_null<const HistoryItem*> item) {
+void OverviewWidget::ui_repaintHistoryItem(not_null<const HistoryItem *> item) {
 	if (peer() == item->history()->peer || migratePeer() == item->history()->peer) {
 		_inner->repaintItem(item);
 	}
@@ -2334,7 +2417,8 @@ QPoint OverviewWidget::clampMousePosition(QPoint point) {
 }
 
 void OverviewWidget::onScrollTimer() {
-	qint32 d = (_scrollDelta > 0) ? std::min(_scrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) : std::max(_scrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
+	qint32 d = (_scrollDelta > 0) ? std::min(_scrollDelta * 3 / 20 + 1, qint32(MaxScrollSpeed)) :
+	                                std::max(_scrollDelta * 3 / 20 - 1, -qint32(MaxScrollSpeed));
 	_scroll->scrollToY(_scroll->scrollTop() + d);
 }
 
@@ -2418,7 +2502,7 @@ void OverviewWidget::deleteSelectedItems(bool forEveryone) {
 	auto selected = _inner->getSelectedItems();
 	if (selected.isEmpty()) return;
 
-	QMap<PeerData*, QVector<MTPint>> idsByPeer;
+	QMap<PeerData *, QVector<MTPint>> idsByPeer;
 	for_const (auto item, selected) {
 		if (item->id > 0) {
 			idsByPeer[item->history()->peer].push_back(MTP_int(item->id));
@@ -2426,9 +2510,7 @@ void OverviewWidget::deleteSelectedItems(bool forEveryone) {
 	}
 
 	onClearSelected();
-	for_const (auto item, selected) {
-		item->destroy();
-	}
+	for_const (auto item, selected) { item->destroy(); }
 
 	for (auto i = idsByPeer.cbegin(), e = idsByPeer.cend(); i != e; ++i) {
 		App::main()->deleteMessages(i.key(), i.value(), forEveryone);

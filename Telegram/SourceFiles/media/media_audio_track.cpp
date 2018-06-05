@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "media/media_audio_track.h"
 
-#include "media/media_audio_ffmpeg_loader.h"
 #include "media/media_audio.h"
+#include "media/media_audio_ffmpeg_loader.h"
 #include "messenger.h"
 
 #include <AL/al.h>
@@ -54,7 +54,8 @@ ALuint CreateBuffer() {
 
 } // namespace
 
-Track::Track(not_null<Instance*> instance) : _instance(instance) {
+Track::Track(not_null<Instance *> instance)
+    : _instance(instance) {
 	_instance->registerTrack(this);
 }
 
@@ -76,7 +77,8 @@ void Track::fillFromData(base::byte_vector &&data) {
 	_peaks.reserve(peaksCount);
 	auto peakValue = quint16(0);
 	auto peakSamples = 0;
-	auto peakEachSample = (format == AL_FORMAT_STEREO8 || format == AL_FORMAT_STEREO16) ? (_peakEachPosition * 2) : _peakEachPosition;
+	auto peakEachSample =
+	    (format == AL_FORMAT_STEREO8 || format == AL_FORMAT_STEREO16) ? (_peakEachPosition * 2) : _peakEachPosition;
 	_peakValueMin = 0x7FFF;
 	_peakValueMax = 0;
 	auto peakCallback = [this, &peakValue, &peakSamples, peakEachSample](quint16 sample) {
@@ -140,7 +142,7 @@ void Track::fillFromFile(const QString &filePath) {
 		auto size = f.size();
 		if (size > 0 && size <= kMaxFileSize) {
 			auto bytes = base::byte_vector(size);
-			if (f.read(reinterpret_cast<char*>(bytes.data()), bytes.size()) == bytes.size()) {
+			if (f.read(reinterpret_cast<char *>(bytes.data()), bytes.size()) == bytes.size()) {
 				fillFromData(std::move(bytes));
 			} else {
 				LOG(("Track Error: Could not read %1 bytes from file '%2'.").arg(bytes.size()).arg(filePath));

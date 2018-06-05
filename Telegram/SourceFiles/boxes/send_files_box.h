@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "boxes/abstract_box.h"
-#include "storage/localimageloader.h"
 #include "history/history_media.h"
+#include "storage/localimageloader.h"
 
 namespace Ui {
 class Checkbox;
@@ -34,11 +34,14 @@ class SendFilesBox : public BoxContent {
 	Q_OBJECT
 
 public:
-	SendFilesBox(QWidget*, QImage image, CompressConfirm compressed);
-	SendFilesBox(QWidget*, const QStringList &files, CompressConfirm compressed);
-	SendFilesBox(QWidget*, const QString &phone, const QString &firstname, const QString &lastname);
+	SendFilesBox(QWidget *, QImage image, CompressConfirm compressed);
+	SendFilesBox(QWidget *, const QStringList &files, CompressConfirm compressed);
+	SendFilesBox(QWidget *, const QString &phone, const QString &firstname, const QString &lastname);
 
-	void setConfirmedCallback(base::lambda<void(const QStringList &files, const QImage &image, std::unique_ptr<FileLoadTask::MediaInformation> information, bool compressed, const QString &caption, bool ctrlShiftEnter)> callback) {
+	void setConfirmedCallback(base::lambda<void(const QStringList &files, const QImage &image,
+	                                            std::unique_ptr<FileLoadTask::MediaInformation> information,
+	                                            bool compressed, const QString &caption, bool ctrlShiftEnter)>
+	                              callback) {
 		_confirmedCallback = std::move(callback);
 	}
 	void setCancelledCallback(base::lambda<void()> callback) {
@@ -99,22 +102,24 @@ private:
 	QString _contactLastName;
 	EmptyUserpic _contactPhotoEmpty;
 
-	base::lambda<void(const QStringList &files, const QImage &image, std::unique_ptr<FileLoadTask::MediaInformation> information, bool compressed, const QString &caption, bool ctrlShiftEnter)> _confirmedCallback;
+	base::lambda<void(const QStringList &files, const QImage &image,
+	                  std::unique_ptr<FileLoadTask::MediaInformation> information, bool compressed,
+	                  const QString &caption, bool ctrlShiftEnter)>
+	    _confirmedCallback;
 	base::lambda<void()> _cancelledCallback;
 	bool _confirmed = false;
 
-	object_ptr<Ui::InputArea> _caption = { nullptr };
-	object_ptr<Ui::Checkbox> _compressed = { nullptr };
+	object_ptr<Ui::InputArea> _caption = {nullptr};
+	object_ptr<Ui::Checkbox> _compressed = {nullptr};
 
 	QPointer<Ui::RoundButton> _send;
-
 };
 
 class EditCaptionBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	EditCaptionBox(QWidget*, HistoryMedia *media, FullMsgId msgId);
+	EditCaptionBox(QWidget *, HistoryMedia *media, FullMsgId msgId);
 
 public slots:
 	void onCaptionResized();
@@ -148,7 +153,7 @@ private:
 	QPixmap _thumb;
 	Media::Clip::ReaderPointer _gifPreview;
 
-	object_ptr<Ui::InputArea> _field = { nullptr };
+	object_ptr<Ui::InputArea> _field = {nullptr};
 
 	int _thumbx = 0;
 	int _thumby = 0;
@@ -164,5 +169,4 @@ private:
 	mtpRequestId _saveRequestId = 0;
 
 	QString _error;
-
 };

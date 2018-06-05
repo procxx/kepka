@@ -20,23 +20,24 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_inner_widget.h"
 
-#include "styles/style_profile.h"
-#include "styles/style_window.h"
-#include "profile/profile_cover.h"
-#include "profile/profile_block_info.h"
-#include "profile/profile_block_settings.h"
-#include "profile/profile_block_invite_link.h"
-#include "profile/profile_block_shared_media.h"
+#include "apiwrap.h"
 #include "profile/profile_block_actions.h"
 #include "profile/profile_block_channel_members.h"
 #include "profile/profile_block_group_members.h"
-#include "apiwrap.h"
+#include "profile/profile_block_info.h"
+#include "profile/profile_block_invite_link.h"
+#include "profile/profile_block_settings.h"
+#include "profile/profile_block_shared_media.h"
+#include "profile/profile_cover.h"
+#include "styles/style_profile.h"
+#include "styles/style_window.h"
 
 namespace Profile {
 
-InnerWidget::InnerWidget(QWidget *parent, PeerData *peer) : TWidget(parent)
-, _peer(peer)
-, _cover(this, peer) {
+InnerWidget::InnerWidget(QWidget *parent, PeerData *peer)
+    : TWidget(parent)
+    , _peer(peer)
+    , _cover(this, peer) {
 	setAttribute(Qt::WA_OpaquePaintEvent);
 
 	createBlocks();
@@ -48,22 +49,22 @@ void InnerWidget::createBlocks() {
 	auto channel = _peer->asChannel();
 	auto megagroup = _peer->isMegagroup() ? channel : nullptr;
 	if (user || channel || megagroup) {
-		_blocks.push_back({ new InfoWidget(this, _peer), RectPart::Right });
+		_blocks.push_back({new InfoWidget(this, _peer), RectPart::Right});
 	}
-	_blocks.push_back({ new SettingsWidget(this, _peer), RectPart::Right });
+	_blocks.push_back({new SettingsWidget(this, _peer), RectPart::Right});
 	if (chat || channel || megagroup) {
-		_blocks.push_back({ new InviteLinkWidget(this, _peer), RectPart::Right });
+		_blocks.push_back({new InviteLinkWidget(this, _peer), RectPart::Right});
 	}
-	_blocks.push_back({ new SharedMediaWidget(this, _peer), RectPart::Right });
+	_blocks.push_back({new SharedMediaWidget(this, _peer), RectPart::Right});
 	if (channel && !megagroup) {
-		_blocks.push_back({ new ChannelMembersWidget(this, _peer), RectPart::Right });
+		_blocks.push_back({new ChannelMembersWidget(this, _peer), RectPart::Right});
 	}
-	_blocks.push_back({ new ActionsWidget(this, _peer), RectPart::Right });
+	_blocks.push_back({new ActionsWidget(this, _peer), RectPart::Right});
 	if (chat || megagroup) {
 		auto membersWidget = new GroupMembersWidget(this, _peer);
 		connect(membersWidget, SIGNAL(onlineCountUpdated(int)), _cover, SLOT(onOnlineCountUpdated(int)));
 		_cover->onOnlineCountUpdated(membersWidget->onlineCount());
-		_blocks.push_back({ membersWidget, RectPart::Left });
+		_blocks.push_back({membersWidget, RectPart::Left});
 	}
 	for_const (auto &blockData, _blocks) {
 		connect(blockData.block, SIGNAL(heightUpdated()), this, SLOT(onBlockHeightUpdated()));
@@ -89,23 +90,17 @@ bool InnerWidget::shareContactButtonShown() const {
 	return _cover->shareContactButtonShown();
 }
 
-void InnerWidget::saveState(not_null<SectionMemento*> memento) {
-	for_const (auto &blockData, _blocks) {
-		blockData.block->saveState(memento);
-	}
+void InnerWidget::saveState(not_null<SectionMemento *> memento) {
+	for_const (auto &blockData, _blocks) { blockData.block->saveState(memento); }
 }
 
-void InnerWidget::restoreState(not_null<SectionMemento*> memento) {
-	for_const (auto &blockData, _blocks) {
-		blockData.block->restoreState(memento);
-	}
+void InnerWidget::restoreState(not_null<SectionMemento *> memento) {
+	for_const (auto &blockData, _blocks) { blockData.block->restoreState(memento); }
 }
 
 void InnerWidget::showFinished() {
 	_cover->showFinished();
-	for_const (auto &blockData, _blocks) {
-		blockData.block->showFinished();
-	}
+	for_const (auto &blockData, _blocks) { blockData.block->showFinished(); }
 }
 
 void InnerWidget::decreaseAdditionalHeight(int removeHeight) {
@@ -120,11 +115,12 @@ void InnerWidget::paintEvent(QPaintEvent *e) {
 	if (_mode == Mode::TwoColumn) {
 		int leftHeight = countBlocksHeight(RectPart::Left);
 		int rightHeight = countBlocksHeight(RectPart::Right);
-		int shadowHeight = rightHeight;// std::min(leftHeight, rightHeight);
+		int shadowHeight = rightHeight; // std::min(leftHeight, rightHeight);
 
 		int shadowLeft = _blocksLeft + _leftColumnWidth + _columnDivider;
 		int shadowTop = _blocksTop + st::profileBlockMarginTop;
-		p.fillRect(rtlrect(shadowLeft, shadowTop, st::lineWidth, shadowHeight - st::profileBlockMarginTop, width()), st::shadowFg);
+		p.fillRect(rtlrect(shadowLeft, shadowTop, st::lineWidth, shadowHeight - st::profileBlockMarginTop, width()),
+		           st::shadowFg);
 	}
 }
 

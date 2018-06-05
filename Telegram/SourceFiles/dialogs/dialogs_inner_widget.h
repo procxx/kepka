@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "dialogs/dialogs_widget.h"
 #include "base/flags.h"
+#include "dialogs/dialogs_widget.h"
 #include "facades.h"
 
 namespace Dialogs {
@@ -44,7 +44,7 @@ class DialogsInner : public Ui::SplittedWidget, public RPCSender, private base::
 	Q_OBJECT
 
 public:
-	DialogsInner(QWidget *parent, not_null<Window::Controller*> controller, QWidget *main);
+	DialogsInner(QWidget *parent, not_null<Window::Controller *> controller, QWidget *main);
 
 	void dialogsReceived(const QVector<MTPDialog> &dialogs);
 	void addSavedPeersAfter(const QDateTime &date);
@@ -110,7 +110,7 @@ public:
 	}
 	void setVisibleTopBottom(int visibleTop, int visibleBottom) override;
 
-	base::Observable<UserData*> searchFromUserChanged;
+	base::Observable<UserData *> searchFromUserChanged;
 
 	void notify_userIsContactChanged(UserData *user, bool fromThisApp);
 	void notify_historyMuteUpdated(History *history);
@@ -121,7 +121,7 @@ public slots:
 	void onParentGeometryChanged();
 	void onDialogRowReplaced(Dialogs::Row *oldRow, Dialogs::Row *newRow);
 
-	void onMenuDestroyed(QObject*);
+	void onMenuDestroyed(QObject *);
 
 signals:
 	void draggingScrollDelta(int delta);
@@ -146,7 +146,7 @@ protected:
 private:
 	struct ImportantSwitch;
 	using DialogsList = std::unique_ptr<Dialogs::IndexedList>;
-	using FilteredDialogs = QVector<Dialogs::Row*>;
+	using FilteredDialogs = QVector<Dialogs::Row *>;
 	using SearchResults = std::vector<std::unique_ptr<Dialogs::FakeRow>>;
 	struct HashtagResult;
 	using HashtagResults = std::vector<std::unique_ptr<HashtagResult>>;
@@ -167,25 +167,31 @@ private:
 	void setPeerSearchPressed(int pressed);
 	void setSearchedPressed(int pressed);
 	bool isPressed() const {
-		return _importantSwitchPressed || _pressed || (_hashtagPressed >= 0) || (_filteredPressed >= 0) || (_peerSearchPressed >= 0) || (_searchedPressed >= 0);
+		return _importantSwitchPressed || _pressed || (_hashtagPressed >= 0) || (_filteredPressed >= 0) ||
+		       (_peerSearchPressed >= 0) || (_searchedPressed >= 0);
 	}
 	bool isSelected() const {
-		return _importantSwitchSelected || _selected || (_hashtagSelected >= 0) || (_filteredSelected >= 0) || (_peerSearchSelected >= 0) || (_searchedSelected >= 0);
+		return _importantSwitchSelected || _selected || (_hashtagSelected >= 0) || (_filteredSelected >= 0) ||
+		       (_peerSearchSelected >= 0) || (_searchedSelected >= 0);
 	}
-	void handlePeerNameChange(not_null<PeerData*> peer, const PeerData::Names &oldNames, const PeerData::NameFirstChars &oldChars);
+	void handlePeerNameChange(not_null<PeerData *> peer, const PeerData::Names &oldNames,
+	                          const PeerData::NameFirstChars &oldChars);
 
 	void itemRemoved(HistoryItem *item);
 	enum class UpdateRowSection {
-		Default       = (1 << 0),
-		Filtered      = (1 << 1),
-		PeerSearch    = (1 << 2),
+		Default = (1 << 0),
+		Filtered = (1 << 1),
+		PeerSearch = (1 << 2),
 		MessageSearch = (1 << 3),
-		All           = Default | Filtered | PeerSearch | MessageSearch,
+		All = Default | Filtered | PeerSearch | MessageSearch,
 	};
 	using UpdateRowSections = base::flags<UpdateRowSection>;
-	friend inline constexpr auto is_flag_type(UpdateRowSection) { return true; };
+	friend inline constexpr auto is_flag_type(UpdateRowSection) {
+		return true;
+	};
 
-	void updateDialogRow(PeerData *peer, MsgId msgId, QRect updateRect, UpdateRowSections sections = UpdateRowSection::All);
+	void updateDialogRow(PeerData *peer, MsgId msgId, QRect updateRect,
+	                     UpdateRowSections sections = UpdateRowSection::All);
 
 	int dialogsOffset() const;
 	int filteredOffset() const;
@@ -193,10 +199,12 @@ private:
 	int searchedOffset() const;
 	int searchInPeerSkip() const;
 
-	void paintDialog(Painter &p, Dialogs::Row *row, int fullWidth, PeerData *active, PeerData *selected, bool onlyBackground, TimeMs ms);
-	void paintPeerSearchResult(Painter &p, const PeerSearchResult *result, int fullWidth, bool active, bool selected, bool onlyBackground, TimeMs ms) const;
+	void paintDialog(Painter &p, Dialogs::Row *row, int fullWidth, PeerData *active, PeerData *selected,
+	                 bool onlyBackground, TimeMs ms);
+	void paintPeerSearchResult(Painter &p, const PeerSearchResult *result, int fullWidth, bool active, bool selected,
+	                           bool onlyBackground, TimeMs ms) const;
 	void paintSearchInPeer(Painter &p, int fullWidth, bool onlyBackground, TimeMs ms) const;
-	void paintSearchInFilter(Painter &p, not_null<PeerData*> peer, int top, int fullWidth, const Text &text) const;
+	void paintSearchInFilter(Painter &p, not_null<PeerData *> peer, int top, int fullWidth, const Text &text) const;
 
 	void clearSelection();
 	void clearSearchResults(bool clearPeerSearchResults = true);
@@ -216,7 +224,7 @@ private:
 	void savePinnedOrder();
 	void step_pinnedShifting(TimeMs ms, bool timer);
 
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 
 	DialogsList _dialogs;
 	DialogsList _dialogsImportant;
@@ -244,7 +252,7 @@ private:
 	};
 	std::vector<PinnedRow> _pinnedRows;
 	BasicAnimation _a_pinnedShifting;
-	QList<History*> _pinnedOrder;
+	QList<History *> _pinnedOrder;
 
 	// Remember the last currently dragged row top shift for updating area.
 	int _aboveTopShift = -1;
@@ -294,5 +302,4 @@ private:
 	Ui::PopupMenu *_menu = nullptr;
 
 	base::lambda<void()> _loadMoreCallback;
-
 };

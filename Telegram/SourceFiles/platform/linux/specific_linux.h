@@ -33,30 +33,25 @@ class LocationCoords;
 
 namespace Platform {
 
-inline void SetWatchingMediaKeys(bool watching) {
-}
+inline void SetWatchingMediaKeys(bool watching) {}
 
-inline void StartTranslucentPaint(QPainter &p, QPaintEvent *e) {
-}
+inline void StartTranslucentPaint(QPainter &p, QPaintEvent *e) {}
 
-inline void InitOnTopPanel(QWidget *panel) {
-}
+inline void InitOnTopPanel(QWidget *panel) {}
 
-inline void DeInitOnTopPanel(QWidget *panel) {
-}
+inline void DeInitOnTopPanel(QWidget *panel) {}
 
-inline void ReInitOnTopPanel(QWidget *panel) {
-}
+inline void ReInitOnTopPanel(QWidget *panel) {}
 
 QString CurrentExecutablePath(int argc, char *argv[]);
 
 } // namespace Platform
 
 inline QString psServerPrefix() {
-    return QStringLiteral("/tmp/");
+	return QStringLiteral("/tmp/");
 }
 inline void psCheckLocalSocket(const QString &serverName) {
-    QFile address(serverName);
+	QFile address(serverName);
 	if (address.exists()) {
 		address.remove();
 	}
@@ -102,28 +97,24 @@ inline QByteArray psDownloadPathBookmark(const QString &path) {
 inline QByteArray psPathBookmark(const QString &path) {
 	return QByteArray();
 }
-inline void psDownloadPathEnableAccess() {
-}
+inline void psDownloadPathEnableAccess() {}
 
 class PsFileBookmark {
 public:
-	PsFileBookmark(const QByteArray &bookmark) {
-	}
+	PsFileBookmark(const QByteArray &bookmark) {}
 	bool check() const {
 		return true;
 	}
 	bool enable() const {
 		return true;
 	}
-	void disable() const {
-	}
+	void disable() const {}
 	const QString &name(const QString &original) const {
 		return original;
 	}
 	QByteArray bookmark() const {
 		return QByteArray();
 	}
-
 };
 
 bool linuxMoveFile(const char *from, const char *to);

@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "dialogs/dialogs_row.h"
 
+#include "mainwidget.h"
 #include "styles/style_dialogs.h"
 #include "ui/effects/ripple_animation.h"
-#include "mainwidget.h"
 
 namespace Dialogs {
 
@@ -52,10 +52,9 @@ void RippleRow::paintRipple(Painter &p, int x, int y, int outerWidth, TimeMs ms,
 	}
 }
 
-FakeRow::FakeRow(PeerData *searchInPeer, not_null<HistoryItem*> item)
-: _searchInPeer(searchInPeer)
-, _item(item)
-, _cache(st::dialogsTextWidthMin) {
-}
+FakeRow::FakeRow(PeerData *searchInPeer, not_null<HistoryItem *> item)
+    : _searchInPeer(searchInPeer)
+    , _item(item)
+    , _cache(st::dialogsTextWidthMin) {}
 
 } // namespace Dialogs

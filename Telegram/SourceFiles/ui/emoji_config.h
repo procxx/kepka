@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "emoji.h"
 #include "settings.h"
 #include "ui/text/text.h"
-#include "emoji.h"
 
 namespace Ui {
 namespace Emoji {
@@ -34,18 +34,18 @@ constexpr auto kPanelRowsPerPage = 6;
 void Init();
 
 class One {
-	struct CreationTag {
-	};
+	struct CreationTag {};
 
 public:
 	One(One &&other) = default;
-	One(const QString &id, quint16 x, quint16 y, bool hasPostfix, bool colorizable, EmojiPtr original, const CreationTag &)
-	: _id(id)
-	, _x(x)
-	, _y(y)
-	, _hasPostfix(hasPostfix)
-	, _colorizable(colorizable)
-	, _original(original) {
+	One(const QString &id, quint16 x, quint16 y, bool hasPostfix, bool colorizable, EmojiPtr original,
+	    const CreationTag &)
+	    : _id(id)
+	    , _x(x)
+	    , _y(y)
+	    , _hasPostfix(hasPostfix)
+	    , _colorizable(colorizable)
+	    , _original(original) {
 		Expects(!_colorizable || !colored());
 	}
 
@@ -98,7 +98,6 @@ private:
 	const EmojiPtr _original = nullptr;
 
 	friend void internal::Init();
-
 };
 
 inline EmojiPtr FromUrl(const QString &url) {
@@ -139,17 +138,14 @@ inline int ColorIndexFromOldKey(quint64 oldKey) {
 }
 
 inline int Size(int index = Index()) {
-	int sizes[] = { 18, 22, 27, 36, 45 };
+	int sizes[] = {18, 22, 27, 36, 45};
 	return sizes[index];
 }
 
 inline QString Filename(int index = Index()) {
 	const char *EmojiNames[] = {
-		":/gui/art/emoji.webp",
-		":/gui/art/emoji_125x.webp",
-		":/gui/art/emoji_150x.webp",
-		":/gui/art/emoji_200x.webp",
-		":/gui/art/emoji_250x.webp",
+	    ":/gui/art/emoji.webp",      ":/gui/art/emoji_125x.webp", ":/gui/art/emoji_150x.webp",
+	    ":/gui/art/emoji_200x.webp", ":/gui/art/emoji_250x.webp",
 	};
 	return QString::fromLatin1(EmojiNames[index]);
 }

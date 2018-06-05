@@ -19,20 +19,20 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/language_box.h"
-#include "lang/lang_keys.h"
-#include "ui/widgets/checkbox.h"
-#include "ui/widgets/buttons.h"
-#include "storage/localstorage.h"
 #include "boxes/confirm_box.h"
+#include "lang/lang_cloud_manager.h"
+#include "lang/lang_instance.h"
+#include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
-#include "lang/lang_instance.h"
-#include "lang/lang_cloud_manager.h"
+#include "storage/localstorage.h"
 #include "styles/style_boxes.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/checkbox.h"
 
 class LanguageBox::Inner : public TWidget, private base::Subscriber {
 public:
-	Inner(QWidget *parent, not_null<Languages*> languages);
+	Inner(QWidget *parent, not_null<Languages *> languages);
 
 	void setSelected(int index);
 	void refresh();
@@ -41,14 +41,14 @@ private:
 	void activateCurrent();
 	void languageChanged(int languageIndex);
 
-	not_null<Languages*> _languages;
+	not_null<Languages *> _languages;
 	std::shared_ptr<Ui::RadiobuttonGroup> _group;
 	std::vector<object_ptr<Ui::Radiobutton>> _buttons;
-
 };
 
-LanguageBox::Inner::Inner(QWidget *parent, not_null<Languages*> languages) : TWidget(parent)
-, _languages(languages) {
+LanguageBox::Inner::Inner(QWidget *parent, not_null<Languages *> languages)
+    : TWidget(parent)
+    , _languages(languages) {
 	_group = std::make_shared<Ui::RadiobuttonGroup>(0);
 	_group->setChangedCallback([this](int value) { languageChanged(value); });
 	subscribe(Lang::Current().updated(), [this] {
@@ -107,16 +107,12 @@ void LanguageBox::Inner::activateCurrent() {
 
 void LanguageBox::prepare() {
 	refreshLang();
-	subscribe(Lang::Current().updated(), [this] {
-		refreshLang();
-	});
+	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 
 	_inner = setInnerWidget(object_ptr<Inner>(this, &_languages), st::boxLayerScroll);
 
 	refresh();
-	subscribe(Lang::CurrentCloudManager().languageListChanged(), [this] {
-		refresh();
-	});
+	subscribe(Lang::CurrentCloudManager().languageListChanged(), [this] { refresh(); });
 }
 
 void LanguageBox::refreshLang() {
@@ -141,9 +137,10 @@ void LanguageBox::refreshLanguages() {
 	_languages.reserve(list.size() + 1);
 	auto currentId = Lang::Current().id();
 	auto currentIndex = -1;
-	_languages.push_back({ qsl("en"), qsl("English"), qsl("English") });
+	_languages.push_back({qsl("en"), qsl("English"), qsl("English")});
 	for (auto &language : list) {
-		auto isCurrent = (language.id == currentId) || (language.id == Lang::DefaultLanguageId() && currentId.isEmpty());
+		auto isCurrent =
+		    (language.id == currentId) || (language.id == Lang::DefaultLanguageId() && currentId.isEmpty());
 		if (language.id != qstr("en")) {
 			if (isCurrent) {
 				currentIndex = _languages.size();
@@ -154,11 +151,11 @@ void LanguageBox::refreshLanguages() {
 		}
 	}
 	if (currentId == qstr("custom")) {
-		_languages.insert(_languages.begin(), { currentId, qsl("Custom LangPack"), qsl("Custom LangPack") });
+		_languages.insert(_languages.begin(), {currentId, qsl("Custom LangPack"), qsl("Custom LangPack")});
 		currentIndex = 0;
 	} else if (currentIndex < 0) {
 		currentIndex = _languages.size();
-		_languages.push_back({ currentId, lang(lng_language_name), lang(lng_language_name) });
+		_languages.push_back({currentId, lang(lng_language_name), lang(lng_language_name)});
 	}
 	_inner->setSelected(currentIndex);
 }

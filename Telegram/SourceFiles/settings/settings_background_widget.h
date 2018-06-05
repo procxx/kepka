@@ -55,13 +55,12 @@ private:
 	void step_radial(TimeMs ms, bool timer);
 
 	QPixmap _background;
-	object_ptr<Ui::LinkButton> _useDefaultTheme = { nullptr };
+	object_ptr<Ui::LinkButton> _useDefaultTheme = {nullptr};
 	object_ptr<Ui::LinkButton> _chooseFromGallery;
 	object_ptr<Ui::LinkButton> _chooseFromFile;
 	object_ptr<Ui::LinkButton> _editTheme;
 
 	Ui::RadialAnimation _radial;
-
 };
 
 class BackgroundWidget : public BlockWidget {
@@ -82,10 +81,9 @@ private:
 	void createControls();
 	void needBackgroundUpdate(bool tile);
 
-	object_ptr<BackgroundRow> _background = { nullptr };
-	object_ptr<Ui::Checkbox> _tile = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _adaptive = { nullptr };
-
+	object_ptr<BackgroundRow> _background = {nullptr};
+	object_ptr<Ui::Checkbox> _tile = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _adaptive = {nullptr};
 };
 
 } // namespace Settings

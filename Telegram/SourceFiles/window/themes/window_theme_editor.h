@@ -48,7 +48,7 @@ class Editor : public TWidget {
 	Q_OBJECT
 
 public:
-	Editor(QWidget*, const QString &path);
+	Editor(QWidget *, const QString &path);
 
 	static void Start();
 
@@ -70,7 +70,6 @@ private:
 	object_ptr<BoxLayerTitleShadow> _leftShadow;
 	object_ptr<BoxLayerTitleShadow> _topShadow;
 	object_ptr<Ui::FlatButton> _export;
-
 };
 
 } // namespace Theme

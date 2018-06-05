@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/countryinput.h"
 #include "intro/introwidget.h"
+#include "ui/countryinput.h"
 
 namespace Ui {
 class PhonePartInput;
@@ -80,13 +80,12 @@ private:
 	object_ptr<Ui::CountryCodeInput> _code;
 	object_ptr<Ui::PhonePartInput> _phone;
 
-	object_ptr<Ui::WidgetFadeWrap<Ui::FlatLabel>> _signup = { nullptr };
+	object_ptr<Ui::WidgetFadeWrap<Ui::FlatLabel>> _signup = {nullptr};
 
 	QString _sentPhone;
 	mtpRequestId _sentRequest = 0;
 
 	object_ptr<QTimer> _checkRequest;
-
 };
 
 } // namespace Intro

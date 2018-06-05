@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "window/section_widget.h"
-#include "ui/widgets/scroll_area.h"
-#include "structs.h"
 #include "dialogs/dialogs_common.h"
+#include "structs.h"
+#include "ui/widgets/scroll_area.h"
+#include "window/section_widget.h"
 
 class DialogsInner;
 
@@ -40,8 +40,7 @@ class DropdownMenu;
 class FlatButton;
 class FlatInput;
 class CrossButton;
-template <typename Widget>
-class WidgetScaledFadeWrap;
+template <typename Widget> class WidgetScaledFadeWrap;
 } // namespace Ui
 
 namespace Window {
@@ -63,7 +62,7 @@ class DialogsWidget : public Window::AbstractSectionWidget, public RPCSender {
 	Q_OBJECT
 
 public:
-	DialogsWidget(QWidget *parent, not_null<Window::Controller*> controller);
+	DialogsWidget(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void updateDragInScroll(bool inScroll);
 
@@ -179,7 +178,7 @@ private:
 	mtpRequestId _contactsRequestId = 0;
 	bool _pinnedDialogsReceived = false;
 
-	object_ptr<Ui::IconButton> _forwardCancel = { nullptr };
+	object_ptr<Ui::IconButton> _forwardCancel = {nullptr};
 	object_ptr<Ui::IconButton> _mainMenuToggle;
 	object_ptr<Ui::FlatInput> _filter;
 	object_ptr<Ui::WidgetScaledFadeWrap<Ui::IconButton>> _chooseFromUser;
@@ -189,7 +188,7 @@ private:
 	object_ptr<Ui::ScrollArea> _scroll;
 	QPointer<DialogsInner> _inner;
 	class UpdateButton;
-	object_ptr<UpdateButton> _updateTelegram = { nullptr };
+	object_ptr<UpdateButton> _updateTelegram = {nullptr};
 
 	Animation _a_show;
 	Window::SlideDirection _showDirection;
@@ -226,7 +225,6 @@ private:
 
 	QPixmap _widthAnimationCache;
 
-	object_ptr<QTimer> _draggingScrollTimer = { nullptr };
+	object_ptr<QTimer> _draggingScrollTimer = {nullptr};
 	int _draggingScrollDelta = 0;
-
 };

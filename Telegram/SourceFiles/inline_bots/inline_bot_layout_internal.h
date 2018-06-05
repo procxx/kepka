@@ -31,9 +31,9 @@ namespace internal {
 
 class FileBase : public ItemBase {
 public:
-	FileBase(not_null<Context*> context, Result *result);
+	FileBase(not_null<Context *> context, Result *result);
 	// for saved gif layouts
-	FileBase(not_null<Context*> context, DocumentData *doc);
+	FileBase(not_null<Context *> context, DocumentData *doc);
 
 protected:
 	DocumentData *getShownDocument() const;
@@ -46,21 +46,20 @@ protected:
 
 class DeleteSavedGifClickHandler : public LeftButtonClickHandler {
 public:
-	DeleteSavedGifClickHandler(DocumentData *data) : _data(data) {
-	}
+	DeleteSavedGifClickHandler(DocumentData *data)
+	    : _data(data) {}
 
 protected:
 	void onClickImpl() const override;
 
 private:
-	DocumentData  *_data;
-
+	DocumentData *_data;
 };
 
 class Gif : public FileBase {
 public:
-	Gif(not_null<Context*> context, Result *result);
-	Gif(not_null<Context*> context, DocumentData *doc, bool hasDeleteButton);
+	Gif(not_null<Context *> context, Result *result);
+	Gif(not_null<Context *> context, DocumentData *doc, bool hasDeleteButton);
 
 	void setPosition(qint32 position) override;
 	void initDimensions() override;
@@ -82,11 +81,13 @@ private:
 	QSize countFrameSize() const;
 
 	enum class StateFlag {
-		Over       = (1 << 0),
+		Over = (1 << 0),
 		DeleteOver = (1 << 1),
 	};
 	using StateFlags = base::flags<StateFlag>;
-	friend inline constexpr auto is_flag_type(StateFlag) { return true; };
+	friend inline constexpr auto is_flag_type(StateFlag) {
+		return true;
+	};
 	StateFlags _state;
 
 	Media::Clip::ReaderPointer _gif;
@@ -102,23 +103,21 @@ private:
 
 	struct AnimationData {
 		AnimationData(AnimationCallbacks &&callbacks)
-			: over(false)
-			, radial(std::move(callbacks)) {
-		}
+		    : over(false)
+		    , radial(std::move(callbacks)) {}
 		bool over;
 		Animation _a_over;
 		Ui::RadialAnimation radial;
 	};
 	mutable std::unique_ptr<AnimationData> _animation;
 	mutable Animation _a_deleteOver;
-
 };
 
 class Photo : public ItemBase {
 public:
-	Photo(not_null<Context*> context, Result *result);
+	Photo(not_null<Context *> context, Result *result);
 	// Not used anywhere currently.
-	//Photo(not_null<Context*> context, PhotoData *photo);
+	// Photo(not_null<Context*> context, PhotoData *photo);
 
 	void initDimensions() override;
 
@@ -140,14 +139,13 @@ private:
 	mutable QPixmap _thumb;
 	mutable bool _thumbLoaded = false;
 	void prepareThumb(qint32 width, qint32 height, const QSize &frame) const;
-
 };
 
 class Sticker : public FileBase {
 public:
-	Sticker(not_null<Context*> context, Result *result);
+	Sticker(not_null<Context *> context, Result *result);
 	// Not used anywhere currently.
-	//Sticker(not_null<Context*> context, DocumentData *document);
+	// Sticker(not_null<Context*> context, DocumentData *document);
 
 	void initDimensions() override;
 
@@ -174,12 +172,11 @@ private:
 	mutable QPixmap _thumb;
 	mutable bool _thumbLoaded = false;
 	void prepareThumb() const;
-
 };
 
 class Video : public FileBase {
 public:
-	Video(not_null<Context*> context, Result *result);
+	Video(not_null<Context *> context, Result *result);
 
 	void initDimensions() override;
 
@@ -195,38 +192,35 @@ private:
 	int _durationWidth = 0;
 
 	void prepareThumb(qint32 width, qint32 height) const;
-
 };
 
 class OpenFileClickHandler : public LeftButtonClickHandler {
 public:
-	OpenFileClickHandler(Result *result) : _result(result) {
-	}
+	OpenFileClickHandler(Result *result)
+	    : _result(result) {}
 
 protected:
 	void onClickImpl() const override;
 
 private:
 	Result *_result;
-
 };
 
 class CancelFileClickHandler : public LeftButtonClickHandler {
 public:
-	CancelFileClickHandler(Result *result) : _result(result) {
-	}
+	CancelFileClickHandler(Result *result)
+	    : _result(result) {}
 
 protected:
 	void onClickImpl() const override;
 
 private:
 	Result *_result;
-
 };
 
 class File : public FileBase {
 public:
-	File(not_null<Context*> context, Result *result);
+	File(not_null<Context *> context, Result *result);
 
 	void initDimensions() override;
 
@@ -263,8 +257,8 @@ private:
 	}
 
 	struct AnimationData {
-		AnimationData(AnimationCallbacks &&radialCallbacks) : radial(std::move(radialCallbacks)) {
-		}
+		AnimationData(AnimationCallbacks &&radialCallbacks)
+		    : radial(std::move(radialCallbacks)) {}
 		Animation a_thumbOver;
 		Ui::RadialAnimation radial;
 	};
@@ -283,12 +277,11 @@ private:
 
 	// duration = -1 - no duration, duration = -2 - "GIF" duration
 	void setStatusSize(qint32 newSize, qint32 fullSize, qint32 duration, qint64 realDuration) const;
-
 };
 
 class Contact : public ItemBase {
 public:
-	Contact(not_null<Context*> context, Result *result);
+	Contact(not_null<Context *> context, Result *result);
 
 	void initDimensions() override;
 	int resizeGetHeight(int width) override;
@@ -301,12 +294,11 @@ private:
 	Text _title, _description;
 
 	void prepareThumb(int width, int height) const;
-
 };
 
 class Article : public ItemBase {
 public:
-	Article(not_null<Context*> context, Result *result, bool withThumb);
+	Article(not_null<Context *> context, Result *result, bool withThumb);
 
 	void initDimensions() override;
 	int resizeGetHeight(int width) override;
@@ -324,12 +316,11 @@ private:
 	qint32 _urlWidth;
 
 	void prepareThumb(int width, int height) const;
-
 };
 
 class Game : public ItemBase {
 public:
-	Game(not_null<Context*> context, Result *result);
+	Game(not_null<Context *> context, Result *result);
 
 	void setPosition(qint32 position) override;
 	void initDimensions() override;
@@ -353,7 +344,6 @@ private:
 	Text _title, _description;
 
 	QSize _frameSize;
-
 };
 
 } // namespace internal

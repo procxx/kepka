@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/style/processor.h"
 
+#include "codegen/common/cpp_file.h"
+#include "codegen/style/generator.h"
+#include "codegen/style/parsed_file.h"
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
-#include "codegen/common/cpp_file.h"
-#include "codegen/style/parsed_file.h"
-#include "codegen/style/generator.h"
 
 namespace codegen {
 namespace style {
@@ -39,9 +39,8 @@ QString destFileBaseName(const structure::Module &module) {
 } // namespace
 
 Processor::Processor(const Options &options)
-: parser_(std::make_unique<ParsedFile>(options))
-, options_(options) {
-}
+    : parser_(std::make_unique<ParsedFile>(options))
+    , options_(options) {}
 
 int Processor::launch() {
 	if (!parser_->read()) {
@@ -60,18 +59,15 @@ bool Processor::write(const structure::Module &module) const {
 	bool forceReGenerate = false;
 	QDir dir(options_.outputPath);
 	if (!dir.mkpath(".")) {
-		common::logError(kErrorCantWritePath, "Command Line") << "can not open path for writing: " << dir.absolutePath().toStdString();
+		common::logError(kErrorCantWritePath, "Command Line")
+		    << "can not open path for writing: " << dir.absolutePath().toStdString();
 		return false;
 	}
 
 	QFileInfo srcFile(module.filepath());
 	QString dstFilePath = dir.absolutePath() + '/' + (options_.isPalette ? "palette" : destFileBaseName(module));
 
-	common::ProjectInfo project = {
-		"codegen_style",
-		srcFile.fileName(),
-		forceReGenerate
-	};
+	common::ProjectInfo project = {"codegen_style", srcFile.fileName(), forceReGenerate};
 
 	Generator generator(module, dstFilePath, project, options_.isPalette);
 	if (!generator.writeHeader()) {

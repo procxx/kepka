@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
 #include "ui/twidget.h"
+#include <QString>
 
 class QWidget;
 class QPaintEvent;
@@ -45,7 +45,6 @@ protected:
 
 private:
 	QString _text;
-
 };
 
 } // namespace Settings

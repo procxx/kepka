@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
-#include <QList>
 #include "base/runtime_composer.h"
 #include "core/click_handler.h"
 #include "core/utils.h"
-#include "structs.h"
 #include "history/history_item.h"
+#include "structs.h"
+#include <QList>
+#include <QString>
 
 struct HistoryServiceDependentData {
 	MsgId msgId = 0;
@@ -34,8 +34,7 @@ struct HistoryServiceDependentData {
 	ClickHandlerPtr lnk;
 };
 
-struct HistoryServicePinned : public RuntimeComponent<HistoryServicePinned>, public HistoryServiceDependentData {
-};
+struct HistoryServicePinned : public RuntimeComponent<HistoryServicePinned>, public HistoryServiceDependentData {};
 
 struct HistoryServiceGameScore : public RuntimeComponent<HistoryServiceGameScore>, public HistoryServiceDependentData {
 	int score = 0;
@@ -66,13 +65,15 @@ public:
 		QList<ClickHandlerPtr> links;
 	};
 
-	static not_null<HistoryService*> create(not_null<History*> history, const MTPDmessage &message) {
+	static not_null<HistoryService *> create(not_null<History *> history, const MTPDmessage &message) {
 		return _create(history, message);
 	}
-	static not_null<HistoryService*> create(not_null<History*> history, const MTPDmessageService &message) {
+	static not_null<HistoryService *> create(not_null<History *> history, const MTPDmessageService &message) {
 		return _create(history, message);
 	}
-	static not_null<HistoryService*> create(not_null<History*> history, MsgId msgId, QDateTime date, const PreparedText &message, MTPDmessage::Flags flags = 0, UserId from = 0, PhotoData *photo = nullptr) {
+	static not_null<HistoryService *> create(not_null<History *> history, MsgId msgId, QDateTime date,
+	                                         const PreparedText &message, MTPDmessage::Flags flags = 0, UserId from = 0,
+	                                         PhotoData *photo = nullptr) {
 		return _create(history, msgId, date, message, flags, from, photo);
 	}
 
@@ -124,9 +125,10 @@ public:
 protected:
 	friend class HistoryLayout::ServiceMessagePainter;
 
-	HistoryService(not_null<History*> history, const MTPDmessage &message);
-	HistoryService(not_null<History*> history, const MTPDmessageService &message);
-	HistoryService(not_null<History*> history, MsgId msgId, QDateTime date, const PreparedText &message, MTPDmessage::Flags flags = 0, UserId from = 0, PhotoData *photo = 0);
+	HistoryService(not_null<History *> history, const MTPDmessage &message);
+	HistoryService(not_null<History *> history, const MTPDmessageService &message);
+	HistoryService(not_null<History *> history, MsgId msgId, QDateTime date, const PreparedText &message,
+	               MTPDmessage::Flags flags = 0, UserId from = 0, PhotoData *photo = 0);
 	friend class HistoryItemInstantiated<HistoryService>;
 
 	void initDimensions() override;
@@ -157,7 +159,7 @@ private:
 		return nullptr;
 	}
 	const HistoryServiceDependentData *GetDependentData() const {
-		return const_cast<HistoryService*>(this)->GetDependentData();
+		return const_cast<HistoryService *>(this)->GetDependentData();
 	}
 	bool updateDependent(bool force = false);
 	void updateDependentText();
@@ -171,23 +173,23 @@ private:
 	PreparedText preparePinnedText();
 	PreparedText prepareGameScoreText();
 	PreparedText preparePaymentSentText();
-
 };
 
 class HistoryJoined : public HistoryService, private HistoryItemInstantiated<HistoryJoined> {
 public:
-	static not_null<HistoryJoined*> create(not_null<History*> history, const QDateTime &inviteDate, not_null<UserData*> inviter, MTPDmessage::Flags flags) {
+	static not_null<HistoryJoined *> create(not_null<History *> history, const QDateTime &inviteDate,
+	                                        not_null<UserData *> inviter, MTPDmessage::Flags flags) {
 		return _create(history, inviteDate, inviter, flags);
 	}
 
 protected:
-	HistoryJoined(not_null<History*> history, const QDateTime &inviteDate, not_null<UserData*> inviter, MTPDmessage::Flags flags);
+	HistoryJoined(not_null<History *> history, const QDateTime &inviteDate, not_null<UserData *> inviter,
+	              MTPDmessage::Flags flags);
 	using HistoryItemInstantiated<HistoryJoined>::_create;
 	friend class HistoryItemInstantiated<HistoryJoined>;
 
 private:
-	static PreparedText GenerateText(not_null<History*> history, not_null<UserData*> inviter);
-
+	static PreparedText GenerateText(not_null<History *> history, not_null<UserData *> inviter);
 };
 
 extern TextParseOptions _historySrvOptions;

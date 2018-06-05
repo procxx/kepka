@@ -26,12 +26,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Ui {
 class FlatLabel;
 class LinkButton;
-template <typename Enum>
-class RadioenumGroup;
-template <typename Enum>
-class Radioenum;
-template <typename Widget>
-class WidgetSlideWrap;
+template <typename Enum> class RadioenumGroup;
+template <typename Enum> class Radioenum;
+template <typename Widget> class WidgetSlideWrap;
 } // namespace Ui
 
 class EditPrivacyBox : public BoxContent, private MTP::Sender {
@@ -81,10 +78,9 @@ public:
 		EditPrivacyBox *_view = nullptr;
 
 		friend class EditPrivacyBox;
-
 	};
 
-	EditPrivacyBox(QWidget*, std::unique_ptr<Controller> controller);
+	EditPrivacyBox(QWidget *, std::unique_ptr<Controller> controller);
 
 protected:
 	void prepare() override;
@@ -102,7 +98,7 @@ private:
 
 	void editExceptionUsers(Exception exception);
 	QString exceptionLinkText(Exception exception);
-	std::vector<not_null<UserData*>> &exceptionUsers(Exception exception);
+	std::vector<not_null<UserData *>> &exceptionUsers(Exception exception);
 	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> &exceptionLink(Exception exception);
 
 	std::unique_ptr<Controller> _controller;
@@ -110,17 +106,16 @@ private:
 
 	std::shared_ptr<Ui::RadioenumGroup<Option>> _optionGroup;
 	object_ptr<Ui::FlatLabel> _loading;
-	object_ptr<Ui::FlatLabel> _description = { nullptr };
-	object_ptr<Ui::Radioenum<Option>> _everyone = { nullptr };
-	object_ptr<Ui::Radioenum<Option>> _contacts = { nullptr };
-	object_ptr<Ui::Radioenum<Option>> _nobody = { nullptr };
-	object_ptr<Ui::FlatLabel> _warning = { nullptr };
-	object_ptr<Ui::FlatLabel> _exceptionsTitle = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _alwaysLink = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _neverLink = { nullptr };
-	object_ptr<Ui::FlatLabel> _exceptionsDescription = { nullptr };
+	object_ptr<Ui::FlatLabel> _description = {nullptr};
+	object_ptr<Ui::Radioenum<Option>> _everyone = {nullptr};
+	object_ptr<Ui::Radioenum<Option>> _contacts = {nullptr};
+	object_ptr<Ui::Radioenum<Option>> _nobody = {nullptr};
+	object_ptr<Ui::FlatLabel> _warning = {nullptr};
+	object_ptr<Ui::FlatLabel> _exceptionsTitle = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _alwaysLink = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::LinkButton>> _neverLink = {nullptr};
+	object_ptr<Ui::FlatLabel> _exceptionsDescription = {nullptr};
 
-	std::vector<not_null<UserData*>> _alwaysUsers;
-	std::vector<not_null<UserData*>> _neverUsers;
-
+	std::vector<not_null<UserData *>> _alwaysUsers;
+	std::vector<not_null<UserData *>> _neverUsers;
 };

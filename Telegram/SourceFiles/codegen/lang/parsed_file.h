@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <string>
-#include <array>
-#include <functional>
-#include <QImage>
 #include "codegen/common/basic_tokenized_file.h"
 #include "codegen/lang/options.h"
+#include <QImage>
+#include <array>
+#include <functional>
+#include <memory>
+#include <string>
 
 namespace codegen {
 namespace lang {
@@ -48,7 +48,6 @@ struct LangPack {
 	};
 	std::vector<Entry> entries;
 	std::vector<Tag> tags;
-
 };
 
 inline bool operator==(const LangPack::Tag &a, const LangPack::Tag &b) {
@@ -109,7 +108,6 @@ private:
 	Options options_;
 	bool failed_ = false;
 	LangPack result_;
-
 };
 
 } // namespace lang

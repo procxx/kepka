@@ -33,7 +33,7 @@ namespace internal {
 
 class ConfigLoader : public base::enable_weak_from_this {
 public:
-	ConfigLoader(not_null<Instance*> instance, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail);
+	ConfigLoader(not_null<Instance *> instance, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail);
 	~ConfigLoader();
 
 	void load();
@@ -49,7 +49,7 @@ private:
 	void terminateRequest();
 	void terminateSpecialRequest();
 
-	not_null<Instance*> _instance;
+	not_null<Instance *> _instance;
 	base::Timer _enumDCTimer;
 	DcId _enumCurrent = 0;
 	mtpRequestId _enumRequest = 0;
@@ -69,7 +69,6 @@ private:
 
 	RPCDoneHandlerPtr _doneHandler;
 	RPCFailHandlerPtr _failHandler;
-
 };
 
 inline bool operator==(const ConfigLoader::SpecialEndpoint &a, const ConfigLoader::SpecialEndpoint &b) {

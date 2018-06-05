@@ -18,26 +18,28 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QDesktopServices>
-#include <QStandardPaths>
-#include <QFileDialog>
 #include "core/file_utilities.h"
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QStandardPaths>
 
-#include "mainwindow.h"
-#include "storage/localstorage.h"
-#include "platform/platform_file_utilities.h"
 #include "base/task_queue.h"
+#include "mainwindow.h"
 #include "messenger.h"
+#include "platform/platform_file_utilities.h"
+#include "storage/localstorage.h"
 
 bool filedialogGetSaveFile(QString &file, const QString &caption, const QString &filter, const QString &initialPath) {
 	QStringList files;
 	QByteArray remoteContent;
-	bool result = Platform::FileDialog::Get(files, remoteContent, caption, filter, FileDialog::internal::Type::WriteFile, initialPath);
+	bool result = Platform::FileDialog::Get(files, remoteContent, caption, filter,
+	                                        FileDialog::internal::Type::WriteFile, initialPath);
 	file = files.isEmpty() ? QString() : files.at(0);
 	return result;
 }
 
-QString filedialogDefaultName(const QString &prefix, const QString &extension, const QString &path, bool skipExistance, int fileTime) {
+QString filedialogDefaultName(const QString &prefix, const QString &extension, const QString &path, bool skipExistance,
+                              int fileTime) {
 	auto directoryPath = path;
 	if (directoryPath.isEmpty()) {
 		if (cDialogLastPath().isEmpty()) {
@@ -55,7 +57,13 @@ QString filedialogDefaultName(const QString &prefix, const QString &extension, c
 		mylocaltime(&tm, &t);
 
 		QChar zero('0');
-		base = prefix + qsl("_%1-%2-%3_%4-%5-%6").arg(tm.tm_year + 1900).arg(tm.tm_mon + 1, 2, 10, zero).arg(tm.tm_mday, 2, 10, zero).arg(tm.tm_hour, 2, 10, zero).arg(tm.tm_min, 2, 10, zero).arg(tm.tm_sec, 2, 10, zero);
+		base = prefix + qsl("_%1-%2-%3_%4-%5-%6")
+		                    .arg(tm.tm_year + 1900)
+		                    .arg(tm.tm_mon + 1, 2, 10, zero)
+		                    .arg(tm.tm_mday, 2, 10, zero)
+		                    .arg(tm.tm_hour, 2, 10, zero)
+		                    .arg(tm.tm_min, 2, 10, zero)
+		                    .arg(tm.tm_sec, 2, 10, zero);
 	}
 
 	QString name;
@@ -90,9 +98,7 @@ QString filedialogNextFilename(const QString &name, const QString &cur, const QS
 namespace File {
 
 void OpenEmailLink(const QString &email) {
-	base::TaskQueue::Main().Put([email] {
-		Platform::File::UnsafeOpenEmailLink(email);
-	});
+	base::TaskQueue::Main().Put([email] { Platform::File::UnsafeOpenEmailLink(email); });
 }
 
 void OpenWith(const QString &filepath, QPoint menuPosition) {
@@ -106,15 +112,11 @@ void OpenWith(const QString &filepath, QPoint menuPosition) {
 }
 
 void Launch(const QString &filepath) {
-	base::TaskQueue::Main().Put([filepath] {
-		Platform::File::UnsafeLaunch(filepath);
-	});
+	base::TaskQueue::Main().Put([filepath] { Platform::File::UnsafeLaunch(filepath); });
 }
 
 void ShowInFolder(const QString &filepath) {
-	base::TaskQueue::Main().Put([filepath] {
-		Platform::File::UnsafeShowInFolder(filepath);
-	});
+	base::TaskQueue::Main().Put([filepath] { Platform::File::UnsafeShowInFolder(filepath); });
 }
 
 namespace internal {
@@ -133,12 +135,13 @@ void UnsafeLaunchDefault(const QString &filepath) {
 
 namespace FileDialog {
 
-void GetOpenPath(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback, base::lambda<void()> failed) {
+void GetOpenPath(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback,
+                 base::lambda<void()> failed) {
 	base::TaskQueue::Main().Put([caption, filter, callback = std::move(callback), failed = std::move(failed)] {
 		auto files = QStringList();
 		auto remoteContent = QByteArray();
-		if (Platform::FileDialog::Get(files, remoteContent, caption, filter, FileDialog::internal::Type::ReadFile)
-			&& ((!files.isEmpty() && !files[0].isEmpty()) || !remoteContent.isEmpty())) {
+		if (Platform::FileDialog::Get(files, remoteContent, caption, filter, FileDialog::internal::Type::ReadFile) &&
+		    ((!files.isEmpty() && !files[0].isEmpty()) || !remoteContent.isEmpty())) {
 			if (callback) {
 				auto result = OpenResult();
 				if (!files.isEmpty() && !files[0].isEmpty()) {
@@ -153,12 +156,13 @@ void GetOpenPath(const QString &caption, const QString &filter, base::lambda<voi
 	});
 }
 
-void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback, base::lambda<void()> failed) {
+void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback,
+                  base::lambda<void()> failed) {
 	base::TaskQueue::Main().Put([caption, filter, callback = std::move(callback), failed = std::move(failed)] {
 		auto files = QStringList();
 		auto remoteContent = QByteArray();
-		if (Platform::FileDialog::Get(files, remoteContent, caption, filter, FileDialog::internal::Type::ReadFiles)
-			&& (!files.isEmpty() || !remoteContent.isEmpty())) {
+		if (Platform::FileDialog::Get(files, remoteContent, caption, filter, FileDialog::internal::Type::ReadFiles) &&
+		    (!files.isEmpty() || !remoteContent.isEmpty())) {
 			if (callback) {
 				auto result = OpenResult();
 				result.paths = files;
@@ -171,25 +175,29 @@ void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<vo
 	});
 }
 
-void GetWritePath(const QString &caption, const QString &filter, const QString &initialPath, base::lambda<void(const QString &result)> callback, base::lambda<void()> failed) {
-	base::TaskQueue::Main().Put([caption, filter, initialPath, callback = std::move(callback), failed = std::move(failed)] {
-		auto file = QString();
-		if (filedialogGetSaveFile(file, caption, filter, initialPath)) {
-			if (callback) {
-				callback(file);
-			}
-		} else if (failed) {
-			failed();
-		}
-	});
+void GetWritePath(const QString &caption, const QString &filter, const QString &initialPath,
+                  base::lambda<void(const QString &result)> callback, base::lambda<void()> failed) {
+	base::TaskQueue::Main().Put(
+	    [caption, filter, initialPath, callback = std::move(callback), failed = std::move(failed)] {
+		    auto file = QString();
+		    if (filedialogGetSaveFile(file, caption, filter, initialPath)) {
+			    if (callback) {
+				    callback(file);
+			    }
+		    } else if (failed) {
+			    failed();
+		    }
+	    });
 }
 
-void GetFolder(const QString &caption, const QString &initialPath, base::lambda<void(const QString &result)> callback, base::lambda<void()> failed) {
+void GetFolder(const QString &caption, const QString &initialPath, base::lambda<void(const QString &result)> callback,
+               base::lambda<void()> failed) {
 	base::TaskQueue::Main().Put([caption, initialPath, callback = std::move(callback), failed = std::move(failed)] {
 		auto files = QStringList();
 		auto remoteContent = QByteArray();
-		if (Platform::FileDialog::Get(files, remoteContent, caption, QString(), FileDialog::internal::Type::ReadFolder, initialPath)
-			&& !files.isEmpty() && !files[0].isEmpty()) {
+		if (Platform::FileDialog::Get(files, remoteContent, caption, QString(), FileDialog::internal::Type::ReadFolder,
+		                              initialPath) &&
+		    !files.isEmpty() && !files[0].isEmpty()) {
 			if (callback) {
 				callback(files[0]);
 			}
@@ -213,12 +221,13 @@ void InitLastPathDefault() {
 	cSetDialogLastPath(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
 }
 
-bool GetDefault(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter, FileDialog::internal::Type type, QString startFile = QString()) {
+bool GetDefault(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter,
+                FileDialog::internal::Type type, QString startFile = QString()) {
 	if (cDialogLastPath().isEmpty()) {
 		Platform::FileDialog::InitLastPath();
 	}
 
-    remoteContent = QByteArray();
+	remoteContent = QByteArray();
 	if (startFile.isEmpty() || startFile.at(0) != '/') {
 		startFile = cDialogLastPath() + '/' + startFile;
 	}
@@ -231,17 +240,17 @@ bool GetDefault(QStringList &files, QByteArray &remoteContent, const QString &ca
 			Local::writeUserSettings();
 		}
 		return !files.isEmpty();
-    } else if (type == Type::ReadFolder) {
+	} else if (type == Type::ReadFolder) {
 		file = QFileDialog::getExistingDirectory(Messenger::Instance().getFileDialogParent(), caption, startFile);
-    } else if (type == Type::WriteFile) {
+	} else if (type == Type::WriteFile) {
 		file = QFileDialog::getSaveFileName(Messenger::Instance().getFileDialogParent(), caption, startFile, filter);
-    } else {
+	} else {
 		file = QFileDialog::getOpenFileName(Messenger::Instance().getFileDialogParent(), caption, startFile, filter);
-    }
-    if (file.isEmpty()) {
-        files = QStringList();
-        return false;
-    }
+	}
+	if (file.isEmpty()) {
+		files = QStringList();
+		return false;
+	}
 	if (type != Type::ReadFolder) {
 		// Save last used directory for all queries except directory choosing.
 		auto path = QFileInfo(file).absoluteDir().absolutePath();

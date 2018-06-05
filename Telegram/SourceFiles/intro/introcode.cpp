@@ -20,19 +20,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "intro/introcode.h"
 
-#include "lang/lang_keys.h"
+#include "app.h" // for formatPhone
 #include "application.h"
-#include "intro/introsignup.h"
 #include "intro/intropwdcheck.h"
+#include "intro/introsignup.h"
+#include "lang/lang_keys.h"
+#include "styles/style_intro.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/labels.h"
-#include "styles/style_intro.h"
-#include "app.h" // for formatPhone
 
 namespace Intro {
 
-CodeInput::CodeInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory) : Ui::MaskedInputField(parent, st, std::move(placeholderFactory)) {
-}
+CodeInput::CodeInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory)
+    : Ui::MaskedInputField(parent, st, std::move(placeholderFactory)) {}
 
 void CodeInput::setDigitsCountMax(int digitsCount) {
 	_digitsCountMax = digitsCount;
@@ -81,14 +81,15 @@ void CodeInput::correctValue(const QString &was, int wasCursor, QString &now, in
 	if (strict) emit codeEntered();
 }
 
-CodeWidget::CodeWidget(QWidget *parent, Widget::Data *data) : Step(parent, data)
-, _noTelegramCode(this, lang(lng_code_no_telegram), st::introLink)
-, _code(this, st::introCode, langFactory(lng_code_ph))
-, _callTimer(this)
-, _callStatus(getData()->callStatus)
-, _callTimeout(getData()->callTimeout)
-, _callLabel(this, st::introDescription)
-, _checkRequest(this) {
+CodeWidget::CodeWidget(QWidget *parent, Widget::Data *data)
+    : Step(parent, data)
+    , _noTelegramCode(this, lang(lng_code_no_telegram), st::introLink)
+    , _code(this, st::introCode, langFactory(lng_code_ph))
+    , _callTimer(this)
+    , _callStatus(getData()->callStatus)
+    , _callTimeout(getData()->callTimeout)
+    , _callLabel(this, st::introDescription)
+    , _checkRequest(this) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 
 	connect(_code, SIGNAL(changed()), this, SLOT(onInputChange()));
@@ -133,9 +134,12 @@ void CodeWidget::updateCallText() {
 		switch (_callStatus) {
 		case Widget::Data::CallStatus::Waiting: {
 			if (_callTimeout >= 3600) {
-				return lng_code_call(lt_minutes, qsl("%1:%2").arg(_callTimeout / 3600).arg((_callTimeout / 60) % 60, 2, 10, QChar('0')), lt_seconds, qsl("%1").arg(_callTimeout % 60, 2, 10, QChar('0')));
+				return lng_code_call(
+				    lt_minutes, qsl("%1:%2").arg(_callTimeout / 3600).arg((_callTimeout / 60) % 60, 2, 10, QChar('0')),
+				    lt_seconds, qsl("%1").arg(_callTimeout % 60, 2, 10, QChar('0')));
 			} else {
-				return lng_code_call(lt_minutes, QString::number(_callTimeout / 60), lt_seconds, qsl("%1").arg(_callTimeout % 60, 2, 10, QChar('0')));
+				return lng_code_call(lt_minutes, QString::number(_callTimeout / 60), lt_seconds,
+				                     qsl("%1").arg(_callTimeout % 60, 2, 10, QChar('0')));
 			}
 		} break;
 		case Widget::Data::CallStatus::Calling: return lang(lng_code_calling);
@@ -253,7 +257,8 @@ bool CodeWidget::codeSubmitFail(const RPCError &error) {
 	} else if (err == qstr("SESSION_PASSWORD_NEEDED")) {
 		getData()->code = _sentCode;
 		_checkRequest->start(1000);
-		_sentRequest = MTP::send(MTPaccount_GetPassword(), rpcDone(&CodeWidget::gotPassword), rpcFail(&CodeWidget::codeSubmitFail));
+		_sentRequest = MTP::send(MTPaccount_GetPassword(), rpcDone(&CodeWidget::gotPassword),
+		                         rpcFail(&CodeWidget::codeSubmitFail));
 		return true;
 	}
 	if (cDebug()) { // internal server error
@@ -277,7 +282,9 @@ void CodeWidget::onSendCall() {
 		if (--_callTimeout <= 0) {
 			_callStatus = Widget::Data::CallStatus::Calling;
 			_callTimer->stop();
-			_callRequestId = MTP::send(MTPauth_ResendCode(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash)), rpcDone(&CodeWidget::callDone));
+			_callRequestId =
+			    MTP::send(MTPauth_ResendCode(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash)),
+			              rpcDone(&CodeWidget::callDone));
 		} else {
 			getData()->callStatus = _callStatus;
 			getData()->callTimeout = _callTimeout;
@@ -328,12 +335,16 @@ void CodeWidget::submit() {
 	getData()->pwdSalt = QByteArray();
 	getData()->hasRecovery = false;
 	getData()->pwdHint = QString();
-	_sentRequest = MTP::send(MTPauth_SignIn(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash), MTP_string(_sentCode)), rpcDone(&CodeWidget::codeSubmitDone), rpcFail(&CodeWidget::codeSubmitFail));
+	_sentRequest =
+	    MTP::send(MTPauth_SignIn(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash), MTP_string(_sentCode)),
+	              rpcDone(&CodeWidget::codeSubmitDone), rpcFail(&CodeWidget::codeSubmitFail));
 }
 
 void CodeWidget::onNoTelegramCode() {
 	if (_noTelegramCodeRequestId) return;
-	_noTelegramCodeRequestId = MTP::send(MTPauth_ResendCode(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash)), rpcDone(&CodeWidget::noTelegramCodeDone), rpcFail(&CodeWidget::noTelegramCodeFail));
+	_noTelegramCodeRequestId =
+	    MTP::send(MTPauth_ResendCode(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash)),
+	              rpcDone(&CodeWidget::noTelegramCodeDone), rpcFail(&CodeWidget::noTelegramCodeFail));
 }
 
 void CodeWidget::noTelegramCodeDone(const MTPauth_SentCode &result) {

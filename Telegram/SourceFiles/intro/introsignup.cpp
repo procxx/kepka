@@ -20,27 +20,28 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "intro/introsignup.h"
 
-#include "styles/style_intro.h"
-#include "styles/style_boxes.h"
-#include "core/file_utilities.h"
-#include "boxes/photo_crop_box.h"
-#include "boxes/confirm_box.h"
-#include "lang/lang_keys.h"
+#include "app.h"
 #include "application.h"
+#include "boxes/confirm_box.h"
+#include "boxes/photo_crop_box.h"
+#include "core/file_utilities.h"
+#include "lang/lang_keys.h"
+#include "styles/style_boxes.h"
+#include "styles/style_intro.h"
+#include "ui/special_buttons.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/input_fields.h"
 #include "ui/widgets/labels.h"
-#include "ui/special_buttons.h"
-#include "app.h"
 
 namespace Intro {
 
-SignupWidget::SignupWidget(QWidget *parent, Widget::Data *data) : Step(parent, data)
-, _photo(this, st::introPhotoSize, st::introPhotoIconPosition)
-, _first(this, st::introName, langFactory(lng_signup_firstname))
-, _last(this, st::introName, langFactory(lng_signup_lastname))
-, _invertOrder(langFirstNameGoesSecond())
-, _checkRequest(this) {
+SignupWidget::SignupWidget(QWidget *parent, Widget::Data *data)
+    : Step(parent, data)
+    , _photo(this, st::introPhotoSize, st::introPhotoIconPosition)
+    , _first(this, st::introName, langFactory(lng_signup_firstname))
+    , _last(this, st::introName, langFactory(lng_signup_lastname))
+    , _invertOrder(langFirstNameGoesSecond())
+    , _checkRequest(this) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 	if (_invertOrder) {
 		setTabOrder(_last, _first);
@@ -73,25 +74,26 @@ void SignupWidget::setupPhotoButton() {
 	_photo->setClickedCallback(App::LambdaDelayed(st::defaultActiveButton.ripple.hideDuration, this, [this] {
 		auto imgExtensions = cImgExtensions();
 		auto filter = qsl("Image files (*") + imgExtensions.join(qsl(" *")) + qsl(");;") + FileDialog::AllFilesFilter();
-		FileDialog::GetOpenPath(lang(lng_choose_image), filter, base::lambda_guarded(this, [this](const FileDialog::OpenResult &result) {
-			if (result.remoteContent.isEmpty() && result.paths.isEmpty()) {
-				return;
-			}
+		FileDialog::GetOpenPath(
+		    lang(lng_choose_image), filter, base::lambda_guarded(this, [this](const FileDialog::OpenResult &result) {
+			    if (result.remoteContent.isEmpty() && result.paths.isEmpty()) {
+				    return;
+			    }
 
-			QImage img;
-			if (!result.remoteContent.isEmpty()) {
-				img = App::readImage(result.remoteContent);
-			} else {
-				img = App::readImage(result.paths.front());
-			}
+			    QImage img;
+			    if (!result.remoteContent.isEmpty()) {
+				    img = App::readImage(result.remoteContent);
+			    } else {
+				    img = App::readImage(result.paths.front());
+			    }
 
-			if (img.isNull() || img.width() > 10 * img.height() || img.height() > 10 * img.width()) {
-				showError(langFactory(lng_bad_photo));
-				return;
-			}
-			auto box = Ui::show(Box<PhotoCropBox>(img, PeerId(0)));
-			connect(box, SIGNAL(ready(const QImage&)), this, SLOT(onPhotoReady(const QImage&)));
-		}));
+			    if (img.isNull() || img.width() > 10 * img.height() || img.height() > 10 * img.width()) {
+				    showError(langFactory(lng_bad_photo));
+				    return;
+			    }
+			    auto box = Ui::show(Box<PhotoCropBox>(img, PeerId(0)));
+			    connect(box, SIGNAL(ready(const QImage &)), this, SLOT(onPhotoReady(const QImage &)));
+		    }));
 	}));
 }
 
@@ -187,8 +189,8 @@ bool SignupWidget::nameSubmitFail(const RPCError &error) {
 		Ui::show(Box<InformBox>(lang(lng_error_phone_flood)));
 		return true;
 	} else if (err == qstr("PHONE_NUMBER_INVALID") || err == qstr("PHONE_CODE_EXPIRED") ||
-		err == qstr("PHONE_CODE_EMPTY") || err == qstr("PHONE_CODE_INVALID") ||
-		err == qstr("PHONE_NUMBER_OCCUPIED")) {
+	           err == qstr("PHONE_CODE_EMPTY") || err == qstr("PHONE_CODE_INVALID") ||
+	           err == qstr("PHONE_NUMBER_OCCUPIED")) {
 		goBack();
 		return true;
 	} else if (err == "FIRSTNAME_INVALID") {
@@ -221,7 +223,8 @@ void SignupWidget::onInputChange() {
 void SignupWidget::submit() {
 	if (_sentRequest) return;
 	if (_invertOrder) {
-		if ((_last->hasFocus() || _last->getLastText().trimmed().length()) && !_first->getLastText().trimmed().length()) {
+		if ((_last->hasFocus() || _last->getLastText().trimmed().length()) &&
+		    !_first->getLastText().trimmed().length()) {
 			_first->setFocus();
 			return;
 		} else if (!_last->getLastText().trimmed().length()) {
@@ -229,7 +232,8 @@ void SignupWidget::submit() {
 			return;
 		}
 	} else {
-		if ((_first->hasFocus() || _first->getLastText().trimmed().length()) && !_last->getLastText().trimmed().length()) {
+		if ((_first->hasFocus() || _first->getLastText().trimmed().length()) &&
+		    !_last->getLastText().trimmed().length()) {
 			_last->setFocus();
 			return;
 		} else if (!_first->getLastText().trimmed().length()) {
@@ -242,7 +246,9 @@ void SignupWidget::submit() {
 
 	_firstName = _first->getLastText().trimmed();
 	_lastName = _last->getLastText().trimmed();
-	_sentRequest = MTP::send(MTPauth_SignUp(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash), MTP_string(getData()->code), MTP_string(_firstName), MTP_string(_lastName)), rpcDone(&SignupWidget::nameSubmitDone), rpcFail(&SignupWidget::nameSubmitFail));
+	_sentRequest = MTP::send(MTPauth_SignUp(MTP_string(getData()->phone), MTP_bytes(getData()->phoneHash),
+	                                        MTP_string(getData()->code), MTP_string(_firstName), MTP_string(_lastName)),
+	                         rpcDone(&SignupWidget::nameSubmitDone), rpcFail(&SignupWidget::nameSubmitFail));
 }
 
 QString SignupWidget::nextButtonText() const {

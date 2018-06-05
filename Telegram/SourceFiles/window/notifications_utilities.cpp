@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/notifications_utilities.h"
 
-#include "platform/platform_specific.h"
 #include "messenger.h"
+#include "platform/platform_specific.h"
 #include "styles/style_window.h"
 
 namespace Window {
@@ -33,7 +33,8 @@ constexpr int kNotifyDeletePhotoAfterMs = 60000;
 
 } // namespace
 
-CachedUserpics::CachedUserpics(Type type) : _type(type) {
+CachedUserpics::CachedUserpics(Type type)
+    : _type(type) {
 	connect(&_clearTimer, SIGNAL(timeout()), this, SLOT(onClear()));
 	QDir().mkpath(cWorkingDir() + qsl("tdata/temp"));
 }
@@ -113,12 +114,10 @@ void CachedUserpics::onClear() {
 CachedUserpics::~CachedUserpics() {
 	if (_someSavedFlag) {
 		TimeMs result = 0;
-		for_const (auto &item, _images) {
-			QFile(item.path).remove();
-		}
+		for_const (auto &item, _images) { QFile(item.path).remove(); }
 
-// This works about 1200ms on Windows for a folder with one image O_o
-//		psDeleteDir(cWorkingDir() + qsl("tdata/temp"));
+		// This works about 1200ms on Windows for a folder with one image O_o
+		//		psDeleteDir(cWorkingDir() + qsl("tdata/temp"));
 	}
 }
 

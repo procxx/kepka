@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "lang/lang_cloud_manager.h"
 #include "boxes/abstract_box.h"
+#include "lang/lang_cloud_manager.h"
 #include "mtproto/sender.h"
 
 namespace Ui {
@@ -29,10 +29,9 @@ class RadiobuttonGroup;
 class Radiobutton;
 } // namespace Ui
 
-class LanguageBox : public BoxContent, private MTP::Sender  {
+class LanguageBox : public BoxContent, private MTP::Sender {
 public:
-	LanguageBox(QWidget*) {
-	}
+	LanguageBox(QWidget*) {}
 
 protected:
 	void prepare() override;
@@ -48,5 +47,4 @@ private:
 
 	class Inner;
 	QPointer<Inner> _inner;
-
 };

@@ -20,26 +20,27 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_privacy_widget.h"
 
+#include "application.h"
+#include "boxes/autolock_box.h"
+#include "boxes/edit_privacy_box.h"
+#include "boxes/passcode_box.h"
+#include "boxes/peer_list_box.h"
+#include "boxes/self_destruction_box.h"
+#include "boxes/sessions_box.h"
+#include "lang/lang_keys.h"
+#include "platform/platform_specific.h"
+#include "scheme.h"
+#include "settings/settings_privacy_controllers.h"
+#include "styles/style_settings.h"
 #include "ui/effects/widget_slide_wrap.h"
 #include "ui/widgets/buttons.h"
-#include "styles/style_settings.h"
-#include "lang/lang_keys.h"
-#include "application.h"
-#include "platform/platform_specific.h"
-#include "boxes/sessions_box.h"
-#include "boxes/passcode_box.h"
-#include "boxes/autolock_box.h"
-#include "boxes/peer_list_box.h"
-#include "boxes/edit_privacy_box.h"
-#include "boxes/self_destruction_box.h"
-#include "settings/settings_privacy_controllers.h"
-#include "scheme.h"
 
 namespace Settings {
 
-LocalPasscodeState::LocalPasscodeState(QWidget *parent) : TWidget(parent)
-, _edit(this, GetEditPasscodeText(), st::boxLinkButton)
-, _turnOff(this, lang(lng_passcode_turn_off), st::boxLinkButton) {
+LocalPasscodeState::LocalPasscodeState(QWidget *parent)
+    : TWidget(parent)
+    , _edit(this, GetEditPasscodeText(), st::boxLinkButton)
+    , _turnOff(this, lang(lng_passcode_turn_off), st::boxLinkButton) {
 	updateControls();
 	connect(_edit, SIGNAL(clicked()), this, SLOT(onEdit()));
 	connect(_turnOff, SIGNAL(clicked()), this, SLOT(onTurnOff()));
@@ -70,13 +71,15 @@ QString LocalPasscodeState::GetEditPasscodeText() {
 	return lang(Global::LocalPasscode() ? lng_passcode_change : lng_passcode_turn_on);
 }
 
-CloudPasswordState::CloudPasswordState(QWidget *parent) : TWidget(parent)
-, _edit(this, lang(lng_cloud_password_set), st::boxLinkButton)
-, _turnOff(this, lang(lng_passcode_turn_off), st::boxLinkButton) {
+CloudPasswordState::CloudPasswordState(QWidget *parent)
+    : TWidget(parent)
+    , _edit(this, lang(lng_cloud_password_set), st::boxLinkButton)
+    , _turnOff(this, lang(lng_passcode_turn_off), st::boxLinkButton) {
 	_turnOff->hide();
 	connect(_edit, SIGNAL(clicked()), this, SLOT(onEdit()));
 	connect(_turnOff, SIGNAL(clicked()), this, SLOT(onTurnOff()));
-	Sandbox::connect(SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(onReloadPassword(Qt::ApplicationState)));
+	Sandbox::connect(SIGNAL(applicationStateChanged(Qt::ApplicationState)), this,
+	                 SLOT(onReloadPassword(Qt::ApplicationState)));
 	onReloadPassword();
 }
 
@@ -96,10 +99,14 @@ void CloudPasswordState::onTurnOff() {
 		_turnOff->hide();
 
 		auto flags = MTPDaccount_passwordInputSettings::Flag::f_email;
-		MTPaccount_PasswordInputSettings settings(MTP_account_passwordInputSettings(MTP_flags(flags), MTP_bytes(QByteArray()), MTP_bytes(QByteArray()), MTP_string(QString()), MTP_string(QString())));
-		MTP::send(MTPaccount_UpdatePasswordSettings(MTP_bytes(QByteArray()), settings), rpcDone(&CloudPasswordState::offPasswordDone), rpcFail(&CloudPasswordState::offPasswordFail));
+		MTPaccount_PasswordInputSettings settings(
+		    MTP_account_passwordInputSettings(MTP_flags(flags), MTP_bytes(QByteArray()), MTP_bytes(QByteArray()),
+		                                      MTP_string(QString()), MTP_string(QString())));
+		MTP::send(MTPaccount_UpdatePasswordSettings(MTP_bytes(QByteArray()), settings),
+		          rpcDone(&CloudPasswordState::offPasswordDone), rpcFail(&CloudPasswordState::offPasswordFail));
 	} else {
-		auto box = Ui::show(Box<PasscodeBox>(_newPasswordSalt, _curPasswordSalt, _hasPasswordRecovery, _curPasswordHint, true));
+		auto box = Ui::show(
+		    Box<PasscodeBox>(_newPasswordSalt, _curPasswordSalt, _hasPasswordRecovery, _curPasswordHint, true));
 		connect(box, SIGNAL(reloadPassword()), this, SLOT(onReloadPassword()));
 	}
 }
@@ -169,13 +176,15 @@ bool CloudPasswordState::offPasswordFail(const RPCError &error) {
 	return true;
 }
 
-PrivacyWidget::PrivacyWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_privacy)) {
+PrivacyWidget::PrivacyWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_privacy)) {
 	createControls();
 	subscribe(Global::RefLocalPasscodeChanged(), [this]() { autoLockUpdated(); });
 }
 
 QString PrivacyWidget::GetAutoLockText() {
-	return (Global::AutoLock() % 3600) ? lng_passcode_autolock_minutes(lt_count, Global::AutoLock() / 60) : lng_passcode_autolock_hours(lt_count, Global::AutoLock() / 3600);
+	return (Global::AutoLock() % 3600) ? lng_passcode_autolock_minutes(lt_count, Global::AutoLock() / 60) :
+	                                     lng_passcode_autolock_hours(lt_count, Global::AutoLock() / 3600);
 }
 
 void PrivacyWidget::createControls() {
@@ -186,7 +195,8 @@ void PrivacyWidget::createControls() {
 	addChildRow(_blockedUsers, marginSmall, lang(lng_settings_blocked_users), SLOT(onBlockedUsers()));
 	addChildRow(_lastSeenPrivacy, marginSmall, lang(lng_settings_last_seen_privacy), SLOT(onLastSeenPrivacy()));
 	addChildRow(_callsPrivacy, marginSmall, lang(lng_settings_calls_privacy), SLOT(onCallsPrivacy()));
-	addChildRow(_groupsInvitePrivacy, marginSmall, lang(lng_settings_groups_invite_privacy), SLOT(onGroupsInvitePrivacy()));
+	addChildRow(_groupsInvitePrivacy, marginSmall, lang(lng_settings_groups_invite_privacy),
+	            SLOT(onGroupsInvitePrivacy()));
 	addChildRow(_localPasscodeState, marginSmall);
 	auto label = lang(psIdleSupported() ? lng_passcode_autolock_away : lng_passcode_autolock_inactive);
 	auto value = GetAutoLockText();
@@ -209,7 +219,7 @@ void PrivacyWidget::autoLockUpdated() {
 }
 
 void PrivacyWidget::onBlockedUsers() {
-	Ui::show(Box<PeerListBox>(std::make_unique<BlockedBoxController>(), [](not_null<PeerListBox*> box) {
+	Ui::show(Box<PeerListBox>(std::make_unique<BlockedBoxController>(), [](not_null<PeerListBox *> box) {
 		box->addButton(langFactory(lng_close), [box] { box->closeBox(); });
 		box->addLeftButton(langFactory(lng_blocked_list_add), [box] { BlockedBoxController::BlockNewUser(); });
 	}));

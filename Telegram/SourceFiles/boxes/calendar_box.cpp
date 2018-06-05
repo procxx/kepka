@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/calendar_box.h"
 
-#include "ui/widgets/buttons.h"
+#include "lang/lang_keys.h"
 #include "styles/style_boxes.h"
 #include "styles/style_dialogs.h"
-#include "lang/lang_keys.h"
 #include "ui/effects/ripple_animation.h"
+#include "ui/widgets/buttons.h"
 
 namespace {
 
@@ -92,10 +92,10 @@ private:
 	int _daysCount = 0;
 	int _daysShift = 0;
 	int _rowsCount = 0;
-
 };
 
-CalendarBox::Context::Context(QDate month, QDate highlighted) : _highlighted(highlighted) {
+CalendarBox::Context::Context(QDate month, QDate highlighted)
+    : _highlighted(highlighted) {
 	showMonth(month);
 }
 
@@ -176,7 +176,8 @@ QDate CalendarBox::Context::dateFromIndex(int index) const {
 		}
 		index += QDate(year, month, 1).daysInMonth();
 	}
-	for (auto maxIndex = QDate(year, month, 1).daysInMonth(); index >= maxIndex; maxIndex = QDate(year, month, 1).daysInMonth()) {
+	for (auto maxIndex = QDate(year, month, 1).daysInMonth(); index >= maxIndex;
+	     maxIndex = QDate(year, month, 1).daysInMonth()) {
 		index -= maxIndex;
 		if (month++ == kMonthsCount) {
 			month -= kMonthsCount;
@@ -236,11 +237,11 @@ private:
 	static constexpr auto kEmptySelection = -kDaysInWeek;
 	int _selected = kEmptySelection;
 	int _pressed = kEmptySelection;
-
 };
 
-CalendarBox::Inner::Inner(QWidget *parent, Context *context) : TWidget(parent)
-, _context(context) {
+CalendarBox::Inner::Inner(QWidget *parent, Context *context)
+    : TWidget(parent)
+    , _context(context) {
 	setMouseTracking(true);
 	subscribe(context->month(), [this](QDate month) { monthChanged(month); });
 }
@@ -295,11 +296,11 @@ void CalendarBox::Inner::paintRows(Painter &p, QRect clip) {
 	auto y = rowsTop();
 	auto index = -_context->daysShift();
 	auto highlightedIndex = _context->highlightedIndex();
-	for (auto row = 0, rowsCount = _context->rowsCount(), daysCount = _context->daysCount()
-		; row != rowsCount
-		; ++row, y += st::calendarCellSize.height()) {
+	for (auto row = 0, rowsCount = _context->rowsCount(), daysCount = _context->daysCount(); row != rowsCount;
+	     ++row, y += st::calendarCellSize.height()) {
 		auto x = rowsLeft();
-		if (!myrtlrect(x, y, st::calendarCellSize.width() * kDaysInWeek, st::calendarCellSize.height()).intersects(clip)) {
+		if (!myrtlrect(x, y, st::calendarCellSize.width() * kDaysInWeek, st::calendarCellSize.height())
+		         .intersects(clip)) {
 			index += kDaysInWeek;
 			continue;
 		}
@@ -364,14 +365,20 @@ void CalendarBox::Inner::mousePressEvent(QMouseEvent *e) {
 
 		auto row = index / kDaysInWeek;
 		auto col = index % kDaysInWeek;
-		auto cell = QRect(rowsLeft() + col * st::calendarCellSize.width(), rowsTop() + row * st::calendarCellSize.height(), st::calendarCellSize.width(), st::calendarCellSize.height());
+		auto cell =
+		    QRect(rowsLeft() + col * st::calendarCellSize.width(), rowsTop() + row * st::calendarCellSize.height(),
+		          st::calendarCellSize.width(), st::calendarCellSize.height());
 		auto it = _ripples.find(_selected);
 		if (it == _ripples.cend()) {
 			auto mask = Ui::RippleAnimation::ellipseMask(QSize(st::calendarCellInner, st::calendarCellInner));
 			auto update = [this, cell] { rtlupdate(cell); };
-			it = _ripples.emplace(_selected, std::make_unique<Ui::RippleAnimation>(st::defaultRippleAnimation, std::move(mask), std::move(update))).first;
+			it = _ripples
+			         .emplace(_selected, std::make_unique<Ui::RippleAnimation>(st::defaultRippleAnimation,
+			                                                                   std::move(mask), std::move(update)))
+			         .first;
 		}
-		auto ripplePosition = QPoint(cell.x() + (st::calendarCellSize.width() - st::calendarCellInner) / 2, cell.y() + (st::calendarCellSize.height() - st::calendarCellInner) / 2);
+		auto ripplePosition = QPoint(cell.x() + (st::calendarCellSize.width() - st::calendarCellInner) / 2,
+		                             cell.y() + (st::calendarCellSize.height() - st::calendarCellInner) / 2);
 		it->second->add(e->pos() - ripplePosition);
 	}
 }
@@ -400,7 +407,9 @@ CalendarBox::Inner::~Inner() = default;
 
 class CalendarBox::Title : public TWidget, private base::Subscriber {
 public:
-	Title(QWidget *parent, Context *context) : TWidget(parent), _context(context) {
+	Title(QWidget *parent, Context *context)
+	    : TWidget(parent)
+	    , _context(context) {
 		subscribe(_context->month(), [this](QDate date) { monthChanged(date); });
 	}
 
@@ -414,7 +423,6 @@ private:
 
 	QString _text;
 	int _textWidth = 0;
-
 };
 
 void CalendarBox::Title::monthChanged(QDate month) {
@@ -428,17 +436,17 @@ void CalendarBox::Title::paintEvent(QPaintEvent *e) {
 
 	p.setFont(st::calendarTitleFont);
 	p.setPen(st::boxTitleFg);
-	p.drawTextLeft((width() - _textWidth) / 2, (height() - st::calendarTitleFont->height) / 2, width(), _text, _textWidth);
+	p.drawTextLeft((width() - _textWidth) / 2, (height() - st::calendarTitleFont->height) / 2, width(), _text,
+	               _textWidth);
 }
 
-CalendarBox::CalendarBox(QWidget*, QDate month, QDate highlighted, base::lambda<void(QDate date)> callback)
-: _context(std::make_unique<Context>(month, highlighted))
-, _inner(this, _context.get())
-, _title(this, _context.get())
-, _previous(this, st::calendarPrevious)
-, _next(this, st::calendarNext)
-, _callback(std::move(callback)) {
-}
+CalendarBox::CalendarBox(QWidget *, QDate month, QDate highlighted, base::lambda<void(QDate date)> callback)
+    : _context(std::make_unique<Context>(month, highlighted))
+    , _inner(this, _context.get())
+    , _title(this, _context.get())
+    , _previous(this, st::calendarPrevious)
+    , _next(this, st::calendarNext)
+    , _callback(std::move(callback)) {}
 
 void CalendarBox::setMinDate(QDate date) {
 	_context->setMinDate(date);
@@ -460,7 +468,7 @@ void CalendarBox::prepare() {
 		}
 	});
 
-//	_inner = setInnerWidget(object_ptr<Inner>(this, _context.get()), st::calendarScroll, st::calendarTitleHeight);
+	//	_inner = setInnerWidget(object_ptr<Inner>(this, _context.get()), st::calendarScroll, st::calendarTitleHeight);
 	_inner->setDateChosenCallback(std::move(_callback));
 
 	addButton(langFactory(lng_close), [this] { closeBox(); });
@@ -493,7 +501,8 @@ void CalendarBox::monthChanged(QDate month) {
 void CalendarBox::resizeEvent(QResizeEvent *e) {
 	_previous->moveToLeft(0, 0);
 	_next->moveToRight(0, 0);
-	_title->setGeometryToLeft(_previous->width(), 0, width() - _previous->width() - _next->width(), st::calendarTitleHeight);
+	_title->setGeometryToLeft(_previous->width(), 0, width() - _previous->width() - _next->width(),
+	                          st::calendarTitleHeight);
 	_inner->setGeometryToLeft(0, st::calendarTitleHeight, width(), height() - st::calendarTitleHeight);
 	BoxContent::resizeEvent(e);
 }

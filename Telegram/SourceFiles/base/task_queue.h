@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <deque>
-#include <QMutex>
 #include "base/lambda.h"
 #include "base/timer.h"
+#include <QMutex>
+#include <deque>
+#include <memory>
 
 namespace base {
 
@@ -47,8 +47,8 @@ public:
 	};
 
 	// Creating custom serial queues.
-	TaskQueue(Priority priority) : TaskQueue(Type::Serial, priority) {
-	}
+	TaskQueue(Priority priority)
+	    : TaskQueue(Type::Serial, priority) {}
 
 	// Default main and two concurrent queues.
 	static TaskQueue &Main();
@@ -100,7 +100,6 @@ private:
 
 	// Only for Serial queues: non-null value means a task is currently processed.
 	bool *destroyed_flag_ = nullptr;
-
 };
 
 } // namespace base

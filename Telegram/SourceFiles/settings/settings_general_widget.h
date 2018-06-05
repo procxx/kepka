@@ -52,14 +52,13 @@ private:
 	void updateWorkmode();
 
 	object_ptr<Ui::LinkButton> _changeLanguage;
-	object_ptr<Ui::Checkbox> _enableTrayIcon = { nullptr };
-	object_ptr<Ui::Checkbox> _enableTaskbarIcon = { nullptr };
-	object_ptr<Ui::Checkbox> _autoStart = { nullptr };
-	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _startMinimized = { nullptr };
-	object_ptr<Ui::Checkbox> _addInSendTo = { nullptr };
+	object_ptr<Ui::Checkbox> _enableTrayIcon = {nullptr};
+	object_ptr<Ui::Checkbox> _enableTaskbarIcon = {nullptr};
+	object_ptr<Ui::Checkbox> _autoStart = {nullptr};
+	object_ptr<Ui::WidgetSlideWrap<Ui::Checkbox>> _startMinimized = {nullptr};
+	object_ptr<Ui::Checkbox> _addInSendTo = {nullptr};
 
 	int _languagesLoadedSubscription = 0;
-
 };
 
 } // namespace Settings

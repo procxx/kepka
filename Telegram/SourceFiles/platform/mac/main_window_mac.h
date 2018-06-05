@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "platform/platform_main_window.h"
-#include "platform/mac/specific_mac_p.h"
 #include "base/timer.h"
+#include "platform/mac/specific_mac_p.h"
+#include "platform/platform_main_window.h"
 
 #include <QMenuBar>
-#include <QTimer>
 #include <QSystemTrayIcon>
+#include <QTimer>
 
 namespace Platform {
 
@@ -40,8 +40,7 @@ public:
 	void psInitSysMenu();
 	void psUpdateMargins();
 
-	void psRefreshTaskbarIcon() {
-	}
+	void psRefreshTaskbarIcon() {}
 
 	bool psFilterNativeEvent(void *event);
 
@@ -91,7 +90,8 @@ protected:
 
 	void psTrayMenuUpdated();
 	void psSetupTrayIcon();
-	virtual void placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift, style::color color) = 0;
+	virtual void placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift,
+	                               style::color color) = 0;
 
 	QTimer psUpdatedPositionTimer;
 
@@ -127,7 +127,6 @@ private:
 	QAction *psShowTelegram = nullptr;
 
 	int _customTitleHeight = 0;
-
 };
 
 } // namespace Platform

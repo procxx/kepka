@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <map>
-#include <set>
-#include <vector>
-#include <memory>
-#include <QString>
-#include <QObject>
 #include "core/basic_types.h"
+#include "mtproto/connection.h"
 #include "mtproto/core_types.h"
 #include "mtproto/rpc_sender.h"
-#include "mtproto/connection.h"
 #include "mtproto/session.h"
+#include <QObject>
+#include <QString>
+#include <map>
+#include <memory>
+#include <set>
+#include <vector>
 
 namespace MTP {
 namespace internal {
@@ -61,7 +61,7 @@ public:
 		SpecialConfigRequester,
 		KeysDestroyer,
 	};
-	Instance(not_null<DcOptions*> options, Mode mode, Config &&config);
+	Instance(not_null<DcOptions *> options, Mode mode, Config &&config);
 
 	Instance(const Instance &other) = delete;
 	Instance &operator=(const Instance &other) = delete;
@@ -76,10 +76,11 @@ public:
 	AuthKeysList getKeysForWrite() const;
 	void addKeysForDestroy(AuthKeysList &&keys);
 
-	not_null<DcOptions*> dcOptions();
+	not_null<DcOptions *> dcOptions();
 
 	template <typename TRequest>
-	mtpRequestId send(const TRequest &request, RPCResponseHandler callbacks = RPCResponseHandler(), ShiftedDcId dcId = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
+	mtpRequestId send(const TRequest &request, RPCResponseHandler callbacks = RPCResponseHandler(),
+	                  ShiftedDcId dcId = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
 		if (auto session = getSession(dcId)) {
 			return session->send(request, callbacks, msCanWait, true, !dcId, after);
 		}
@@ -87,7 +88,8 @@ public:
 	}
 
 	template <typename TRequest>
-	mtpRequestId send(const TRequest &request, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail = RPCFailHandlerPtr(), qint32 dc = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
+	mtpRequestId send(const TRequest &request, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail = RPCFailHandlerPtr(),
+	                  qint32 dc = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
 		return send(request, RPCResponseHandler(onDone, onFail), dc, msCanWait, after);
 	}
 
@@ -160,7 +162,6 @@ private:
 
 	class Private;
 	const std::unique_ptr<Private> _private;
-
 };
 
 } // namespace MTP

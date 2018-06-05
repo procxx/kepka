@@ -24,8 +24,8 @@ namespace Media {
 namespace Clip {
 namespace internal {
 
-QtGifReaderImplementation::QtGifReaderImplementation(FileLocation *location, QByteArray *data) : ReaderImplementation(location, data) {
-}
+QtGifReaderImplementation::QtGifReaderImplementation(FileLocation *location, QByteArray *data)
+    : ReaderImplementation(location, data) {}
 
 ReaderImplementation::ReadResult QtGifReaderImplementation::readFramesTill(TimeMs frameMs, TimeMs systemMs) {
 	if (!_frame.isNull() && _frameTime > frameMs) {

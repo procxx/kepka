@@ -24,8 +24,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 class ChangePhoneBox : public BoxContent {
 public:
-	ChangePhoneBox(QWidget*) {
-	}
+	ChangePhoneBox(QWidget *) {}
 
 protected:
 	void prepare() override;
@@ -35,6 +34,4 @@ protected:
 private:
 	class EnterPhone;
 	class EnterCode;
-
 };
-

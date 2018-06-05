@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/main_window_linux.h"
 
-#include "styles/style_window.h"
-#include "platform/linux/linux_libs.h"
-#include "platform/linux/linux_desktop_environment.h"
-#include "platform/platform_notifications_manager.h"
+#include "app.h"
+#include "application.h"
+#include "facades.h"
+#include "lang/lang_keys.h"
 #include "mainwindow.h"
 #include "messenger.h"
-#include "application.h"
-#include "lang/lang_keys.h"
+#include "platform/linux/linux_desktop_environment.h"
+#include "platform/linux/linux_libs.h"
+#include "platform/platform_notifications_manager.h"
 #include "storage/localstorage.h"
-#include "app.h"
-#include "facades.h"
+#include "styles/style_window.h"
 
 namespace Platform {
 namespace {
@@ -52,20 +52,24 @@ QImage _trayIconImageBack, _trayIconImage;
 
 
 QImage _trayIconImageGen() {
-	qint32 counter = App::histories().unreadBadge(), counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
+	qint32 counter = App::histories().unreadBadge(),
+	       counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
 	bool muted = App::histories().unreadOnlyMuted();
-	if (_trayIconImage.isNull() || _trayIconImage.width() != _trayIconSize || muted != _trayIconMuted || counterSlice != _trayIconCount) {
+	if (_trayIconImage.isNull() || _trayIconImage.width() != _trayIconSize || muted != _trayIconMuted ||
+	    counterSlice != _trayIconCount) {
 		if (_trayIconImageBack.isNull() || _trayIconImageBack.width() != _trayIconSize) {
-			_trayIconImageBack = Messenger::Instance().logo().scaled(_trayIconSize, _trayIconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+			_trayIconImageBack = Messenger::Instance().logo().scaled(_trayIconSize, _trayIconSize,
+			                                                         Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 			_trayIconImageBack = _trayIconImageBack.convertToFormat(QImage::Format_ARGB32);
-			int w = _trayIconImageBack.width(), h = _trayIconImageBack.height(), perline = _trayIconImageBack.bytesPerLine();
+			int w = _trayIconImageBack.width(), h = _trayIconImageBack.height(),
+			    perline = _trayIconImageBack.bytesPerLine();
 			uchar *bytes = _trayIconImageBack.bits();
 			for (qint32 y = 0; y < h; ++y) {
 				for (qint32 x = 0; x < w; ++x) {
 					qint32 srcoff = y * perline + x * 4;
-					bytes[srcoff + QT_RED  ] = qMax(bytes[srcoff + QT_RED  ], uchar(224));
+					bytes[srcoff + QT_RED] = qMax(bytes[srcoff + QT_RED], uchar(224));
 					bytes[srcoff + QT_GREEN] = qMax(bytes[srcoff + QT_GREEN], uchar(165));
-					bytes[srcoff + QT_BLUE ] = qMax(bytes[srcoff + QT_BLUE ], uchar(44));
+					bytes[srcoff + QT_BLUE] = qMax(bytes[srcoff + QT_BLUE], uchar(44));
 				}
 			}
 		}
@@ -83,17 +87,20 @@ QImage _trayIconImageGen() {
 			auto &bg = (muted ? st::trayCounterBgMute : st::trayCounterBg);
 			auto &fg = st::trayCounterFg;
 			auto layer = App::wnd()->iconWithCounter(layerSize, counter, bg, fg, false);
-			p.drawImage(_trayIconImage.width() - layer.width() - 1, _trayIconImage.height() - layer.height() - 1, layer);
+			p.drawImage(_trayIconImage.width() - layer.width() - 1, _trayIconImage.height() - layer.height() - 1,
+			            layer);
 		}
 	}
 	return _trayIconImage;
 }
 
 QString _trayIconImageFile() {
-	qint32 counter = App::histories().unreadBadge(), counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
+	qint32 counter = App::histories().unreadBadge(),
+	       counterSlice = (counter >= 1000) ? (1000 + (counter % 100)) : counter;
 	bool muted = App::histories().unreadOnlyMuted();
 
-	QString name = cWorkingDir() + qsl("tdata/ticons/ico%1_%2_%3.png").arg(muted ? "mute" : "").arg(_trayIconSize).arg(counterSlice);
+	QString name = cWorkingDir() +
+	               qsl("tdata/ticons/ico%1_%2_%3.png").arg(muted ? "mute" : "").arg(_trayIconSize).arg(counterSlice);
 	QFileInfo info(name);
 	if (info.exists()) return name;
 
@@ -131,11 +138,9 @@ void MainWindow::psStatusIconCheck() {
 	}
 }
 
-void MainWindow::psShowTrayMenu() {
-}
+void MainWindow::psShowTrayMenu() {}
 
-void MainWindow::psTrayMenuUpdated() {
-}
+void MainWindow::psTrayMenuUpdated() {}
 
 void MainWindow::psSetupTrayIcon() {
 	if (noQtTrayIcon) {
@@ -156,7 +161,8 @@ void MainWindow::psSetupTrayIcon() {
 			trayIcon->setIcon(icon);
 
 			trayIcon->setToolTip(str_const_toString(AppName));
-			connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(toggleTray(QSystemTrayIcon::ActivationReason)), Qt::UniqueConnection);
+			connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+			        SLOT(toggleTray(QSystemTrayIcon::ActivationReason)), Qt::UniqueConnection);
 
 			// This is very important for native notifications via libnotify!
 			// Some notification servers compose several notifications with a "Reply"
@@ -193,8 +199,7 @@ void MainWindow::workmodeUpdated(DBIWorkMode mode) {
 	}
 }
 
-void MainWindow::psUpdateIndicator() {
-}
+void MainWindow::psUpdateIndicator() {}
 
 void MainWindow::unreadCounterChangedHook() {
 	setWindowTitle(titleText());
@@ -233,7 +238,6 @@ void MainWindow::LibsLoaded() {
 	LOG(("Tray Icon: Try Qt = %1, Prefer appindicator = %2").arg(Logs::b(!noQtTrayIcon)).arg(Logs::b(tryAppIndicator)));
 
 	if (noQtTrayIcon) cSetSupportTray(false);
-
 }
 
 void MainWindow::psCreateTrayIcon() {
@@ -274,13 +278,10 @@ void MainWindow::psFirstShow() {
 	setPositionInited();
 }
 
-void MainWindow::psInitSysMenu() {
-}
+void MainWindow::psInitSysMenu() {}
 
-void MainWindow::psUpdateMargins() {
-}
+void MainWindow::psUpdateMargins() {}
 
-MainWindow::~MainWindow() {
-}
+MainWindow::~MainWindow() {}
 
 } // namespace Platform

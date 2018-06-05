@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <vector>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QtMath>
+#include <memory>
+#include <vector>
 
 namespace codegen {
 namespace style {
@@ -98,8 +98,8 @@ struct margins {
 
 struct font {
 	enum Flag {
-		Bold      = 0x01,
-		Italic    = 0x02,
+		Bold = 0x01,
+		Italic = 0x02,
 		Underline = 0x04,
 	};
 	std::string family;
@@ -140,18 +140,42 @@ public:
 	// Default constructed value (uninitialized).
 	Value(Type type, Qt::Initialization);
 
-	Type type() const { return type_; }
-	int Int() const { return data_->Int(); }
-	double Double() const { return data_->Double(); }
-	std::string String() const { return data_->String(); }
-	data::point Point() const { return data_->Point(); }
-	data::size Size() const { return data_->Size(); };
-	data::color Color() const { return data_->Color(); };
-	data::margins Margins() const { return data_->Margins(); };
-	data::font Font() const { return data_->Font(); };
-	data::icon Icon() const { return data_->Icon(); };
-	const data::fields *Fields() const { return data_->Fields(); };
-	data::fields *Fields() { return data_->Fields(); };
+	Type type() const {
+		return type_;
+	}
+	int Int() const {
+		return data_->Int();
+	}
+	double Double() const {
+		return data_->Double();
+	}
+	std::string String() const {
+		return data_->String();
+	}
+	data::point Point() const {
+		return data_->Point();
+	}
+	data::size Size() const {
+		return data_->Size();
+	};
+	data::color Color() const {
+		return data_->Color();
+	};
+	data::margins Margins() const {
+		return data_->Margins();
+	};
+	data::font Font() const {
+		return data_->Font();
+	};
+	data::icon Icon() const {
+		return data_->Icon();
+	};
+	const data::fields *Fields() const {
+		return data_->Fields();
+	};
+	data::fields *Fields() {
+		return data_->Fields();
+	};
 
 	explicit operator bool() const {
 		return type_.tag != TypeTag::Invalid;
@@ -170,19 +194,40 @@ public:
 private:
 	class DataBase {
 	public:
-		virtual int Int() const { return 0; }
-		virtual double Double() const { return 0.; }
-		virtual std::string String() const { return std::string(); }
-		virtual data::point Point() const { return {}; };
-		virtual data::size Size() const { return {}; };
-		virtual data::color Color() const { return {}; };
-		virtual data::margins Margins() const { return {}; };
-		virtual data::font Font() const { return {}; };
-		virtual data::icon Icon() const { return {}; };
-		virtual const data::fields *Fields() const { return nullptr; };
-		virtual data::fields *Fields() { return nullptr; };
-		virtual ~DataBase() {
+		virtual int Int() const {
+			return 0;
 		}
+		virtual double Double() const {
+			return 0.;
+		}
+		virtual std::string String() const {
+			return std::string();
+		}
+		virtual data::point Point() const {
+			return {};
+		};
+		virtual data::size Size() const {
+			return {};
+		};
+		virtual data::color Color() const {
+			return {};
+		};
+		virtual data::margins Margins() const {
+			return {};
+		};
+		virtual data::font Font() const {
+			return {};
+		};
+		virtual data::icon Icon() const {
+			return {};
+		};
+		virtual const data::fields *Fields() const {
+			return nullptr;
+		};
+		virtual data::fields *Fields() {
+			return nullptr;
+		};
+		virtual ~DataBase() {}
 	};
 	struct DataTypes;
 
@@ -192,7 +237,6 @@ private:
 	std::shared_ptr<DataBase> data_;
 
 	FullName copyOf_; // for copies of existing named values
-
 };
 
 struct Variable {
@@ -207,11 +251,7 @@ struct Variable {
 
 namespace data {
 struct field {
-	enum class Status {
-		Uninitialized,
-		Implicit,
-		Explicit
-	};
+	enum class Status { Uninitialized, Implicit, Explicit };
 	Variable variable;
 	Status status;
 };

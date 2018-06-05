@@ -25,8 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Ui {
 class ScrollArea;
 class PlainShadow;
-template <typename Widget>
-class WidgetFadeWrap;
+template <typename Widget> class WidgetFadeWrap;
 } // namespace Ui
 
 namespace Profile {
@@ -38,7 +37,7 @@ class Widget final : public Window::SectionWidget {
 	Q_OBJECT
 
 public:
-	Widget(QWidget *parent, not_null<Window::Controller*> controller, PeerData *peer);
+	Widget(QWidget *parent, not_null<Window::Controller *> controller, PeerData *peer);
 
 	PeerData *peer() const;
 	PeerData *peerForDialogs() const override {
@@ -49,10 +48,10 @@ public:
 
 	QPixmap grabForShowAnimation(const Window::SectionSlideParams &params) override;
 
-	bool showInternal(not_null<Window::SectionMemento*> memento) override;
+	bool showInternal(not_null<Window::SectionMemento *> memento) override;
 	std::unique_ptr<Window::SectionMemento> createMemento() override;
 
-	void setInternalState(const QRect &geometry, not_null<SectionMemento*> memento);
+	void setInternalState(const QRect &geometry, not_null<SectionMemento *> memento);
 
 	// Float player interface.
 	bool wheelEventFromFloatPlayer(QEvent *e, Window::Column myColumn, Window::Column playerColumn) override;
@@ -71,14 +70,13 @@ private slots:
 private:
 	void updateScrollState();
 	void updateAdaptiveLayout();
-	void saveState(not_null<SectionMemento*> memento);
-	void restoreState(not_null<SectionMemento*> memento);
+	void saveState(not_null<SectionMemento *> memento);
+	void restoreState(not_null<SectionMemento *> memento);
 
 	object_ptr<Ui::ScrollArea> _scroll;
 	QPointer<InnerWidget> _inner;
 	object_ptr<FixedBar> _fixedBar;
 	object_ptr<Ui::WidgetFadeWrap<Ui::PlainShadow>> _fixedBarShadow;
-
 };
 
 } // namespace Profile

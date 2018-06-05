@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/observer.h"
-#include "mtproto/sender.h"
 #include "base/weak_unique_ptr.h"
+#include "mtproto/sender.h"
 
 namespace MTP {
 class Instance;
@@ -34,7 +34,7 @@ class Instance;
 
 class CloudManager : public base::enable_weak_from_this, private MTP::Sender, private base::Subscriber {
 public:
-	CloudManager(Instance &langpack, not_null<MTP::Instance*> mtproto);
+	CloudManager(Instance &langpack, not_null<MTP::Instance *> mtproto);
 
 	struct Language {
 		QString id;
@@ -92,7 +92,6 @@ private:
 	base::Observable<void> _firstLanguageSuggestion;
 
 	mtpRequestId _switchingToLanguageRequest = 0;
-
 };
 
 inline bool operator==(const CloudManager::Language &a, const CloudManager::Language &b) {

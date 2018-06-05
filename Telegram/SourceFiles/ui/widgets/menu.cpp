@@ -20,25 +20,27 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "ui/effects/ripple_animation.h"
 #include "ui/widgets/checkbox.h"
 
-#include <qevent.h>
 #include <QAction>
+#include <qevent.h>
 
 namespace Ui {
 
 Menu::ActionData::~ActionData() = default;
 
-Menu::Menu(QWidget *parent, const style::Menu &st) : TWidget(parent)
-, _st(st)
-, _itemHeight(_st.itemPadding.top() + _st.itemFont->height + _st.itemPadding.bottom())
-, _separatorHeight(_st.separatorPadding.top() + _st.separatorWidth + _st.separatorPadding.bottom()) {
+Menu::Menu(QWidget *parent, const style::Menu &st)
+    : TWidget(parent)
+    , _st(st)
+    , _itemHeight(_st.itemPadding.top() + _st.itemFont->height + _st.itemPadding.bottom())
+    , _separatorHeight(_st.separatorPadding.top() + _st.separatorWidth + _st.separatorPadding.bottom()) {
 	init();
 }
 
-Menu::Menu(QWidget *parent, QMenu *menu, const style::Menu &st) : TWidget(parent)
-, _st(st)
-, _wappedMenu(menu)
-, _itemHeight(_st.itemPadding.top() + _st.itemFont->height + _st.itemPadding.bottom())
-, _separatorHeight(_st.separatorPadding.top() + _st.separatorWidth + _st.separatorPadding.bottom()) {
+Menu::Menu(QWidget *parent, QMenu *menu, const style::Menu &st)
+    : TWidget(parent)
+    , _st(st)
+    , _wappedMenu(menu)
+    , _itemHeight(_st.itemPadding.top() + _st.itemFont->height + _st.itemPadding.bottom())
+    , _separatorHeight(_st.separatorPadding.top() + _st.separatorWidth + _st.separatorPadding.bottom()) {
 	init();
 
 	_wappedMenu->setParent(this);
@@ -56,13 +58,15 @@ void Menu::init() {
 	setAttribute(Qt::WA_OpaquePaintEvent);
 }
 
-QAction *Menu::addAction(const QString &text, const QObject *receiver, const char* member, const style::icon *icon, const style::icon *iconOver) {
+QAction *Menu::addAction(const QString &text, const QObject *receiver, const char *member, const style::icon *icon,
+                         const style::icon *iconOver) {
 	auto action = addAction(new QAction(text, this), icon, iconOver);
 	connect(action, SIGNAL(triggered(bool)), receiver, member, Qt::QueuedConnection);
 	return action;
 }
 
-QAction *Menu::addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon, const style::icon *iconOver) {
+QAction *Menu::addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon,
+                         const style::icon *iconOver) {
 	auto action = addAction(new QAction(text, this), icon, iconOver);
 	connect(action, &QAction::triggered, action, std::move(callback), Qt::QueuedConnection);
 	return action;
@@ -212,7 +216,9 @@ void Menu::paintEvent(QPaintEvent *e) {
 		if (clip.top() < top) {
 			if (action->isSeparator()) {
 				p.fillRect(0, 0, width(), actionHeight, _st.itemBg);
-				p.fillRect(_st.separatorPadding.left(), _st.separatorPadding.top(), width() - _st.separatorPadding.left() - _st.separatorPadding.right(), _st.separatorWidth, _st.separatorFg);
+				p.fillRect(_st.separatorPadding.left(), _st.separatorPadding.top(),
+				           width() - _st.separatorPadding.left() - _st.separatorPadding.right(), _st.separatorWidth,
+				           _st.separatorFg);
 			} else {
 				auto enabled = action->isEnabled();
 				auto selected = ((i == _selected || i == _pressed) && enabled);
@@ -229,13 +235,16 @@ void Menu::paintEvent(QPaintEvent *e) {
 				p.setPen(selected ? _st.itemFgOver : (enabled ? _st.itemFg : _st.itemFgDisabled));
 				p.drawTextLeft(_st.itemPadding.left(), _st.itemPadding.top(), width(), data.text);
 				if (data.hasSubmenu) {
-					_st.arrow.paint(p, width() - _st.itemPadding.right() - _st.arrow.width(), (_itemHeight - _st.arrow.height()) / 2, width());
+					_st.arrow.paint(p, width() - _st.itemPadding.right() - _st.arrow.width(),
+					                (_itemHeight - _st.arrow.height()) / 2, width());
 				} else if (!data.shortcut.isEmpty()) {
-					p.setPen(selected ? _st.itemFgShortcutOver : (enabled ? _st.itemFgShortcut : _st.itemFgShortcutDisabled));
+					p.setPen(selected ? _st.itemFgShortcutOver :
+					                    (enabled ? _st.itemFgShortcut : _st.itemFgShortcutDisabled));
 					p.drawTextRight(_st.itemPadding.right(), _st.itemPadding.top(), width(), data.shortcut);
 				} else if (data.toggle) {
 					auto toggleSize = data.toggle->getSize();
-					data.toggle->paint(p, width() - _st.itemPadding.right() - toggleSize.width() + _st.itemToggleShift, (_itemHeight - toggleSize.height()) / 2, width(), ms);
+					data.toggle->paint(p, width() - _st.itemPadding.right() - toggleSize.width() + _st.itemToggleShift,
+					                   (_itemHeight - toggleSize.height()) / 2, width(), ms);
 				}
 			}
 		}
@@ -251,7 +260,10 @@ void Menu::updateSelected(QPoint globalPosition) {
 	while (top <= p.y() && ++selected < _actions.size()) {
 		top += _actions[selected]->isSeparator() ? _separatorHeight : _itemHeight;
 	}
-	setSelected((selected >= 0 && selected < _actions.size() && _actions[selected]->isEnabled() && !_actions[selected]->isSeparator()) ? selected : -1);
+	setSelected((selected >= 0 && selected < _actions.size() && _actions[selected]->isEnabled() &&
+	             !_actions[selected]->isSeparator()) ?
+	                selected :
+	                -1);
 }
 
 void Menu::itemPressed(TriggeredSource source) {
@@ -263,9 +275,8 @@ void Menu::itemPressed(TriggeredSource source) {
 		if (source == TriggeredSource::Mouse) {
 			if (!_actionsData[_pressed].ripple) {
 				auto mask = RippleAnimation::rectMask(QSize(width(), _itemHeight));
-				_actionsData[_pressed].ripple = std::make_unique<RippleAnimation>(_st.ripple, std::move(mask), [this, selected = _pressed] {
-					updateItem(selected);
-				});
+				_actionsData[_pressed].ripple = std::make_unique<RippleAnimation>(
+				    _st.ripple, std::move(mask), [this, selected = _pressed] { updateItem(selected); });
 			}
 			_actionsData[_pressed].ripple->add(mapFromGlobal(QCursor::pos()) - QPoint(0, itemTop(_pressed)));
 		} else {

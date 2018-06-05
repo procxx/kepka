@@ -20,37 +20,38 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/widgets/labels.h"
 
-#include "ui/widgets/popup_menu.h"
-#include "mainwindow.h"
-#include "lang/lang_keys.h"
 #include "app.h"
 #include "facades.h"
+#include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "ui/widgets/popup_menu.h"
 
-#include <QDrag>
 #include <QApplication>
 #include <QClipboard>
+#include <QDrag>
 
 namespace Ui {
 namespace {
 
 TextParseOptions _labelOptions = {
-	TextParseMultiline, // flags
-	0, // maxw
-	0, // maxh
-	Qt::LayoutDirectionAuto, // dir
+    TextParseMultiline, // flags
+    0, // maxw
+    0, // maxh
+    Qt::LayoutDirectionAuto, // dir
 };
 
 TextParseOptions _labelMarkedOptions = {
-	TextParseMultiline | TextParseRichText | TextParseLinks | TextParseHashtags | TextParseMentions | TextParseBotCommands | TextParseMarkdown, // flags
-	0, // maxw
-	0, // maxh
-	Qt::LayoutDirectionAuto, // dir
+    TextParseMultiline | TextParseRichText | TextParseLinks | TextParseHashtags | TextParseMentions |
+        TextParseBotCommands | TextParseMarkdown, // flags
+    0, // maxw
+    0, // maxh
+    Qt::LayoutDirectionAuto, // dir
 };
 
 } // namespace
 
-CrossFadeAnimation::CrossFadeAnimation(style::color bg) : _bg(bg) {
-}
+CrossFadeAnimation::CrossFadeAnimation(style::color bg)
+    : _bg(bg) {}
 
 void CrossFadeAnimation::addLine(Part was, Part now) {
 	_lines.push_back(Line(std::move(was), std::move(now)));
@@ -59,12 +60,11 @@ void CrossFadeAnimation::addLine(Part was, Part now) {
 void CrossFadeAnimation::paintFrame(Painter &p, double positionReady, double alphaWas, double alphaNow) {
 	if (_lines.isEmpty()) return;
 
-	for_const (auto &line, _lines) {
-		paintLine(p, line, positionReady, alphaWas, alphaNow);
-	}
+	for_const (auto &line, _lines) { paintLine(p, line, positionReady, alphaWas, alphaNow); }
 }
 
-void CrossFadeAnimation::paintLine(Painter &p, const Line &line, double positionReady, double alphaWas, double alphaNow) {
+void CrossFadeAnimation::paintLine(Painter &p, const Line &line, double positionReady, double alphaWas,
+                                   double alphaNow) {
 	auto &snapshotWas = line.was.snapshot;
 	auto &snapshotNow = line.now.snapshot;
 	if (snapshotWas.isNull() && snapshotNow.isNull()) {
@@ -90,7 +90,8 @@ void CrossFadeAnimation::paintLine(Painter &p, const Line &line, double position
 		}
 	}
 	if (widthDelta > 0) {
-		p.fillRect(left + (snapshotWas.width() / cIntRetinaFactor()), topNow, widthDelta, snapshotNow.height() / cIntRetinaFactor(), _bg);
+		p.fillRect(left + (snapshotWas.width() / cIntRetinaFactor()), topNow, widthDelta,
+		           snapshotNow.height() / cIntRetinaFactor(), _bg);
 	}
 
 	p.setOpacity(alphaNow);
@@ -101,12 +102,14 @@ void CrossFadeAnimation::paintLine(Painter &p, const Line &line, double position
 		}
 	}
 	if (widthDelta < 0) {
-		p.fillRect(left + (snapshotNow.width() / cIntRetinaFactor()), topWas, -widthDelta, snapshotWas.height() / cIntRetinaFactor(), _bg);
+		p.fillRect(left + (snapshotNow.width() / cIntRetinaFactor()), topWas, -widthDelta,
+		           snapshotWas.height() / cIntRetinaFactor(), _bg);
 	}
 }
 
-LabelSimple::LabelSimple(QWidget *parent, const style::LabelSimple &st, const QString &value) : TWidget(parent)
-, _st(st) {
+LabelSimple::LabelSimple(QWidget *parent, const style::LabelSimple &st, const QString &value)
+    : TWidget(parent)
+    , _st(st) {
 	setText(value);
 }
 
@@ -143,17 +146,19 @@ void LabelSimple::paintEvent(QPaintEvent *e) {
 	p.drawTextLeft(0, 0, width(), _text, _textWidth);
 }
 
-FlatLabel::FlatLabel(QWidget *parent, const style::FlatLabel &st) : TWidget(parent)
-, _text(st.width ? st.width : QFIXED_MAX)
-, _st(st)
-, _contextCopyText(lang(lng_context_copy_text)) {
+FlatLabel::FlatLabel(QWidget *parent, const style::FlatLabel &st)
+    : TWidget(parent)
+    , _text(st.width ? st.width : QFIXED_MAX)
+    , _st(st)
+    , _contextCopyText(lang(lng_context_copy_text)) {
 	init();
 }
 
-FlatLabel::FlatLabel(QWidget *parent, const QString &text, InitType initType, const style::FlatLabel &st) : TWidget(parent)
-, _text(st.width ? st.width : QFIXED_MAX)
-, _st(st)
-, _contextCopyText(lang(lng_context_copy_text)) {
+FlatLabel::FlatLabel(QWidget *parent, const QString &text, InitType initType, const style::FlatLabel &st)
+    : TWidget(parent)
+    , _text(st.width ? st.width : QFIXED_MAX)
+    , _st(st)
+    , _contextCopyText(lang(lng_context_copy_text)) {
 	if (initType == InitType::Rich) {
 		setRichText(text);
 	} else {
@@ -223,7 +228,8 @@ int FlatLabel::naturalWidth() const {
 }
 
 int FlatLabel::countTextWidth() const {
-	return _allowedWidth ? (_allowedWidth - _st.margin.left() - _st.margin.right()) : (_st.width ? _st.width : _text.maxWidth());
+	return _allowedWidth ? (_allowedWidth - _st.margin.left() - _st.margin.right()) :
+	                       (_st.width ? _st.width : _text.maxWidth());
 }
 
 int FlatLabel::countTextHeight(int textWidth) {
@@ -279,10 +285,11 @@ Text::StateResult FlatLabel::dragActionStart(const QPoint &p, Qt::MouseButton bu
 		return state;
 	}
 
-	if (_trippleClickTimer.isActive() && (_lastMousePos - _trippleClickPoint).manhattanLength() < QApplication::startDragDistance()) {
+	if (_trippleClickTimer.isActive() &&
+	    (_lastMousePos - _trippleClickPoint).manhattanLength() < QApplication::startDragDistance()) {
 		if (state.uponSymbol) {
-			_selection = { state.symbol, state.symbol };
-			_savedSelection = { 0, 0 };
+			_selection = {state.symbol, state.symbol};
+			_savedSelection = {0, 0};
 			_dragSymbol = state.symbol;
 			_dragAction = Selecting;
 			_selectionType = TextSelectType::Paragraphs;
@@ -304,8 +311,8 @@ Text::StateResult FlatLabel::dragActionStart(const QPoint &p, Qt::MouseButton bu
 			_dragAction = PrepareDrag; // start text drag
 		} else if (!_dragWasInactive) {
 			if (state.afterSymbol) ++_dragSymbol;
-			_selection = { _dragSymbol, _dragSymbol };
-			_savedSelection = { 0, 0 };
+			_selection = {_dragSymbol, _dragSymbol};
+			_savedSelection = {0, 0};
 			_dragAction = Selecting;
 			update();
 		}
@@ -321,8 +328,8 @@ Text::StateResult FlatLabel::dragActionFinish(const QPoint &p, Qt::MouseButton b
 	if (_dragAction == Dragging) {
 		activated.clear();
 	} else if (_dragAction == PrepareDrag) {
-		_selection = { 0, 0 };
-		_savedSelection = { 0, 0 };
+		_selection = {0, 0};
+		_savedSelection = {0, 0};
 		update();
 	}
 	_dragAction = NoDrag;
@@ -336,7 +343,8 @@ Text::StateResult FlatLabel::dragActionFinish(const QPoint &p, Qt::MouseButton b
 
 #if defined Q_OS_LINUX32 || defined Q_OS_LINUX64
 	if (!_selection.empty()) {
-		QApplication::clipboard()->setText(_text.originalText(_selection, _contextExpandLinksMode), QClipboard::Selection);
+		QApplication::clipboard()->setText(_text.originalText(_selection, _contextExpandLinksMode),
+		                                   QClipboard::Selection);
 	}
 #endif // Q_OS_LINUX32 || Q_OS_LINUX64
 
@@ -358,8 +366,8 @@ void FlatLabel::mouseDoubleClickEvent(QMouseEvent *e) {
 			_selectionType = _doubleClickSelectsParagraph ? TextSelectType::Paragraphs : TextSelectType::Words;
 			if (_dragAction == NoDrag) {
 				_dragAction = Selecting;
-				_selection = { state.symbol, state.symbol };
-				_savedSelection = { 0, 0 };
+				_selection = {state.symbol, state.symbol};
+				_savedSelection = {0, 0};
 			}
 			mouseMoveEvent(e);
 
@@ -383,7 +391,7 @@ void FlatLabel::focusOutEvent(QFocusEvent *e) {
 		if (_contextMenu) {
 			_savedSelection = _selection;
 		}
-		_selection = { 0, 0 };
+		_selection = {0, 0};
 		update();
 	}
 }
@@ -391,7 +399,7 @@ void FlatLabel::focusOutEvent(QFocusEvent *e) {
 void FlatLabel::focusInEvent(QFocusEvent *e) {
 	if (!_savedSelection.empty()) {
 		_selection = _savedSelection;
-		_savedSelection = { 0, 0 };
+		_savedSelection = {0, 0};
 		update();
 	}
 }
@@ -407,7 +415,8 @@ void FlatLabel::keyPressEvent(QKeyEvent *e) {
 	} else if (e->key() == Qt::Key_E && e->modifiers().testFlag(Qt::ControlModifier)) {
 		auto selection = _selection.empty() ? (_contextMenu ? _savedSelection : _selection) : _selection;
 		if (!selection.empty()) {
-			QApplication::clipboard()->setText(_text.originalText(selection, _contextExpandLinksMode), QClipboard::FindBuffer);
+			QApplication::clipboard()->setText(_text.originalText(selection, _contextExpandLinksMode),
+			                                   QClipboard::FindBuffer);
 		}
 #endif // Q_OS_MAC
 	}
@@ -420,8 +429,9 @@ void FlatLabel::contextMenuEvent(QContextMenuEvent *e) {
 }
 
 bool FlatLabel::event(QEvent *e) {
-	if (e->type() == QEvent::TouchBegin || e->type() == QEvent::TouchUpdate || e->type() == QEvent::TouchEnd || e->type() == QEvent::TouchCancel) {
-		QTouchEvent *ev = static_cast<QTouchEvent*>(e);
+	if (e->type() == QEvent::TouchBegin || e->type() == QEvent::TouchUpdate || e->type() == QEvent::TouchEnd ||
+	    e->type() == QEvent::TouchCancel) {
+		QTouchEvent *ev = static_cast<QTouchEvent *>(e);
 		if (ev->device()->type() == QTouchDevice::TouchScreen) {
 			touchEvent(ev);
 			return true;
@@ -448,41 +458,41 @@ void FlatLabel::touchEvent(QTouchEvent *e) {
 
 	switch (e->type()) {
 	case QEvent::TouchBegin:
-	if (_contextMenu) {
-		e->accept();
-		return; // ignore mouse press, that was hiding context menu
-	}
-	if (_touchInProgress) return;
-	if (e->touchPoints().isEmpty()) return;
+		if (_contextMenu) {
+			e->accept();
+			return; // ignore mouse press, that was hiding context menu
+		}
+		if (_touchInProgress) return;
+		if (e->touchPoints().isEmpty()) return;
 
-	_touchInProgress = true;
-	_touchSelectTimer.start(QApplication::startDragTime());
-	_touchSelect = false;
-	_touchStart = _touchPrevPos = _touchPos;
-	break;
+		_touchInProgress = true;
+		_touchSelectTimer.start(QApplication::startDragTime());
+		_touchSelect = false;
+		_touchStart = _touchPrevPos = _touchPos;
+		break;
 
 	case QEvent::TouchUpdate:
-	if (!_touchInProgress) return;
-	if (_touchSelect) {
-		_lastMousePos = _touchPos;
-		dragActionUpdate();
-	}
-	break;
+		if (!_touchInProgress) return;
+		if (_touchSelect) {
+			_lastMousePos = _touchPos;
+			dragActionUpdate();
+		}
+		break;
 
 	case QEvent::TouchEnd:
-	if (!_touchInProgress) return;
-	_touchInProgress = false;
-	if (_touchSelect) {
-		dragActionFinish(_touchPos, Qt::RightButton);
-		QContextMenuEvent contextMenu(QContextMenuEvent::Mouse, mapFromGlobal(_touchPos), _touchPos);
-		showContextMenu(&contextMenu, ContextMenuReason::FromTouch);
-	} else { // one short tap -- like mouse click
-		dragActionStart(_touchPos, Qt::LeftButton);
-		dragActionFinish(_touchPos, Qt::LeftButton);
-	}
-	_touchSelectTimer.stop();
-	_touchSelect = false;
-	break;
+		if (!_touchInProgress) return;
+		_touchInProgress = false;
+		if (_touchSelect) {
+			dragActionFinish(_touchPos, Qt::RightButton);
+			QContextMenuEvent contextMenu(QContextMenuEvent::Mouse, mapFromGlobal(_touchPos), _touchPos);
+			showContextMenu(&contextMenu, ContextMenuReason::FromTouch);
+		} else { // one short tap -- like mouse click
+			dragActionStart(_touchPos, Qt::LeftButton);
+			dragActionFinish(_touchPos, Qt::LeftButton);
+		}
+		_touchSelectTimer.stop();
+		_touchSelect = false;
+		break;
 	}
 }
 
@@ -518,7 +528,8 @@ void FlatLabel::showContextMenu(QContextMenuEvent *e, ContextMenuReason reason) 
 		_contextMenu->addAction(_contextCopyText, this, SLOT(onCopyContextText()))->setEnabled(true);
 	}
 
-	QString linkCopyToClipboardText = _contextMenuClickHandler ? _contextMenuClickHandler->copyToClipboardContextItemText() : QString();
+	QString linkCopyToClipboardText =
+	    _contextMenuClickHandler ? _contextMenuClickHandler->copyToClipboardContextItemText() : QString();
 	if (!linkCopyToClipboardText.isEmpty()) {
 		_contextMenu->addAction(linkCopyToClipboardText, this, SLOT(onCopyContextUrl()))->setEnabled(true);
 	}
@@ -527,7 +538,7 @@ void FlatLabel::showContextMenu(QContextMenuEvent *e, ContextMenuReason reason) 
 		delete _contextMenu;
 		_contextMenu = nullptr;
 	} else {
-		connect(_contextMenu, SIGNAL(destroyed(QObject*)), this, SLOT(onContextMenuDestroy(QObject*)));
+		connect(_contextMenu, SIGNAL(destroyed(QObject *)), this, SLOT(onContextMenuDestroy(QObject *)));
 		_contextMenu->popup(e->globalPos());
 		e->accept();
 	}
@@ -541,7 +552,7 @@ void FlatLabel::onCopySelectedText() {
 }
 
 void FlatLabel::onCopyContextText() {
-	QApplication::clipboard()->setText(_text.originalText({ 0, 0xFFFF }, _contextExpandLinksMode));
+	QApplication::clipboard()->setText(_text.originalText({0, 0xFFFF}, _contextExpandLinksMode));
 }
 
 void FlatLabel::onCopyContextUrl() {
@@ -599,7 +610,8 @@ void FlatLabel::clickHandlerPressedChanged(const ClickHandlerPtr &action, bool a
 	update();
 }
 
-std::unique_ptr<CrossFadeAnimation> FlatLabel::CrossFade(FlatLabel *from, FlatLabel *to, style::color bg, QPoint fromPosition, QPoint toPosition) {
+std::unique_ptr<CrossFadeAnimation> FlatLabel::CrossFade(FlatLabel *from, FlatLabel *to, style::color bg,
+                                                         QPoint fromPosition, QPoint toPosition) {
 	auto result = std::make_unique<CrossFadeAnimation>(bg);
 
 	struct Data {
@@ -646,7 +658,9 @@ std::unique_ptr<CrossFadeAnimation> FlatLabel::CrossFade(FlatLabel *from, FlatLa
 		} else if (label->_st.align & Qt::AlignRight) {
 			left += (fullWidth - lineWidth);
 		}
-		auto snapshotRect = data.full.rect().intersected(QRect(left * cIntRetinaFactor(), top * cIntRetinaFactor(), lineWidth * cIntRetinaFactor(), label->_st.style.font->height * cIntRetinaFactor()));
+		auto snapshotRect = data.full.rect().intersected(QRect(left * cIntRetinaFactor(), top * cIntRetinaFactor(),
+		                                                       lineWidth * cIntRetinaFactor(),
+		                                                       label->_st.style.font->height * cIntRetinaFactor()));
 		if (!snapshotRect.isEmpty()) {
 			result.snapshot = App::pixmapFromImageInPlace(data.full.copy(snapshotRect));
 			result.snapshot.setDevicePixelRatio(cRetinaFactor());
@@ -696,10 +710,11 @@ void FlatLabel::updateHover(const Text::StateResult &state) {
 			if (state.afterSymbol && _selectionType == TextSelectType::Letters) {
 				++second;
 			}
-			auto selection = _text.adjustSelection({ std::min(second, _dragSymbol), std::max(second, _dragSymbol) }, _selectionType);
+			auto selection =
+			    _text.adjustSelection({std::min(second, _dragSymbol), std::max(second, _dragSymbol)}, _selectionType);
 			if (_selection != selection) {
 				_selection = selection;
-				_savedSelection = { 0, 0 };
+				_savedSelection = {0, 0};
 				setFocus();
 				update();
 			}
@@ -781,9 +796,11 @@ void FlatLabel::paintEvent(QPaintEvent *e) {
 	if (renderElided) {
 		auto lineHeight = std::max(_st.style.lineHeight, _st.style.font->height);
 		auto lines = _st.maxHeight ? std::max(_st.maxHeight / lineHeight, 1) : ((height() / lineHeight) + 2);
-		_text.drawElided(p, _st.margin.left(), _st.margin.top(), textWidth, lines, _st.align, e->rect().y(), e->rect().bottom(), 0, _breakEverywhere, selection);
+		_text.drawElided(p, _st.margin.left(), _st.margin.top(), textWidth, lines, _st.align, e->rect().y(),
+		                 e->rect().bottom(), 0, _breakEverywhere, selection);
 	} else {
-		_text.draw(p, _st.margin.left(), _st.margin.top(), textWidth, _st.align, e->rect().y(), e->rect().bottom(), selection);
+		_text.draw(p, _st.margin.left(), _st.margin.top(), textWidth, _st.align, e->rect().y(), e->rect().bottom(),
+		           selection);
 	}
 }
 

@@ -19,14 +19,14 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 
-#include <algorithm>
-#include <thread>
-#include <condition_variable>
+#include "base/task_queue.h"
+#include "base/assertion.h"
+#include "facades.h"
 #include <QMutex>
 #include <QWaitCondition>
-#include "base/assertion.h"
-#include "base/task_queue.h"
-#include "facades.h"
+#include <algorithm>
+#include <condition_variable>
+#include <thread>
 
 namespace base {
 namespace {
@@ -51,20 +51,22 @@ private:
 	void Insert(TaskQueue *queue, int list_index_);
 	void Remove(TaskQueue *queue, int list_index_);
 
-	TaskQueue *Tail() { return &tail_; }
-	const TaskQueue *Tail() const { return &tail_; }
+	TaskQueue *Tail() {
+		return &tail_;
+	}
+	const TaskQueue *Tail() const {
+		return &tail_;
+	}
 
-	TaskQueue tail_ = { Type::Special, Priority::Normal };
+	TaskQueue tail_ = {Type::Special, Priority::Normal};
 	TaskQueue *(lists_[kQueuesListsCount]);
-
 };
 
 class TaskQueue::TaskThreadPool {
-	struct Private {
-	};
+	struct Private {};
 
 public:
-	TaskThreadPool(const Private &) { }
+	TaskThreadPool(const Private &) {}
 	static const std::shared_ptr<TaskThreadPool> &Instance();
 
 	void AddQueueTask(TaskQueue *queue, Task &&task);
@@ -85,7 +87,6 @@ private:
 	bool stopped_ = false;
 	int tasks_in_process_ = 0;
 	int background_tasks_in_process_ = 0;
-
 };
 
 TaskQueue::TaskQueueList::TaskQueueList() {
@@ -175,7 +176,7 @@ TaskQueue *TaskQueue::TaskQueueList::TakeFirst(int list_index_) {
 
 	auto queue = lists_[list_index_];
 	Unregister(queue);
-//	log_msgs.push_back("Unregistered from list in TakeFirst");
+	//	log_msgs.push_back("Unregistered from list in TakeFirst");
 	return queue;
 }
 
@@ -195,9 +196,7 @@ void TaskQueue::TaskThreadPool::AddQueueTask(TaskQueue *queue, Task &&task) {
 		}
 	}
 	if (will_create_thread) {
-		threads_.emplace_back([this]() {
-			ThreadFunction();
-		});
+		threads_.emplace_back([this]() { ThreadFunction(); });
 	} else if (some_threads_are_vacant) {
 		Assert(threads_count > tasks_in_process_);
 		thread_condition_.wakeOne();
@@ -309,8 +308,8 @@ void TaskQueue::TaskThreadPool::ThreadFunction() {
 }
 
 TaskQueue::TaskQueue(Type type, Priority priority)
-: type_(type)
-, priority_(priority) {
+    : type_(type)
+    , priority_(priority) {
 	if (type_ != Type::Main && type_ != Type::Special) {
 		weak_thread_pool_ = TaskThreadPool::Instance();
 	}
@@ -381,17 +380,17 @@ bool TaskQueue::IsMyThread() const {
 
 // Default queues.
 TaskQueue &TaskQueue::Main() { // static
-	static TaskQueue MainQueue { Type::Main, Priority::Normal };
+	static TaskQueue MainQueue{Type::Main, Priority::Normal};
 	return MainQueue;
 }
 
 TaskQueue &TaskQueue::Normal() { // static
-	static TaskQueue NormalQueue { Type::Concurrent, Priority::Normal };
+	static TaskQueue NormalQueue{Type::Concurrent, Priority::Normal};
 	return NormalQueue;
 }
 
 TaskQueue &TaskQueue::Background() { // static
-	static TaskQueue BackgroundQueue { Type::Concurrent, Priority::Background };
+	static TaskQueue BackgroundQueue{Type::Concurrent, Priority::Background};
 	return BackgroundQueue;
 }
 

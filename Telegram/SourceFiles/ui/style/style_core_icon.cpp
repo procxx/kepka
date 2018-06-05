@@ -19,9 +19,9 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/style/style_core_icon.h"
+#include "app.h"
 #include "settings.h"
 #include "style_core.h"
-#include "app.h"
 
 #include <QPainter>
 
@@ -33,9 +33,9 @@ quint32 colorKey(QColor c) {
 	return (((((quint32(c.red()) << 8) | quint32(c.green())) << 8) | quint32(c.blue())) << 8) | quint32(c.alpha());
 }
 
-using IconMasks = QMap<const IconMask*, QImage>;
-using IconPixmaps = QMap<QPair<const IconMask*, quint32>, QPixmap>;
-using IconDatas = OrderedSet<IconData*>;
+using IconMasks = QMap<const IconMask *, QImage>;
+using IconPixmaps = QMap<QPair<const IconMask *, quint32>, QPixmap>;
+using IconDatas = OrderedSet<IconData *>;
 NeverFreedPointer<IconMasks> iconMasks;
 NeverFreedPointer<IconPixmaps> iconPixmaps;
 NeverFreedPointer<IconDatas> iconData;
@@ -88,7 +88,7 @@ QSize readGeneratedSize(const IconMask *mask, DBIScale scale) {
 		if (size > sizeTag.size() && !memcmp(data, sizeTag.data(), sizeTag.size())) {
 			size -= sizeTag.size();
 			data += sizeTag.size();
-			auto baForStream = QByteArray::fromRawData(reinterpret_cast<const char*>(data), size);
+			auto baForStream = QByteArray::fromRawData(reinterpret_cast<const char *>(data), size);
 			QDataStream stream(baForStream);
 			stream.setVersion(QDataStream::Qt_5_1);
 
@@ -101,7 +101,8 @@ QSize readGeneratedSize(const IconMask *mask, DBIScale scale) {
 			case dbisOneAndQuarter: return QSize(pxAdjust(width, 5), pxAdjust(height, 5));
 			case dbisOneAndHalf: return QSize(pxAdjust(width, 6), pxAdjust(height, 6));
 			case dbisTwo: return QSize(width * 2, height * 2);
-			case dbisAuto: case dbisScaleCount: assert(false); // temp
+			case dbisAuto:
+			case dbisScaleCount: assert(false); // temp
 			}
 		} else {
 			Unexpected("Bad data in generated icon!");
@@ -113,10 +114,9 @@ QSize readGeneratedSize(const IconMask *mask, DBIScale scale) {
 } // namespace
 
 MonoIcon::MonoIcon(const IconMask *mask, Color color, QPoint offset)
-: _mask(mask)
-, _color(std::move(color))
-, _offset(offset) {
-}
+    : _mask(mask)
+    , _color(std::move(color))
+    , _offset(offset) {}
 
 void MonoIcon::reset() const {
 	_pixmap = QPixmap();
@@ -317,9 +317,7 @@ QImage IconData::instance(QColor colorOverride, DBIScale scale) const {
 int IconData::width() const {
 	if (_width < 0) {
 		_width = 0;
-		for_const (auto &part, _parts) {
-			accumulate_max(_width, part.offset().x() + part.width());
-		}
+		for_const (auto &part, _parts) { accumulate_max(_width, part.offset().x() + part.width()); }
 	}
 	return _width;
 }
@@ -327,9 +325,7 @@ int IconData::width() const {
 int IconData::height() const {
 	if (_height < 0) {
 		_height = 0;
-		for_const (auto &part, _parts) {
-			accumulate_max(_height, part.offset().x() + part.height());
-		}
+		for_const (auto &part, _parts) { accumulate_max(_height, part.offset().x() + part.height()); }
 	}
 	return _height;
 }

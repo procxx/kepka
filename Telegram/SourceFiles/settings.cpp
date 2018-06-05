@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "settings.h"
 #include "structs.h"
 
-#include "platform/platform_specific.h"
 #include "app.h"
+#include "platform/platform_specific.h"
 
 bool gRtl = false;
 Qt::LayoutDirection gLangDir = gRtl ? Qt::RightToLeft : Qt::LeftToRight;
@@ -128,20 +128,20 @@ void ParseCommandLineArguments(const QStringList &arguments) {
 		OneValue,
 		AllLeftValues,
 	};
-	auto parseMap = std::map<QByteArray, KeyFormat> {
-		{ "-testmode"   , KeyFormat::NoValues },
-		{ "-debug"      , KeyFormat::NoValues },
-		{ "-many"       , KeyFormat::NoValues },
-		{ "-key"        , KeyFormat::OneValue },
-		{ "-autostart"  , KeyFormat::NoValues },
-		{ "-fixprevious", KeyFormat::NoValues },
-		{ "-cleanup"    , KeyFormat::NoValues },
-		{ "-noupdate"   , KeyFormat::NoValues },
-		{ "-tosettings" , KeyFormat::NoValues },
-		{ "-startintray", KeyFormat::NoValues },
-		{ "-sendpath"   , KeyFormat::AllLeftValues },
-		{ "-workdir"    , KeyFormat::OneValue },
-		{ "--"          , KeyFormat::OneValue },
+	auto parseMap = std::map<QByteArray, KeyFormat>{
+	    {"-testmode", KeyFormat::NoValues},
+	    {"-debug", KeyFormat::NoValues},
+	    {"-many", KeyFormat::NoValues},
+	    {"-key", KeyFormat::OneValue},
+	    {"-autostart", KeyFormat::NoValues},
+	    {"-fixprevious", KeyFormat::NoValues},
+	    {"-cleanup", KeyFormat::NoValues},
+	    {"-noupdate", KeyFormat::NoValues},
+	    {"-tosettings", KeyFormat::NoValues},
+	    {"-startintray", KeyFormat::NoValues},
+	    {"-sendpath", KeyFormat::AllLeftValues},
+	    {"-workdir", KeyFormat::OneValue},
+	    {"--", KeyFormat::OneValue},
 	};
 	auto parseResult = QMap<QByteArray, QStringList>();
 	auto parsingKey = QByteArray();
@@ -170,9 +170,11 @@ void ParseCommandLineArguments(const QStringList &arguments) {
 	gDebug = parseResult.contains("-debug");
 	gManyInstance = parseResult.contains("-many");
 	gKeyFile = parseResult.value("-key", QStringList()).join(QString());
-	gLaunchMode = parseResult.contains("-autostart") ? LaunchModeAutoStart
-		: parseResult.contains("-fixprevious") ? LaunchModeFixPrevious
-		: parseResult.contains("-cleanup") ? LaunchModeCleanup : LaunchModeNormal;
+	gLaunchMode = parseResult.contains("-autostart") ?
+	                  LaunchModeAutoStart :
+	                  parseResult.contains("-fixprevious") ?
+	                  LaunchModeFixPrevious :
+	                  parseResult.contains("-cleanup") ? LaunchModeCleanup : LaunchModeNormal;
 	gNoStartUpdate = parseResult.contains("-noupdate");
 	gStartToSettings = parseResult.contains("-tosettings");
 	gStartInTray = parseResult.contains("-startintray");
@@ -205,34 +207,32 @@ void InitFromCommandLine(int argc, char *argv[]) {
 #endif // Q_OS_MAC
 
 	switch (cPlatform()) {
-	case dbipWindows:
-		gUpdateURL = QUrl(qsl("http://tdesktop.com/win/tupdates/current"));
+	case dbipWindows: gUpdateURL = QUrl(qsl("http://tdesktop.com/win/tupdates/current"));
 #ifndef OS_WIN_STORE
 		gPlatformString = qsl("Windows");
 #else // OS_WIN_STORE
 		gPlatformString = qsl("WinStore");
 #endif // OS_WIN_STORE
-	break;
-	case dbipMac:
-		gUpdateURL = QUrl(qsl("http://tdesktop.com/mac/tupdates/current"));
+		break;
+	case dbipMac: gUpdateURL = QUrl(qsl("http://tdesktop.com/mac/tupdates/current"));
 #ifndef OS_MAC_STORE
 		gPlatformString = qsl("MacOS");
 #else // OS_MAC_STORE
 		gPlatformString = qsl("MacAppStore");
 #endif // OS_MAC_STORE
-	break;
+		break;
 	case dbipMacOld:
 		gUpdateURL = QUrl(qsl("http://tdesktop.com/mac32/tupdates/current"));
 		gPlatformString = qsl("MacOSold");
-	break;
+		break;
 	case dbipLinux64:
 		gUpdateURL = QUrl(qsl("http://tdesktop.com/linux/tupdates/current"));
 		gPlatformString = qsl("Linux64bit");
-	break;
+		break;
 	case dbipLinux32:
 		gUpdateURL = QUrl(qsl("http://tdesktop.com/linux32/tupdates/current"));
 		gPlatformString = qsl("Linux32bit");
-	break;
+		break;
 	}
 
 	auto path = Platform::CurrentExecutablePath(argc, argv);

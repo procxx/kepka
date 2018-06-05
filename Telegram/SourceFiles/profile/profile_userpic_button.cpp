@@ -20,16 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_userpic_button.h"
 
-#include "styles/style_profile.h"
-#include "observer_peer.h"
-#include "auth_session.h"
 #include "app.h"
+#include "auth_session.h"
+#include "observer_peer.h"
+#include "styles/style_profile.h"
 
 namespace Profile {
 
-UserpicButton::UserpicButton(QWidget *parent, PeerData *peer, int size) : AbstractButton(parent)
-, _size(size ? size : st::profilePhotoSize)
-, _peer(peer) {
+UserpicButton::UserpicButton(QWidget *parent, PeerData *peer, int size)
+    : AbstractButton(parent)
+    , _size(size ? size : st::profilePhotoSize)
+    , _peer(peer) {
 	resize(_size, _size);
 
 	processPeerPhoto();
@@ -39,9 +40,9 @@ UserpicButton::UserpicButton(QWidget *parent, PeerData *peer, int size) : Abstra
 	}
 
 	auto observeEvents = Notify::PeerUpdate::Flag::PhotoChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 	subscribe(Auth().downloaderTaskFinished(), [this] {
 		if (_waiting && _peer->userpicLoaded()) {
 			_waiting = false;

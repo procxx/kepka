@@ -20,31 +20,30 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_advanced_widget.h"
 
-#include "styles/style_settings.h"
-#include "lang/lang_keys.h"
-#include "boxes/connection_box.h"
-#include "boxes/confirm_box.h"
-#include "boxes/about_box.h"
-#include "boxes/local_storage_box.h"
-#include "mainwindow.h"
-#include "ui/widgets/buttons.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "storage/localstorage.h"
-#include "window/themes/window_theme.h"
-#include "scheme.h"
-#include "facades.h"
 #include "app.h"
+#include "boxes/about_box.h"
+#include "boxes/confirm_box.h"
+#include "boxes/connection_box.h"
+#include "boxes/local_storage_box.h"
+#include "facades.h"
+#include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "scheme.h"
+#include "storage/localstorage.h"
+#include "styles/style_settings.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/widgets/buttons.h"
+#include "window/themes/window_theme.h"
 
 #include <QDesktopServices>
 
 namespace Settings {
 
-AdvancedWidget::AdvancedWidget(QWidget *parent, UserData *self) : BlockWidget(parent, self, lang(lng_settings_section_advanced_settings)) {
+AdvancedWidget::AdvancedWidget(QWidget *parent, UserData *self)
+    : BlockWidget(parent, self, lang(lng_settings_section_advanced_settings)) {
 	createControls();
 #ifndef TDESKTOP_DISABLE_NETWORK_PROXY
-	subscribe(Global::RefConnectionTypeChanged(), [this]() {
-		connectionTypeUpdated();
-	});
+	subscribe(Global::RefConnectionTypeChanged(), [this]() { connectionTypeUpdated(); });
 #endif // !TDESKTOP_DISABLE_NETWORK_PROXY
 	if (!self) {
 		subscribe(Window::Theme::Background(), [this](const Window::Theme::BackgroundUpdate &update) {
@@ -67,11 +66,13 @@ void AdvancedWidget::createControls() {
 #endif // TDESKTOP_DISABLE_NETWORK_PROXY
 	})();
 	if (self()) {
-		addChildRow(_manageLocalStorage, marginLocalStorage, lang(lng_settings_manage_local_storage), SLOT(onManageLocalStorage()));
+		addChildRow(_manageLocalStorage, marginLocalStorage, lang(lng_settings_manage_local_storage),
+		            SLOT(onManageLocalStorage()));
 	}
 
 #ifndef TDESKTOP_DISABLE_NETWORK_PROXY
-	addChildRow(_connectionType, marginLarge, lang(lng_connection_type), lang(lng_connection_auto_connecting), LabeledLink::Type::Primary, SLOT(onConnectionType()));
+	addChildRow(_connectionType, marginLarge, lang(lng_connection_type), lang(lng_connection_auto_connecting),
+	            LabeledLink::Type::Primary, SLOT(onConnectionType()));
 	connectionTypeUpdated();
 #endif // !TDESKTOP_DISABLE_NETWORK_PROXY
 
@@ -79,11 +80,13 @@ void AdvancedWidget::createControls() {
 		addChildRow(_askQuestion, marginSmall, lang(lng_settings_ask_question), SLOT(onAskQuestion()));
 	} else {
 		style::margins slidedPadding(0, marginLarge.bottom() / 2, 0, marginLarge.bottom() - (marginLarge.bottom() / 2));
-		addChildRow(_useDefaultTheme, marginLarge, slidedPadding, lang(lng_settings_bg_use_default), SLOT(onUseDefaultTheme()));
+		addChildRow(_useDefaultTheme, marginLarge, slidedPadding, lang(lng_settings_bg_use_default),
+		            SLOT(onUseDefaultTheme()));
 		if (!Window::Theme::IsNonDefaultUsed()) {
 			_useDefaultTheme->hideFast();
 		}
-		addChildRow(_toggleNightTheme, marginLarge, slidedPadding, getNightThemeToggleText(), SLOT(onToggleNightTheme()));
+		addChildRow(_toggleNightTheme, marginLarge, slidedPadding, getNightThemeToggleText(),
+		            SLOT(onToggleNightTheme()));
 		if (Window::Theme::IsNonDefaultUsed()) {
 			_toggleNightTheme->hideFast();
 		}
@@ -113,12 +116,14 @@ void AdvancedWidget::connectionTypeUpdated() {
 		case dbictHttpProxy:
 		case dbictTcpProxy: {
 			auto transport = MTP::dctransport();
-			return transport.isEmpty() ? lang(lng_connection_proxy_connecting) : lng_connection_proxy(lt_transport, transport);
+			return transport.isEmpty() ? lang(lng_connection_proxy_connecting) :
+			                             lng_connection_proxy(lt_transport, transport);
 		} break;
 		case dbictAuto:
 		default: {
 			auto transport = MTP::dctransport();
-			return transport.isEmpty() ? lang(lng_connection_auto_connecting) : lng_connection_auto(lt_transport, transport);
+			return transport.isEmpty() ? lang(lng_connection_auto_connecting) :
+			                             lng_connection_auto(lt_transport, transport);
 		} break;
 		}
 	};
@@ -140,11 +145,9 @@ void AdvancedWidget::onToggleNightTheme() {
 }
 
 void AdvancedWidget::onAskQuestion() {
-	auto box = Box<ConfirmBox>(lang(lng_settings_ask_sure), lang(lng_settings_ask_ok), lang(lng_settings_faq_button), base::lambda_guarded(this, [this] {
-		onAskQuestionSure();
-	}), base::lambda_guarded(this, [this] {
-		onTelegramFAQ();
-	}));
+	auto box = Box<ConfirmBox>(lang(lng_settings_ask_sure), lang(lng_settings_ask_ok), lang(lng_settings_faq_button),
+	                           base::lambda_guarded(this, [this] { onAskQuestionSure(); }),
+	                           base::lambda_guarded(this, [this] { onTelegramFAQ(); }));
 	box->setStrictCancel(true);
 	Ui::show(std::move(box));
 }

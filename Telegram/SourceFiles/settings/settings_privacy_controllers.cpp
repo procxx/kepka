@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_privacy_controllers.h"
 
-#include "lang/lang_keys.h"
 #include "apiwrap.h"
-#include "observer_peer.h"
-#include "mainwidget.h"
 #include "auth_session.h"
-#include "storage/localstorage.h"
-#include "boxes/peer_list_controllers.h"
 #include "boxes/confirm_box.h"
+#include "boxes/peer_list_controllers.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
+#include "storage/localstorage.h"
 
 namespace Settings {
 namespace {
@@ -36,40 +36,41 @@ constexpr auto kBlockedPerPage = 40;
 
 class BlockUserBoxController : public ChatsListBoxController {
 public:
-	void rowClicked(not_null<PeerListRow*> row) override;
+	void rowClicked(not_null<PeerListRow *> row) override;
 
-	void setBlockUserCallback(base::lambda<void(not_null<UserData*> user)> callback) {
+	void setBlockUserCallback(base::lambda<void(not_null<UserData *> user)> callback) {
 		_blockUserCallback = std::move(callback);
 	}
 
 protected:
 	void prepareViewHook() override;
-	std::unique_ptr<Row> createRow(not_null<History*> history) override;
-	void updateRowHook(not_null<Row*> row) override {
+	std::unique_ptr<Row> createRow(not_null<History *> history) override;
+	void updateRowHook(not_null<Row *> row) override {
 		updateIsBlocked(row, row->peer()->asUser());
 		delegate()->peerListUpdateRow(row);
 	}
 
 private:
-	void updateIsBlocked(not_null<PeerListRow*> row, UserData *user) const;
+	void updateIsBlocked(not_null<PeerListRow *> row, UserData *user) const;
 
-	base::lambda<void(not_null<UserData*> user)> _blockUserCallback;
-
+	base::lambda<void(not_null<UserData *> user)> _blockUserCallback;
 };
 
 void BlockUserBoxController::prepareViewHook() {
 	delegate()->peerListSetTitle(langFactory(lng_blocked_list_add_title));
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserIsBlocked, [this](const Notify::PeerUpdate &update) {
-		if (auto user = update.peer->asUser()) {
-			if (auto row = delegate()->peerListFindRow(user->id)) {
-				updateIsBlocked(row, user);
-				delegate()->peerListUpdateRow(row);
-			}
-		}
-	}));
+	subscribe(
+	    Notify::PeerUpdated(),
+	    Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserIsBlocked, [this](const Notify::PeerUpdate &update) {
+		    if (auto user = update.peer->asUser()) {
+			    if (auto row = delegate()->peerListFindRow(user->id)) {
+				    updateIsBlocked(row, user);
+				    delegate()->peerListUpdateRow(row);
+			    }
+		    }
+	    }));
 }
 
-void BlockUserBoxController::updateIsBlocked(not_null<PeerListRow*> row, UserData *user) const {
+void BlockUserBoxController::updateIsBlocked(not_null<PeerListRow *> row, UserData *user) const {
 	auto blocked = user->isBlocked();
 	row->setDisabledState(blocked ? PeerListRow::State::DisabledChecked : PeerListRow::State::Active);
 	if (blocked) {
@@ -79,11 +80,11 @@ void BlockUserBoxController::updateIsBlocked(not_null<PeerListRow*> row, UserDat
 	}
 }
 
-void BlockUserBoxController::rowClicked(not_null<PeerListRow*> row) {
+void BlockUserBoxController::rowClicked(not_null<PeerListRow *> row) {
 	_blockUserCallback(row->peer()->asUser());
 }
 
-std::unique_ptr<BlockUserBoxController::Row> BlockUserBoxController::createRow(not_null<History*> history) {
+std::unique_ptr<BlockUserBoxController::Row> BlockUserBoxController::createRow(not_null<History *> history) {
 	if (history->peer->isSelf()) {
 		return nullptr;
 	}
@@ -102,11 +103,12 @@ void BlockedBoxController::prepare() {
 	setDescriptionText(lang(lng_contacts_loading));
 	delegate()->peerListRefreshRows();
 
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserIsBlocked, [this](const Notify::PeerUpdate &update) {
-		if (auto user = update.peer->asUser()) {
-			handleBlockedEvent(user);
-		}
-	}));
+	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserIsBlocked,
+	                                                            [this](const Notify::PeerUpdate &update) {
+		                                                            if (auto user = update.peer->asUser()) {
+			                                                            handleBlockedEvent(user);
+		                                                            }
+	                                                            }));
 
 	loadMoreRows();
 }
@@ -116,37 +118,38 @@ void BlockedBoxController::loadMoreRows() {
 		return;
 	}
 
-	_loadRequestId = request(MTPcontacts_GetBlocked(MTP_int(_offset), MTP_int(kBlockedPerPage))).done([this](const MTPcontacts_Blocked &result) {
-		_loadRequestId = 0;
+	_loadRequestId = request(MTPcontacts_GetBlocked(MTP_int(_offset), MTP_int(kBlockedPerPage)))
+	                     .done([this](const MTPcontacts_Blocked &result) {
+		                     _loadRequestId = 0;
 
-		if (!_offset) {
-			setDescriptionText(lang(lng_blocked_list_about));
-		}
+		                     if (!_offset) {
+			                     setDescriptionText(lang(lng_blocked_list_about));
+		                     }
 
-		auto handleContactsBlocked = [](auto &list) {
-			App::feedUsers(list.vusers);
-			return list.vblocked.v;
-		};
-		switch (result.type()) {
-		case mtpc_contacts_blockedSlice: {
-			receivedUsers(handleContactsBlocked(result.c_contacts_blockedSlice()));
-		} break;
-		case mtpc_contacts_blocked: {
-			_allLoaded = true;
-			receivedUsers(handleContactsBlocked(result.c_contacts_blocked()));
-		} break;
-		default: Unexpected("Bad type() in MTPcontacts_GetBlocked() result.");
-		}
-	}).fail([this](const RPCError &error) {
-		_loadRequestId = 0;
-	}).send();
+		                     auto handleContactsBlocked = [](auto &list) {
+			                     App::feedUsers(list.vusers);
+			                     return list.vblocked.v;
+		                     };
+		                     switch (result.type()) {
+		                     case mtpc_contacts_blockedSlice: {
+			                     receivedUsers(handleContactsBlocked(result.c_contacts_blockedSlice()));
+		                     } break;
+		                     case mtpc_contacts_blocked: {
+			                     _allLoaded = true;
+			                     receivedUsers(handleContactsBlocked(result.c_contacts_blocked()));
+		                     } break;
+		                     default: Unexpected("Bad type() in MTPcontacts_GetBlocked() result.");
+		                     }
+	                     })
+	                     .fail([this](const RPCError &error) { _loadRequestId = 0; })
+	                     .send();
 }
 
-void BlockedBoxController::rowClicked(not_null<PeerListRow*> row) {
+void BlockedBoxController::rowClicked(not_null<PeerListRow *> row) {
 	Ui::showPeerHistoryAsync(row->peer()->id, ShowAtUnreadMsgId);
 }
 
-void BlockedBoxController::rowActionClicked(not_null<PeerListRow*> row) {
+void BlockedBoxController::rowActionClicked(not_null<PeerListRow *> row) {
 	auto user = row->peer()->asUser();
 	Expects(user != nullptr);
 
@@ -187,8 +190,8 @@ void BlockedBoxController::handleBlockedEvent(UserData *user) {
 
 void BlockedBoxController::BlockNewUser() {
 	auto controller = std::make_unique<BlockUserBoxController>();
-	auto initBox = [controller = controller.get()](not_null<PeerListBox*> box) {
-		controller->setBlockUserCallback([box](not_null<UserData*> user) {
+	auto initBox = [controller = controller.get()](not_null<PeerListBox *> box) {
+		controller->setBlockUserCallback([box](not_null<UserData *> user) {
 			Auth().api().blockUser(user);
 			box->closeBox();
 		});
@@ -246,8 +249,12 @@ QString LastSeenPrivacyController::warning() {
 
 QString LastSeenPrivacyController::exceptionLinkText(Exception exception, int count) {
 	switch (exception) {
-	case Exception::Always: return (count > 0) ? lng_edit_privacy_lastseen_always(lt_count, count) : lang(lng_edit_privacy_lastseen_always_empty);
-	case Exception::Never: return (count > 0) ? lng_edit_privacy_lastseen_never(lt_count, count) : lang(lng_edit_privacy_lastseen_never_empty);
+	case Exception::Always:
+		return (count > 0) ? lng_edit_privacy_lastseen_always(lt_count, count) :
+		                     lang(lng_edit_privacy_lastseen_always_empty);
+	case Exception::Never:
+		return (count > 0) ? lng_edit_privacy_lastseen_never(lt_count, count) :
+		                     lang(lng_edit_privacy_lastseen_never_empty);
 	}
 	Unexpected("Invalid exception value.");
 }
@@ -275,7 +282,8 @@ void LastSeenPrivacyController::confirmSave(bool someAreDisallowed, base::lambda
 			Auth().data().setLastSeenWarningSeen(true);
 			Local::writeUserSettings();
 		};
-		auto box = Box<ConfirmBox>(lang(lng_edit_privacy_lastseen_warning), lang(lng_continue), lang(lng_cancel), std::move(callback));
+		auto box = Box<ConfirmBox>(lang(lng_edit_privacy_lastseen_warning), lang(lng_continue), lang(lng_cancel),
+		                           std::move(callback));
 		*weakBox = Ui::show(std::move(box), KeepOtherLayers);
 	} else {
 		saveCallback();
@@ -300,8 +308,11 @@ QString GroupsInvitePrivacyController::description() {
 
 QString GroupsInvitePrivacyController::exceptionLinkText(Exception exception, int count) {
 	switch (exception) {
-	case Exception::Always: return (count > 0) ? lng_edit_privacy_groups_always(lt_count, count) : lang(lng_edit_privacy_groups_always_empty);
-	case Exception::Never: return (count > 0) ? lng_edit_privacy_groups_never(lt_count, count) : lang(lng_edit_privacy_groups_never_empty);
+	case Exception::Always:
+		return (count > 0) ? lng_edit_privacy_groups_always(lt_count, count) :
+		                     lang(lng_edit_privacy_groups_always_empty);
+	case Exception::Never:
+		return (count > 0) ? lng_edit_privacy_groups_never(lt_count, count) : lang(lng_edit_privacy_groups_never_empty);
 	}
 	Unexpected("Invalid exception value.");
 }
@@ -332,8 +343,10 @@ QString CallsPrivacyController::description() {
 
 QString CallsPrivacyController::exceptionLinkText(Exception exception, int count) {
 	switch (exception) {
-	case Exception::Always: return (count > 0) ? lng_edit_privacy_calls_always(lt_count, count) : lang(lng_edit_privacy_calls_always_empty);
-	case Exception::Never: return (count > 0) ? lng_edit_privacy_calls_never(lt_count, count) : lang(lng_edit_privacy_calls_never_empty);
+	case Exception::Always:
+		return (count > 0) ? lng_edit_privacy_calls_always(lt_count, count) : lang(lng_edit_privacy_calls_always_empty);
+	case Exception::Never:
+		return (count > 0) ? lng_edit_privacy_calls_never(lt_count, count) : lang(lng_edit_privacy_calls_never_empty);
 	}
 	Unexpected("Invalid exception value.");
 }

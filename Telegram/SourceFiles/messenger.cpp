@@ -20,45 +20,45 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "messenger.h"
 
-#include "base/timer.h"
-#include "storage/localstorage.h"
-#include "platform/platform_specific.h"
-#include "mainwindow.h"
-#include "application.h"
-#include "shortcuts.h"
-#include "auth_session.h"
 #include "apiwrap.h"
+#include "application.h"
+#include "auth_session.h"
+#include "base/qthelp_regex.h"
+#include "base/qthelp_url.h"
+#include "base/timer.h"
+#include "boxes/confirm_phone_box.h"
+#include "boxes/connection_box.h"
+#include "boxes/share_box.h"
 #include "calls/calls_instance.h"
+#include "history/history_location_manager.h"
+#include "lang/lang_cloud_manager.h"
 #include "lang/lang_file_parser.h"
 #include "lang/lang_translator.h"
-#include "lang/lang_cloud_manager.h"
-#include "observer_peer.h"
-#include "storage/file_upload.h"
 #include "mainwidget.h"
+#include "mainwindow.h"
+#include "media/media_audio_track.h"
+#include "media/player/media_player_instance.h"
 #include "mediaview.h"
 #include "mtproto/dc_options.h"
 #include "mtproto/mtp_instance.h"
-#include "media/player/media_player_instance.h"
-#include "media/media_audio_track.h"
+#include "observer_peer.h"
+#include "platform/platform_specific.h"
+#include "shortcuts.h"
+#include "storage/file_upload.h"
+#include "storage/localstorage.h"
+#include "storage/serialize_common.h"
+#include "ui/widgets/tooltip.h"
 #include "window/notifications_manager.h"
 #include "window/themes/window_theme.h"
-#include "history/history_location_manager.h"
-#include "ui/widgets/tooltip.h"
-#include "storage/serialize_common.h"
 #include "window/window_controller.h"
-#include "base/qthelp_regex.h"
-#include "base/qthelp_url.h"
-#include "boxes/connection_box.h"
-#include "boxes/confirm_phone_box.h"
-#include "boxes/share_box.h"
 
-#include <QMimeDatabase>
-#include <QDesktopServices>
-#include <QBuffer>
-#include <QWindow>
 #include <QApplication>
+#include <QBuffer>
+#include <QDesktopServices>
 #include <QDesktopWidget>
+#include <QMimeDatabase>
 #include <QScreen>
+#include <QWindow>
 
 namespace {
 
@@ -80,12 +80,13 @@ struct Messenger::Private {
 	base::Timer quitTimer;
 };
 
-Messenger::Messenger() : QObject()
-, _private(std::make_unique<Private>())
-, _langpack(std::make_unique<Lang::Instance>())
-, _audio(std::make_unique<Media::Audio::Instance>())
-, _logo(Window::LoadLogo())
-, _logoNoMargin(Window::LoadLogoNoMargin()) {
+Messenger::Messenger()
+    : QObject()
+    , _private(std::make_unique<Private>())
+    , _langpack(std::make_unique<Lang::Instance>())
+    , _audio(std::make_unique<Media::Audio::Instance>())
+    , _logo(Window::LoadLogo())
+    , _logoNoMargin(Window::LoadLogoNoMargin()) {
 	Expects(!_logo.isNull());
 	Expects(!_logoNoMargin.isNull());
 	Expects(SingleInstance == nullptr);
@@ -143,7 +144,8 @@ Messenger::Messenger() : QObject()
 	_window->setGeometry(currentGeometry);
 
 	QCoreApplication::instance()->installEventFilter(this);
-	Sandbox::connect(SIGNAL(applicationStateChanged(Qt::ApplicationState)), this, SLOT(onAppStateChanged(Qt::ApplicationState)));
+	Sandbox::connect(SIGNAL(applicationStateChanged(Qt::ApplicationState)), this,
+	                 SLOT(onAppStateChanged(Qt::ApplicationState)));
 
 	DEBUG_LOG(("Application Info: window created..."));
 
@@ -205,27 +207,25 @@ bool Messenger::hideMediaView() {
 	return false;
 }
 
-void Messenger::showPhoto(not_null<const PhotoOpenClickHandler*> link, HistoryItem *item) {
-	return (!item && link->peer())
-		? showPhoto(link->photo(), link->peer())
-		: showPhoto(link->photo(), item);
+void Messenger::showPhoto(not_null<const PhotoOpenClickHandler *> link, HistoryItem *item) {
+	return (!item && link->peer()) ? showPhoto(link->photo(), link->peer()) : showPhoto(link->photo(), item);
 }
 
-void Messenger::showPhoto(not_null<PhotoData*> photo, HistoryItem *item) {
+void Messenger::showPhoto(not_null<PhotoData *> photo, HistoryItem *item) {
 	if (_mediaView->isHidden()) Ui::hideLayer(true);
 	_mediaView->showPhoto(photo, item);
 	_mediaView->activateWindow();
 	_mediaView->setFocus();
 }
 
-void Messenger::showPhoto(not_null<PhotoData*> photo, PeerData *peer) {
+void Messenger::showPhoto(not_null<PhotoData *> photo, PeerData *peer) {
 	if (_mediaView->isHidden()) Ui::hideLayer(true);
 	_mediaView->showPhoto(photo, peer);
 	_mediaView->activateWindow();
 	_mediaView->setFocus();
 }
 
-void Messenger::showDocument(not_null<DocumentData*> document, HistoryItem *item) {
+void Messenger::showDocument(not_null<DocumentData *> document, HistoryItem *item) {
 	if (cUseExternalVideoPlayer() && document->isVideo()) {
 		QDesktopServices::openUrl(QUrl("file:///" + document->location(false).fname));
 	} else {
@@ -260,8 +260,8 @@ bool Messenger::eventFilter(QObject *object, QEvent *e) {
 	} break;
 
 	case QEvent::Shortcut: {
-		DEBUG_LOG(("Shortcut event caught: %1").arg(static_cast<QShortcutEvent*>(e)->key().toString()));
-		if (Shortcuts::launch(static_cast<QShortcutEvent*>(e)->shortcutId())) {
+		DEBUG_LOG(("Shortcut event caught: %1").arg(static_cast<QShortcutEvent *>(e)->key().toString()));
+		if (Shortcuts::launch(static_cast<QShortcutEvent *>(e)->shortcutId())) {
 			return true;
 		}
 	} break;
@@ -274,7 +274,7 @@ bool Messenger::eventFilter(QObject *object, QEvent *e) {
 
 	case QEvent::FileOpen: {
 		if (object == QCoreApplication::instance()) {
-			auto url = QString::fromUtf8(static_cast<QFileOpenEvent*>(e)->url().toEncoded().trimmed());
+			auto url = QString::fromUtf8(static_cast<QFileOpenEvent *>(e)->url().toEncoded().trimmed());
 			if (url.startsWith(qstr("tg://"), Qt::CaseInsensitive)) {
 				cSetStartUrl(url.mid(0, 8192));
 				checkStartUrl();
@@ -391,12 +391,15 @@ void Messenger::setMtpAuthorization(const QByteArray &serialized) {
 	};
 	readKeys(_private->mtpConfig.keys);
 	readKeys(_private->mtpKeysToDestroy);
-	LOG(("MTP Info: read keys, current: %1, to destroy: %2").arg(_private->mtpConfig.keys.size()).arg(_private->mtpKeysToDestroy.size()));
+	LOG(("MTP Info: read keys, current: %1, to destroy: %2")
+	        .arg(_private->mtpConfig.keys.size())
+	        .arg(_private->mtpKeysToDestroy.size()));
 }
 
 void Messenger::startMtp() {
 	Expects(!_mtproto);
-	_mtproto = std::make_unique<MTP::Instance>(_dcOptions.get(), MTP::Instance::Mode::Normal, base::take(_private->mtpConfig));
+	_mtproto =
+	    std::make_unique<MTP::Instance>(_dcOptions.get(), MTP::Instance::Mode::Normal, base::take(_private->mtpConfig));
 	_private->mtpConfig.mainDcId = _mtproto->mainDcId();
 
 	_mtproto->setStateChangedHandler([](MTP::ShiftedDcId shiftedDcId, qint32 state) {
@@ -443,7 +446,8 @@ void Messenger::destroyMtpKeys(MTP::AuthKeysList &&keys) {
 	auto destroyConfig = MTP::Instance::Config();
 	destroyConfig.mainDcId = MTP::Instance::Config::kNoneMainDc;
 	destroyConfig.keys = std::move(keys);
-	_mtprotoForKeysDestroy = std::make_unique<MTP::Instance>(_dcOptions.get(), MTP::Instance::Mode::KeysDestroyer, std::move(destroyConfig));
+	_mtprotoForKeysDestroy =
+	    std::make_unique<MTP::Instance>(_dcOptions.get(), MTP::Instance::Mode::KeysDestroyer, std::move(destroyConfig));
 	connect(_mtprotoForKeysDestroy.get(), SIGNAL(allKeysDestroyed()), this, SLOT(onAllKeysDestroyed()));
 }
 
@@ -567,12 +571,15 @@ void Messenger::peerClearPhoto(PeerId id) {
 	if (!AuthSession::Exists()) return;
 
 	if (id == Auth().userPeerId()) {
-		MTP::send(MTPphotos_UpdateProfilePhoto(MTP_inputPhotoEmpty()), rpcDone(&Messenger::selfPhotoCleared), rpcFail(&Messenger::peerPhotoFail, id));
+		MTP::send(MTPphotos_UpdateProfilePhoto(MTP_inputPhotoEmpty()), rpcDone(&Messenger::selfPhotoCleared),
+		          rpcFail(&Messenger::peerPhotoFail, id));
 	} else if (peerIsChat(id)) {
-		MTP::send(MTPmessages_EditChatPhoto(peerToBareMTPInt(id), MTP_inputChatPhotoEmpty()), rpcDone(&Messenger::chatPhotoCleared, id), rpcFail(&Messenger::peerPhotoFail, id));
+		MTP::send(MTPmessages_EditChatPhoto(peerToBareMTPInt(id), MTP_inputChatPhotoEmpty()),
+		          rpcDone(&Messenger::chatPhotoCleared, id), rpcFail(&Messenger::peerPhotoFail, id));
 	} else if (peerIsChannel(id)) {
 		if (auto channel = App::channelLoaded(id)) {
-			MTP::send(MTPchannels_EditPhoto(channel->inputChannel, MTP_inputChatPhotoEmpty()), rpcDone(&Messenger::chatPhotoCleared, id), rpcFail(&Messenger::peerPhotoFail, id));
+			MTP::send(MTPchannels_EditPhoto(channel->inputChannel, MTP_inputChatPhotoEmpty()),
+			          rpcDone(&Messenger::chatPhotoCleared, id), rpcFail(&Messenger::peerPhotoFail, id));
 		}
 	}
 }
@@ -637,7 +644,7 @@ void Messenger::call_handleObservables() {
 
 void Messenger::killDownloadSessions() {
 	auto ms = getms(), left = static_cast<TimeMs>(MTPAckSendWaiting) + MTPKillFileSessionTimeout;
-	for (auto i = killDownloadSessionTimes.begin(); i != killDownloadSessionTimes.end(); ) {
+	for (auto i = killDownloadSessionTimes.begin(); i != killDownloadSessionTimes.end();) {
 		if (i.value() <= ms) {
 			for (int j = 0; j < MTP::kDownloadSessionsCount; ++j) {
 				MTP::stopSession(MTP::downloadDcId(i.key(), j));
@@ -662,13 +669,20 @@ void Messenger::photoUpdated(const FullMsgId &msgId, bool silent, const MTPInput
 	if (i != photoUpdates.end()) {
 		auto id = i.value();
 		if (id == Auth().userPeerId()) {
-			MTP::send(MTPphotos_UploadProfilePhoto(file), rpcDone(&Messenger::selfPhotoDone), rpcFail(&Messenger::peerPhotoFail, id));
+			MTP::send(MTPphotos_UploadProfilePhoto(file), rpcDone(&Messenger::selfPhotoDone),
+			          rpcFail(&Messenger::peerPhotoFail, id));
 		} else if (peerIsChat(id)) {
 			auto history = App::history(id);
-			history->sendRequestId = MTP::send(MTPmessages_EditChatPhoto(history->peer->asChat()->inputChat, MTP_inputChatUploadedPhoto(file)), rpcDone(&Messenger::chatPhotoDone, id), rpcFail(&Messenger::peerPhotoFail, id), 0, 0, history->sendRequestId);
+			history->sendRequestId = MTP::send(
+			    MTPmessages_EditChatPhoto(history->peer->asChat()->inputChat, MTP_inputChatUploadedPhoto(file)),
+			    rpcDone(&Messenger::chatPhotoDone, id), rpcFail(&Messenger::peerPhotoFail, id), 0, 0,
+			    history->sendRequestId);
 		} else if (peerIsChannel(id)) {
 			auto history = App::history(id);
-			history->sendRequestId = MTP::send(MTPchannels_EditPhoto(history->peer->asChannel()->inputChannel, MTP_inputChatUploadedPhoto(file)), rpcDone(&Messenger::chatPhotoDone, id), rpcFail(&Messenger::peerPhotoFail, id), 0, 0, history->sendRequestId);
+			history->sendRequestId = MTP::send(
+			    MTPchannels_EditPhoto(history->peer->asChannel()->inputChannel, MTP_inputChatUploadedPhoto(file)),
+			    rpcDone(&Messenger::chatPhotoDone, id), rpcFail(&Messenger::peerPhotoFail, id), 0, 0,
+			    history->sendRequestId);
 		}
 	}
 }
@@ -731,8 +745,8 @@ void Messenger::setInternalLinkDomain(const QString &domain) const {
 	// This domain should start with 'http[s]://' and end with '/', like 'https://t.me/'.
 	auto validate = [](auto &domain) {
 		auto prefixes = {
-			qstr("https://"),
-			qstr("http://"),
+		    qstr("https://"),
+		    qstr("http://"),
 		};
 		for (auto &prefix : prefixes) {
 			if (domain.startsWith(prefix, Qt::CaseInsensitive)) {
@@ -749,8 +763,8 @@ void Messenger::setInternalLinkDomain(const QString &domain) const {
 QString Messenger::createInternalLink(const QString &query) const {
 	auto result = createInternalLinkFull(query);
 	auto prefixes = {
-		qstr("https://"),
-		qstr("http://"),
+	    qstr("https://"),
+	    qstr("http://"),
 	};
 	for (auto &prefix : prefixes) {
 		if (result.startsWith(prefix, Qt::CaseInsensitive)) {
@@ -791,7 +805,8 @@ bool Messenger::openLocalUrl(const QString &url) {
 			main->joinGroupByHash(joinChatMatch->captured(1));
 			return true;
 		}
-	} else if (auto stickerSetMatch = regex_match(qsl("^addstickers/?\\?set=([a-zA-Z0-9\\.\\_]+)(&|$)"), command, matchOptions)) {
+	} else if (auto stickerSetMatch =
+	               regex_match(qsl("^addstickers/?\\?set=([a-zA-Z0-9\\.\\_]+)(&|$)"), command, matchOptions)) {
 		if (auto main = App::main()) {
 			main->stickersBox(MTP_inputStickerSetShortName(MTP_string(stickerSetMatch->captured(1))));
 			return true;
@@ -863,15 +878,21 @@ void Messenger::uploadProfilePhoto(const QImage &tosend, const PeerId &peerId) {
 
 	auto thumb = App::pixmapFromImageInPlace(tosend.scaled(160, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 	photoThumbs.insert('a', thumb);
-	photoSizes.push_back(MTP_photoSize(MTP_string("a"), MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)), MTP_int(thumb.width()), MTP_int(thumb.height()), MTP_int(0)));
+	photoSizes.push_back(MTP_photoSize(MTP_string("a"),
+	                                   MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)),
+	                                   MTP_int(thumb.width()), MTP_int(thumb.height()), MTP_int(0)));
 
 	auto medium = App::pixmapFromImageInPlace(tosend.scaled(320, 320, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 	photoThumbs.insert('b', medium);
-	photoSizes.push_back(MTP_photoSize(MTP_string("b"), MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)), MTP_int(medium.width()), MTP_int(medium.height()), MTP_int(0)));
+	photoSizes.push_back(MTP_photoSize(MTP_string("b"),
+	                                   MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)),
+	                                   MTP_int(medium.width()), MTP_int(medium.height()), MTP_int(0)));
 
 	auto full = QPixmap::fromImage(tosend, Qt::ColorOnly);
 	photoThumbs.insert('c', full);
-	photoSizes.push_back(MTP_photoSize(MTP_string("c"), MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)), MTP_int(full.width()), MTP_int(full.height()), MTP_int(0)));
+	photoSizes.push_back(MTP_photoSize(MTP_string("c"),
+	                                   MTP_fileLocationUnavailable(MTP_long(0), MTP_int(0), MTP_long(0)),
+	                                   MTP_int(full.width()), MTP_int(full.height()), MTP_int(0)));
 
 	QByteArray jpeg;
 	QBuffer jpegBuffer(&jpeg);
@@ -879,15 +900,18 @@ void Messenger::uploadProfilePhoto(const QImage &tosend, const PeerId &peerId) {
 
 	PhotoId id = rand_value<PhotoId>();
 
-	auto photo = MTP_photo(MTP_flags(0), MTP_long(id), MTP_long(0), MTP_int(unixtime()), MTP_vector<MTPPhotoSize>(photoSizes));
+	auto photo =
+	    MTP_photo(MTP_flags(0), MTP_long(id), MTP_long(0), MTP_int(unixtime()), MTP_vector<MTPPhotoSize>(photoSizes));
 
 	QString file, filename;
 	qint32 filesize = 0;
 	QByteArray data;
 
-	SendMediaReady ready(SendMediaType::Photo, file, filename, filesize, data, id, id, qsl("jpg"), peerId, photo, photoThumbs, MTP_documentEmpty(MTP_long(0)), jpeg, 0);
+	SendMediaReady ready(SendMediaType::Photo, file, filename, filesize, data, id, id, qsl("jpg"), peerId, photo,
+	                     photoThumbs, MTP_documentEmpty(MTP_long(0)), jpeg, 0);
 
-	connect(&Auth().uploader(), SIGNAL(photoReady(const FullMsgId&, bool, const MTPInputFile&)), this, SLOT(photoUpdated(const FullMsgId&, bool, const MTPInputFile&)), Qt::UniqueConnection);
+	connect(&Auth().uploader(), SIGNAL(photoReady(const FullMsgId &, bool, const MTPInputFile &)), this,
+	        SLOT(photoUpdated(const FullMsgId &, bool, const MTPInputFile &)), Qt::UniqueConnection);
 
 	FullMsgId newId(peerToChannel(peerId), clientMsgId());
 	regPhotoUpdate(peerId, newId);
@@ -973,7 +997,7 @@ bool Messenger::minimizeActiveWindow() {
 }
 
 QWidget *Messenger::getFileDialogParent() {
-	return (_mediaView && _mediaView->isVisible()) ? (QWidget*)_mediaView.get() : (QWidget*)getActiveWindow();
+	return (_mediaView && _mediaView->isVisible()) ? (QWidget *)_mediaView.get() : (QWidget *)getActiveWindow();
 }
 
 void Messenger::checkMediaViewActivation() {

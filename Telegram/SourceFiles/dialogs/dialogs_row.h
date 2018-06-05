@@ -46,18 +46,16 @@ public:
 
 private:
 	mutable std::unique_ptr<Ui::RippleAnimation> _ripple;
-
 };
 
 class List;
 class Row : public RippleRow {
 public:
 	Row(History *history, Row *prev, Row *next, int pos)
-		: _history(history)
-		, _prev(prev)
-		, _next(next)
-		, _pos(pos) {
-	}
+	    : _history(history)
+	    , _prev(prev)
+	    , _next(next)
+	    , _pos(pos) {}
 	void *attached = nullptr; // for any attached data, for example View in contacts list
 
 	History *history() const {
@@ -73,17 +71,16 @@ private:
 	History *_history;
 	Row *_prev, *_next;
 	int _pos;
-
 };
 
 class FakeRow : public RippleRow {
 public:
-	FakeRow(PeerData *searchInPeer, not_null<HistoryItem*> item);
+	FakeRow(PeerData *searchInPeer, not_null<HistoryItem *> item);
 
 	PeerData *searchInPeer() const {
 		return _searchInPeer;
 	}
-	not_null<HistoryItem*> item() const {
+	not_null<HistoryItem *> item() const {
 		return _item;
 	}
 
@@ -91,10 +88,9 @@ private:
 	friend class Layout::RowPainter;
 
 	PeerData *_searchInPeer = nullptr;
-	not_null<HistoryItem*> _item;
+	not_null<HistoryItem *> _item;
 	mutable const HistoryItem *_cacheFor = nullptr;
 	mutable Text _cache;
-
 };
 
 } // namespace Dialogs

@@ -18,8 +18,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "core/utils.h" // TimeMs
-#include <QString>
 #include <QByteArray>
+#include <QString>
 #include <QWindow> // WId
 
 // e is NSEvent*
@@ -72,5 +72,4 @@ private:
 	class objc_FileBookmarkData;
 	objc_FileBookmarkData *data = nullptr;
 #endif // OS_MAC_STORE
-
 };

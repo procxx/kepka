@@ -23,8 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <memory>
 
 #include <QApplication>
-#include <QLocalSocket>
 #include <QLocalServer>
+#include <QLocalSocket>
 
 class Messenger;
 
@@ -43,7 +43,7 @@ public:
 signals:
 	void adjustSingleTimers();
 
-// Single instance application
+	// Single instance application
 public slots:
 	void socketConnected();
 	void socketError(QLocalSocket::LocalSocketError e);
@@ -59,7 +59,7 @@ public slots:
 	void closeApplication(); // will be done in aboutToQuit()
 
 private:
-	typedef QPair<QLocalSocket*, QByteArray> LocalClient;
+	typedef QPair<QLocalSocket *, QByteArray> LocalClient;
 	typedef QList<LocalClient> LocalClients;
 
 	std::unique_ptr<Messenger> _messengerInstance;

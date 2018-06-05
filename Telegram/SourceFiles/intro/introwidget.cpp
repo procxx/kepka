@@ -20,32 +20,32 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "intro/introwidget.h"
 
-#include "lang/lang_keys.h"
-#include "storage/localstorage.h"
-#include "lang/lang_file_parser.h"
-#include "intro/introstart.h"
-#include "intro/introphone.h"
-#include "intro/introcode.h"
-#include "intro/introsignup.h"
-#include "intro/intropwdcheck.h"
-#include "mainwidget.h"
 #include "apiwrap.h"
+#include "application.h"
+#include "auth_session.h"
+#include "boxes/confirm_box.h"
+#include "intro/introcode.h"
+#include "intro/introphone.h"
+#include "intro/intropwdcheck.h"
+#include "intro/introsignup.h"
+#include "intro/introstart.h"
+#include "lang/lang_cloud_manager.h"
+#include "lang/lang_file_parser.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
 #include "mainwindow.h"
 #include "messenger.h"
-#include "application.h"
-#include "boxes/confirm_box.h"
-#include "ui/text/text.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/labels.h"
-#include "ui/effects/widget_fade_wrap.h"
-#include "ui/effects/slide_animation.h"
-#include "window/window_slide_animation.h"
+#include "storage/localstorage.h"
 #include "styles/style_boxes.h"
 #include "styles/style_intro.h"
 #include "styles/style_window.h"
+#include "ui/effects/slide_animation.h"
+#include "ui/effects/widget_fade_wrap.h"
+#include "ui/text/text.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/labels.h"
 #include "window/themes/window_theme.h"
-#include "lang/lang_cloud_manager.h"
-#include "auth_session.h"
+#include "window/window_slide_animation.h"
 
 namespace Intro {
 namespace {
@@ -54,10 +54,12 @@ constexpr str_const kDefaultCountry = "US";
 
 } // namespace
 
-Widget::Widget(QWidget *parent) : TWidget(parent)
-, _back(this, object_ptr<Ui::IconButton>(this, st::introBackButton), st::introSlideDuration)
-, _settings(this, object_ptr<Ui::RoundButton>(this, langFactory(lng_menu_settings), st::defaultBoxButton), st::introCoverDuration)
-, _next(this, base::lambda<QString()>(), st::introNextButton) {
+Widget::Widget(QWidget *parent)
+    : TWidget(parent)
+    , _back(this, object_ptr<Ui::IconButton>(this, st::introBackButton), st::introSlideDuration)
+    , _settings(this, object_ptr<Ui::RoundButton>(this, langFactory(lng_menu_settings), st::defaultBoxButton),
+                st::introCoverDuration)
+    , _next(this, base::lambda<QString()>(), st::introNextButton) {
 	auto country = Platform::SystemCountry();
 	if (country.isEmpty()) {
 		country = str_const_toString(kDefaultCountry);
@@ -102,9 +104,8 @@ void Widget::createLanguageLink() {
 		_changeLanguage.create(this, object_ptr<Ui::LinkButton>(this, text), st::introCoverDuration);
 		_changeLanguage->show();
 		_changeLanguage->hideFast();
-		_changeLanguage->entity()->setClickedCallback([this, languageId] {
-			Lang::CurrentCloudManager().switchToLanguage(languageId);
-		});
+		_changeLanguage->entity()->setClickedCallback(
+		    [this, languageId] { Lang::CurrentCloudManager().switchToLanguage(languageId); });
 		_changeLanguage->toggleAnimated(!_resetAccount);
 		updateControlsGeometry();
 	};
@@ -115,13 +116,16 @@ void Widget::createLanguageLink() {
 	if (!currentId.isEmpty() && currentId != defaultId) {
 		createLink(Lang::GetOriginalValue(lng_switch_to_this), defaultId);
 	} else if (!suggestedId.isEmpty() && suggestedId != currentId) {
-		request(MTPlangpack_GetStrings(MTP_string(suggestedId), MTP_vector<MTPstring>(1, MTP_string("lng_switch_to_this")))).done([this, suggestedId, createLink](const MTPVector<MTPLangPackString> &result) {
-			auto strings = Lang::Instance::ParseStrings(result);
-			auto it = strings.find(lng_switch_to_this);
-			if (it != strings.end()) {
-				createLink(it->second, suggestedId);
-			}
-		}).send();
+		request(
+		    MTPlangpack_GetStrings(MTP_string(suggestedId), MTP_vector<MTPstring>(1, MTP_string("lng_switch_to_this"))))
+		    .done([this, suggestedId, createLink](const MTPVector<MTPLangPackString> &result) {
+			    auto strings = Lang::Instance::ParseStrings(result);
+			    auto it = strings.find(lng_switch_to_this);
+			    if (it != strings.end()) {
+				    createLink(it->second, suggestedId);
+			    }
+		    })
+		    .send();
 	}
 }
 
@@ -149,7 +153,8 @@ void Widget::historyMove(Direction direction) {
 	if (wasStep->hasCover() != getStep()->hasCover()) {
 		_nextTopFrom = wasStep->contentTop() + st::introStepHeight;
 		_controlsTopFrom = wasStep->hasCover() ? st::introCoverHeight : 0;
-		_coverShownAnimation.start([this] { updateControlsGeometry(); }, 0., 1., st::introCoverDuration, wasStep->hasCover() ? anim::linear : anim::easeOutCirc);
+		_coverShownAnimation.start([this] { updateControlsGeometry(); }, 0., 1., st::introCoverDuration,
+		                           wasStep->hasCover() ? anim::linear : anim::easeOutCirc);
 	}
 
 	if (direction == Direction::Forward || direction == Direction::Replace) {
@@ -198,9 +203,7 @@ void Widget::appendStep(Step *step) {
 			moveToStep(step, direction);
 		}
 	});
-	step->setShowResetCallback([this] {
-		showResetButton();
-	});
+	step->setShowResetCallback([this] { showResetButton(); });
 }
 
 void Widget::showResetButton() {
@@ -218,53 +221,65 @@ void Widget::showResetButton() {
 void Widget::resetAccount() {
 	if (_resetRequest) return;
 
-	Ui::show(Box<ConfirmBox>(lang(lng_signin_sure_reset), lang(lng_signin_reset), st::attentionBoxButton, base::lambda_guarded(this, [this] {
-		if (_resetRequest) return;
-		_resetRequest = request(MTPaccount_DeleteAccount(MTP_string("Forgot password"))).done([this](const MTPBool &result) {
-			_resetRequest = 0;
+	Ui::show(Box<ConfirmBox>(
+	    lang(lng_signin_sure_reset), lang(lng_signin_reset), st::attentionBoxButton, base::lambda_guarded(this, [this] {
+		    if (_resetRequest) return;
+		    _resetRequest =
+		        request(MTPaccount_DeleteAccount(MTP_string("Forgot password")))
+		            .done([this](const MTPBool &result) {
+			            _resetRequest = 0;
 
-			Ui::hideLayer();
-			moveToStep(new SignupWidget(this, getData()), Direction::Replace);
-		}).fail([this](const RPCError &error) {
-			_resetRequest = 0;
+			            Ui::hideLayer();
+			            moveToStep(new SignupWidget(this, getData()), Direction::Replace);
+		            })
+		            .fail([this](const RPCError &error) {
+			            _resetRequest = 0;
 
-			auto type = error.type();
-			if (type.startsWith(qstr("2FA_CONFIRM_WAIT_"))) {
-				auto seconds = type.mid(qstr("2FA_CONFIRM_WAIT_").size()).toInt();
-				auto days = (seconds + 59) / 86400;
-				auto hours = ((seconds + 59) % 86400) / 3600;
-				auto minutes = ((seconds + 59) % 3600) / 60;
-				auto when = lng_signin_reset_minutes(lt_count, minutes);
-				if (days > 0) {
-					auto daysCount = lng_signin_reset_days(lt_count, days);
-					auto hoursCount = lng_signin_reset_hours(lt_count, hours);
-					when = lng_signin_reset_in_days(lt_days_count, daysCount, lt_hours_count, hoursCount, lt_minutes_count, when);
-				} else if (hours > 0) {
-					auto hoursCount = lng_signin_reset_hours(lt_count, hours);
-					when = lng_signin_reset_in_hours(lt_hours_count, hoursCount, lt_minutes_count, when);
-				}
-				Ui::show(Box<InformBox>(lng_signin_reset_wait(lt_phone_number, App::formatPhone(getData()->phone), lt_when, when)));
-			} else if (type == qstr("2FA_RECENT_CONFIRM")) {
-				Ui::show(Box<InformBox>(lang(lng_signin_reset_cancelled)));
-			} else {
-				Ui::hideLayer();
-				getStep()->showError(langFactory(lng_server_error));
-			}
-		}).send();
-	})));
+			            auto type = error.type();
+			            if (type.startsWith(qstr("2FA_CONFIRM_WAIT_"))) {
+				            auto seconds = type.mid(qstr("2FA_CONFIRM_WAIT_").size()).toInt();
+				            auto days = (seconds + 59) / 86400;
+				            auto hours = ((seconds + 59) % 86400) / 3600;
+				            auto minutes = ((seconds + 59) % 3600) / 60;
+				            auto when = lng_signin_reset_minutes(lt_count, minutes);
+				            if (days > 0) {
+					            auto daysCount = lng_signin_reset_days(lt_count, days);
+					            auto hoursCount = lng_signin_reset_hours(lt_count, hours);
+					            when = lng_signin_reset_in_days(lt_days_count, daysCount, lt_hours_count, hoursCount,
+					                                            lt_minutes_count, when);
+				            } else if (hours > 0) {
+					            auto hoursCount = lng_signin_reset_hours(lt_count, hours);
+					            when = lng_signin_reset_in_hours(lt_hours_count, hoursCount, lt_minutes_count, when);
+				            }
+				            Ui::show(Box<InformBox>(lng_signin_reset_wait(
+				                lt_phone_number, App::formatPhone(getData()->phone), lt_when, when)));
+			            } else if (type == qstr("2FA_RECENT_CONFIRM")) {
+				            Ui::show(Box<InformBox>(lang(lng_signin_reset_cancelled)));
+			            } else {
+				            Ui::hideLayer();
+				            getStep()->showError(langFactory(lng_server_error));
+			            }
+		            })
+		            .send();
+	    })));
 }
 
 void Widget::getNearestDC() {
-	request(MTPhelp_GetNearestDc()).done([this](const MTPNearestDc &result) {
-		auto &nearest = result.c_nearestDc();
-		DEBUG_LOG(("Got nearest dc, country: %1, nearest: %2, this: %3").arg(qs(nearest.vcountry)).arg(nearest.vnearest_dc.v).arg(nearest.vthis_dc.v));
-		Messenger::Instance().suggestMainDcId(nearest.vnearest_dc.v);
-		auto nearestCountry = qs(nearest.vcountry);
-		if (getData()->country != nearestCountry) {
-			getData()->country = nearestCountry;
-			getData()->updated.notify();
-		}
-	}).send();
+	request(MTPhelp_GetNearestDc())
+	    .done([this](const MTPNearestDc &result) {
+		    auto &nearest = result.c_nearestDc();
+		    DEBUG_LOG(("Got nearest dc, country: %1, nearest: %2, this: %3")
+		                  .arg(qs(nearest.vcountry))
+		                  .arg(nearest.vnearest_dc.v)
+		                  .arg(nearest.vthis_dc.v));
+		    Messenger::Instance().suggestMainDcId(nearest.vnearest_dc.v);
+		    auto nearestCountry = qs(nearest.vcountry);
+		    if (getData()->country != nearestCountry) {
+			    getData()->country = nearestCountry;
+			    getData()->updated.notify();
+		    }
+	    })
+	    .send();
 }
 
 void Widget::showControls() {
@@ -327,11 +342,14 @@ void Widget::paintEvent(QPaintEvent *e) {
 	p.fillRect(e->rect(), st::windowBg);
 	auto progress = _a_show.current(getms(), 1.);
 	if (_a_show.animating()) {
-		auto coordUnder = _showBack ? anim::interpolate(-st::slideShift, 0, progress) : anim::interpolate(0, -st::slideShift, progress);
+		auto coordUnder = _showBack ? anim::interpolate(-st::slideShift, 0, progress) :
+		                              anim::interpolate(0, -st::slideShift, progress);
 		auto coordOver = _showBack ? anim::interpolate(0, width(), progress) : anim::interpolate(width(), 0, progress);
 		auto shadow = _showBack ? (1. - progress) : progress;
 		if (coordOver > 0) {
-			p.drawPixmap(QRect(0, 0, coordOver, height()), _cacheUnder, QRect(-coordUnder * cRetinaFactor(), 0, coordOver * cRetinaFactor(), height() * cRetinaFactor()));
+			p.drawPixmap(
+			    QRect(0, 0, coordOver, height()), _cacheUnder,
+			    QRect(-coordUnder * cRetinaFactor(), 0, coordOver * cRetinaFactor(), height() * cRetinaFactor()));
 			p.setOpacity(shadow);
 			p.fillRect(0, 0, coordOver, height(), st::slideFadeOutBg);
 			p.setOpacity(1);
@@ -354,9 +372,7 @@ QRect Widget::calculateStepRect() const {
 
 void Widget::resizeEvent(QResizeEvent *e) {
 	auto stepRect = calculateStepRect();
-	for_const (auto step, _stepHistory) {
-		step->setGeometry(stepRect);
-	}
+	for_const (auto step, _stepHistory) { step->setGeometry(stepRect); }
 
 	updateControlsGeometry();
 }
@@ -376,10 +392,12 @@ void Widget::updateControlsGeometry() {
 	auto nextTop = anim::interpolate(_nextTopFrom, nextTopTo, shown);
 	_next->moveToLeft((width() - _next->width()) / 2, nextTop);
 	if (_changeLanguage) {
-		_changeLanguage->moveToLeft((width() - _changeLanguage->width()) / 2, _next->y() + _next->height() + _changeLanguage->height());
+		_changeLanguage->moveToLeft((width() - _changeLanguage->width()) / 2,
+		                            _next->y() + _next->height() + _changeLanguage->height());
 	}
 	if (_resetAccount) {
-		_resetAccount->moveToLeft((width() - _resetAccount->width()) / 2, height() - st::introResetBottom - _resetAccount->height());
+		_resetAccount->moveToLeft((width() - _resetAccount->width()) / 2,
+		                          height() - st::introResetBottom - _resetAccount->height());
 	}
 }
 
@@ -530,7 +548,8 @@ bool Widget::Step::paintAnimated(Painter &p, QRect clip) {
 	auto departingAlpha = 1. - progress;
 	auto showCoverMethod = progress;
 	auto hideCoverMethod = progress;
-	auto coverTop = (hasCover() ? anim::interpolate(-st::introCoverHeight, 0, showCoverMethod) : anim::interpolate(0, -st::introCoverHeight, hideCoverMethod));
+	auto coverTop = (hasCover() ? anim::interpolate(-st::introCoverHeight, 0, showCoverMethod) :
+	                              anim::interpolate(0, -st::introCoverHeight, hideCoverMethod));
 
 	paintCover(p, coverTop);
 
@@ -572,10 +591,12 @@ void Widget::Step::hideDescription() {
 
 void Widget::Step::paintContentSnapshot(Painter &p, const QPixmap &snapshot, double alpha, double howMuchHidden) {
 	if (!snapshot.isNull()) {
-		auto contentTop = anim::interpolate(height() - (snapshot.height() / cIntRetinaFactor()), height(), howMuchHidden);
+		auto contentTop =
+		    anim::interpolate(height() - (snapshot.height() / cIntRetinaFactor()), height(), howMuchHidden);
 		if (contentTop < height()) {
 			p.setOpacity(alpha);
-			p.drawPixmap(QPoint(contentLeft(), contentTop), snapshot, QRect(0, 0, snapshot.width(), (height() - contentTop) * cIntRetinaFactor()));
+			p.drawPixmap(QPoint(contentLeft(), contentTop), snapshot,
+			             QRect(0, 0, snapshot.width(), (height() - contentTop) * cIntRetinaFactor()));
 		}
 	}
 }
@@ -586,7 +607,7 @@ void Widget::Step::prepareCoverMask() {
 	auto maskWidth = cIntRetinaFactor();
 	auto maskHeight = st::introCoverHeight * cIntRetinaFactor();
 	auto mask = QImage(maskWidth, maskHeight, QImage::Format_ARGB32_Premultiplied);
-	auto maskInts = reinterpret_cast<quint32*>(mask.bits());
+	auto maskInts = reinterpret_cast<quint32 *>(mask.bits());
 	Assert(mask.depth() == (sizeof(quint32) << 3));
 	auto maskIntsPerLineAdded = (mask.bytesPerLine() >> 2) - maskWidth;
 	Assert(maskIntsPerLineAdded >= 0);
@@ -605,14 +626,17 @@ void Widget::Step::prepareCoverMask() {
 void Widget::Step::paintCover(Painter &p, int top) {
 	auto coverHeight = top + st::introCoverHeight;
 	if (coverHeight > 0) {
-		p.drawPixmap(QRect(0, 0, width(), coverHeight), _coverMask, QRect(0, -top * cIntRetinaFactor(), _coverMask.width(), coverHeight * cIntRetinaFactor()));
+		p.drawPixmap(QRect(0, 0, width(), coverHeight), _coverMask,
+		             QRect(0, -top * cIntRetinaFactor(), _coverMask.width(), coverHeight * cIntRetinaFactor()));
 	}
 
 	auto left = 0;
 	auto right = 0;
 	if (width() < st::introCoverMaxWidth) {
 		auto iconsMaxSkip = st::introCoverMaxWidth - st::introCoverLeft.width() - st::introCoverRight.width();
-		auto iconsSkip = st::introCoverIconsMinSkip + (iconsMaxSkip - st::introCoverIconsMinSkip) * (width() - st::introStepWidth) / (st::introCoverMaxWidth - st::introStepWidth);
+		auto iconsSkip = st::introCoverIconsMinSkip + (iconsMaxSkip - st::introCoverIconsMinSkip) *
+		                                                  (width() - st::introStepWidth) /
+		                                                  (st::introCoverMaxWidth - st::introStepWidth);
 		auto outside = iconsSkip + st::introCoverLeft.width() + st::introCoverRight.width() - width();
 		left = -outside / 2;
 		right = -outside - left;
@@ -625,15 +649,16 @@ void Widget::Step::paintCover(Painter &p, int top) {
 		right = rightShown - st::introCoverRight.width();
 	}
 	st::introCoverLeft.paint(p, left, coverHeight - st::introCoverLeft.height(), width());
-	st::introCoverRight.paint(p, width() - right - st::introCoverRight.width(), coverHeight - st::introCoverRight.height(), width());
+	st::introCoverRight.paint(p, width() - right - st::introCoverRight.width(),
+	                          coverHeight - st::introCoverRight.height(), width());
 
 	auto planeLeft = (width() - st::introCoverIcon.width()) / 2 - st::introCoverIconLeft;
 	auto planeTop = top + st::introCoverIconTop;
 	if (top < 0 && !_hasCover) {
 		auto deltaLeft = -std::round(double(st::introPlaneWidth / st::introPlaneHeight) * top);
-//		auto deltaTop = top;
+		//		auto deltaTop = top;
 		planeLeft += deltaLeft;
-	//	planeTop += top;
+		//	planeTop += top;
 	}
 	st::introCoverIcon.paint(p, planeLeft, planeTop, width());
 }
@@ -645,7 +670,8 @@ int Widget::Step::contentLeft() const {
 int Widget::Step::contentTop() const {
 	auto result = height() - st::introStepHeight - st::introStepHeightAdd;
 	if (_hasCover) {
-		auto added = 1. - snap(double(height() - st::windowMinHeight) / (st::introStepHeightFull - st::windowMinHeight), 0., 1.);
+		auto added =
+		    1. - snap(double(height() - st::windowMinHeight) / (st::introStepHeightFull - st::windowMinHeight), 0., 1.);
 		result += std::round(added * st::introStepHeightAdd);
 	}
 	return result;
@@ -674,7 +700,9 @@ void Widget::Step::refreshError() {
 		if (_error) _error->hideAnimated();
 	} else {
 		if (!_error) {
-			_error.create(this, object_ptr<Ui::FlatLabel>(this, _errorCentered ? st::introErrorCentered : st::introError), st::introErrorDuration);
+			_error.create(this,
+			              object_ptr<Ui::FlatLabel>(this, _errorCentered ? st::introErrorCentered : st::introError),
+			              st::introErrorDuration);
 			_error->hideFast();
 		}
 		_error->entity()->setText(_errorTextFactory());
@@ -683,11 +711,13 @@ void Widget::Step::refreshError() {
 	}
 }
 
-Widget::Step::Step(QWidget *parent, Data *data, bool hasCover) : TWidget(parent)
-, _data(data)
-, _hasCover(hasCover)
-, _title(this, _hasCover ? st::introCoverTitle : st::introTitle)
-, _description(this, object_ptr<Ui::FlatLabel>(this, _hasCover ? st::introCoverDescription : st::introDescription), st::introErrorDuration) {
+Widget::Step::Step(QWidget *parent, Data *data, bool hasCover)
+    : TWidget(parent)
+    , _data(data)
+    , _hasCover(hasCover)
+    , _title(this, _hasCover ? st::introCoverTitle : st::introTitle)
+    , _description(this, object_ptr<Ui::FlatLabel>(this, _hasCover ? st::introCoverDescription : st::introDescription),
+                   st::introErrorDuration) {
 	hide();
 	subscribe(Window::Theme::Background(), [this](const Window::Theme::BackgroundUpdate &update) {
 		if (update.paletteChanged()) {
@@ -717,7 +747,8 @@ void Widget::Step::prepareShowAnimated(Step *after) {
 Widget::Step::CoverAnimation Widget::Step::prepareCoverAnimation(Step *after) {
 	auto result = CoverAnimation();
 	result.title = Ui::FlatLabel::CrossFade(after->_title, _title, st::introBg);
-	result.description = Ui::FlatLabel::CrossFade(after->_description->entity(), _description->entity(), st::introBg, after->_description->pos(), _description->pos());
+	result.description = Ui::FlatLabel::CrossFade(after->_description->entity(), _description->entity(), st::introBg,
+	                                              after->_description->pos(), _description->pos());
 	result.contentSnapshotWas = after->prepareContentSnapshot();
 	result.contentSnapshotNow = prepareContentSnapshot();
 	return result;
@@ -740,7 +771,8 @@ void Widget::Step::showAnimated(Direction direction) {
 	hideChildren();
 	if (_slideAnimation) {
 		auto slideLeft = (direction == Direction::Back);
-		_slideAnimation->start(slideLeft, [this] { update(0, contentTop(), width(), st::introStepHeight); }, st::introSlideDuration);
+		_slideAnimation->start(slideLeft, [this] { update(0, contentTop(), width(), st::introStepHeight); },
+		                       st::introSlideDuration);
 	} else {
 		_a_show.start([this] { update(); }, 0., 1., st::introCoverDuration);
 	}
@@ -779,8 +811,7 @@ void Widget::Step::activate() {
 	}
 }
 
-void Widget::Step::cancelled() {
-}
+void Widget::Step::cancelled() {}
 
 void Widget::Step::finished() {
 	hide();

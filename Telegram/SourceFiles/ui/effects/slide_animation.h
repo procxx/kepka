@@ -35,8 +35,7 @@ public:
 		_overflowHidden = hidden;
 	}
 
-	template <typename Lambda>
-	void start(bool slideLeft, Lambda &&updateCallback, double duration);
+	template <typename Lambda> void start(bool slideLeft, Lambda &&updateCallback, double duration);
 
 	void paintFrame(Painter &p, int x, int y, int outerWidth, TimeMs ms);
 
@@ -53,11 +52,9 @@ private:
 	int _leftSnapshotWidth = 0;
 	int _leftSnapshotHeight = 0;
 	int _rightSnapshotWidth = 0;
-
 };
 
-template <typename Lambda>
-void SlideAnimation::start(bool slideLeft, Lambda &&updateCallback, double duration) {
+template <typename Lambda> void SlideAnimation::start(bool slideLeft, Lambda &&updateCallback, double duration) {
 	_slideLeft = slideLeft;
 	if (_slideLeft) {
 		std::swap(_leftSnapshot, _rightSnapshot);

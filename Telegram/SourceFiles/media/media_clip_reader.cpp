@@ -18,9 +18,9 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QAbstractEventDispatcher>
 #include "media/media_clip_reader.h"
 #include "storage/file_download.h"
+#include <QAbstractEventDispatcher>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -29,17 +29,17 @@ extern "C" {
 #include <libswscale/swscale.h>
 }
 
-#include "media/media_clip_ffmpeg.h"
-#include "media/media_clip_qtgif.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
+#include "media/media_clip_ffmpeg.h"
+#include "media/media_clip_qtgif.h"
 
 namespace Media {
 namespace Clip {
 namespace {
 
-QVector<QThread*> threads;
-QVector<Manager*> managers;
+QVector<QThread *> threads;
+QVector<Manager *> managers;
 
 QImage PrepareFrameImage(const FrameRequest &request, const QImage &original, bool hasAlpha, QImage &cache) {
 	auto needResize = (original.width() != request.framew) || (original.height() != request.frameh);
@@ -59,18 +59,33 @@ QImage PrepareFrameImage(const FrameRequest &request, const QImage &original, bo
 		Painter p(&cache);
 		if (needNewCache) {
 			if (request.framew < request.outerw) {
-				p.fillRect(0, 0, (request.outerw - request.framew) / (2 * factor), cache.height() / factor, st::imageBg);
-				p.fillRect((request.outerw - request.framew) / (2 * factor) + (request.framew / factor), 0, (cache.width() / factor) - ((request.outerw - request.framew) / (2 * factor) + (request.framew / factor)), cache.height() / factor, st::imageBg);
+				p.fillRect(0, 0, (request.outerw - request.framew) / (2 * factor), cache.height() / factor,
+				           st::imageBg);
+				p.fillRect((request.outerw - request.framew) / (2 * factor) + (request.framew / factor), 0,
+				           (cache.width() / factor) -
+				               ((request.outerw - request.framew) / (2 * factor) + (request.framew / factor)),
+				           cache.height() / factor, st::imageBg);
 			}
 			if (request.frameh < request.outerh) {
-				p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), 0, std::min(cache.width(), request.framew) / factor, (request.outerh - request.frameh) / (2 * factor), st::imageBg);
-				p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), (request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor), std::min(cache.width(), request.framew) / factor, (cache.height() / factor) - ((request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor)), st::imageBg);
+				p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), 0,
+				           std::min(cache.width(), request.framew) / factor,
+				           (request.outerh - request.frameh) / (2 * factor), st::imageBg);
+				p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)),
+				           (request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor),
+				           std::min(cache.width(), request.framew) / factor,
+				           (cache.height() / factor) -
+				               ((request.outerh - request.frameh) / (2 * factor) + (request.frameh / factor)),
+				           st::imageBg);
 			}
 		}
 		if (hasAlpha) {
-			p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)), std::max(0, (request.outerh - request.frameh) / (2 * factor)), std::min(cache.width(), request.framew) / factor, std::min(cache.height(), request.frameh) / factor, st::imageBgTransparent);
+			p.fillRect(std::max(0, (request.outerw - request.framew) / (2 * factor)),
+			           std::max(0, (request.outerh - request.frameh) / (2 * factor)),
+			           std::min(cache.width(), request.framew) / factor,
+			           std::min(cache.height(), request.frameh) / factor, st::imageBgTransparent);
 		}
-		auto position = QPoint((request.outerw - request.framew) / (2 * factor), (request.outerh - request.frameh) / (2 * factor));
+		auto position =
+		    QPoint((request.outerw - request.framew) / (2 * factor), (request.outerh - request.frameh) / (2 * factor));
 		if (needResize) {
 			PainterHighQualityEnabler hq(p);
 
@@ -94,17 +109,17 @@ QPixmap PrepareFrame(const FrameRequest &request, const QImage &original, bool h
 } // namespace
 
 Reader::Reader(const QString &filepath, Callback &&callback, Mode mode, qint64 seekMs)
-: _callback(std::move(callback))
-, _mode(mode)
-, _seekPositionMs(seekMs) {
+    : _callback(std::move(callback))
+    , _mode(mode)
+    , _seekPositionMs(seekMs) {
 	init(FileLocation(filepath), QByteArray());
 }
 
-Reader::Reader(not_null<DocumentData*> document, FullMsgId msgId, Callback &&callback, Mode mode, qint64 seekMs)
-: _callback(std::move(callback))
-, _mode(mode)
-, _audioMsgId(document, msgId, (mode == Mode::Video) ? rand_value<quint32>() : 0)
-, _seekPositionMs(seekMs) {
+Reader::Reader(not_null<DocumentData *> document, FullMsgId msgId, Callback &&callback, Mode mode, qint64 seekMs)
+    : _callback(std::move(callback))
+    , _mode(mode)
+    , _audioMsgId(document, msgId, (mode == Mode::Video) ? rand_value<quint32>() : 0)
+    , _seekPositionMs(seekMs) {
 	init(document->location(), document->data());
 }
 
@@ -204,7 +219,8 @@ void Reader::callback(Reader *reader, qint32 threadIndex, Notification notificat
 	}
 }
 
-void Reader::start(qint32 framew, qint32 frameh, qint32 outerw, qint32 outerh, ImageRoundRadius radius, ImageRoundCorners corners) {
+void Reader::start(qint32 framew, qint32 frameh, qint32 outerw, qint32 outerh, ImageRoundRadius radius,
+                   ImageRoundCorners corners) {
 	if (managers.size() <= _threadIndex) error();
 	if (_state == State::Error) return;
 
@@ -224,7 +240,8 @@ void Reader::start(qint32 framew, qint32 frameh, qint32 outerw, qint32 outerh, I
 	}
 }
 
-QPixmap Reader::current(qint32 framew, qint32 frameh, qint32 outerw, qint32 outerh, ImageRoundRadius radius, ImageRoundCorners corners, TimeMs ms) {
+QPixmap Reader::current(qint32 framew, qint32 frameh, qint32 outerw, qint32 outerh, ImageRoundRadius radius,
+                        ImageRoundCorners corners, TimeMs ms) {
 	Expects(outerw > 0);
 	Expects(outerh > 0);
 
@@ -246,10 +263,8 @@ QPixmap Reader::current(qint32 framew, qint32 frameh, qint32 outerw, qint32 oute
 	}
 
 	auto factor = cIntRetinaFactor();
-	if (frame->pix.width() == outerw * factor
-		&& frame->pix.height() == outerh * factor
-		&& frame->request.radius == radius
-		&& frame->request.corners == corners) {
+	if (frame->pix.width() == outerw * factor && frame->pix.height() == outerh * factor &&
+	    frame->request.radius == radius && frame->request.corners == corners) {
 		moveToNextShow();
 		return frame->pix;
 	}
@@ -363,11 +378,12 @@ Reader::~Reader() {
 
 class ReaderPrivate {
 public:
-	ReaderPrivate(Reader *reader, const FileLocation &location, const QByteArray &data) : _interface(reader)
-	, _mode(reader->mode())
-	, _audioMsgId(reader->audioMsgId())
-	, _seekPositionMs(reader->seekPositionMs())
-	, _data(data) {
+	ReaderPrivate(Reader *reader, const FileLocation &location, const QByteArray &data)
+	    : _interface(reader)
+	    , _mode(reader->mode())
+	    , _audioMsgId(reader->audioMsgId())
+	    , _seekPositionMs(reader->seekPositionMs())
+	    , _data(data) {
 		if (_data.isEmpty()) {
 			_location = std::make_unique<FileLocation>(location);
 			if (!_location->accessEnable()) {
@@ -389,7 +405,8 @@ public:
 				// get the frame size and return a black frame with that size.
 
 				auto firstFramePositionMs = TimeMs(0);
-				auto reader = std::make_unique<internal::FFMpegReaderImplementation>(_location.get(), &_data, AudioMsgId());
+				auto reader =
+				    std::make_unique<internal::FFMpegReaderImplementation>(_location.get(), &_data, AudioMsgId());
 				if (reader->start(internal::ReaderImplementation::Mode::Normal, firstFramePositionMs)) {
 					auto firstFrameReadResult = reader->readFramesTill(-1, ms);
 					if (firstFrameReadResult == internal::ReaderImplementation::ReadResult::Success) {
@@ -497,7 +514,7 @@ public:
 		}
 
 		_implementation = std::make_unique<internal::FFMpegReaderImplementation>(_location.get(), &_data, _audioMsgId);
-//		_implementation = new QtGifReaderImplementation(_location, &_data);
+		//		_implementation = new QtGifReaderImplementation(_location, &_data);
 
 		auto implementationMode = [this]() {
 			using ImplementationMode = internal::ReaderImplementation::Mode;
@@ -605,10 +622,11 @@ private:
 	TimeMs _videoPausedAtMs = 0;
 
 	friend class Manager;
-
 };
 
-Manager::Manager(QThread *thread) : _processingInThread(0), _needReProcess(false) {
+Manager::Manager(QThread *thread)
+    : _processingInThread(0)
+    , _needReProcess(false) {
 	moveToThread(thread);
 	connect(thread, SIGNAL(started()), this, SLOT(process()));
 	connect(thread, SIGNAL(finished()), this, SLOT(finish()));
@@ -700,8 +718,10 @@ bool Manager::handleProcessResult(ReaderPrivate *reader, ProcessResult result, T
 		qint32 ishowing, iprevious;
 		auto showing = it.key()->frameToShow(&ishowing), previous = it.key()->frameToWriteNext(false, &iprevious);
 		Assert(previous != nullptr && showing != nullptr && ishowing >= 0 && iprevious >= 0);
-		if (reader->_frames[ishowing].when > 0 && showing->displayed.loadAcquire() <= 0) { // current frame was not shown
-			if (reader->_frames[ishowing].when + WaitBeforeGifPause < ms || (reader->_frames[iprevious].when && previous->displayed.loadAcquire() <= 0)) {
+		if (reader->_frames[ishowing].when > 0 &&
+		    showing->displayed.loadAcquire() <= 0) { // current frame was not shown
+			if (reader->_frames[ishowing].when + WaitBeforeGifPause < ms ||
+			    (reader->_frames[iprevious].when && previous->displayed.loadAcquire() <= 0)) {
 				reader->_autoPausedGif = true;
 				it.key()->_autoPausedGif.storeRelease(1);
 				result = ProcessResult::Paused;
@@ -825,7 +845,8 @@ void Manager::process() {
 			QMutexLocker lock(&_readerPointersMutex);
 			auto it = constUnsafeFindReaderPointer(reader);
 			if (it == _readerPointers.cend()) {
-				_loadLevel.fetchAndAddRelaxed(-1 * (reader->_width > 0 ? reader->_width * reader->_height : AverageGifSize));
+				_loadLevel.fetchAndAddRelaxed(-1 *
+				                              (reader->_width > 0 ? reader->_width * reader->_height : AverageGifSize));
 				delete reader;
 				i = _readers.erase(i);
 				continue;

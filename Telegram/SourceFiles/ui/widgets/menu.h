@@ -23,10 +23,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/lambda.h"
 #include "styles/style_widgets.h"
 
-#include <QMenu>
-#include <QList>
-#include <qevent.h>
 #include "ui/twidget.h"
+#include <QList>
+#include <QMenu>
+#include <qevent.h>
 
 namespace Ui {
 
@@ -40,8 +40,10 @@ public:
 	Menu(QWidget *parent, const style::Menu &st = st::defaultMenu);
 	Menu(QWidget *parent, QMenu *menu, const style::Menu &st = st::defaultMenu);
 
-	QAction *addAction(const QString &text, const QObject *receiver, const char* member, const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
-	QAction *addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
+	QAction *addAction(const QString &text, const QObject *receiver, const char *member,
+	                   const style::icon *icon = nullptr, const style::icon *iconOver = nullptr);
+	QAction *addAction(const QString &text, base::lambda<void()> callback, const style::icon *icon = nullptr,
+	                   const style::icon *iconOver = nullptr);
 	QAction *addSeparator();
 	void clearActions();
 	void finishAnimations();
@@ -58,7 +60,7 @@ public:
 	void setShowSource(TriggeredSource source);
 	void setForceWidth(int forceWidth);
 
-	using Actions = QList<QAction*>;
+	using Actions = QList<QAction *>;
 	Actions &actions();
 
 	void setResizedCallback(base::lambda<void()> callback) {
@@ -161,7 +163,6 @@ private:
 	int _selected = -1;
 	int _pressed = -1;
 	bool _childShown = false;
-
 };
 
 } // namespace Ui

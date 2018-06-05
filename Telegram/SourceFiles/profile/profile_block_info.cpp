@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_info.h"
 
-#include "styles/style_profile.h"
-#include "ui/widgets/labels.h"
-#include "ui/widgets/buttons.h"
-#include "ui/effects/widget_slide_wrap.h"
-#include "core/click_handler_types.h"
-#include "mainwidget.h"
-#include "observer_peer.h"
 #include "apiwrap.h"
+#include "core/click_handler_types.h"
 #include "lang/lang_keys.h"
-#include "ui/toast/toast.h"
+#include "mainwidget.h"
 #include "messenger.h"
+#include "observer_peer.h"
+#include "styles/style_profile.h"
+#include "ui/effects/widget_slide_wrap.h"
+#include "ui/toast/toast.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/labels.h"
 
 namespace Profile {
 
@@ -38,14 +38,13 @@ constexpr int kCommonGroupsLimit = 20;
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
 
-InfoWidget::InfoWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_info_section)) {
-	auto observeEvents = UpdateFlag::AboutChanged
-		| UpdateFlag::UsernameChanged
-		| UpdateFlag::UserPhoneChanged
-		| UpdateFlag::UserCanShareContact;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+InfoWidget::InfoWidget(QWidget *parent, PeerData *peer)
+    : BlockWidget(parent, peer, lang(lng_profile_info_section)) {
+	auto observeEvents = UpdateFlag::AboutChanged | UpdateFlag::UsernameChanged | UpdateFlag::UserPhoneChanged |
+	                     UpdateFlag::UserCanShareContact;
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	refreshLabels();
 }
@@ -88,7 +87,8 @@ int InfoWidget::resizeGetHeight(int newWidth) {
 		newHeight += _about->height();
 	}
 
-	auto moveLabeledText = [&newHeight, left, newWidth, marginLeft, marginRight](Ui::FlatLabel *label, Ui::FlatLabel *text, Ui::FlatLabel *shortText) {
+	auto moveLabeledText = [&newHeight, left, newWidth, marginLeft,
+	                        marginRight](Ui::FlatLabel *label, Ui::FlatLabel *text, Ui::FlatLabel *shortText) {
 		if (!label) return;
 
 		label->moveToLeft(left, newHeight);
@@ -111,7 +111,9 @@ int InfoWidget::resizeGetHeight(int newWidth) {
 				text->show();
 			}
 		}
-		newHeight += std::max(label->height(), text->height() - st::profileBlockTextPart.margin.top() - st::profileBlockTextPart.margin.bottom()) + st::profileBlockOneLineSkip;
+		newHeight += std::max(label->height(), text->height() - st::profileBlockTextPart.margin.top() -
+		                                           st::profileBlockTextPart.margin.bottom()) +
+		             st::profileBlockOneLineSkip;
 	};
 	moveLabeledText(_channelLinkLabel, _channelLink, _channelLinkShort);
 	moveLabeledText(_mobileNumberLabel, _mobileNumber, nullptr);
@@ -153,7 +155,7 @@ void InfoWidget::refreshAbout() {
 	_about.destroy();
 	_bioLabel.destroy();
 	_bio.destroy();
-	auto aboutText = TextWithEntities { TextUtilities::Clean(getAboutText()) };
+	auto aboutText = TextWithEntities{TextUtilities::Clean(getAboutText())};
 	auto displayAsBio = false;
 	if (auto user = peer()->asUser()) {
 		if (!user->botInfo) {
@@ -170,7 +172,8 @@ void InfoWidget::refreshAbout() {
 			_about.create(this, st::profileBlockTextPart);
 			_about->show();
 
-			TextUtilities::ParseEntities(aboutText, TextParseLinks | TextParseMentions | TextParseHashtags | TextParseBotCommands);
+			TextUtilities::ParseEntities(aboutText,
+			                             TextParseLinks | TextParseMentions | TextParseHashtags | TextParseBotCommands);
 			_about->setMarkedText(aboutText);
 			_about->setSelectable(true);
 			_about->setClickHandlerHook([this](const ClickHandlerPtr &handler, Qt::MouseButton button) {
@@ -190,7 +193,8 @@ void InfoWidget::refreshMobileNumber() {
 			phoneText.text = App::phoneFromSharedContact(peerToUser(user->id));
 		}
 	}
-	setSingleLineLabeledText(&_mobileNumberLabel, lang(lng_profile_mobile_number), &_mobileNumber, phoneText, lang(lng_profile_copy_phone));
+	setSingleLineLabeledText(&_mobileNumberLabel, lang(lng_profile_mobile_number), &_mobileNumber, phoneText,
+	                         lang(lng_profile_copy_phone));
 }
 
 void InfoWidget::refreshUsername() {
@@ -200,7 +204,8 @@ void InfoWidget::refreshUsername() {
 			usernameText.text = '@' + user->username;
 		}
 	}
-	setSingleLineLabeledText(&_usernameLabel, lang(lng_profile_username), &_username, usernameText, lang(lng_context_copy_mention));
+	setSingleLineLabeledText(&_usernameLabel, lang(lng_profile_username), &_username, usernameText,
+	                         lang(lng_context_copy_mention));
 }
 
 void InfoWidget::refreshChannelLink() {
@@ -211,11 +216,14 @@ void InfoWidget::refreshChannelLink() {
 			channelLinkText.text = Messenger::Instance().createInternalLinkFull(channel->username);
 			channelLinkText.entities.push_back(EntityInText(EntityInTextUrl, 0, channelLinkText.text.size()));
 			channelLinkTextShort.text = Messenger::Instance().createInternalLink(channel->username);
-			channelLinkTextShort.entities.push_back(EntityInText(EntityInTextCustomUrl, 0, channelLinkTextShort.text.size(), Messenger::Instance().createInternalLinkFull(channel->username)));
+			channelLinkTextShort.entities.push_back(
+			    EntityInText(EntityInTextCustomUrl, 0, channelLinkTextShort.text.size(),
+			                 Messenger::Instance().createInternalLinkFull(channel->username)));
 		}
 	}
 	setSingleLineLabeledText(nullptr, lang(lng_profile_link), &_channelLink, channelLinkText, QString());
-	setSingleLineLabeledText(&_channelLinkLabel, lang(lng_profile_link), &_channelLinkShort, channelLinkTextShort, QString());
+	setSingleLineLabeledText(&_channelLinkLabel, lang(lng_profile_link), &_channelLinkShort, channelLinkTextShort,
+	                         QString());
 	auto copyLinkHandlerHook = [this](const ClickHandlerPtr &handler, Qt::MouseButton button) {
 		if (auto channel = peer()->asChannel()) {
 			auto link = Messenger::Instance().createInternalLinkFull(channel->username);
@@ -235,8 +243,8 @@ void InfoWidget::refreshChannelLink() {
 }
 
 void InfoWidget::setLabeledText(object_ptr<Ui::FlatLabel> *labelWidget, const QString &label,
-	object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities,
-	const style::FlatLabel &st, const QString &copyText) {
+                                object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities,
+                                const style::FlatLabel &st, const QString &copyText) {
 	if (labelWidget) labelWidget->destroy();
 	textWidget->destroy();
 	if (textWithEntities.text.isEmpty()) {
@@ -255,7 +263,8 @@ void InfoWidget::setLabeledText(object_ptr<Ui::FlatLabel> *labelWidget, const QS
 }
 
 void InfoWidget::setSingleLineLabeledText(object_ptr<Ui::FlatLabel> *labelWidget, const QString &label,
-	object_ptr<Ui::FlatLabel> *textWidget, const TextWithEntities &textWithEntities, const QString &copyText) {
+                                          object_ptr<Ui::FlatLabel> *textWidget,
+                                          const TextWithEntities &textWithEntities, const QString &copyText) {
 	setLabeledText(labelWidget, label, textWidget, textWithEntities, st::profileBlockOneLineTextPart, copyText);
 	if (*textWidget) {
 		(*textWidget)->setDoubleClickSelectsParagraph(true);

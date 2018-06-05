@@ -22,7 +22,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "application.h"
 
-SingleTimer::SingleTimer(QObject *parent) : QTimer(parent) {
+SingleTimer::SingleTimer(QObject *parent)
+    : QTimer(parent) {
 	QTimer::setSingleShot(true);
 	Sandbox::connect(SIGNAL(adjustSingleTimers()), this, SLOT(adjust()));
 }

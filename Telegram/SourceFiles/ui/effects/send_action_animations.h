@@ -48,8 +48,9 @@ public:
 	public:
 		using Type = SendAction::Type;
 
-		Impl(int period) : _period(period), _started(getms()) {
-		}
+		Impl(int period)
+		    : _period(period)
+		    , _started(getms()) {}
 
 		struct MetaData {
 			int index;
@@ -70,7 +71,6 @@ public:
 
 		int _period = 1;
 		TimeMs _started = 0;
-
 	};
 
 	~SendActionAnimation();
@@ -79,7 +79,6 @@ private:
 	std::unique_ptr<Impl> createByType(Type type);
 
 	std::unique_ptr<Impl> _impl;
-
 };
 
 } // namespace Ui

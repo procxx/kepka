@@ -21,18 +21,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "dialogs/dialogs_list.h"
 
 #include "dialogs/dialogs_layout.h"
-#include "styles/style_dialogs.h"
 #include "mainwidget.h"
+#include "styles/style_dialogs.h"
 
 namespace Dialogs {
 
 List::List(SortMode sortMode)
-: _last(std::make_unique<Row>(nullptr, nullptr, nullptr, 0))
-, _begin(_last.get())
-, _end(_last.get())
-, _sortMode(sortMode)
-, _current(_last.get()) {
-}
+    : _last(std::make_unique<Row>(nullptr, nullptr, nullptr, 0))
+    , _begin(_last.get())
+    , _end(_last.get())
+    , _sortMode(sortMode)
+    , _current(_last.get()) {}
 
 void List::adjustCurrent(qint32 y, qint32 h) const {
 	if (isEmpty()) return;
@@ -143,7 +142,8 @@ Row *List::addByName(History *history) {
 		change = change->_prev;
 	}
 	if (!insertBefore(row, change)) {
-		while (change->_next != _end && change->_next->history()->peer->name.compare(peerName, Qt::CaseInsensitive) < 0) {
+		while (change->_next != _end &&
+		       change->_next->history()->peer->name.compare(peerName, Qt::CaseInsensitive) < 0) {
 			change = change->_next;
 		}
 		insertAfter(row, change);
@@ -163,10 +163,12 @@ void List::adjustByPos(Row *row) {
 		}
 	}
 	if (!insertBefore(row, change)) {
-		if (change->_next != _end && _end->_prev->history()->sortKeyInChatList() > row->history()->sortKeyInChatList()) {
+		if (change->_next != _end &&
+		    _end->_prev->history()->sortKeyInChatList() > row->history()->sortKeyInChatList()) {
 			change = _end->_prev;
 		} else {
-			while (change->_next != _end && change->_next->history()->sortKeyInChatList() > row->history()->sortKeyInChatList()) {
+			while (change->_next != _end &&
+			       change->_next->history()->sortKeyInChatList() > row->history()->sortKeyInChatList()) {
 				change = change->_next;
 			}
 		}

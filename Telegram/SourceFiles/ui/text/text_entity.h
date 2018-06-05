@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
 #include <QRegularExpression>
+#include <QString>
 #include <QVector>
 
 #include "scheme.h"
@@ -40,7 +40,7 @@ enum EntityInTextType {
 	EntityInTextBold,
 	EntityInTextItalic,
 	EntityInTextCode, // inline
-	EntityInTextPre,  // block
+	EntityInTextPre, // block
 };
 
 class EntityInText;
@@ -49,11 +49,10 @@ using EntitiesInText = QList<EntityInText>;
 class EntityInText {
 public:
 	EntityInText(EntityInTextType type, int offset, int length, const QString &data = QString())
-		: _type(type)
-		, _offset(offset)
-		, _length(length)
-		, _data(data) {
-	}
+	    : _type(type)
+	    , _offset(offset)
+	    , _length(length)
+	    , _data(data) {}
 
 	EntityInTextType type() const {
 		return _type;
@@ -115,7 +114,6 @@ private:
 	EntityInTextType _type;
 	int _offset, _length;
 	QString _data;
-
 };
 
 struct TextWithEntities {
@@ -178,17 +176,18 @@ QStringList PrepareSearchWords(const QString &query, const QRegularExpression *S
 bool CutPart(TextWithEntities &sending, TextWithEntities &left, int limit);
 
 struct MentionNameFields {
-	MentionNameFields(qint32 userId = 0, quint64 accessHash = 0) : userId(userId), accessHash(accessHash) {
-	}
+	MentionNameFields(qint32 userId = 0, quint64 accessHash = 0)
+	    : userId(userId)
+	    , accessHash(accessHash) {}
 	qint32 userId = 0;
 	quint64 accessHash = 0;
 };
 inline MentionNameFields MentionNameDataToFields(const QString &data) {
 	auto components = data.split('.');
 	if (!components.isEmpty()) {
-		return { components.at(0).toInt(), (components.size() > 1) ? components.at(1).toULongLong() : 0 };
+		return {components.at(0).toInt(), (components.size() > 1) ? components.at(1).toULongLong() : 0};
 	}
-	return MentionNameFields {};
+	return MentionNameFields{};
 }
 
 inline QString MentionNameDataFromFields(const MentionNameFields &fields) {
@@ -204,7 +203,8 @@ enum class ConvertOption {
 	WithLocal,
 	SkipLocal,
 };
-MTPVector<MTPMessageEntity> EntitiesToMTP(const EntitiesInText &entities, ConvertOption option = ConvertOption::WithLocal);
+MTPVector<MTPMessageEntity> EntitiesToMTP(const EntitiesInText &entities,
+                                          ConvertOption option = ConvertOption::WithLocal);
 
 // New entities are added to the ones that are already in result.
 // Changes text if (flags & TextParseMarkdown).
@@ -219,8 +219,10 @@ enum class PrepareTextOption {
 	CheckLinks,
 };
 inline QString PrepareForSending(const QString &text, PrepareTextOption option = PrepareTextOption::IgnoreLinks) {
-	auto result = TextWithEntities { text };
-	auto prepareFlags = (option == PrepareTextOption::CheckLinks) ? (TextParseLinks | TextParseMentions | TextParseHashtags | TextParseBotCommands) : 0;
+	auto result = TextWithEntities{text};
+	auto prepareFlags = (option == PrepareTextOption::CheckLinks) ?
+	                        (TextParseLinks | TextParseMentions | TextParseHashtags | TextParseBotCommands) :
+	                        0;
 	PrepareForSending(result, prepareFlags);
 	return result.text;
 }
@@ -232,23 +234,18 @@ void ApplyServerCleaning(TextWithEntities &result);
 
 namespace Lang {
 
-template <typename ResultString>
-struct StartReplacements;
+template <typename ResultString> struct StartReplacements;
 
-template <>
-struct StartReplacements<TextWithEntities> {
+template <> struct StartReplacements<TextWithEntities> {
 	static inline TextWithEntities Call(QString &&langString) {
-		return { std::move(langString), EntitiesInText() };
+		return {std::move(langString), EntitiesInText()};
 	}
 };
 
-template <typename ResultString>
-struct ReplaceTag;
+template <typename ResultString> struct ReplaceTag;
 
-template <>
-struct ReplaceTag<TextWithEntities> {
+template <> struct ReplaceTag<TextWithEntities> {
 	static TextWithEntities Call(TextWithEntities &&original, ushort tag, const TextWithEntities &replacement);
-
 };
 
 } // namespace Lang

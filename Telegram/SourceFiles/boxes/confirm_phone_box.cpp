@@ -20,17 +20,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/confirm_phone_box.h"
 
-#include "styles/style_boxes.h"
 #include "boxes/confirm_box.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "styles/style_boxes.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/input_fields.h"
 #include "ui/widgets/labels.h"
-#include "mainwidget.h"
-#include "lang/lang_keys.h"
 
 namespace {
 
-object_ptr<ConfirmPhoneBox> CurrentConfirmPhoneBox = { nullptr };
+object_ptr<ConfirmPhoneBox> CurrentConfirmPhoneBox = {nullptr};
 
 } // namespace
 
@@ -90,9 +90,9 @@ void SentCodeField::fix() {
 }
 
 SentCodeCall::SentCodeCall(QObject *parent, base::lambda_once<void()> callCallback, base::lambda<void()> updateCallback)
-: _timer(parent)
-, _call(std::move(callCallback))
-, _update(std::move(updateCallback)) {
+    : _timer(parent)
+    , _call(std::move(callCallback))
+    , _update(std::move(updateCallback)) {
 	_timer->connect(_timer, &QTimer::timeout, [this] {
 		if (_status.state == State::Waiting) {
 			if (--_status.timeout <= 0) {
@@ -120,9 +120,13 @@ QString SentCodeCall::getText() const {
 	switch (_status.state) {
 	case State::Waiting: {
 		if (_status.timeout >= 3600) {
-			return lng_code_call(lt_minutes, qsl("%1:%2").arg(_status.timeout / 3600).arg((_status.timeout / 60) % 60, 2, 10, QChar('0')), lt_seconds, qsl("%1").arg(_status.timeout % 60, 2, 10, QChar('0')));
+			return lng_code_call(
+			    lt_minutes,
+			    qsl("%1:%2").arg(_status.timeout / 3600).arg((_status.timeout / 60) % 60, 2, 10, QChar('0')),
+			    lt_seconds, qsl("%1").arg(_status.timeout % 60, 2, 10, QChar('0')));
 		}
-		return lng_code_call(lt_minutes, QString::number(_status.timeout / 60), lt_seconds, qsl("%1").arg(_status.timeout % 60, 2, 10, QChar('0')));
+		return lng_code_call(lt_minutes, QString::number(_status.timeout / 60), lt_seconds,
+		                     qsl("%1").arg(_status.timeout % 60, 2, 10, QChar('0')));
 	} break;
 	case State::Calling: return lang(lng_code_calling);
 	case State::Called: return lang(lng_code_called);
@@ -140,11 +144,10 @@ void ConfirmPhoneBox::start(const QString &phone, const QString &hash) {
 	CurrentConfirmPhoneBox->checkPhoneAndHash();
 }
 
-ConfirmPhoneBox::ConfirmPhoneBox(QWidget*, const QString &phone, const QString &hash)
-: _phone(phone)
-, _hash(hash)
-, _call(this, [this] { sendCall(); }, [this] { update(); }) {
-}
+ConfirmPhoneBox::ConfirmPhoneBox(QWidget *, const QString &phone, const QString &hash)
+    : _phone(phone)
+    , _hash(hash)
+    , _call(this, [this] { sendCall(); }, [this] { update(); }) {}
 
 void ConfirmPhoneBox::sendCall() {
 	MTP::send(MTPauth_ResendCode(MTP_string(_phone), MTP_string(_phoneHash)), rpcDone(&ConfirmPhoneBox::callDone));
@@ -154,7 +157,8 @@ void ConfirmPhoneBox::checkPhoneAndHash() {
 	if (_sendCodeRequestId) {
 		return;
 	}
-	_sendCodeRequestId = MTP::send(MTPaccount_SendConfirmPhoneCode(MTP_flags(0), MTP_string(_hash), MTPBool()), rpcDone(&ConfirmPhoneBox::sendCodeDone), rpcFail(&ConfirmPhoneBox::sendCodeFail));
+	_sendCodeRequestId = MTP::send(MTPaccount_SendConfirmPhoneCode(MTP_flags(0), MTP_string(_hash), MTPBool()),
+	                               rpcDone(&ConfirmPhoneBox::sendCodeDone), rpcFail(&ConfirmPhoneBox::sendCodeFail));
 }
 
 void ConfirmPhoneBox::sendCodeDone(const MTPauth_SentCode &result) {
@@ -170,7 +174,7 @@ void ConfirmPhoneBox::sendCodeDone(const MTPauth_SentCode &result) {
 	}
 	_phoneHash = qs(resultInner.vphone_code_hash);
 	if (resultInner.has_next_type() && resultInner.vnext_type.type() == mtpc_auth_codeTypeCall) {
-		_call.setStatus({ SentCodeCall::State::Waiting, resultInner.has_timeout() ? resultInner.vtimeout.v : 60 });
+		_call.setStatus({SentCodeCall::State::Waiting, resultInner.has_timeout() ? resultInner.vtimeout.v : 60});
 	}
 	launch();
 }
@@ -219,7 +223,8 @@ void ConfirmPhoneBox::prepare() {
 	addButton(langFactory(lng_confirm_phone_send), [this] { onSendCode(); });
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });
 
-	setDimensions(st::boxWidth, st::usernamePadding.top() + _code->height() + st::usernameSkip + _about->height() + st::usernameSkip);
+	setDimensions(st::boxWidth,
+	              st::usernamePadding.top() + _code->height() + st::usernameSkip + _about->height() + st::usernameSkip);
 
 	connect(_code, SIGNAL(submitted(bool)), this, SLOT(onSendCode()));
 
@@ -245,7 +250,8 @@ void ConfirmPhoneBox::onSendCode() {
 
 	showError(QString());
 
-	_sendCodeRequestId = MTP::send(MTPaccount_ConfirmPhone(MTP_string(_phoneHash), MTP_string(_code->getLastText())), rpcDone(&ConfirmPhoneBox::confirmDone), rpcFail(&ConfirmPhoneBox::confirmFail));
+	_sendCodeRequestId = MTP::send(MTPaccount_ConfirmPhone(MTP_string(_phoneHash), MTP_string(_code->getLastText())),
+	                               rpcDone(&ConfirmPhoneBox::confirmDone), rpcFail(&ConfirmPhoneBox::confirmFail));
 }
 
 void ConfirmPhoneBox::confirmDone(const MTPBool &result) {

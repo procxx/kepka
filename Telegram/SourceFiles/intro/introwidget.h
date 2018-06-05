@@ -29,8 +29,7 @@ class LinkButton;
 class SlideAnimation;
 class CrossFadeAnimation;
 class FlatLabel;
-template <typename Widget>
-class WidgetFadeWrap;
+template <typename Widget> class WidgetFadeWrap;
 } // namespace Ui
 
 namespace Intro {
@@ -81,7 +80,6 @@ public:
 		QString pwdHint;
 
 		base::Observable<void> updated;
-
 	};
 
 	enum class Direction {
@@ -199,13 +197,12 @@ public:
 		bool _errorCentered = false;
 		bool _errorBelowLink = false;
 		base::lambda<QString()> _errorTextFactory;
-		object_ptr<Ui::WidgetFadeWrap<Ui::FlatLabel>> _error = { nullptr };
+		object_ptr<Ui::WidgetFadeWrap<Ui::FlatLabel>> _error = {nullptr};
 
 		Animation _a_show;
 		CoverAnimation _coverAnimation;
 		std::unique_ptr<Ui::SlideAnimation> _slideAnimation;
 		QPixmap _coverMask;
-
 	};
 
 private:
@@ -240,7 +237,7 @@ private:
 	bool _showBack = false;
 	QPixmap _cacheUnder, _cacheOver;
 
-	QVector<Step*> _stepHistory;
+	QVector<Step *> _stepHistory;
 
 	Data _data;
 
@@ -249,15 +246,14 @@ private:
 	int _controlsTopFrom = 0;
 
 	object_ptr<Ui::WidgetFadeWrap<Ui::IconButton>> _back;
-	object_ptr<Ui::WidgetFadeWrap<Ui::RoundButton>> _update = { nullptr };
+	object_ptr<Ui::WidgetFadeWrap<Ui::RoundButton>> _update = {nullptr};
 	object_ptr<Ui::WidgetFadeWrap<Ui::RoundButton>> _settings;
 
 	object_ptr<Ui::RoundButton> _next;
-	object_ptr<Ui::WidgetFadeWrap<Ui::LinkButton>> _changeLanguage = { nullptr };
-	object_ptr<Ui::WidgetFadeWrap<Ui::RoundButton>> _resetAccount = { nullptr };
+	object_ptr<Ui::WidgetFadeWrap<Ui::LinkButton>> _changeLanguage = {nullptr};
+	object_ptr<Ui::WidgetFadeWrap<Ui::RoundButton>> _resetAccount = {nullptr};
 
 	mtpRequestId _resetRequest = 0;
-
 };
 
 } // namespace Intro

@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <map>
-#include <set>
-#include <functional>
-#include <QtCore/QString>
-#include <QtCore/QSet>
 #include "codegen/common/cpp_file.h"
 #include "codegen/lang/parsed_file.h"
+#include <QtCore/QSet>
+#include <QtCore/QString>
+#include <functional>
+#include <map>
+#include <memory>
+#include <set>
 
 namespace codegen {
 namespace lang {
@@ -45,13 +45,13 @@ private:
 	QString getFullKey(const LangPack::Entry &entry);
 
 	template <typename ComputeResult>
-	void writeSetSearch(const std::set<QString, std::greater<QString>> &set, ComputeResult computeResult, const QString &invalidResult);
+	void writeSetSearch(const std::set<QString, std::greater<QString>> &set, ComputeResult computeResult,
+	                    const QString &invalidResult);
 
 	const LangPack &langpack_;
 	QString basePath_, baseName_;
 	const common::ProjectInfo &project_;
 	std::unique_ptr<common::CppFile> source_, header_;
-
 };
 
 } // namespace lang

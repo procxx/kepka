@@ -18,16 +18,17 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QPaintEvent>
 #include "chat_helpers/bot_keyboard.h"
+#include <QPaintEvent>
 
-#include "styles/style_widgets.h"
-#include "styles/style_history.h"
-#include "facades.h"
 #include "app.h"
+#include "facades.h"
+#include "styles/style_history.h"
+#include "styles/style_widgets.h"
 
-BotKeyboard::BotKeyboard(QWidget *parent) : TWidget(parent)
-, _st(&st::botKbButton) {
+BotKeyboard::BotKeyboard(QWidget *parent)
+    : TWidget(parent)
+    , _st(&st::botKbButton) {
 	setGeometry(0, 0, _st->margin, st::botKbScroll.deltat);
 	_height = st::botKbScroll.deltat;
 	setMouseTracking(true);
@@ -55,7 +56,7 @@ const style::TextStyle &BotKeyboard::Style::textStyle() const {
 	return st::botKbStyle;
 }
 
-void BotKeyboard::Style::repaint(not_null<const HistoryItem*> item) const {
+void BotKeyboard::Style::repaint(not_null<const HistoryItem *> item) const {
 	_parent->update();
 }
 
@@ -67,7 +68,8 @@ void BotKeyboard::Style::paintButtonBg(Painter &p, const QRect &rect, double how
 	App::roundRect(p, rect, st::botKbBg, BotKeyboardCorners);
 }
 
-void BotKeyboard::Style::paintButtonIcon(Painter &p, const QRect &rect, int outerWidth, HistoryMessageReplyMarkup::Button::Type type) const {
+void BotKeyboard::Style::paintButtonIcon(Painter &p, const QRect &rect, int outerWidth,
+                                         HistoryMessageReplyMarkup::Button::Type type) const {
 	// Buttons with icons should not appear here.
 }
 

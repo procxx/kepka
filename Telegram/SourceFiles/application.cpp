@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "application.h"
 
-#include "platform/platform_specific.h"
+#include "base/timer.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
+#include "messenger.h"
+#include "platform/platform_specific.h"
 #include "storage/localstorage.h"
 #include "window/notifications_manager.h"
-#include "messenger.h"
-#include "base/timer.h"
 
 #include <QDesktopWidget>
 #include <QScreen>
@@ -50,7 +50,11 @@ QString _escapeTo7bit(const QString &str) {
 		QChar ch(str.at(i));
 		ushort uch(ch.unicode());
 		if (uch < 32 || uch > 127 || uch == ushort(uchar('%'))) {
-			result.append('%').append(_toHex(uch >> 12)).append(_toHex(uch >> 8)).append(_toHex(uch >> 4)).append(_toHex(uch));
+			result.append('%')
+			    .append(_toHex(uch >> 12))
+			    .append(_toHex(uch >> 8))
+			    .append(_toHex(uch >> 4))
+			    .append(_toHex(uch));
 		} else {
 			result.append(ch);
 		}
@@ -64,7 +68,8 @@ QString _escapeFrom7bit(const QString &str) {
 	for (int i = 0, l = str.size(); i != l; ++i) {
 		QChar ch(str.at(i));
 		if (ch == QChar::fromLatin1('%') && i + 4 < l) {
-			result.append(QChar(ushort((_fromHex(str.at(i + 1)) << 12) | (_fromHex(str.at(i + 2)) << 8) | (_fromHex(str.at(i + 3)) << 4) | _fromHex(str.at(i + 4)))));
+			result.append(QChar(ushort((_fromHex(str.at(i + 1)) << 12) | (_fromHex(str.at(i + 2)) << 8) |
+			                           (_fromHex(str.at(i + 3)) << 4) | _fromHex(str.at(i + 4)))));
 			i += 4;
 		} else {
 			result.append(ch);
@@ -75,9 +80,10 @@ QString _escapeFrom7bit(const QString &str) {
 
 } // namespace
 
-Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
+Application::Application(int &argc, char **argv)
+    : QApplication(argc, argv) {
 	QByteArray d(QFile::encodeName(QDir(cWorkingDir()).absolutePath()));
-	char h[33] = { 0 };
+	char h[33] = {0};
 	hashMd5Hex(d.constData(), d.size(), h);
 #ifndef OS_MAC_STORE
 	_localServerName = psServerPrefix() + h + '-' + cGUIDStr();
@@ -88,7 +94,8 @@ Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
 
 	connect(&_localSocket, SIGNAL(connected()), this, SLOT(socketConnected()));
 	connect(&_localSocket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-	connect(&_localSocket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socketError(QLocalSocket::LocalSocketError)));
+	connect(&_localSocket, SIGNAL(error(QLocalSocket::LocalSocketError)), this,
+	        SLOT(socketError(QLocalSocket::LocalSocketError)));
 	connect(&_localSocket, SIGNAL(bytesWritten(qint64)), this, SLOT(socketWritten(qint64)));
 	connect(&_localSocket, SIGNAL(readyRead()), this, SLOT(socketReading()));
 	connect(&_localServer, SIGNAL(newConnection()), this, SLOT(newInstanceConnected()));
@@ -100,7 +107,7 @@ Application::Application(int &argc, char **argv) : QApplication(argc, argv) {
 		LOG(("Many instance allowed, starting..."));
 		singleInstanceChecked();
 	} else {
-        LOG(("Connecting local socket to %1...").arg(_localServerName));
+		LOG(("Connecting local socket to %1...").arg(_localServerName));
 		_localSocket.connectToServer(_localServerName);
 	}
 }
@@ -132,7 +139,7 @@ void Application::socketConnected() {
 	_localSocket.write(commands.toLatin1());
 }
 
-void Application::socketWritten(qint64/* bytes*/) {
+void Application::socketWritten(qint64 /* bytes*/) {
 	if (_localSocket.state() != QLocalSocket::ConnectedState) {
 		LOG(("Socket is not connected %1").arg(_localSocket.state()));
 		return;
@@ -177,7 +184,9 @@ void Application::socketError(QLocalSocket::LocalSocketError e) {
 	psCheckLocalSocket(_localServerName);
 
 	if (!_localServer.listen(_localServerName)) {
-		LOG(("Failed to start listening to %1 server, error %2").arg(_localServerName).arg(int(_localServer.serverError())));
+		LOG(("Failed to start listening to %1 server, error %2")
+		        .arg(_localServerName)
+		        .arg(int(_localServer.serverError())));
 		return App::quit();
 	}
 #endif // !Q_OS_WINRT
@@ -223,7 +232,8 @@ void Application::socketDisconnected() {
 
 void Application::newInstanceConnected() {
 	DEBUG_LOG(("Application Info: new local socket connected"));
-	for (QLocalSocket *client = _localServer.nextPendingConnection(); client; client = _localServer.nextPendingConnection()) {
+	for (QLocalSocket *client = _localServer.nextPendingConnection(); client;
+	     client = _localServer.nextPendingConnection()) {
 		_localClients.push_back(LocalClient(client, QByteArray()));
 		connect(client, SIGNAL(readyRead()), this, SLOT(readClients()));
 		connect(client, SIGNAL(disconnected()), this, SLOT(removeClients()));
@@ -239,7 +249,8 @@ void Application::readClients() {
 		if (i->second.size()) {
 			QString cmds(QString::fromLatin1(i->second));
 			qint32 from = 0, l = cmds.length();
-			for (qint32 to = cmds.indexOf(QChar(';'), from); to >= from; to = (from < l) ? cmds.indexOf(QChar(';'), from) : -1) {
+			for (qint32 to = cmds.indexOf(QChar(';'), from); to >= from;
+			     to = (from < l) ? cmds.indexOf(QChar(';'), from) : -1) {
 				QStringRef cmd(&cmds, from, to - from);
 				if (cmd.startsWith(qsl("CMD:"))) {
 					Sandbox::execExternal(cmds.mid(from + 4, to - from - 4));
@@ -254,7 +265,8 @@ void Application::readClients() {
 						startUrl = _escapeFrom7bit(cmds.mid(from + 5, to - from - 5)).mid(0, 8192);
 					}
 				} else {
-					LOG(("Application Error: unknown command %1 passed in local socket").arg(QString(cmd.constData(), cmd.length())));
+					LOG(("Application Error: unknown command %1 passed in local socket")
+					        .arg(QString(cmd.constData(), cmd.length())));
 				}
 				from = to + 1;
 			}
@@ -324,7 +336,7 @@ void Application::closeApplication() {
 }
 
 inline Application *application() {
-	return qobject_cast<Application*>(QApplication::instance());
+	return qobject_cast<Application *>(QApplication::instance());
 }
 
 namespace Sandbox {
@@ -398,10 +410,13 @@ void launch() {
 	if (devicePixelRatio > 1.) {
 		if ((cPlatform() != dbipMac && cPlatform() != dbipMacOld) || (devicePixelRatio != 2.)) {
 			LOG(("Found non-trivial Device Pixel Ratio: %1").arg(devicePixelRatio));
-			LOG(("Environmental variables: QT_DEVICE_PIXEL_RATIO='%1'").arg(QString::fromLatin1(qgetenv("QT_DEVICE_PIXEL_RATIO"))));
+			LOG(("Environmental variables: QT_DEVICE_PIXEL_RATIO='%1'")
+			        .arg(QString::fromLatin1(qgetenv("QT_DEVICE_PIXEL_RATIO"))));
 			LOG(("Environmental variables: QT_SCALE_FACTOR='%1'").arg(QString::fromLatin1(qgetenv("QT_SCALE_FACTOR"))));
-			LOG(("Environmental variables: QT_AUTO_SCREEN_SCALE_FACTOR='%1'").arg(QString::fromLatin1(qgetenv("QT_AUTO_SCREEN_SCALE_FACTOR"))));
-			LOG(("Environmental variables: QT_SCREEN_SCALE_FACTORS='%1'").arg(QString::fromLatin1(qgetenv("QT_SCREEN_SCALE_FACTORS"))));
+			LOG(("Environmental variables: QT_AUTO_SCREEN_SCALE_FACTOR='%1'")
+			        .arg(QString::fromLatin1(qgetenv("QT_AUTO_SCREEN_SCALE_FACTOR"))));
+			LOG(("Environmental variables: QT_SCREEN_SCALE_FACTORS='%1'")
+			        .arg(QString::fromLatin1(qgetenv("QT_SCREEN_SCALE_FACTORS"))));
 		}
 		cSetRetina(true);
 		cSetRetinaFactor(devicePixelRatio);

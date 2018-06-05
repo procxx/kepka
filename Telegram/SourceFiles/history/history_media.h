@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QString>
 #include "history/history.h"
 #include "history/history_item.h"
+#include <QString>
 
 enum class MediaInBubbleState {
 	None,
@@ -33,8 +33,8 @@ enum class MediaInBubbleState {
 
 class HistoryMedia : public HistoryElement {
 public:
-	HistoryMedia(not_null<HistoryItem*> parent) : _parent(parent) {
-	}
+	HistoryMedia(not_null<HistoryItem *> parent)
+	    : _parent(parent) {}
 
 	virtual HistoryMediaType type() const = 0;
 
@@ -67,22 +67,19 @@ public:
 		return false;
 	}
 	virtual void initDimensions() = 0;
-	virtual void updateMessageId() {
-	}
+	virtual void updateMessageId() {}
 	virtual int resizeGetHeight(int width) {
 		_width = qMin(width, _maxw);
 		return _height;
 	}
 	virtual void draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const = 0;
 	virtual HistoryTextState getState(QPoint point, HistoryStateRequest request) const = 0;
-	virtual void updatePressed(QPoint point) {
-	}
+	virtual void updatePressed(QPoint point) {}
 
 	virtual qint32 addToOverview(AddToOverviewMethod method) {
 		return 0;
 	}
-	virtual void eraseFromOverview() {
-	}
+	virtual void eraseFromOverview() {}
 
 	// if we are in selecting items mode perhaps we want to
 	// toggle selection instead of activating the pressed link
@@ -112,10 +109,8 @@ public:
 	// if we press and drag this link should we drag the item
 	virtual bool dragItemByHandler(const ClickHandlerPtr &p) const = 0;
 
-	virtual void clickHandlerActiveChanged(const ClickHandlerPtr &p, bool active) {
-	}
-	virtual void clickHandlerPressedChanged(const ClickHandlerPtr &p, bool pressed) {
-	}
+	virtual void clickHandlerActiveChanged(const ClickHandlerPtr &p, bool active) {}
+	virtual void clickHandlerPressedChanged(const ClickHandlerPtr &p, bool pressed) {}
 
 	virtual bool uploading() const {
 		return false;
@@ -135,20 +130,16 @@ public:
 	virtual bool playInline(bool autoplay) {
 		return false;
 	}
-	virtual void stopInline() {
-	}
+	virtual void stopInline() {}
 	virtual bool isRoundVideoPlaying() const {
 		return false;
 	}
 
-	virtual void attachToParent() {
-	}
+	virtual void attachToParent() {}
 
-	virtual void detachFromParent() {
-	}
+	virtual void detachFromParent() {}
 
-	virtual void updateSentMedia(const MTPMessageMedia &media) {
-	}
+	virtual void updateSentMedia(const MTPMessageMedia &media) {}
 
 	// After sending an inline result we may want to completely recreate
 	// the media (all media that was generated on client side, for example)
@@ -229,9 +220,7 @@ protected:
 		_parent->history()->eraseFromOverview(type, _parent->id);
 	}
 
-	not_null<HistoryItem*> _parent;
+	not_null<HistoryItem *> _parent;
 	int _width = 0;
 	MediaInBubbleState _inBubbleState = MediaInBubbleState::None;
-
-
 };

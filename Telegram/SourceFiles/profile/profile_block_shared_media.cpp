@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_shared_media.h"
 
+#include "history/history.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
 #include "profile/profile_common_groups_section.h"
 #include "profile/profile_section_memento.h"
 #include "styles/style_profile.h"
-#include "observer_peer.h"
 #include "ui/widgets/buttons.h"
-#include "mainwidget.h"
-#include "lang/lang_keys.h"
-#include "history/history.h"
 
 namespace Profile {
 namespace {
@@ -44,7 +44,8 @@ QString getButtonText(MediaOverviewType type, int count) {
 	case OverviewFiles: return lng_profile_files(lt_count, count);
 	case OverviewVoiceFiles: return lng_profile_audios(lt_count, count);
 	case OverviewLinks: return lng_profile_shared_links(lt_count, count);
-	case OverviewChatPhotos: case OverviewCount: return QString(); // temp
+	case OverviewChatPhotos:
+	case OverviewCount: return QString(); // temp
 	}
 	return QString();
 }
@@ -52,15 +53,14 @@ QString getButtonText(MediaOverviewType type, int count) {
 } // namespace
 
 SharedMediaWidget::SharedMediaWidget(QWidget *parent, PeerData *peer)
-	: BlockWidget(parent, peer, lang(lng_profile_shared_media))
-	, _history(App::history(peer))
-	, _migrated(_history->migrateFrom())
-{
-	auto observeEvents = Notify::PeerUpdate::Flag::SharedMediaChanged
-		| Notify::PeerUpdate::Flag::UserCommonChatsChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+    : BlockWidget(parent, peer, lang(lng_profile_shared_media))
+    , _history(App::history(peer))
+    , _migrated(_history->migrateFrom()) {
+	auto observeEvents =
+	    Notify::PeerUpdate::Flag::SharedMediaChanged | Notify::PeerUpdate::Flag::UserCommonChatsChanged;
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	for (auto i = 0; i != OverviewCount; ++i) {
 		auto type = static_cast<MediaOverviewType>(i);
@@ -173,7 +173,6 @@ void SharedMediaWidget::resizeButtons(int newWidth, int *top) {
 		_commonGroups->moveToLeft(left, *top);
 		*top += _commonGroups->height();
 	}
-
 }
 
 int SharedMediaWidget::getCommonGroupsCount() const {

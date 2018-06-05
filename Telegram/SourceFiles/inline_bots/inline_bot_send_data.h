@@ -21,9 +21,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "core/basic_types.h"
-#include "structs.h"
 #include "history/history_location_manager.h"
 #include "mtproto/type_utils.h"
+#include "structs.h"
 
 class History;
 namespace InlineBots {
@@ -44,9 +44,9 @@ public:
 
 	virtual bool isValid() const = 0;
 
-	virtual void addToHistory(const Result *owner, History *history,
-		MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate,
-		UserId viaBotId, MsgId replyToId, const QString &postAuthor, const MTPReplyMarkup &markup) const = 0;
+	virtual void addToHistory(const Result *owner, History *history, MTPDmessage::Flags flags, MsgId msgId,
+	                          UserId fromId, MTPint mtpDate, UserId viaBotId, MsgId replyToId,
+	                          const QString &postAuthor, const MTPReplyMarkup &markup) const = 0;
 	virtual QString getErrorOnSend(const Result *owner, History *history) const = 0;
 
 	virtual bool hasLocationCoords() const {
@@ -57,7 +57,6 @@ public:
 	}
 	virtual QString getLayoutTitle(const Result *owner) const;
 	virtual QString getLayoutDescription(const Result *owner) const;
-
 };
 
 // This class implements addHistory() for most of the types hiding
@@ -72,21 +71,19 @@ public:
 	};
 	virtual SentMTPMessageFields getSentMessageFields() const = 0;
 
-	void addToHistory(const Result *owner, History *history,
-		MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate,
-		UserId viaBotId, MsgId replyToId, const QString &postAuthor, const MTPReplyMarkup &markup) const override;
+	void addToHistory(const Result *owner, History *history, MTPDmessage::Flags flags, MsgId msgId, UserId fromId,
+	                  MTPint mtpDate, UserId viaBotId, MsgId replyToId, const QString &postAuthor,
+	                  const MTPReplyMarkup &markup) const override;
 
 	QString getErrorOnSend(const Result *owner, History *history) const override;
-
 };
 
 // Plain text message.
 class SendText : public SendDataCommon {
 public:
-	SendText(const QString &message, const EntitiesInText &entities, bool/* noWebPage*/)
-		: _message(message)
-		, _entities(entities) {
-	}
+	SendText(const QString &message, const EntitiesInText &entities, bool /* noWebPage*/)
+	    : _message(message)
+	    , _entities(entities) {}
 
 	bool isValid() const override {
 		return !_message.isEmpty();
@@ -97,14 +94,13 @@ public:
 private:
 	QString _message;
 	EntitiesInText _entities;
-
 };
 
 // Message with geo location point media.
 class SendGeo : public SendDataCommon {
 public:
-	explicit SendGeo(const MTPDgeoPoint &point) : _location(point) {
-	}
+	explicit SendGeo(const MTPDgeoPoint &point)
+	    : _location(point) {}
 
 	bool isValid() const override {
 		return true;
@@ -123,20 +119,18 @@ public:
 
 private:
 	LocationCoords _location;
-
 };
 
 // Message with venue media.
 class SendVenue : public SendDataCommon {
 public:
-	SendVenue(const MTPDgeoPoint &point, const QString &venueId,
-		const QString &provider, const QString &title, const QString &address)
-		: _location(point)
-		, _venueId(venueId)
-		, _provider(provider)
-		, _title(title)
-		, _address(address) {
-	}
+	SendVenue(const MTPDgeoPoint &point, const QString &venueId, const QString &provider, const QString &title,
+	          const QString &address)
+	    : _location(point)
+	    , _venueId(venueId)
+	    , _provider(provider)
+	    , _title(title)
+	    , _address(address) {}
 
 	bool isValid() const override {
 		return true;
@@ -156,17 +150,15 @@ public:
 private:
 	LocationCoords _location;
 	QString _venueId, _provider, _title, _address;
-
 };
 
 // Message with shared contact media.
 class SendContact : public SendDataCommon {
 public:
 	SendContact(const QString &firstName, const QString &lastName, const QString &phoneNumber)
-		: _firstName(firstName)
-		, _lastName(lastName)
-		, _phoneNumber(phoneNumber) {
-	}
+	    : _firstName(firstName)
+	    , _lastName(lastName)
+	    , _phoneNumber(phoneNumber) {}
 
 	bool isValid() const override {
 		return (!_firstName.isEmpty() || !_lastName.isEmpty()) && !_phoneNumber.isEmpty();
@@ -178,77 +170,70 @@ public:
 
 private:
 	QString _firstName, _lastName, _phoneNumber;
-
 };
 
 // Message with photo.
 class SendPhoto : public SendData {
 public:
 	SendPhoto(PhotoData *photo, const QString &caption)
-		: _photo(photo)
-		, _caption(caption) {
-	}
+	    : _photo(photo)
+	    , _caption(caption) {}
 
 	bool isValid() const override {
 		return _photo != nullptr;
 	}
 
-	void addToHistory(const Result *owner, History *history,
-		MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate,
-		UserId viaBotId, MsgId replyToId, const QString &postAuthor, const MTPReplyMarkup &markup) const override;
+	void addToHistory(const Result *owner, History *history, MTPDmessage::Flags flags, MsgId msgId, UserId fromId,
+	                  MTPint mtpDate, UserId viaBotId, MsgId replyToId, const QString &postAuthor,
+	                  const MTPReplyMarkup &markup) const override;
 
 	QString getErrorOnSend(const Result *owner, History *history) const override;
 
 private:
 	PhotoData *_photo;
 	QString _caption;
-
 };
 
 // Message with file.
 class SendFile : public SendData {
 public:
 	SendFile(DocumentData *document, const QString &caption)
-		: _document(document)
-		, _caption(caption) {
-	}
+	    : _document(document)
+	    , _caption(caption) {}
 
 	bool isValid() const override {
 		return _document != nullptr;
 	}
 
-	void addToHistory(const Result *owner, History *history,
-		MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate,
-		UserId viaBotId, MsgId replyToId, const QString &postAuthor, const MTPReplyMarkup &markup) const override;
+	void addToHistory(const Result *owner, History *history, MTPDmessage::Flags flags, MsgId msgId, UserId fromId,
+	                  MTPint mtpDate, UserId viaBotId, MsgId replyToId, const QString &postAuthor,
+	                  const MTPReplyMarkup &markup) const override;
 
 	QString getErrorOnSend(const Result *owner, History *history) const override;
 
 private:
 	DocumentData *_document;
 	QString _caption;
-
 };
 
 // Message with game.
 class SendGame : public SendData {
 public:
 	SendGame(GameData *game)
-		: _game(game) {
-	}
+	    : _game(game) {}
 
 	bool isValid() const override {
 		return _game != nullptr;
 	}
 
-	void addToHistory(const Result *owner, History *history,
-		MTPDmessage::Flags flags, MsgId msgId, UserId fromId, MTPint mtpDate,
-		UserId viaBotId, MsgId replyToId, const QString &postAuthor, const MTPReplyMarkup &markup) const override;
+	void addToHistory(const Result *owner, History *history, MTPDmessage::Flags flags, MsgId msgId, UserId fromId,
+	                  MTPint mtpDate, UserId viaBotId, MsgId replyToId, const QString &postAuthor,
+	                  const MTPReplyMarkup &markup) const override;
 
 	QString getErrorOnSend(const Result *owner, History *history) const override;
 
 private:
 	GameData *_game;
-
 };
 
 } // namespace internal

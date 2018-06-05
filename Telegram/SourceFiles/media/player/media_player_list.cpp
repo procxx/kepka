@@ -18,33 +18,30 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QPaintEvent>
-#include <QMouseEvent>
+#include "media/player/media_player_list.h"
 #include "app.h"
 #include "facades.h"
-#include "media/player/media_player_list.h"
+#include "history/history_media.h"
 #include "media/player/media_player_instance.h"
 #include "overview/overview_layout.h"
 #include "styles/style_media_player.h"
-#include "history/history_media.h"
+#include <QMouseEvent>
+#include <QPaintEvent>
 
 namespace Media {
 namespace Player {
 
-ListWidget::ListWidget(QWidget *parent) : TWidget(parent) {
+ListWidget::ListWidget(QWidget *parent)
+    : TWidget(parent) {
 	setMouseTracking(true);
 	playlistUpdated();
 	subscribe(instance()->playlistChangedNotifier(), [this](AudioMsgId::Type type) { playlistUpdated(); });
-	subscribe(Global::RefItemRemoved(), [this](HistoryItem *item) {
-		itemRemoved(item);
-	});
+	subscribe(Global::RefItemRemoved(), [this](HistoryItem *item) { itemRemoved(item); });
 }
 
 ListWidget::~ListWidget() {
 	auto layouts = base::take(_layouts);
-	for_const (auto layout, layouts) {
-		delete layout;
-	}
+	for_const (auto layout, layouts) { delete layout; }
 }
 
 void ListWidget::paintEvent(QPaintEvent *e) {
@@ -121,7 +118,7 @@ void ListWidget::mouseMoveEvent(QMouseEvent *e) {
 	}
 }
 
-void ListWidget::ui_repaintHistoryItem(not_null<const HistoryItem*> item) {
+void ListWidget::ui_repaintHistoryItem(not_null<const HistoryItem *> item) {
 	repaintItem(item);
 }
 
@@ -174,9 +171,7 @@ QRect ListWidget::getCurrentTrackGeometry() const {
 
 int ListWidget::resizeGetHeight(int newWidth) {
 	auto result = 0;
-	for_const (auto layout, _list) {
-		result += layout->resizeGetHeight(newWidth);
-	}
+	for_const (auto layout, _list) { result += layout->resizeGetHeight(newWidth); }
 	return (result > 0) ? (marginTop() + result) : 0;
 }
 
@@ -207,7 +202,8 @@ void ListWidget::playlistUpdated() {
 			if (auto item = App::histItemById(msgId)) {
 				if (auto media = item->getMedia()) {
 					if (media->type() == MediaTypeMusicFile) {
-						layoutIt = _layouts.insert(msgId, new Overview::Layout::Document(media->getDocument(), item, st::mediaPlayerFileLayout));
+						layoutIt = _layouts.insert(msgId, new Overview::Layout::Document(media->getDocument(), item,
+						                                                                 st::mediaPlayerFileLayout));
 						layoutIt.value()->initDimensions();
 					}
 				}

@@ -71,7 +71,6 @@ private:
 	bool _invertOrder = false;
 
 	object_ptr<QTimer> _checkRequest;
-
 };
 
 } // namespace Intro

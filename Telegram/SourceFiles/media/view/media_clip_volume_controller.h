@@ -53,7 +53,6 @@ private:
 
 	bool _over = false;
 	Animation _a_over;
-
 };
 
 } // namespace Clip

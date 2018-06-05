@@ -64,18 +64,18 @@ public:
 	base::Observable<void> &savedGifsUpdated() {
 		return _savedGifsUpdated;
 	}
-	base::Observable<not_null<History*>> &historyCleared() {
+	base::Observable<not_null<History *>> &historyCleared() {
 		return _historyCleared;
 	}
-	base::Observable<not_null<const HistoryItem*>> &repaintLogEntry() {
+	base::Observable<not_null<const HistoryItem *>> &repaintLogEntry() {
 		return _repaintLogEntry;
 	}
 	base::Observable<void> &pendingHistoryResize() {
 		return _pendingHistoryResize;
 	}
 	struct ItemVisibilityQuery {
-		not_null<HistoryItem*> item;
-		not_null<bool*> isVisible;
+		not_null<HistoryItem *> item;
+		not_null<bool *> isVisible;
 	};
 	base::Observable<ItemVisibilityQuery> &queryItemVisibility() {
 		return _queryItemVisibility;
@@ -160,18 +160,17 @@ private:
 		OrderedSet<PeerId> groupStickersSectionHidden;
 	};
 
-	base::Variable<bool> _contactsLoaded = { false };
-	base::Variable<bool> _allChatsLoaded = { false };
+	base::Variable<bool> _contactsLoaded = {false};
+	base::Variable<bool> _allChatsLoaded = {false};
 	base::Observable<void> _moreChatsLoaded;
 	base::Observable<void> _stickersUpdated;
 	base::Observable<void> _savedGifsUpdated;
-	base::Observable<not_null<History*>> _historyCleared;
-	base::Observable<not_null<const HistoryItem*>> _repaintLogEntry;
+	base::Observable<not_null<History *>> _historyCleared;
+	base::Observable<not_null<const HistoryItem *>> _repaintLogEntry;
 	base::Observable<void> _pendingHistoryResize;
 	base::Observable<ItemVisibilityQuery> _queryItemVisibility;
 	Variables _variables;
 	TimeMs _lastTimeVideoPlayedAt = 0;
-
 };
 
 // One per Messenger.
@@ -225,8 +224,8 @@ public:
 	void checkAutoLock();
 	void checkAutoLockIn(TimeMs time);
 
-	base::Observable<DocumentData*> documentUpdated;
-	base::Observable<std::pair<HistoryItem*, MsgId>> messageIdChanging;
+	base::Observable<DocumentData *> documentUpdated;
+	base::Observable<std::pair<HistoryItem *, MsgId>> messageIdChanging;
 
 	~AuthSession();
 
@@ -243,5 +242,4 @@ private:
 	const std::unique_ptr<Storage::Downloader> _downloader;
 	const std::unique_ptr<Storage::Uploader> _uploader;
 	const std::unique_ptr<Window::Notifications::System> _notifications;
-
 };

@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
-#include "ui/animation.h"
 #include "base/timer.h"
+#include "ui/animation.h"
+#include "ui/twidget.h"
 
 namespace Window {
 class Controller;
@@ -40,8 +40,8 @@ class TabbedPanel : public TWidget {
 	Q_OBJECT
 
 public:
-	TabbedPanel(QWidget *parent, not_null<Window::Controller*> controller);
-	TabbedPanel(QWidget *parent, not_null<Window::Controller*> controller, object_ptr<TabbedSelector> selector);
+	TabbedPanel(QWidget *parent, not_null<Window::Controller *> controller);
+	TabbedPanel(QWidget *parent, not_null<Window::Controller *> controller, object_ptr<TabbedSelector> selector);
 
 	object_ptr<TabbedSelector> takeSelector();
 	QPointer<TabbedSelector> getSelector() const;
@@ -107,7 +107,7 @@ private:
 	bool preventAutoHide() const;
 	void updateContentHeight();
 
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 	object_ptr<TabbedSelector> _selector;
 
 	int _contentMaxHeight = 0;
@@ -122,7 +122,6 @@ private:
 	QPixmap _cache;
 	Animation _a_opacity;
 	base::Timer _hideTimer;
-
 };
 
 } // namespace ChatHelpers

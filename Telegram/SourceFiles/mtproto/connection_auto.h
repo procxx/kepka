@@ -32,7 +32,6 @@ class AutoConnection : public AbstractTCPConnection {
 	Q_OBJECT
 
 public:
-
 	AutoConnection(QThread *thread);
 
 	void sendData(mtpBuffer &buffer) override;
@@ -59,21 +58,11 @@ public slots:
 	void onTcpTimeoutTimer();
 
 protected:
-
 	void socketPacket(const char *packet, quint32 length) override;
 
 private:
-
 	void httpSend(mtpBuffer &buffer);
-	enum Status {
-		WaitingBoth = 0,
-		WaitingHttp,
-		WaitingTcp,
-		HttpReady,
-		UsingHttp,
-		UsingTcp,
-		FinishedWork
-	};
+	enum Status { WaitingBoth = 0, WaitingHttp, WaitingTcp, HttpReady, UsingHttp, UsingTcp, FinishedWork };
 	Status status;
 	MTPint128 tcpNonce, httpNonce;
 	QTimer httpStartTimer;
@@ -81,7 +70,7 @@ private:
 	QNetworkAccessManager manager;
 	QUrl address;
 
-	typedef QSet<QNetworkReply*> Requests;
+	typedef QSet<QNetworkReply *> Requests;
 	Requests requests;
 
 	QString _addrTcp, _addrHttp;
@@ -89,7 +78,6 @@ private:
 	MTPDdcOption::Flags _flagsTcp, _flagsHttp;
 	qint32 _tcpTimeout;
 	QTimer tcpTimeoutTimer;
-
 };
 
 } // namespace internal

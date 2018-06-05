@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "boxes/peer_list_box.h"
 #include "boxes/edit_privacy_box.h"
+#include "boxes/peer_list_box.h"
 #include "mtproto/sender.h"
 
 namespace Settings {
@@ -29,8 +29,8 @@ namespace Settings {
 class BlockedBoxController : public PeerListController, private base::Subscriber, private MTP::Sender {
 public:
 	void prepare() override;
-	void rowClicked(not_null<PeerListRow*> row) override;
-	void rowActionClicked(not_null<PeerListRow*> row) override;
+	void rowClicked(not_null<PeerListRow *> row) override;
+	void rowActionClicked(not_null<PeerListRow *> row) override;
 	void loadMoreRows() override;
 
 	static void BlockNewUser();
@@ -46,7 +46,6 @@ private:
 	int _offset = 0;
 	mtpRequestId _loadRequestId = 0;
 	bool _allLoaded = false;
-
 };
 
 class LastSeenPrivacyController : public EditPrivacyBox::Controller, private base::Subscriber {
@@ -64,7 +63,6 @@ public:
 	QString exceptionsDescription() override;
 
 	void confirmSave(bool someAreDisallowed, base::lambda_once<void()> saveCallback) override;
-
 };
 
 class GroupsInvitePrivacyController : public EditPrivacyBox::Controller, private base::Subscriber {
@@ -80,7 +78,6 @@ public:
 	QString exceptionLinkText(Exception exception, int count) override;
 	QString exceptionBoxTitle(Exception exception) override;
 	QString exceptionsDescription() override;
-
 };
 
 class CallsPrivacyController : public EditPrivacyBox::Controller, private base::Subscriber {
@@ -95,7 +92,6 @@ public:
 	QString exceptionLinkText(Exception exception, int count) override;
 	QString exceptionBoxTitle(Exception exception) override;
 	QString exceptionsDescription() override;
-
 };
 
 } // namespace Settings

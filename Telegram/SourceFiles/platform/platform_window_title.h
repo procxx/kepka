@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "window/window_title.h"
 #include "window/themes/window_theme_preview.h"
+#include "window/window_title.h"
 
 namespace Platform {
 
@@ -43,7 +43,7 @@ void PreviewWindowFramePaint(QImage &preview, const style::palette &palette, QRe
 namespace Platform {
 
 inline object_ptr<Window::TitleWidget> CreateTitleWidget(QWidget *parent) {
-	return { nullptr };
+	return {nullptr};
 }
 
 inline int PreviewTitleHeight() {

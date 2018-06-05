@@ -24,18 +24,19 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "app.h"
 #include "ui/text/text.h"
 
-#include "core/utils.h"                // makeShared
-#include "core/click_handler_types.h"  // UrlClickHandler
+#include "core/click_handler_types.h" // UrlClickHandler
+#include "core/utils.h" // makeShared
 
-#include "ui/text/text_block.h"        // TextBlockTSkip, ...
-#include "styles/style_basic.h"        // style::TextStyle
+#include "styles/style_basic.h" // style::TextStyle
+#include "ui/text/text_block.h" // TextBlockTSkip, ...
 
 class HiddenUrlClickHandler;
 
 namespace {
 
 inline qint32 countBlockHeight(const ITextBlock *b, const style::TextStyle *st) {
-	return (b->type() == TextBlockTSkip) ? static_cast<const SkipBlock*>(b)->height() : (st->lineHeight > st->font->height) ? st->lineHeight : st->font->height;
+	return (b->type() == TextBlockTSkip) ? static_cast<const SkipBlock *>(b)->height() :
+	                                       (st->lineHeight > st->font->height) ? st->lineHeight : st->font->height;
 }
 
 } // namespace
@@ -60,7 +61,11 @@ QString textcmdStartLink(const QString &url) {
 
 	QString result;
 	result.reserve(url.size() + 4);
-	return result.append(TextCommand).append(QChar(TextCommandLinkText)).append(QChar(url.size())).append(url).append(TextCommand);
+	return result.append(TextCommand)
+	    .append(QChar(TextCommandLinkText))
+	    .append(QChar(url.size()))
+	    .append(url)
+	    .append(TextCommand);
 }
 
 QString textcmdStopLink() {
@@ -107,8 +112,7 @@ const QChar *textSkipCommand(const QChar *from, const QChar *end, bool canLink) 
 	case TextCommandItalic:
 	case TextCommandNoItalic:
 	case TextCommandUnderline:
-	case TextCommandNoUnderline:
-		break;
+	case TextCommandNoUnderline: break;
 
 	case TextCommandLinkIndex:
 		if (result->unicode() > 0x7FFF) return from;
@@ -121,13 +125,9 @@ const QChar *textSkipCommand(const QChar *from, const QChar *end, bool canLink) 
 		result += len + 1;
 	} break;
 
-	case TextCommandSkipBlock:
-		result += 2;
-		break;
+	case TextCommandSkipBlock: result += 2; break;
 
-	case TextCommandLangTag:
-		result += 1;
-		break;
+	case TextCommandLangTag: result += 1; break;
 	}
 	return (result < end && *result == TextCommand) ? (result + 1) : from;
 }
@@ -135,7 +135,7 @@ const QChar *textSkipCommand(const QChar *from, const QChar *end, bool canLink) 
 class TextParser {
 public:
 	static Qt::LayoutDirection stringDirection(const QString &str, qint32 from, qint32 to) {
-		const ushort *p = reinterpret_cast<const ushort*>(str.unicode()) + from;
+		const ushort *p = reinterpret_cast<const ushort *>(str.unicode()) + from;
 		const ushort *end = p + (to - from);
 		while (p < end) {
 			uint ucs4 = *p;
@@ -147,13 +147,10 @@ public:
 				}
 			}
 			switch (QChar::direction(ucs4)) {
-			case QChar::DirL:
-				return Qt::LeftToRight;
+			case QChar::DirL: return Qt::LeftToRight;
 			case QChar::DirR:
-			case QChar::DirAL:
-				return Qt::RightToLeft;
-			default:
-				break;
+			case QChar::DirAL: return Qt::RightToLeft;
+			default: break;
 			}
 			++p;
 		}
@@ -181,13 +178,16 @@ public:
 			}
 			lastSkipped = false;
 			if (emoji) {
-				_t->_blocks.push_back(std::make_unique<EmojiBlock>(_t->_st->font, _t->_text, blockStart, len, flags, lnkIndex, emoji));
+				_t->_blocks.push_back(
+				    std::make_unique<EmojiBlock>(_t->_st->font, _t->_text, blockStart, len, flags, lnkIndex, emoji));
 				emoji = 0;
 				lastSkipped = true;
 			} else if (newline) {
-				_t->_blocks.push_back(std::make_unique<NewlineBlock>(_t->_st->font, _t->_text, blockStart, len, flags, lnkIndex));
+				_t->_blocks.push_back(
+				    std::make_unique<NewlineBlock>(_t->_st->font, _t->_text, blockStart, len, flags, lnkIndex));
 			} else {
-				_t->_blocks.push_back(std::make_unique<TextBlock>(_t->_st->font, _t->_text, _t->_minResizeWidth, blockStart, len, flags, lnkIndex));
+				_t->_blocks.push_back(std::make_unique<TextBlock>(_t->_st->font, _t->_text, _t->_minResizeWidth,
+				                                                  blockStart, len, flags, lnkIndex));
 			}
 			blockStart += len;
 			blockCreated();
@@ -257,11 +257,8 @@ public:
 			if (!_t->_blocks.empty() && _t->_blocks.back()->type() != TextBlockTNewline) {
 				createNewlineBlock();
 			}
-		} else if (type == EntityInTextUrl
-		        || type == EntityInTextEmail
-		        || type == EntityInTextMention
-		        || type == EntityInTextHashtag
-		        || type == EntityInTextBotCommand) {
+		} else if (type == EntityInTextUrl || type == EntityInTextEmail || type == EntityInTextMention ||
+		           type == EntityInTextHashtag || type == EntityInTextBotCommand) {
 			linkType = type;
 			linkData = QString(start + waitingEntity->offset(), waitingEntity->length());
 			if (linkType == EntityInTextUrl) {
@@ -300,15 +297,11 @@ public:
 
 		++waitingEntity;
 		if (links.size() >= 0x7FFF) {
-			while (waitingEntity != entitiesEnd && (
-				waitingEntity->type() == EntityInTextUrl ||
-				waitingEntity->type() == EntityInTextCustomUrl ||
-				waitingEntity->type() == EntityInTextEmail ||
-				waitingEntity->type() == EntityInTextHashtag ||
-				waitingEntity->type() == EntityInTextMention ||
-				waitingEntity->type() == EntityInTextMentionName ||
-				waitingEntity->type() == EntityInTextBotCommand ||
-				waitingEntity->length() <= 0)) {
+			while (waitingEntity != entitiesEnd &&
+			       (waitingEntity->type() == EntityInTextUrl || waitingEntity->type() == EntityInTextCustomUrl ||
+			        waitingEntity->type() == EntityInTextEmail || waitingEntity->type() == EntityInTextHashtag ||
+			        waitingEntity->type() == EntityInTextMention || waitingEntity->type() == EntityInTextMentionName ||
+			        waitingEntity->type() == EntityInTextBotCommand || waitingEntity->length() <= 0)) {
 				++waitingEntity;
 			}
 		} else {
@@ -327,9 +320,7 @@ public:
 		++ptr;
 
 		switch (cmd) {
-		case TextCommandSkipBlock:
-			createSkipBlock(ptr->unicode(), (ptr + 1)->unicode());
-		break;
+		case TextCommandSkipBlock: createSkipBlock(ptr->unicode(), (ptr + 1)->unicode()); break;
 		}
 
 		ptr = afterCmd;
@@ -351,63 +342,63 @@ public:
 				createBlock();
 				flags |= TextBlockFBold;
 			}
-		break;
+			break;
 
 		case TextCommandNoBold:
 			if (flags & TextBlockFBold) {
 				createBlock();
 				flags &= ~TextBlockFBold;
 			}
-		break;
+			break;
 
 		case TextCommandSemibold:
-		if (!(flags & TextBlockFSemibold)) {
-			createBlock();
-			flags |= TextBlockFSemibold;
-		}
-		break;
+			if (!(flags & TextBlockFSemibold)) {
+				createBlock();
+				flags |= TextBlockFSemibold;
+			}
+			break;
 
 		case TextCommandNoSemibold:
-		if (flags & TextBlockFSemibold) {
-			createBlock();
-			flags &= ~TextBlockFSemibold;
-		}
-		break;
+			if (flags & TextBlockFSemibold) {
+				createBlock();
+				flags &= ~TextBlockFSemibold;
+			}
+			break;
 
 		case TextCommandItalic:
 			if (!(flags & TextBlockFItalic)) {
 				createBlock();
 				flags |= TextBlockFItalic;
 			}
-		break;
+			break;
 
 		case TextCommandNoItalic:
 			if (flags & TextBlockFItalic) {
 				createBlock();
 				flags &= ~TextBlockFItalic;
 			}
-		break;
+			break;
 
 		case TextCommandUnderline:
 			if (!(flags & TextBlockFUnderline)) {
 				createBlock();
 				flags |= TextBlockFUnderline;
 			}
-		break;
+			break;
 
 		case TextCommandNoUnderline:
 			if (flags & TextBlockFUnderline) {
 				createBlock();
 				flags &= ~TextBlockFUnderline;
 			}
-		break;
+			break;
 
 		case TextCommandLinkIndex:
 			if (ptr->unicode() != lnkIndex) {
 				createBlock();
 				lnkIndex = ptr->unicode();
 			}
-		break;
+			break;
 
 		case TextCommandLinkText: {
 			createBlock();
@@ -416,9 +407,7 @@ public:
 			lnkIndex = 0x8000 + links.size();
 		} break;
 
-		case TextCommandSkipBlock:
-			createSkipBlock(ptr->unicode(), (ptr + 1)->unicode());
-		break;
+		case TextCommandSkipBlock: createSkipBlock(ptr->unicode(), (ptr + 1)->unicode()); break;
 		}
 
 		ptr = afterCmd;
@@ -429,7 +418,8 @@ public:
 		int skipBack = 0;
 		ch = ((ptr < end) ? *ptr : 0);
 		emojiLookback = 0;
-		bool skip = false, isNewLine = multiline && chIsNewline(ch), isSpace = chIsSpace(ch), isDiac = chIsDiac(ch), isTilde = checkTilde && (ch == '~');
+		bool skip = false, isNewLine = multiline && chIsNewline(ch), isSpace = chIsSpace(ch), isDiac = chIsDiac(ch),
+		     isTilde = checkTilde && (ch == '~');
 		if (chIsBad(ch) || ch.isLowSurrogate()) {
 			skip = true;
 		} else if (ch == 0xFE0F && (cPlatform() == dbipMac || cPlatform() == dbipMacOld)) {
@@ -495,22 +485,24 @@ public:
 		emoji = e;
 	}
 
-	TextParser(Text *t, const QString &text, const TextParseOptions &options) : _t(t),
-		source { text },
-		rich(options.flags & TextParseRichText),
-		multiline(options.flags & TextParseMultiline),
-		stopAfterWidth(QFIXED_MAX) {
+	TextParser(Text *t, const QString &text, const TextParseOptions &options)
+	    : _t(t)
+	    , source{text}
+	    , rich(options.flags & TextParseRichText)
+	    , multiline(options.flags & TextParseMultiline)
+	    , stopAfterWidth(QFIXED_MAX) {
 		if (options.flags & TextParseLinks) {
 			TextUtilities::ParseEntities(source, options.flags, rich);
 		}
 		parse(options);
 	}
 
-	TextParser(Text *t, const TextWithEntities &textWithEntities, const TextParseOptions &options) : _t(t),
-		source(textWithEntities),
-		rich(options.flags & TextParseRichText),
-		multiline(options.flags & TextParseMultiline),
-		stopAfterWidth(QFIXED_MAX) {
+	TextParser(Text *t, const TextWithEntities &textWithEntities, const TextParseOptions &options)
+	    : _t(t)
+	    , source(textWithEntities)
+	    , rich(options.flags & TextParseRichText)
+	    , multiline(options.flags & TextParseMultiline)
+	    , stopAfterWidth(QFIXED_MAX) {
 		auto &preparsed = textWithEntities.entities;
 		if ((options.flags & TextParseLinks) && !preparsed.isEmpty()) {
 			bool parseMentions = (options.flags & TextParseMentions);
@@ -525,9 +517,11 @@ public:
 				for (; i < l; ++i) {
 					auto type = preparsed.at(i).type();
 					if (((type == EntityInTextMention || type == EntityInTextMentionName) && !parseMentions) ||
-						(type == EntityInTextHashtag && !parseHashtags) ||
-						(type == EntityInTextBotCommand && !parseBotCommands) ||
-						((type == EntityInTextBold || type == EntityInTextItalic || type == EntityInTextCode || type == EntityInTextPre) && !parseMarkdown)) {
+					    (type == EntityInTextHashtag && !parseHashtags) ||
+					    (type == EntityInTextBotCommand && !parseBotCommands) ||
+					    ((type == EntityInTextBold || type == EntityInTextItalic || type == EntityInTextCode ||
+					      type == EntityInTextPre) &&
+					     !parseMarkdown)) {
 						continue;
 					}
 					source.entities.push_back(preparsed.at(i));
@@ -569,7 +563,8 @@ public:
 
 		ch = emojiLookback = 0;
 		lastSkipped = false;
-		checkTilde = !cRetina() && (_t->_st->font->size() == 13) && (_t->_st->font->flags() == 0) && (_t->_st->font->f.family() == qstr("Open Sans")); // tilde Open Sans fix
+		checkTilde = !cRetina() && (_t->_st->font->size() == 13) && (_t->_st->font->flags() == 0) &&
+		             (_t->_st->font->f.family() == qstr("Open Sans")); // tilde Open Sans fix
 		for (; ptr <= end; ++ptr) {
 			while (checkEntities() || (rich && checkCommand())) {
 			}
@@ -598,29 +593,36 @@ public:
 					auto &link = links[lnkIndex - maxLnkIndex - 1];
 					ClickHandlerPtr handler;
 					switch (link.type) {
-					case EntityInTextInvalid: case EntityInTextBold: case EntityInTextItalic: assert(false); // temp
+					case EntityInTextInvalid:
+					case EntityInTextBold:
+					case EntityInTextItalic: assert(false); // temp
 					case EntityInTextCustomUrl: handler = MakeShared<HiddenUrlClickHandler>(link.data); break;
 					case EntityInTextEmail:
-					case EntityInTextUrl: handler = MakeShared<UrlClickHandler>(link.data, link.displayStatus == LinkDisplayedFull); break;
+					case EntityInTextUrl:
+						handler = MakeShared<UrlClickHandler>(link.data, link.displayStatus == LinkDisplayedFull);
+						break;
 					case EntityInTextBotCommand: handler = MakeShared<BotCommandClickHandler>(link.data); break;
 					case EntityInTextHashtag:
 						if (options.flags & TextTwitterMentions) {
-							handler = MakeShared<UrlClickHandler>(qsl("https://twitter.com/hashtag/") + link.data.mid(1) + qsl("?src=hash"), true);
+							handler = MakeShared<UrlClickHandler>(
+							    qsl("https://twitter.com/hashtag/") + link.data.mid(1) + qsl("?src=hash"), true);
 						} else if (options.flags & TextInstagramMentions) {
-							handler = MakeShared<UrlClickHandler>(qsl("https://instagram.com/explore/tags/") + link.data.mid(1) + '/', true);
+							handler = MakeShared<UrlClickHandler>(
+							    qsl("https://instagram.com/explore/tags/") + link.data.mid(1) + '/', true);
 						} else {
 							handler = MakeShared<HashtagClickHandler>(link.data);
 						}
-					break;
+						break;
 					case EntityInTextMention:
 						if (options.flags & TextTwitterMentions) {
 							handler = MakeShared<UrlClickHandler>(qsl("https://twitter.com/") + link.data.mid(1), true);
 						} else if (options.flags & TextInstagramMentions) {
-							handler = MakeShared<UrlClickHandler>(qsl("https://instagram.com/") + link.data.mid(1) + '/', true);
+							handler = MakeShared<UrlClickHandler>(
+							    qsl("https://instagram.com/") + link.data.mid(1) + '/', true);
 						} else {
 							handler = MakeShared<MentionClickHandler>(link.data);
 						}
-					break;
+						break;
 					case EntityInTextMentionName: {
 						auto fields = TextUtilities::MentionNameDataToFields(link.data);
 						if (fields.userId) {
@@ -652,11 +654,10 @@ private:
 	struct TextLinkData {
 		TextLinkData() = default;
 		TextLinkData(EntityInTextType type, const QString &text, const QString &data, LinkDisplayStatus displayStatus)
-			: type(type)
-			, text(text)
-			, data(data)
-			, displayStatus(displayStatus) {
-		}
+		    : type(type)
+		    , text(text)
+		    , data(data)
+		    , displayStatus(displayStatus) {}
 		EntityInTextType type = EntityInTextInvalid;
 		QString text, data;
 		LinkDisplayStatus displayStatus = LinkDisplayedFull;
@@ -678,7 +679,7 @@ private:
 	typedef QVector<TextLinkData> TextLinks;
 	TextLinks links;
 
-	typedef QMap<const QChar*, QList<qint32> > RemoveFlagsMap;
+	typedef QMap<const QChar *, QList<qint32>> RemoveFlagsMap;
 	RemoveFlagsMap removeFlags;
 
 	quint16 maxLnkIndex = 0;
@@ -707,7 +708,7 @@ struct BidiStatus {
 	BidiStatus() {
 		eor = QChar::DirON;
 		lastStrong = QChar::DirON;
-		last = QChar:: DirON;
+		last = QChar::DirON;
 		dir = QChar::DirON;
 	}
 	QChar::Direction eor;
@@ -721,11 +722,12 @@ enum { _MaxItemLength = 4096 };
 
 struct BidiControl {
 	inline BidiControl(bool rtl)
-		: base(rtl ? 1 : 0), level(rtl ? 1 : 0) {}
+	    : base(rtl ? 1 : 0)
+	    , level(rtl ? 1 : 0) {}
 
 	inline void embed(bool rtl, bool o = false) {
 		unsigned int toAdd = 1;
-		if((level%2 != 0) == rtl ) {
+		if ((level % 2 != 0) == rtl) {
 			++toAdd;
 		}
 		if (level + toAdd <= _MaxBidiLevel) {
@@ -736,7 +738,9 @@ struct BidiControl {
 			level += toAdd;
 		}
 	}
-	inline bool canPop() const { return cCtx != 0; }
+	inline bool canPop() const {
+		return cCtx != 0;
+	}
 	inline void pdf() {
 		Q_ASSERT(cCtx);
 		--cCtx;
@@ -745,13 +749,13 @@ struct BidiControl {
 	}
 
 	inline QChar::Direction basicDirection() const {
-		return (base ? QChar::DirR : QChar:: DirL);
+		return (base ? QChar::DirR : QChar::DirL);
 	}
 	inline unsigned int baseLevel() const {
 		return base;
 	}
 	inline QChar::Direction direction() const {
-		return ((level%2) ? QChar::DirR : QChar:: DirL);
+		return ((level % 2) ? QChar::DirR : QChar::DirL);
 	}
 
 	struct {
@@ -764,21 +768,20 @@ struct BidiControl {
 	bool override = false;
 };
 
-static void eAppendItems(QScriptAnalysis *analysis, int &start, int &stop, const BidiControl &control, QChar::Direction dir) {
-	if (start > stop)
-		return;
+static void eAppendItems(QScriptAnalysis *analysis, int &start, int &stop, const BidiControl &control,
+                         QChar::Direction dir) {
+	if (start > stop) return;
 
 	int level = control.level;
 
-	if(dir != QChar::DirON && !control.override) {
+	if (dir != QChar::DirON && !control.override) {
 		// add level of run (cases I1 & I2)
-		if(level % 2) {
-			if(dir == QChar::DirL || dir == QChar::DirAN || dir == QChar::DirEN)
-				level++;
+		if (level % 2) {
+			if (dir == QChar::DirL || dir == QChar::DirAN || dir == QChar::DirEN) level++;
 		} else {
-			if(dir == QChar::DirR)
+			if (dir == QChar::DirR)
 				level++;
-			else if(dir == QChar::DirAN || dir == QChar::DirEN)
+			else if (dir == QChar::DirAN || dir == QChar::DirEN)
 				level += 2;
 		}
 	}
@@ -797,8 +800,9 @@ static void eAppendItems(QScriptAnalysis *analysis, int &start, int &stop, const
 
 class TextPainter {
 public:
-	TextPainter(Painter *p, const Text *t) : _p(p), _t(t) {
-	}
+	TextPainter(Painter *p, const Text *t)
+	    : _p(p)
+	    , _t(t) {}
 
 	~TextPainter() {
 		restoreAfterElided();
@@ -807,7 +811,8 @@ public:
 		}
 	}
 
-	void draw(qint32 left, qint32 top, qint32 w, style::align align, qint32 yFrom, qint32 yTo, TextSelection selection = { 0, 0 }, bool fullWidthSelection = true) {
+	void draw(qint32 left, qint32 top, qint32 w, style::align align, qint32 yFrom, qint32 yTo,
+	          TextSelection selection = {0, 0}, bool fullWidthSelection = true) {
 		if (_t->isEmpty()) return;
 
 		_blocksSize = _t->_blocks.size();
@@ -886,7 +891,7 @@ public:
 					_wLeft -= _elideRemoveFromEnd;
 				}
 
-				_parDirection = static_cast<NewlineBlock*>(b)->nextDirection();
+				_parDirection = static_cast<NewlineBlock *>(b)->nextDirection();
 				if (_parDirection == Qt::LayoutDirectionAuto) _parDirection = cLangDir();
 				initNextParagraph(i + 1);
 
@@ -908,7 +913,7 @@ public:
 			}
 
 			if (_btype == TextBlockTText) {
-				auto t = static_cast<TextBlock*>(b);
+				auto t = static_cast<TextBlock *>(b);
 				if (t->_words.isEmpty()) { // no words in this block, spaces only => layout this block in the same line
 					_last_rPadding += b->f_rpadding();
 
@@ -954,7 +959,8 @@ public:
 						_lineHeight = f_lineHeight;
 						j_width = (j->f_width() >= 0) ? j->f_width() : -j->f_width();
 					}
-					if (!drawLine(elidedLine ? ((j + 1 == en) ? _t->countBlockEnd(i, e) : (j + 1)->from()) : j->from(), i, e)) {
+					if (!drawLine(elidedLine ? ((j + 1 == en) ? _t->countBlockEnd(i, e) : (j + 1)->from()) : j->from(),
+					              i, e)) {
 						return;
 					}
 					_y += _lineHeight;
@@ -1009,7 +1015,8 @@ public:
 		}
 	}
 
-	void drawElided(qint32 left, qint32 top, qint32 w, style::align align, qint32 lines, qint32 yFrom, qint32 yTo, qint32 removeFromEnd, bool breakEverywhere, TextSelection selection) {
+	void drawElided(qint32 left, qint32 top, qint32 w, style::align align, qint32 lines, qint32 yFrom, qint32 yTo,
+	                qint32 removeFromEnd, bool breakEverywhere, TextSelection selection) {
 		if (lines <= 0 || _t->isNull()) return;
 
 		if (yTo < 0 || (lines - 1) * _t->_st->font->height < yTo) {
@@ -1087,7 +1094,7 @@ private:
 		bool rtl = (_parDirection == Qt::RightToLeft);
 		if (!ignore && !rtl) {
 			ignore = true;
-			const ushort *start = reinterpret_cast<const ushort*>(_str) + _parStart;
+			const ushort *start = reinterpret_cast<const ushort *>(_str) + _parStart;
 			const ushort *curr = start;
 			const ushort *end = start + _parLength;
 			while (curr < end) {
@@ -1112,8 +1119,7 @@ private:
 		if (ignore) {
 			memset(analysis, 0, _parLength * sizeof(QScriptAnalysis));
 			if (rtl) {
-				for (int i = 0; i < _parLength; ++i)
-					analysis[i].bidiLevel = 1;
+				for (int i = 0; i < _parLength; ++i) analysis[i].bidiLevel = 1;
 				_parHasBidi = true;
 			}
 		} else {
@@ -1121,7 +1127,8 @@ private:
 		}
 	}
 
-	bool drawLine(quint16 _lineEnd, const Text::TextBlocks::const_iterator &_endBlockIter, const Text::TextBlocks::const_iterator &_end) {
+	bool drawLine(quint16 _lineEnd, const Text::TextBlocks::const_iterator &_endBlockIter,
+	              const Text::TextBlocks::const_iterator &_end) {
 		_yDelta = (_lineHeight - _fontHeight) / 2;
 		if (_yTo >= 0 && (_y + _yDelta >= _yTo || _y >= _yTo)) return false;
 		if (_y + _yDelta + _fontHeight <= _yFrom) {
@@ -1163,7 +1170,9 @@ private:
 
 		qint32 delta = (currentBlock->from() < _lineStart ? std::min(_lineStart - currentBlock->from(), 2) : 0);
 		_localFrom = _lineStart - delta;
-		qint32 lineEnd = (_endBlock && _endBlock->from() < trimmedLineEnd && !elidedLine) ? std::min(quint16(trimmedLineEnd + 2), _t->countBlockEnd(_endBlockIter, _end)) : trimmedLineEnd;
+		qint32 lineEnd = (_endBlock && _endBlock->from() < trimmedLineEnd && !elidedLine) ?
+		                     std::min(quint16(trimmedLineEnd + 2), _t->countBlockEnd(_endBlockIter, _end)) :
+		                     trimmedLineEnd;
 
 		auto lineText = _t->_text.mid(_localFrom, lineEnd - _localFrom);
 		auto lineStart = delta;
@@ -1177,7 +1186,8 @@ private:
 		auto x = _x;
 		if (_align & Qt::AlignHCenter) {
 			x += (_wLeft / 2).toInt();
-		} else if (((_align & Qt::AlignLeft) && _parDirection == Qt::RightToLeft) || ((_align & Qt::AlignRight) && _parDirection == Qt::LeftToRight)) {
+		} else if (((_align & Qt::AlignLeft) && _parDirection == Qt::RightToLeft) ||
+		           ((_align & Qt::AlignRight) && _parDirection == Qt::LeftToRight)) {
 			x += _wLeft;
 		}
 
@@ -1187,11 +1197,14 @@ private:
 					if (_parDirection == Qt::RightToLeft) {
 						_lookupResult.symbol = (_lineEnd > _lineStart) ? (_lineEnd - 1) : _lineStart;
 						_lookupResult.afterSymbol = (_lineEnd > _lineStart) ? true : false;
-//						_lookupResult.uponSymbol = ((_lookupX >= _x) && (_lineEnd < _t->_text.size()) && (!_endBlock || _endBlock->type() != TextBlockTSkip)) ? true : false;
+						// _lookupResult.uponSymbol = ((_lookupX >= _x) && (_lineEnd <
+						//_t->_text.size()) &&
+						//(!_endBlock || _endBlock->type() != TextBlockTSkip)) ? true : false;
 					} else {
 						_lookupResult.symbol = _lineStart;
 						_lookupResult.afterSymbol = false;
-//						_lookupResult.uponSymbol = ((_lookupX >= _x) && (_lineStart > 0)) ? true : false;
+						// _lookupResult.uponSymbol = ((_lookupX >= _x) && (_lineStart > 0)) ? true
+						//: false;
 					}
 				}
 				if (_lookupLink) {
@@ -1203,11 +1216,14 @@ private:
 				if (_parDirection == Qt::RightToLeft) {
 					_lookupResult.symbol = _lineStart;
 					_lookupResult.afterSymbol = false;
-//					_lookupResult.uponSymbol = ((_lookupX < _x + _w) && (_lineStart > 0)) ? true : false;
+					// _lookupResult.uponSymbol = ((_lookupX < _x + _w) && (_lineStart > 0)) ? true : false;
 				} else {
 					_lookupResult.symbol = (_lineEnd > _lineStart) ? (_lineEnd - 1) : _lineStart;
 					_lookupResult.afterSymbol = (_lineEnd > _lineStart) ? true : false;
-//					_lookupResult.uponSymbol = ((_lookupX < _x + _w) && (_lineEnd < _t->_text.size()) && (!_endBlock || _endBlock->type() != TextBlockTSkip)) ? true : false;
+					// _lookupResult.uponSymbol = ((_lookupX < _x + _w) && (_lineEnd < _t->_text.size()) &&
+					//                             (!_endBlock || _endBlock->type() != TextBlockTSkip)) ?
+					//                                true :
+					//                                false;
 				}
 				if (_lookupLink) {
 					_lookupResult.link.clear();
@@ -1219,14 +1235,17 @@ private:
 
 		if (_fullWidthSelection) {
 			bool selectFromStart = (_selection.to > _lineStart) && (_lineStart > 0) && (_selection.from <= _lineStart);
-			bool selectTillEnd = (_selection.to >= _lineEnd) && (_lineEnd < _t->_text.size()) && (_selection.from < _lineEnd) && (!_endBlock || _endBlock->type() != TextBlockTSkip);
+			bool selectTillEnd = (_selection.to >= _lineEnd) && (_lineEnd < _t->_text.size()) &&
+			                     (_selection.from < _lineEnd) && (!_endBlock || _endBlock->type() != TextBlockTSkip);
 
-			if ((selectFromStart && _parDirection == Qt::LeftToRight) || (selectTillEnd && _parDirection == Qt::RightToLeft)) {
+			if ((selectFromStart && _parDirection == Qt::LeftToRight) ||
+			    (selectTillEnd && _parDirection == Qt::RightToLeft)) {
 				if (x > _x) {
 					fillSelectRange(_x, x);
 				}
 			}
-			if ((selectTillEnd && _parDirection == Qt::LeftToRight) || (selectFromStart && _parDirection == Qt::RightToLeft)) {
+			if ((selectTillEnd && _parDirection == Qt::LeftToRight) ||
+			    (selectFromStart && _parDirection == Qt::RightToLeft)) {
 				if (x < _x + _wLeft) {
 					fillSelectRange(x + _w - _wLeft, _x + _w);
 				}
@@ -1249,7 +1268,7 @@ private:
 		eShapeLine(line);
 
 		int firstItem = engine.findItem(line.from), lastItem = engine.findItem(line.from + line.length - 1);
-	    int nItems = (firstItem >= 0 && lastItem >= firstItem) ? (lastItem - firstItem + 1) : 0;
+		int nItems = (firstItem >= 0 && lastItem >= firstItem) ? (lastItem - firstItem + 1) : 0;
 		if (!nItems) {
 			return true;
 		}
@@ -1272,11 +1291,14 @@ private:
 			}
 			if (si.analysis.flags == QScriptAnalysis::Object) {
 				if (_type == TextBlockTEmoji || _type == TextBlockTSkip) {
-					si.width = currentBlock->f_width() + (nextBlock == _endBlock && (!nextBlock || nextBlock->from() >= trimmedLineEnd) ? 0 : currentBlock->f_rpadding());
+					si.width = currentBlock->f_width() +
+					           (nextBlock == _endBlock && (!nextBlock || nextBlock->from() >= trimmedLineEnd) ?
+					                0 :
+					                currentBlock->f_rpadding());
 				}
 			}
 		}
-	    QTextEngine::bidiReorder(nItems, levels.data(), visualOrder.data());
+		QTextEngine::bidiReorder(nItems, levels.data(), visualOrder.data());
 		if (rtl() && skipIndex == nItems - 1) {
 			for (qint32 i = nItems; i > 1;) {
 				--i;
@@ -1311,7 +1333,8 @@ private:
 				TextBlockType _type = currentBlock->type();
 				if (!_p && _lookupX >= x && _lookupX < x + si.width) { // _lookupRequest
 					if (_lookupLink) {
-						if (currentBlock->lnkIndex() && _lookupY >= _y + _yDelta && _lookupY < _y + _yDelta + _fontHeight) {
+						if (currentBlock->lnkIndex() && _lookupY >= _y + _yDelta &&
+						    _lookupY < _y + _yDelta + _fontHeight) {
 							_lookupResult.link = _t->_links.at(currentBlock->lnkIndex() - 1);
 						}
 					}
@@ -1324,7 +1347,8 @@ private:
 								_lookupResult.symbol = _lineStart;
 								_lookupResult.afterSymbol = false;
 							} else {
-								_lookupResult.symbol = (trimmedLineEnd > _lineStart) ? (trimmedLineEnd - 1) : _lineStart;
+								_lookupResult.symbol =
+								    (trimmedLineEnd > _lineStart) ? (trimmedLineEnd - 1) : _lineStart;
 								_lookupResult.afterSymbol = (trimmedLineEnd > _lineStart) ? true : false;
 							}
 							return false;
@@ -1332,7 +1356,8 @@ private:
 
 						// Emoji with spaces after symbol lookup
 						auto chFrom = _str + currentBlock->from();
-						auto chTo = chFrom + ((nextBlock ? nextBlock->from() : _t->_text.size()) - currentBlock->from());
+						auto chTo =
+						    chFrom + ((nextBlock ? nextBlock->from() : _t->_text.size()) - currentBlock->from());
 						auto spacesWidth = (si.width - currentBlock->f_width());
 						auto spacesCount = 0;
 						while (chTo > chFrom && (chTo - 1)->unicode() == QChar::Space) {
@@ -1348,11 +1373,13 @@ private:
 								}
 							} else if (_lookupX >= x + si.width - spacesWidth) {
 								_lookupResult.symbol = (chTo - _str); // up to a space, inclided, ltr
-								_lookupResult.afterSymbol = (_lookupX >= x + si.width - spacesWidth + (spacesWidth / 2)) ? true : false;
+								_lookupResult.afterSymbol =
+								    (_lookupX >= x + si.width - spacesWidth + (spacesWidth / 2)) ? true : false;
 								return false;
 							}
 						}
-						if (_lookupX < x + (rtl ? (si.width - currentBlock->f_width()) : 0) + (currentBlock->f_width() / 2)) {
+						if (_lookupX <
+						    x + (rtl ? (si.width - currentBlock->f_width()) : 0) + (currentBlock->f_width() / 2)) {
 							_lookupResult.symbol = ((rtl && chTo > chFrom) ? (chTo - 1) : chFrom) - _str;
 							_lookupResult.afterSymbol = (rtl && chTo > chFrom) ? true : false;
 						} else {
@@ -1369,14 +1396,17 @@ private:
 					}
 					if (_localFrom + si.position < _selection.to) {
 						auto chFrom = _str + currentBlock->from();
-						auto chTo = chFrom + ((nextBlock ? nextBlock->from() : _t->_text.size()) - currentBlock->from());
+						auto chTo =
+						    chFrom + ((nextBlock ? nextBlock->from() : _t->_text.size()) - currentBlock->from());
 						if (_localFrom + si.position >= _selection.from) { // could be without space
-							if (chTo == chFrom || (chTo - 1)->unicode() != QChar::Space || _selection.to >= (chTo - _str)) {
+							if (chTo == chFrom || (chTo - 1)->unicode() != QChar::Space ||
+							    _selection.to >= (chTo - _str)) {
 								fillSelectRange(x, x + si.width);
 							} else { // or with space
 								fillSelectRange(glyphX, glyphX + currentBlock->f_width());
 							}
-						} else if (chTo > chFrom && (chTo - 1)->unicode() == QChar::Space && (chTo - 1 - _str) >= _selection.from) {
+						} else if (chTo > chFrom && (chTo - 1)->unicode() == QChar::Space &&
+						           (chTo - 1 - _str) >= _selection.from) {
 							if (rtl) { // rtl space only
 								fillSelectRange(x, glyphX);
 							} else { // ltr space only
@@ -1384,9 +1414,12 @@ private:
 							}
 						}
 					}
-					emojiDraw(*_p, static_cast<EmojiBlock*>(currentBlock)->emoji, (glyphX + st::emojiPadding).toInt(), _y + _yDelta + emojiY);
-//				} else if (_p && currentBlock->type() == TextBlockSkip) { // debug
-//					_p->fillRect(QRect(x.toInt(), _y, currentBlock->width(), static_cast<SkipBlock*>(currentBlock)->height()), QColor(0, 0, 0, 32));
+					emojiDraw(*_p, static_cast<EmojiBlock *>(currentBlock)->emoji, (glyphX + st::emojiPadding).toInt(),
+					          _y + _yDelta + emojiY);
+					// } else if (_p && currentBlock->type() == TextBlockSkip) { // debug
+					// 	_p->fillRect(
+					// 	    QRect(x.toInt(), _y, currentBlock->width(), static_cast<SkipBlock
+					// *>(currentBlock)->height()), 	    QColor(0, 0, 0, 32));
 				}
 				x += si.width;
 				continue;
@@ -1407,8 +1440,7 @@ private:
 			}
 
 			QFixed itemWidth = 0;
-			for (int g = glyphsStart; g < glyphsEnd; ++g)
-				itemWidth += glyphs.effectiveAdvance(g);
+			for (int g = glyphsStart; g < glyphsEnd; ++g) itemWidth += glyphs.effectiveAdvance(g);
 
 			if (!_p && _lookupX >= x && _lookupX < x + itemWidth) { // _lookupRequest
 				if (_lookupLink) {
@@ -1429,12 +1461,10 @@ private:
 						}
 						for (int charsCount = (ch2 - ch); ch < ch2; ++ch) {
 							QFixed shift1 = QFixed(2 * (charsCount - (ch2 - ch)) + 2) * gwidth / QFixed(2 * charsCount),
-								shift2 = QFixed(2 * (charsCount - (ch2 - ch)) + 1) * gwidth / QFixed(2 * charsCount);
-							if ((rtl && _lookupX >= tmpx - shift1) ||
-								(!rtl && _lookupX < tmpx + shift1)) {
+							       shift2 = QFixed(2 * (charsCount - (ch2 - ch)) + 1) * gwidth / QFixed(2 * charsCount);
+							if ((rtl && _lookupX >= tmpx - shift1) || (!rtl && _lookupX < tmpx + shift1)) {
 								_lookupResult.symbol = _localFrom + itemStart + ch;
-								if ((rtl && _lookupX >= tmpx - shift2) ||
-									(!rtl && _lookupX < tmpx + shift2)) {
+								if ((rtl && _lookupX >= tmpx - shift2) || (!rtl && _lookupX < tmpx + shift2)) {
 									_lookupResult.afterSymbol = false;
 								} else {
 									_lookupResult.afterSymbol = true;
@@ -1459,9 +1489,9 @@ private:
 				return false;
 			} else if (_p) {
 				QTextCharFormat format;
-				QTextItemInt gf(glyphs.mid(glyphsStart, glyphsEnd - glyphsStart),
-								&_e->fnt, engine.layoutData->string.unicode() + itemStart,
-								itemEnd - itemStart, engine.fontEngine(si), format);
+				QTextItemInt gf(glyphs.mid(glyphsStart, glyphsEnd - glyphsStart), &_e->fnt,
+				                engine.layoutData->string.unicode() + itemStart, itemEnd - itemStart,
+				                engine.fontEngine(si), format);
 				gf.logClusters = logClusters + itemStart - si.position;
 				gf.width = itemWidth;
 				gf.justified = false;
@@ -1479,7 +1509,8 @@ private:
 					} else {
 						selWidth = 0;
 						int itemL = itemEnd - itemStart;
-						int selStart = _selection.from - (_localFrom + itemStart), selEnd = _selection.to - (_localFrom + itemStart);
+						int selStart = _selection.from - (_localFrom + itemStart),
+						    selEnd = _selection.to - (_localFrom + itemStart);
 						if (selStart < 0) selStart = 0;
 						if (selEnd > itemL) selEnd = itemL;
 						for (int ch = 0, g; ch < selEnd;) {
@@ -1511,7 +1542,8 @@ private:
 						}
 					}
 					if (rtl) selX = x + itemWidth - (selX - x) - selWidth;
-					selectedRect = QRect(selX.toInt(), _y + _yDelta, (selX + selWidth).toInt() - selX.toInt(), _fontHeight);
+					selectedRect =
+					    QRect(selX.toInt(), _y + _yDelta, (selX + selWidth).toInt() - selX.toInt(), _fontHeight);
 					fillSelectRange(selX, selX + selWidth);
 				}
 				if (Q_UNLIKELY(hasSelected)) {
@@ -1521,7 +1553,10 @@ private:
 						_p->setClipRect(selectedRect, Qt::IntersectClip);
 						_p->setPen(*_currentPenSelected);
 						_p->drawTextItem(QPointF(x.toReal(), textY), gf);
-						auto externalClipping = clippingEnabled ? clippingRegion : QRegion(QRect((_x - _w).toInt(), _y - _lineHeight, (_x + 2 * _w).toInt(), _y + 2 * _lineHeight));
+						auto externalClipping = clippingEnabled ?
+						                            clippingRegion :
+						                            QRegion(QRect((_x - _w).toInt(), _y - _lineHeight,
+						                                          (_x + 2 * _w).toInt(), _y + 2 * _lineHeight));
 						_p->setClipRegion(externalClipping - selectedRect);
 						_p->setPen(*_currentPen);
 						_p->drawTextItem(QPointF(x.toReal(), textY), gf);
@@ -1556,9 +1591,11 @@ private:
 		}
 
 		_elideSavedIndex = blockIndex;
-		auto mutableText = const_cast<Text*>(_t);
+		auto mutableText = const_cast<Text *>(_t);
 		_elideSavedBlock = std::move(mutableText->_blocks[blockIndex]);
-		mutableText->_blocks[blockIndex] = std::make_unique<TextBlock>(_t->_st->font, _t->_text, QFIXED_MAX, elideStart, 0, _elideSavedBlock->flags(), _elideSavedBlock->lnkIndex());
+		mutableText->_blocks[blockIndex] =
+		    std::make_unique<TextBlock>(_t->_st->font, _t->_text, QFIXED_MAX, elideStart, 0, _elideSavedBlock->flags(),
+		                                _elideSavedBlock->lnkIndex());
 		_blocksSize = blockIndex + 1;
 		_endBlock = (blockIndex + 1 < _t->_blocks.size() ? _t->_blocks[blockIndex + 1].get() : nullptr);
 	}
@@ -1573,7 +1610,8 @@ private:
 		}
 	}
 
-	void prepareElidedLine(QString &lineText, qint32 lineStart, qint32 &lineLength, ITextBlock *&_endBlock, int repeat = 0) {
+	void prepareElidedLine(QString &lineText, qint32 lineStart, qint32 &lineLength, ITextBlock *&_endBlock,
+	                       int repeat = 0) {
 		static const QString _Elide = qsl("...");
 
 		_f = _t->_st->font;
@@ -1596,7 +1634,7 @@ private:
 		_wLeft = _w - elideWidth - _elideRemoveFromEnd;
 
 		int firstItem = engine.findItem(line.from), lastItem = engine.findItem(line.from + line.length - 1);
-	    int nItems = (firstItem >= 0 && lastItem >= firstItem) ? (lastItem - firstItem + 1) : 0, i;
+		int nItems = (firstItem >= 0 && lastItem >= firstItem) ? (lastItem - firstItem + 1) : 0, i;
 
 		for (i = 0; i < nItems; ++i) {
 			QScriptItem &si(engine.layoutData->items[firstItem + i]);
@@ -1673,7 +1711,9 @@ private:
 		lineLength += _Elide.size();
 
 		if (!repeat) {
-			for (; blockIndex < _blocksSize && _t->_blocks[blockIndex].get() != _endBlock && _t->_blocks[blockIndex]->from() < elideStart; ++blockIndex) {
+			for (; blockIndex < _blocksSize && _t->_blocks[blockIndex].get() != _endBlock &&
+			       _t->_blocks[blockIndex]->from() < elideStart;
+			     ++blockIndex) {
 			}
 			if (blockIndex < _blocksSize) {
 				elideSaveBlock(blockIndex, _endBlock, elideStart, elideWidth);
@@ -1683,15 +1723,14 @@ private:
 
 	void restoreAfterElided() {
 		if (_elideSavedBlock) {
-			const_cast<Text*>(_t)->_blocks[_elideSavedIndex] = std::move(_elideSavedBlock);
+			const_cast<Text *>(_t)->_blocks[_elideSavedIndex] = std::move(_elideSavedBlock);
 		}
 	}
 
 	// COPIED FROM qtextengine.cpp AND MODIFIED
 	void eShapeLine(const QScriptLine &line) {
 		int item = _e->findItem(line.from);
-		if (item == -1)
-			return;
+		if (item == -1) return;
 
 #if defined(OS_MAC_OLD) || QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
 		auto end = _e->findItem(line.from + line.length - 1);
@@ -1768,14 +1807,12 @@ private:
 
 	void eItemize() {
 		_e->validate();
-		if (_e->layoutData->items.size())
-			return;
+		if (_e->layoutData->items.size()) return;
 
 		int length = _e->layoutData->string.length();
-		if (!length)
-			return;
+		if (!length) return;
 
-		const ushort *string = reinterpret_cast<const ushort*>(_e->layoutData->string.unicode());
+		const ushort *string = reinterpret_cast<const ushort *>(_e->layoutData->string.unicode());
 
 		auto blockIndex = _lineStartBlock;
 		auto currentBlock = _t->_blocks[blockIndex].get();
@@ -1787,8 +1824,7 @@ private:
 		{
 			QVarLengthArray<uchar> scripts(length);
 			QUnicodeTools::initScripts(string, length, scripts.data());
-			for (int i = 0; i < length; ++i)
-				analysis[i].script = scripts.at(i);
+			for (int i = 0; i < length; ++i) analysis[i].script = scripts.at(i);
 		}
 
 		blockIndex = _lineStartBlock;
@@ -1844,12 +1880,12 @@ private:
 				// the font and because Japanese and Chinese are also aliases of the script "Common",
 				// doing this would break too many things.  So instead we only pass the full stop
 				// along, and nothing else.
-				if (currentBlock == startBlock
-					&& i_analysis[i].bidiLevel == i_analysis[start].bidiLevel
-					&& i_analysis[i].flags == i_analysis[start].flags
-					&& (i_analysis[i].script == i_analysis[start].script || i_string->at(i) == QLatin1Char('.'))
-//					&& i_analysis[i].flags < QScriptAnalysis::SpaceTabOrObject // only emojis are objects here, no tabs
-					&& i - start < _MaxItemLength)
+				if (currentBlock == startBlock && i_analysis[i].bidiLevel == i_analysis[start].bidiLevel &&
+				    i_analysis[i].flags == i_analysis[start].flags &&
+				    (i_analysis[i].script == i_analysis[start].script || i_string->at(i) == QLatin1Char('.'))
+				    // && i_analysis[i].flags < QScriptAnalysis::SpaceTabOrObject // only emojis are objects here, no
+				    // tabs
+				    && i - start < _MaxItemLength)
 					continue;
 				i_items->append(QScriptItem(start, i_analysis[start]));
 				start = i;
@@ -1859,10 +1895,8 @@ private:
 		}
 	}
 
-	QChar::Direction eSkipBoundryNeutrals(QScriptAnalysis *analysis,
-											const ushort *unicode,
-											int &sor, int &eor, BidiControl &control,
-											Text::TextBlocks::const_iterator i) {
+	QChar::Direction eSkipBoundryNeutrals(QScriptAnalysis *analysis, const ushort *unicode, int &sor, int &eor,
+	                                      BidiControl &control, Text::TextBlocks::const_iterator i) {
 		Text::TextBlocks::const_iterator e = _t->_blocks.cend(), n = i + 1;
 
 		QChar::Direction dir = control.basicDirection();
@@ -1887,8 +1921,7 @@ private:
 			else
 				dir = QChar::direction(unicode[sor]);
 			// Keep skipping DirBN as if it doesn't exist
-			if (dir != QChar::DirBN)
-				break;
+			if (dir != QChar::DirBN) break;
 			analysis[sor++].bidiLevel = level;
 		}
 
@@ -1905,7 +1938,7 @@ private:
 		int sor = 0;
 		int eor = -1;
 
-		const ushort *unicode = reinterpret_cast<const ushort*>(_t->_text.unicode()) + _parStart;
+		const ushort *unicode = reinterpret_cast<const ushort *>(_t->_text.unicode()) + _parStart;
 		int current = 0;
 
 		QChar::Direction dir = rightToLeft ? QChar::DirR : QChar::DirL;
@@ -1949,293 +1982,301 @@ private:
 				dirCurrent = QChar::direction(unicode[current]);
 
 			switch (dirCurrent) {
-
 				// embedding and overrides (X1-X9 in the BiDi specs)
 			case QChar::DirRLE:
 			case QChar::DirRLO:
 			case QChar::DirLRE:
-			case QChar::DirLRO:
-				{
-					bool rtl = (dirCurrent == QChar::DirRLE || dirCurrent == QChar::DirRLO);
-					hasBidi |= rtl;
-					bool override = (dirCurrent == QChar::DirLRO || dirCurrent == QChar::DirRLO);
+			case QChar::DirLRO: {
+				bool rtl = (dirCurrent == QChar::DirRLE || dirCurrent == QChar::DirRLO);
+				hasBidi |= rtl;
+				bool override = (dirCurrent == QChar::DirLRO || dirCurrent == QChar::DirRLO);
 
-					unsigned int level = control.level+1;
-					if ((level%2 != 0) == rtl) ++level;
-					if (level < _MaxBidiLevel) {
-						eor = current-1;
-						eAppendItems(analysis, sor, eor, control, dir);
-						eor = current;
-						control.embed(rtl, override);
-						QChar::Direction edir = (rtl ? QChar::DirR : QChar::DirL);
-						dir = status.eor = edir;
-						status.lastStrong = edir;
-					}
-					break;
+				unsigned int level = control.level + 1;
+				if ((level % 2 != 0) == rtl) ++level;
+				if (level < _MaxBidiLevel) {
+					eor = current - 1;
+					eAppendItems(analysis, sor, eor, control, dir);
+					eor = current;
+					control.embed(rtl, override);
+					QChar::Direction edir = (rtl ? QChar::DirR : QChar::DirL);
+					dir = status.eor = edir;
+					status.lastStrong = edir;
 				}
-			case QChar::DirPDF:
-				{
-					if (control.canPop()) {
-						if (dir != control.direction()) {
-							eor = current-1;
-							eAppendItems(analysis, sor, eor, control, dir);
-							dir = control.direction();
-						}
-						eor = current;
+				break;
+			}
+			case QChar::DirPDF: {
+				if (control.canPop()) {
+					if (dir != control.direction()) {
+						eor = current - 1;
 						eAppendItems(analysis, sor, eor, control, dir);
-						control.pdf();
-						dir = QChar::DirON; status.eor = QChar::DirON;
-						status.last = control.direction();
-						if (control.override)
-							dir = control.direction();
-						else
-							dir = QChar::DirON;
-						status.lastStrong = control.direction();
+						dir = control.direction();
 					}
-					break;
+					eor = current;
+					eAppendItems(analysis, sor, eor, control, dir);
+					control.pdf();
+					dir = QChar::DirON;
+					status.eor = QChar::DirON;
+					status.last = control.direction();
+					if (control.override)
+						dir = control.direction();
+					else
+						dir = QChar::DirON;
+					status.lastStrong = control.direction();
 				}
+				break;
+			}
 
 				// strong types
 			case QChar::DirL:
-				if(dir == QChar::DirON)
-					dir = QChar::DirL;
-				switch(status.last)
-					{
-					case QChar::DirL:
-						eor = current; status.eor = QChar::DirL; break;
-					case QChar::DirR:
-					case QChar::DirAL:
-					case QChar::DirEN:
-					case QChar::DirAN:
-						if (eor >= 0) {
+				if (dir == QChar::DirON) dir = QChar::DirL;
+				switch (status.last) {
+				case QChar::DirL:
+					eor = current;
+					status.eor = QChar::DirL;
+					break;
+				case QChar::DirR:
+				case QChar::DirAL:
+				case QChar::DirEN:
+				case QChar::DirAN:
+					if (eor >= 0) {
+						eAppendItems(analysis, sor, eor, control, dir);
+						status.eor = dir = eSkipBoundryNeutrals(analysis, unicode, sor, eor, control, i);
+					} else {
+						eor = current;
+						status.eor = dir;
+					}
+					break;
+				case QChar::DirES:
+				case QChar::DirET:
+				case QChar::DirCS:
+				case QChar::DirBN:
+				case QChar::DirB:
+				case QChar::DirS:
+				case QChar::DirWS:
+				case QChar::DirON:
+					if (dir != QChar::DirL) {
+						// last stuff takes embedding dir
+						if (control.direction() == QChar::DirR) {
+							if (status.eor != QChar::DirR) {
+								// AN or EN
+								eAppendItems(analysis, sor, eor, control, dir);
+								status.eor = QChar::DirON;
+								dir = QChar::DirR;
+							}
+							eor = current - 1;
 							eAppendItems(analysis, sor, eor, control, dir);
 							status.eor = dir = eSkipBoundryNeutrals(analysis, unicode, sor, eor, control, i);
 						} else {
-							eor = current; status.eor = dir;
-						}
-						break;
-					case QChar::DirES:
-					case QChar::DirET:
-					case QChar::DirCS:
-					case QChar::DirBN:
-					case QChar::DirB:
-					case QChar::DirS:
-					case QChar::DirWS:
-					case QChar::DirON:
-						if(dir != QChar::DirL) {
-							//last stuff takes embedding dir
-							if(control.direction() == QChar::DirR) {
-								if(status.eor != QChar::DirR) {
-									// AN or EN
-									eAppendItems(analysis, sor, eor, control, dir);
-									status.eor = QChar::DirON;
-									dir = QChar::DirR;
-								}
-								eor = current - 1;
+							if (status.eor != QChar::DirL) {
 								eAppendItems(analysis, sor, eor, control, dir);
-								status.eor = dir = eSkipBoundryNeutrals(analysis, unicode, sor, eor, control, i);
+								status.eor = QChar::DirON;
+								dir = QChar::DirL;
 							} else {
-								if(status.eor != QChar::DirL) {
-									eAppendItems(analysis, sor, eor, control, dir);
-									status.eor = QChar::DirON;
-									dir = QChar::DirL;
-								} else {
-									eor = current; status.eor = QChar::DirL; break;
-								}
+								eor = current;
+								status.eor = QChar::DirL;
+								break;
 							}
-						} else {
-							eor = current; status.eor = QChar::DirL;
 						}
-					default:
-						break;
+					} else {
+						eor = current;
+						status.eor = QChar::DirL;
 					}
+				default: break;
+				}
 				status.lastStrong = QChar::DirL;
 				break;
 			case QChar::DirAL:
 			case QChar::DirR:
 				hasBidi = true;
-				if(dir == QChar::DirON) dir = QChar::DirR;
-				switch(status.last)
-					{
-					case QChar::DirL:
-					case QChar::DirEN:
-					case QChar::DirAN:
-						if (eor >= 0)
+				if (dir == QChar::DirON) dir = QChar::DirR;
+				switch (status.last) {
+				case QChar::DirL:
+				case QChar::DirEN:
+				case QChar::DirAN:
+					if (eor >= 0) eAppendItems(analysis, sor, eor, control, dir);
+					// fall through
+				case QChar::DirR:
+				case QChar::DirAL:
+					dir = QChar::DirR;
+					eor = current;
+					status.eor = QChar::DirR;
+					break;
+				case QChar::DirES:
+				case QChar::DirET:
+				case QChar::DirCS:
+				case QChar::DirBN:
+				case QChar::DirB:
+				case QChar::DirS:
+				case QChar::DirWS:
+				case QChar::DirON:
+					if (status.eor != QChar::DirR && status.eor != QChar::DirAL) {
+						// last stuff takes embedding dir
+						if (control.direction() == QChar::DirR || status.lastStrong == QChar::DirR ||
+						    status.lastStrong == QChar::DirAL) {
 							eAppendItems(analysis, sor, eor, control, dir);
-						// fall through
-					case QChar::DirR:
-					case QChar::DirAL:
-						dir = QChar::DirR; eor = current; status.eor = QChar::DirR; break;
-					case QChar::DirES:
-					case QChar::DirET:
-					case QChar::DirCS:
-					case QChar::DirBN:
-					case QChar::DirB:
-					case QChar::DirS:
-					case QChar::DirWS:
-					case QChar::DirON:
-						if(status.eor != QChar::DirR && status.eor != QChar::DirAL) {
-							//last stuff takes embedding dir
-							if(control.direction() == QChar::DirR
-							   || status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL) {
-								eAppendItems(analysis, sor, eor, control, dir);
-								dir = QChar::DirR; status.eor = QChar::DirON;
-								eor = current;
-							} else {
-								eor = current - 1;
-								eAppendItems(analysis, sor, eor, control, dir);
-								dir = QChar::DirR; status.eor = QChar::DirON;
-							}
+							dir = QChar::DirR;
+							status.eor = QChar::DirON;
+							eor = current;
 						} else {
-							eor = current; status.eor = QChar::DirR;
+							eor = current - 1;
+							eAppendItems(analysis, sor, eor, control, dir);
+							dir = QChar::DirR;
+							status.eor = QChar::DirON;
 						}
-					default:
-						break;
+					} else {
+						eor = current;
+						status.eor = QChar::DirR;
 					}
+				default: break;
+				}
 				status.lastStrong = dirCurrent;
 				break;
 
 				// weak types:
 
 			case QChar::DirNSM:
-				if (eor == current-1)
-					eor = current;
+				if (eor == current - 1) eor = current;
 				break;
 			case QChar::DirEN:
 				// if last strong was AL change EN to AN
-				if(status.lastStrong != QChar::DirAL) {
-					if(dir == QChar::DirON) {
-						if(status.lastStrong == QChar::DirL)
+				if (status.lastStrong != QChar::DirAL) {
+					if (dir == QChar::DirON) {
+						if (status.lastStrong == QChar::DirL)
 							dir = QChar::DirL;
 						else
 							dir = QChar::DirEN;
 					}
-					switch(status.last)
-						{
-						case QChar::DirET:
-							if (status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL) {
-								eAppendItems(analysis, sor, eor, control, dir);
-								status.eor = QChar::DirON;
-								dir = QChar::DirAN;
-							}
-							// fall through
-						case QChar::DirEN:
-						case QChar::DirL:
-							eor = current;
-							status.eor = dirCurrent;
-							break;
-						case QChar::DirR:
-						case QChar::DirAL:
-						case QChar::DirAN:
-							if (eor >= 0)
-								eAppendItems(analysis, sor, eor, control, dir);
-							else
-								eor = current;
-							status.eor = QChar::DirEN;
-							dir = QChar::DirAN; break;
-						case QChar::DirES:
-						case QChar::DirCS:
-							if(status.eor == QChar::DirEN || dir == QChar::DirAN) {
-								eor = current; break;
-							}
-						case QChar::DirBN:
-						case QChar::DirB:
-						case QChar::DirS:
-						case QChar::DirWS:
-						case QChar::DirON:
-							if(status.eor == QChar::DirR) {
-								// neutrals go to R
-								eor = current - 1;
-								eAppendItems(analysis, sor, eor, control, dir);
-								status.eor = QChar::DirEN;
-								dir = QChar::DirAN;
-							}
-							else if(status.eor == QChar::DirL ||
-									 (status.eor == QChar::DirEN && status.lastStrong == QChar::DirL)) {
-								eor = current; status.eor = dirCurrent;
-							} else {
-								// numbers on both sides, neutrals get right to left direction
-								if(dir != QChar::DirL) {
-									eAppendItems(analysis, sor, eor, control, dir);
-									status.eor = QChar::DirON;
-									eor = current - 1;
-									dir = QChar::DirR;
-									eAppendItems(analysis, sor, eor, control, dir);
-									status.eor = QChar::DirON;
-									dir = QChar::DirAN;
-								} else {
-									eor = current; status.eor = dirCurrent;
-								}
-							}
-						default:
-							break;
+					switch (status.last) {
+					case QChar::DirET:
+						if (status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL) {
+							eAppendItems(analysis, sor, eor, control, dir);
+							status.eor = QChar::DirON;
+							dir = QChar::DirAN;
 						}
-					break;
-				}
-			case QChar::DirAN:
-				hasBidi = true;
-				dirCurrent = QChar::DirAN;
-				if(dir == QChar::DirON) dir = QChar::DirAN;
-				switch(status.last)
-					{
+						// fall through
+					case QChar::DirEN:
 					case QChar::DirL:
-					case QChar::DirAN:
-						eor = current; status.eor = QChar::DirAN; break;
+						eor = current;
+						status.eor = dirCurrent;
+						break;
 					case QChar::DirR:
 					case QChar::DirAL:
-					case QChar::DirEN:
-						if (eor >= 0){
+					case QChar::DirAN:
+						if (eor >= 0)
 							eAppendItems(analysis, sor, eor, control, dir);
-						} else {
+						else
 							eor = current;
-						}
-						dir = QChar::DirAN; status.eor = QChar::DirAN;
+						status.eor = QChar::DirEN;
+						dir = QChar::DirAN;
 						break;
-					case QChar::DirCS:
-						if(status.eor == QChar::DirAN) {
-							eor = current; break;
-						}
 					case QChar::DirES:
-					case QChar::DirET:
+					case QChar::DirCS:
+						if (status.eor == QChar::DirEN || dir == QChar::DirAN) {
+							eor = current;
+							break;
+						}
 					case QChar::DirBN:
 					case QChar::DirB:
 					case QChar::DirS:
 					case QChar::DirWS:
 					case QChar::DirON:
-						if(status.eor == QChar::DirR) {
+						if (status.eor == QChar::DirR) {
 							// neutrals go to R
 							eor = current - 1;
 							eAppendItems(analysis, sor, eor, control, dir);
-							status.eor = QChar::DirAN;
+							status.eor = QChar::DirEN;
 							dir = QChar::DirAN;
-						} else if(status.eor == QChar::DirL ||
-								   (status.eor == QChar::DirEN && status.lastStrong == QChar::DirL)) {
-							eor = current; status.eor = dirCurrent;
+						} else if (status.eor == QChar::DirL ||
+						           (status.eor == QChar::DirEN && status.lastStrong == QChar::DirL)) {
+							eor = current;
+							status.eor = dirCurrent;
 						} else {
 							// numbers on both sides, neutrals get right to left direction
-							if(dir != QChar::DirL) {
+							if (dir != QChar::DirL) {
 								eAppendItems(analysis, sor, eor, control, dir);
 								status.eor = QChar::DirON;
 								eor = current - 1;
 								dir = QChar::DirR;
 								eAppendItems(analysis, sor, eor, control, dir);
-								status.eor = QChar::DirAN;
+								status.eor = QChar::DirON;
 								dir = QChar::DirAN;
 							} else {
-								eor = current; status.eor = dirCurrent;
+								eor = current;
+								status.eor = dirCurrent;
 							}
 						}
-					default:
+					default: break;
+					}
+					break;
+				}
+			case QChar::DirAN:
+				hasBidi = true;
+				dirCurrent = QChar::DirAN;
+				if (dir == QChar::DirON) dir = QChar::DirAN;
+				switch (status.last) {
+				case QChar::DirL:
+				case QChar::DirAN:
+					eor = current;
+					status.eor = QChar::DirAN;
+					break;
+				case QChar::DirR:
+				case QChar::DirAL:
+				case QChar::DirEN:
+					if (eor >= 0) {
+						eAppendItems(analysis, sor, eor, control, dir);
+					} else {
+						eor = current;
+					}
+					dir = QChar::DirAN;
+					status.eor = QChar::DirAN;
+					break;
+				case QChar::DirCS:
+					if (status.eor == QChar::DirAN) {
+						eor = current;
 						break;
 					}
+				case QChar::DirES:
+				case QChar::DirET:
+				case QChar::DirBN:
+				case QChar::DirB:
+				case QChar::DirS:
+				case QChar::DirWS:
+				case QChar::DirON:
+					if (status.eor == QChar::DirR) {
+						// neutrals go to R
+						eor = current - 1;
+						eAppendItems(analysis, sor, eor, control, dir);
+						status.eor = QChar::DirAN;
+						dir = QChar::DirAN;
+					} else if (status.eor == QChar::DirL ||
+					           (status.eor == QChar::DirEN && status.lastStrong == QChar::DirL)) {
+						eor = current;
+						status.eor = dirCurrent;
+					} else {
+						// numbers on both sides, neutrals get right to left direction
+						if (dir != QChar::DirL) {
+							eAppendItems(analysis, sor, eor, control, dir);
+							status.eor = QChar::DirON;
+							eor = current - 1;
+							dir = QChar::DirR;
+							eAppendItems(analysis, sor, eor, control, dir);
+							status.eor = QChar::DirAN;
+							dir = QChar::DirAN;
+						} else {
+							eor = current;
+							status.eor = dirCurrent;
+						}
+					}
+				default: break;
+				}
 				break;
 			case QChar::DirES:
-			case QChar::DirCS:
-				break;
+			case QChar::DirCS: break;
 			case QChar::DirET:
-				if(status.last == QChar::DirEN) {
+				if (status.last == QChar::DirEN) {
 					dirCurrent = QChar::DirEN;
-					eor = current; status.eor = dirCurrent;
+					eor = current;
+					status.eor = dirCurrent;
 				}
 				break;
 
@@ -2250,33 +2291,27 @@ private:
 				// ### implement rule L1
 				break;
 			case QChar::DirWS:
-			case QChar::DirON:
-				break;
-			default:
-				break;
+			case QChar::DirON: break;
+			default: break;
 			}
 
-			if(current >= (int)_parLength) break;
+			if (current >= (int)_parLength) break;
 
 			// set status.last as needed.
-			switch(dirCurrent) {
+			switch (dirCurrent) {
 			case QChar::DirET:
 			case QChar::DirES:
 			case QChar::DirCS:
 			case QChar::DirS:
 			case QChar::DirWS:
 			case QChar::DirON:
-				switch(status.last)
-				{
+				switch (status.last) {
 				case QChar::DirL:
 				case QChar::DirR:
 				case QChar::DirAL:
 				case QChar::DirEN:
-				case QChar::DirAN:
-					status.last = dirCurrent;
-					break;
-				default:
-					status.last = QChar::DirON;
+				case QChar::DirAN: status.last = dirCurrent; break;
+				default: status.last = QChar::DirON;
 				}
 				break;
 			case QChar::DirNSM:
@@ -2284,21 +2319,16 @@ private:
 				// ignore these
 				break;
 			case QChar::DirLRO:
-			case QChar::DirLRE:
-				status.last = QChar::DirL;
-				break;
+			case QChar::DirLRE: status.last = QChar::DirL; break;
 			case QChar::DirRLO:
-			case QChar::DirRLE:
-				status.last = QChar::DirR;
-				break;
+			case QChar::DirRLE: status.last = QChar::DirR; break;
 			case QChar::DirEN:
 				if (status.last == QChar::DirL) {
 					status.last = QChar::DirL;
 					break;
 				}
 				// fall through
-			default:
-				status.last = dirCurrent;
+			default: status.last = dirCurrent;
 			}
 
 			++current;
@@ -2306,8 +2336,7 @@ private:
 
 		eor = current - 1; // remove dummy char
 
-		if (sor <= eor)
-			eAppendItems(analysis, sor, eor, control, dir);
+		if (sor <= eor) eAppendItems(analysis, sor, eor, control, dir);
 
 		return hasBidi;
 	}
@@ -2343,7 +2372,7 @@ private:
 	int _yFrom = 0;
 	int _yTo = 0;
 	int _yToElide = 0;
-	TextSelection _selection = { 0, 0 };
+	TextSelection _selection = {0, 0};
 	bool _fullWidthSelection = true;
 	const QChar *_str = nullptr;
 
@@ -2377,27 +2406,28 @@ private:
 	bool _lookupLink = false;
 	Text::StateRequest _lookupRequest;
 	Text::StateResult _lookupResult;
-
 };
 
 const TextParseOptions _defaultOptions = {
-	TextParseLinks | TextParseMultiline, // flags
-	0, // maxw
-	0, // maxh
-	Qt::LayoutDirectionAuto, // dir
+    TextParseLinks | TextParseMultiline, // flags
+    0, // maxw
+    0, // maxh
+    Qt::LayoutDirectionAuto, // dir
 };
 
 const TextParseOptions _textPlainOptions = {
-	TextParseMultiline, // flags
-	0, // maxw
-	0, // maxh
-	Qt::LayoutDirectionAuto, // dir
+    TextParseMultiline, // flags
+    0, // maxw
+    0, // maxh
+    Qt::LayoutDirectionAuto, // dir
 };
 
-Text::Text(qint32 minResizeWidth) : _minResizeWidth(minResizeWidth) {
-}
+Text::Text(qint32 minResizeWidth)
+    : _minResizeWidth(minResizeWidth) {}
 
-Text::Text(const style::TextStyle &st, const QString &text, const TextParseOptions &options, qint32 minResizeWidth, bool richText) : _minResizeWidth(minResizeWidth) {
+Text::Text(const style::TextStyle &st, const QString &text, const TextParseOptions &options, qint32 minResizeWidth,
+           bool richText)
+    : _minResizeWidth(minResizeWidth) {
 	if (richText) {
 		setRichText(st, text, options);
 	} else {
@@ -2406,13 +2436,13 @@ Text::Text(const style::TextStyle &st, const QString &text, const TextParseOptio
 }
 
 Text::Text(const Text &other)
-: _minResizeWidth(other._minResizeWidth)
-, _maxWidth(other._maxWidth)
-, _minHeight(other._minHeight)
-, _text(other._text)
-, _st(other._st)
-, _links(other._links)
-, _startDir(other._startDir) {
+    : _minResizeWidth(other._minResizeWidth)
+    , _maxWidth(other._maxWidth)
+    , _minHeight(other._minHeight)
+    , _text(other._text)
+    , _st(other._st)
+    , _links(other._links)
+    , _startDir(other._startDir) {
 	_blocks.reserve(other._blocks.size());
 	for (auto &block : other._blocks) {
 		_blocks.push_back(block->clone());
@@ -2420,14 +2450,14 @@ Text::Text(const Text &other)
 }
 
 Text::Text(Text &&other)
-: _minResizeWidth(other._minResizeWidth)
-, _maxWidth(other._maxWidth)
-, _minHeight(other._minHeight)
-, _text(other._text)
-, _st(other._st)
-, _blocks(std::move(other._blocks))
-, _links(other._links)
-, _startDir(other._startDir) {
+    : _minResizeWidth(other._minResizeWidth)
+    , _maxWidth(other._maxWidth)
+    , _minHeight(other._minHeight)
+    , _text(other._text)
+    , _st(other._st)
+    , _blocks(std::move(other._blocks))
+    , _links(other._links)
+    , _startDir(other._startDir) {
 	other.clearFields();
 }
 
@@ -2462,9 +2492,7 @@ Text &Text::operator=(Text &&other) {
 void Text::setText(const style::TextStyle &st, const QString &text, const TextParseOptions &options) {
 	_st = &st;
 	clear();
-	{
-		TextParser parser(this, text, options);
-	}
+	{ TextParser parser(this, text, options); }
 	recountNaturalSize(true, options.dir);
 }
 
@@ -2493,7 +2521,7 @@ void Text::recountNaturalSize(bool initial, Qt::LayoutDirection optionsDir) {
 				}
 			}
 			lastNewlineStart = b->from();
-			lastNewline = static_cast<NewlineBlock*>(b);
+			lastNewline = static_cast<NewlineBlock *>(b);
 
 			_minHeight += lineHeight;
 			lineHeight = 0;
@@ -2541,7 +2569,8 @@ void Text::recountNaturalSize(bool initial, Qt::LayoutDirection optionsDir) {
 	}
 }
 
-void Text::setMarkedText(const style::TextStyle &st, const TextWithEntities &textWithEntities, const TextParseOptions &options) {
+void Text::setMarkedText(const style::TextStyle &st, const TextWithEntities &textWithEntities,
+                         const TextParseOptions &options) {
 	_st = &st;
 	clear();
 	{
@@ -2579,7 +2608,8 @@ void Text::setMarkedText(const style::TextStyle &st, const TextWithEntities &tex
 	recountNaturalSize(true, options.dir);
 }
 
-void Text::setRichText(const style::TextStyle &st, const QString &text, TextParseOptions options, const TextCustomTagsMap &custom) {
+void Text::setRichText(const style::TextStyle &st, const QString &text, TextParseOptions options,
+                       const TextCustomTagsMap &custom) {
 	QString parsed;
 	parsed.reserve(text.size());
 	const QChar *s = text.constData(), *ch = s;
@@ -2609,7 +2639,7 @@ void Text::setRichText(const style::TextStyle &st, const QString &text, TextPars
 			case 'b': cmd = closing ? TextCommandNoBold : TextCommandBold; break;
 			case 'i': cmd = closing ? TextCommandNoItalic : TextCommandItalic; break;
 			case 'u': cmd = closing ? TextCommandNoUnderline : TextCommandUnderline; break;
-			default : other = true; break;
+			default: other = true; break;
 			}
 
 			if (!other) {
@@ -2672,7 +2702,7 @@ bool Text::hasSkipBlock() const {
 
 void Text::setSkipBlock(qint32 width, qint32 height) {
 	if (!_blocks.empty() && _blocks.back()->type() == TextBlockTSkip) {
-		auto block = static_cast<SkipBlock*>(_blocks.back().get());
+		auto block = static_cast<SkipBlock *>(_blocks.back().get());
 		if (block->width() == width && block->height() == height) return;
 		_text.resize(block->from());
 		_blocks.pop_back();
@@ -2709,20 +2739,16 @@ int Text::countHeight(int width) const {
 		return _minHeight;
 	}
 	int result = 0;
-	enumerateLines(width, [&result](QFixed lineWidth, int lineHeight) {
-		result += lineHeight;
-	});
+	enumerateLines(width, [&result](QFixed lineWidth, int lineHeight) { result += lineHeight; });
 	return result;
 }
 
 void Text::countLineWidths(int width, QVector<int> *lineWidths) const {
-	enumerateLines(width, [lineWidths](QFixed lineWidth, int lineHeight) {
-		lineWidths->push_back(lineWidth.ceil().toInt());
-	});
+	enumerateLines(width,
+	               [lineWidths](QFixed lineWidth, int lineHeight) { lineWidths->push_back(lineWidth.ceil().toInt()); });
 }
 
-template <typename Callback>
-void Text::enumerateLines(int w, Callback callback) const {
+template <typename Callback> void Text::enumerateLines(int w, Callback callback) const {
 	QFixed width = w;
 	if (width < _minResizeWidth) width = _minResizeWidth;
 
@@ -2759,7 +2785,7 @@ void Text::enumerateLines(int w, Callback callback) const {
 		}
 
 		if (_btype == TextBlockTText) {
-			auto t = static_cast<TextBlock*>(b.get());
+			auto t = static_cast<TextBlock *>(b.get());
 			if (t->_words.isEmpty()) { // no words in this block, spaces only => layout this block in the same line
 				last_rPadding += b->f_rpadding();
 
@@ -2831,14 +2857,17 @@ void Text::enumerateLines(int w, Callback callback) const {
 	}
 }
 
-void Text::draw(Painter &painter, qint32 left, qint32 top, qint32 w, style::align align, qint32 yFrom, qint32 yTo, TextSelection selection, bool fullWidthSelection) const {
-//	painter.fillRect(QRect(left, top, w, countHeight(w)), QColor(0, 0, 0, 32)); // debug
+void Text::draw(Painter &painter, qint32 left, qint32 top, qint32 w, style::align align, qint32 yFrom, qint32 yTo,
+                TextSelection selection, bool fullWidthSelection) const {
+	//	painter.fillRect(QRect(left, top, w, countHeight(w)), QColor(0, 0, 0, 32)); // debug
 	TextPainter p(&painter, this);
 	p.draw(left, top, w, align, yFrom, yTo, selection, fullWidthSelection);
 }
 
-void Text::drawElided(Painter &painter, qint32 left, qint32 top, qint32 w, qint32 lines, style::align align, qint32 yFrom, qint32 yTo, qint32 removeFromEnd, bool breakEverywhere, TextSelection selection) const {
-//	painter.fillRect(QRect(left, top, w, countHeight(w)), QColor(0, 0, 0, 32)); // debug
+void Text::drawElided(Painter &painter, qint32 left, qint32 top, qint32 w, qint32 lines, style::align align,
+                      qint32 yFrom, qint32 yTo, qint32 removeFromEnd, bool breakEverywhere,
+                      TextSelection selection) const {
+	//	painter.fillRect(QRect(left, top, w, countHeight(w)), QColor(0, 0, 0, 32)); // debug
 	TextPainter p(&painter, this);
 	p.drawElided(left, top, w, align, lines, yFrom, yTo, removeFromEnd, breakEverywhere, selection);
 }
@@ -2889,7 +2918,7 @@ TextSelection Text::adjustSelection(TextSelection selection, TextSelectType sele
 			}
 		}
 	}
-	return { from, to };
+	return {from, to};
 }
 
 bool Text::isEmpty() const {
@@ -2900,12 +2929,17 @@ quint16 Text::countBlockEnd(const TextBlocks::const_iterator &i, const TextBlock
 	return (i + 1 == e) ? _text.size() : (*(i + 1))->from();
 }
 
-quint16 Text::countBlockLength(const Text::TextBlocks::const_iterator &i, const Text::TextBlocks::const_iterator &e) const {
+quint16 Text::countBlockLength(const Text::TextBlocks::const_iterator &i,
+                               const Text::TextBlocks::const_iterator &e) const {
 	return countBlockEnd(i, e) - (*i)->from();
 }
 
-template <typename AppendPartCallback, typename ClickHandlerStartCallback, typename ClickHandlerFinishCallback, typename FlagsChangeCallback>
-void Text::enumerateText(TextSelection selection, AppendPartCallback appendPartCallback, ClickHandlerStartCallback clickHandlerStartCallback, ClickHandlerFinishCallback clickHandlerFinishCallback, FlagsChangeCallback flagsChangeCallback) const {
+template <typename AppendPartCallback, typename ClickHandlerStartCallback, typename ClickHandlerFinishCallback,
+          typename FlagsChangeCallback>
+void Text::enumerateText(TextSelection selection, AppendPartCallback appendPartCallback,
+                         ClickHandlerStartCallback clickHandlerStartCallback,
+                         ClickHandlerFinishCallback clickHandlerFinishCallback,
+                         FlagsChangeCallback flagsChangeCallback) const {
 	if (isEmpty() || selection.empty()) {
 		return;
 	}
@@ -2964,7 +2998,8 @@ TextWithEntities Text::originalTextWithEntities(TextSelection selection, ExpandL
 	result.text.reserve(_text.size());
 
 	int lnkStart = 0, italicStart = 0, boldStart = 0, codeStart = 0, preStart = 0;
-	auto flagsChangeCallback = [&result, &italicStart, &boldStart, &codeStart, &preStart](qint32 oldFlags, qint32 newFlags) {
+	auto flagsChangeCallback = [&result, &italicStart, &boldStart, &codeStart, &preStart](qint32 oldFlags,
+	                                                                                      qint32 newFlags) {
 		if ((oldFlags & TextBlockFItalic) && !(newFlags & TextBlockFItalic)) { // write italic
 			result.entities.push_back(EntityInText(EntityInTextItalic, italicStart, result.text.size() - italicStart));
 		} else if ((newFlags & TextBlockFItalic) && !(oldFlags & TextBlockFItalic)) {
@@ -2986,9 +3021,7 @@ TextWithEntities Text::originalTextWithEntities(TextSelection selection, ExpandL
 			preStart = result.text.size();
 		}
 	};
-	auto clickHandlerStartCallback = [&result, &lnkStart]() {
-		lnkStart = result.text.size();
-	};
+	auto clickHandlerStartCallback = [&result, &lnkStart]() { lnkStart = result.text.size(); };
 	auto clickHandlerFinishCallback = [mode, &result, &lnkStart](const QStringRef &r, const ClickHandlerPtr &handler) {
 		auto expanded = handler->getExpandedLinkTextWithEntities(mode, lnkStart, r);
 		if (expanded.text.isEmpty()) {
@@ -3000,11 +3033,10 @@ TextWithEntities Text::originalTextWithEntities(TextSelection selection, ExpandL
 			result.entities.append(expanded.entities);
 		}
 	};
-	auto appendPartCallback = [&result](const QStringRef &r) {
-		result.text += r;
-	};
+	auto appendPartCallback = [&result](const QStringRef &r) { result.text += r; };
 
-	enumerateText(selection, appendPartCallback, clickHandlerStartCallback, clickHandlerFinishCallback, flagsChangeCallback);
+	enumerateText(selection, appendPartCallback, clickHandlerStartCallback, clickHandlerFinishCallback,
+	              flagsChangeCallback);
 
 	return result;
 }
@@ -3013,11 +3045,8 @@ QString Text::originalText(TextSelection selection, ExpandLinksMode mode) const 
 	QString result;
 	result.reserve(_text.size());
 
-	auto appendPartCallback = [&result](const QStringRef &r) {
-		result += r;
-	};
-	auto clickHandlerStartCallback = []() {
-	};
+	auto appendPartCallback = [&result](const QStringRef &r) { result += r; };
+	auto clickHandlerStartCallback = []() {};
 	auto clickHandlerFinishCallback = [mode, &result](const QStringRef &r, const ClickHandlerPtr &handler) {
 		auto expanded = handler->getExpandedLinkText(mode, r);
 		if (expanded.isEmpty()) {
@@ -3026,10 +3055,10 @@ QString Text::originalText(TextSelection selection, ExpandLinksMode mode) const 
 			result += expanded;
 		}
 	};
-	auto flagsChangeCallback = [](qint32 oldFlags, qint32 newFlags) {
-	};
+	auto flagsChangeCallback = [](qint32 oldFlags, qint32 newFlags) {};
 
-	enumerateText(selection, appendPartCallback, clickHandlerStartCallback, clickHandlerFinishCallback, flagsChangeCallback);
+	enumerateText(selection, appendPartCallback, clickHandlerStartCallback, clickHandlerFinishCallback,
+	              flagsChangeCallback);
 
 	return result;
 }

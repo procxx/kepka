@@ -18,17 +18,17 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include <QTextBlock>
 #include "chat_helpers/emoji_suggestions_widget.h"
+#include <QTextBlock>
 
+#include "app.h"
 #include "chat_helpers/emoji_suggestions_helper.h"
-#include "ui/effects/ripple_animation.h"
-#include "ui/widgets/shadow.h"
 #include "platform/platform_specific.h"
 #include "styles/style_chat_helpers.h"
-#include "ui/widgets/inner_dropdown.h"
+#include "ui/effects/ripple_animation.h"
 #include "ui/emoji_config.h"
-#include "app.h"
+#include "ui/widgets/inner_dropdown.h"
+#include "ui/widgets/shadow.h"
 
 namespace Ui {
 namespace Emoji {
@@ -71,20 +71,19 @@ private:
 	QString _label;
 	QString _replacement;
 	std::unique_ptr<RippleAnimation> _ripple;
-
 };
 
 SuggestionsWidget::Row::Row(not_null<EmojiPtr> emoji, const QString &label, const QString &replacement)
-: _emoji(emoji)
-, _label(label)
-, _replacement(replacement) {
-}
+    : _emoji(emoji)
+    , _label(label)
+    , _replacement(replacement) {}
 
 SuggestionsWidget::Row::~Row() = default;
 
-SuggestionsWidget::SuggestionsWidget(QWidget *parent, const style::Menu &st) : TWidget(parent)
-, _st(&st)
-, _rowHeight(_st->itemPadding.top() + _st->itemFont->height + _st->itemPadding.bottom()) {
+SuggestionsWidget::SuggestionsWidget(QWidget *parent, const style::Menu &st)
+    : TWidget(parent)
+    , _st(&st)
+    , _rowHeight(_st->itemPadding.top() + _st->itemFont->height + _st->itemPadding.bottom()) {
 	setMouseTracking(true);
 }
 
@@ -124,7 +123,7 @@ std::vector<SuggestionsWidget::Row> SuggestionsWidget::getRowsByQuery() const {
 		suggestionsEmoji[i] = Find(QStringFromUTF16(suggestions[i].emoji()));
 	}
 	auto recents = 0;
-    auto &recent = GetRecent();
+	auto &recent = GetRecent();
 	for (auto &item : recent) {
 		auto emoji = item.first->original();
 		if (!emoji) emoji = item.first;
@@ -209,7 +208,9 @@ void SuggestionsWidget::paintEvent(QPaintEvent *e) {
 		}
 		auto emoji = row.emoji();
 		auto esize = Ui::Emoji::Size(Ui::Emoji::Index() + 1);
-		p.drawPixmapLeft((_st->itemPadding.left() - (esize / cIntRetinaFactor())) / 2, (_rowHeight - (esize / cIntRetinaFactor())) / 2, width(), App::emojiLarge(), QRect(emoji->x() * esize, emoji->y() * esize, esize, esize));
+		p.drawPixmapLeft((_st->itemPadding.left() - (esize / cIntRetinaFactor())) / 2,
+		                 (_rowHeight - (esize / cIntRetinaFactor())) / 2, width(), App::emojiLarge(),
+		                 QRect(emoji->x() * esize, emoji->y() * esize, esize, esize));
 		p.setPen(selected ? _st->itemFgOver : _st->itemFg);
 		p.drawTextLeft(_st->itemPadding.left(), _st->itemPadding.top(), width(), row.label());
 		p.translate(0, _rowHeight);
@@ -318,9 +319,8 @@ void SuggestionsWidget::mousePressEvent(QMouseEvent *e) {
 		setPressed(_selected);
 		if (!_rows[_pressed].ripple()) {
 			auto mask = RippleAnimation::rectMask(QSize(width(), _rowHeight));
-			_rows[_pressed].setRipple(std::make_unique<RippleAnimation>(_st->ripple, std::move(mask), [this, selected = _pressed] {
-				updateItem(selected);
-			}));
+			_rows[_pressed].setRipple(std::make_unique<RippleAnimation>(
+			    _st->ripple, std::move(mask), [this, selected = _pressed] { updateItem(selected); }));
 		}
 		_rows[_pressed].ripple()->add(mapFromGlobal(QCursor::pos()) - QPoint(0, itemTop(_pressed)));
 	}
@@ -362,10 +362,12 @@ void SuggestionsWidget::leaveEventHook(QEvent *e) {
 	return TWidget::leaveEventHook(e);
 }
 
-SuggestionsController::SuggestionsController(QWidget *parent, not_null<QTextEdit*> field) : QObject(nullptr)
-, _field(field)
-, _container(parent, st::emojiSuggestionsDropdown)
-, _suggestions(_container->setOwnedWidget(object_ptr<Ui::Emoji::SuggestionsWidget>(parent, st::emojiSuggestionsMenu))) {
+SuggestionsController::SuggestionsController(QWidget *parent, not_null<QTextEdit *> field)
+    : QObject(nullptr)
+    , _field(field)
+    , _container(parent, st::emojiSuggestionsDropdown)
+    , _suggestions(
+          _container->setOwnedWidget(object_ptr<Ui::Emoji::SuggestionsWidget>(parent, st::emojiSuggestionsMenu))) {
 	_container->setAutoHiding(false);
 
 	_field->installEventFilter(this);
@@ -430,9 +432,7 @@ QString SuggestionsController::getEmojiQuery() {
 	auto isSuggestionChar = [](QChar ch) {
 		return (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || (ch == '_') || (ch == '-') || (ch == '+');
 	};
-	auto isGoodCharBeforeSuggestion = [isSuggestionChar](QChar ch) {
-		return !isSuggestionChar(ch) || (ch == 0);
-	};
+	auto isGoodCharBeforeSuggestion = [isSuggestionChar](QChar ch) { return !isSuggestionChar(ch) || (ch == 0); };
 	Assert(position > 0 && position <= text.size());
 	for (auto i = position; i != 0;) {
 		auto ch = text[--i];
@@ -511,7 +511,8 @@ void SuggestionsController::updateGeometry() {
 	auto boundingRect = _container->parentWidget()->rect();
 	auto origin = rtl() ? PanelAnimation::Origin::BottomRight : PanelAnimation::Origin::BottomLeft;
 	auto point = rtl() ? (aroundRect.topLeft() + QPoint(aroundRect.width(), 0)) : aroundRect.topLeft();
-	point -= rtl() ? QPoint(_container->width() - st::emojiSuggestionsDropdown.padding.right(), _container->height()) : QPoint(st::emojiSuggestionsDropdown.padding.left(), _container->height());
+	point -= rtl() ? QPoint(_container->width() - st::emojiSuggestionsDropdown.padding.right(), _container->height()) :
+	                 QPoint(st::emojiSuggestionsDropdown.padding.left(), _container->height());
 	if (rtl()) {
 		if (point.x() < boundingRect.x()) {
 			point.setX(boundingRect.x());
@@ -529,7 +530,8 @@ void SuggestionsController::updateGeometry() {
 	}
 	if (point.y() < boundingRect.y()) {
 		point.setY(aroundRect.y() + aroundRect.height());
-		origin = (origin == PanelAnimation::Origin::BottomRight) ? PanelAnimation::Origin::TopRight : PanelAnimation::Origin::TopLeft;
+		origin = (origin == PanelAnimation::Origin::BottomRight) ? PanelAnimation::Origin::TopRight :
+		                                                           PanelAnimation::Origin::TopLeft;
 	}
 	_container->move(point);
 }
@@ -562,7 +564,7 @@ bool SuggestionsController::eventFilter(QObject *object, QEvent *event) {
 		} break;
 
 		case QEvent::KeyPress: {
-			auto key = static_cast<QKeyEvent*>(event)->key();
+			auto key = static_cast<QKeyEvent *>(event)->key();
 			switch (key) {
 			case Qt::Key_Enter:
 			case Qt::Key_Return:

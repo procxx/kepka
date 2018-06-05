@@ -20,25 +20,26 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_settings.h"
 
-#include "profile/profile_channel_controllers.h"
+#include "apiwrap.h"
+#include "auth_session.h"
+#include "boxes/confirm_box.h"
+#include "boxes/peer_list_controllers.h"
 #include "history/history_admin_log_section.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
+#include "profile/profile_channel_controllers.h"
 #include "styles/style_profile.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/checkbox.h"
-#include "boxes/peer_list_controllers.h"
-#include "boxes/confirm_box.h"
-#include "observer_peer.h"
-#include "auth_session.h"
-#include "mainwidget.h"
-#include "apiwrap.h"
-#include "lang/lang_keys.h"
 
 namespace Profile {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
 
-SettingsWidget::SettingsWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_settings_section))
-, _enableNotifications(this, lang(lng_profile_enable_notifications), true, st::defaultCheckbox) {
+SettingsWidget::SettingsWidget(QWidget *parent, PeerData *peer)
+    : BlockWidget(parent, peer, lang(lng_profile_settings_section))
+    , _enableNotifications(this, lang(lng_profile_enable_notifications), true, st::defaultCheckbox) {
 	subscribe(_enableNotifications->checkedChanged, [this](bool checked) { onNotificationsChange(); });
 
 	Notify::PeerUpdate::Flags observeEvents = UpdateFlag::NotificationsEnabled;
@@ -47,11 +48,12 @@ SettingsWidget::SettingsWidget(QWidget *parent, PeerData *peer) : BlockWidget(pa
 			observeEvents |= UpdateFlag::ChatCanEdit | UpdateFlag::InviteLinkChanged;
 		}
 	} else if (auto channel = peer->asChannel()) {
-		observeEvents |= UpdateFlag::ChannelRightsChanged | UpdateFlag::BannedUsersChanged | UpdateFlag::UsernameChanged | UpdateFlag::InviteLinkChanged;
+		observeEvents |= UpdateFlag::ChannelRightsChanged | UpdateFlag::BannedUsersChanged |
+		                 UpdateFlag::UsernameChanged | UpdateFlag::InviteLinkChanged;
 	}
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	refreshButtons();
 	_enableNotifications->finishAnimations();
@@ -67,7 +69,8 @@ void SettingsWidget::notifyPeerUpdated(const Notify::PeerUpdate &update) {
 	if (update.flags & UpdateFlag::NotificationsEnabled) {
 		refreshEnableNotifications();
 	}
-	if (update.flags & (UpdateFlag::ChannelRightsChanged | UpdateFlag::ChatCanEdit | UpdateFlag::UsernameChanged | UpdateFlag::InviteLinkChanged)) {
+	if (update.flags & (UpdateFlag::ChannelRightsChanged | UpdateFlag::ChatCanEdit | UpdateFlag::UsernameChanged |
+	                    UpdateFlag::InviteLinkChanged)) {
 		refreshInviteLinkButton();
 	}
 	if (update.flags & (UpdateFlag::ChannelRightsChanged | UpdateFlag::ChatCanEdit)) {
@@ -205,7 +208,8 @@ void SettingsWidget::refreshInviteLinkButton() {
 }
 
 void SettingsWidget::onNotificationsChange() {
-	App::main()->updateNotifySetting(peer(), _enableNotifications->checked() ? NotifySettingSetNotify : NotifySettingSetMuted);
+	App::main()->updateNotifySetting(peer(),
+	                                 _enableNotifications->checked() ? NotifySettingSetNotify : NotifySettingSetMuted);
 }
 
 void SettingsWidget::onManageAdmins() {
@@ -249,9 +253,9 @@ void SettingsWidget::onInviteLink() {
 
 	auto text = lang(link.isEmpty() ? lng_group_invite_about : lng_group_invite_about_new);
 	Ui::show(Box<ConfirmBox>(text, base::lambda_guarded(this, [this] {
-		Ui::hideLayer();
-		Auth().api().exportInviteLink(peer());
-	})));
+		                         Ui::hideLayer();
+		                         Auth().api().exportInviteLink(peer());
+	                         })));
 }
 
 } // namespace Profile

@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "media/media_child_ffmpeg_loader.h"
 #include "media/media_audio.h"
 #include "media/media_child_ffmpeg_loader.h"
 
@@ -42,7 +41,7 @@ signals:
 	void error(const AudioMsgId &audio);
 	void needToCheck();
 
-	public slots:
+public slots:
 	void onInit();
 
 	void onStart(const AudioMsgId &audio, qint64 position);
@@ -75,7 +74,6 @@ private:
 	void loadData(AudioMsgId audio, qint64 position);
 	AudioPlayerLoader *setupLoader(const AudioMsgId &audio, SetupError &err, qint64 &position);
 	Mixer::Track *checkLoader(AudioMsgId::Type type);
-
 };
 
 } // namespace Player

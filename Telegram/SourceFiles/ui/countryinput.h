@@ -57,14 +57,13 @@ private:
 	bool _active = false;
 	QString _text;
 	QPainterPath _placeholderPath;
-
 };
 
 class CountrySelectBox : public BoxContent {
 	Q_OBJECT
 
 public:
-	CountrySelectBox(QWidget*);
+	CountrySelectBox(QWidget *);
 
 signals:
 	void countryChosen(const QString &iso);
@@ -86,7 +85,6 @@ private:
 
 	class Inner;
 	QPointer<Inner> _inner;
-
 };
 
 // This class is hold in header because it requires Qt preprocessing.
@@ -136,5 +134,4 @@ private:
 	bool _mouseSelection = false;
 
 	std::vector<std::unique_ptr<Ui::RippleAnimation>> _ripples;
-
 };

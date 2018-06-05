@@ -33,7 +33,7 @@ class RateCallBox : public BoxContent, private MTP::Sender {
 	Q_OBJECT
 
 public:
-	RateCallBox(QWidget*, quint64 callId, quint64 callAccessHash);
+	RateCallBox(QWidget *, quint64 callId, quint64 callAccessHash);
 
 private slots:
 	void onSend();
@@ -57,8 +57,7 @@ private:
 	int _rating = 0;
 
 	std::vector<object_ptr<Ui::IconButton>> _stars;
-	object_ptr<Ui::InputArea> _comment = { nullptr };
+	object_ptr<Ui::InputArea> _comment = {nullptr};
 
 	mtpRequestId _requestId = 0;
-
 };

@@ -20,16 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/emoji/options.h"
 
-#include <ostream>
-#include <QtCore/QCoreApplication>
 #include "codegen/common/logging.h"
+#include <QtCore/QCoreApplication>
+#include <ostream>
 
 namespace codegen {
 namespace emoji {
 namespace {
 
-constexpr int kErrorOutputPathExpected      = 902;
-constexpr int kErrorReplacesPathExpected    = 903;
+constexpr int kErrorOutputPathExpected = 902;
+constexpr int kErrorReplacesPathExpected = 903;
 constexpr int kErrorOneReplacesPathExpected = 904;
 
 } // namespace

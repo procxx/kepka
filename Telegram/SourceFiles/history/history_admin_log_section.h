@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "window/section_widget.h"
-#include "window/section_memento.h"
 #include "history/history_admin_log_item.h"
 #include "mtproto/sender.h"
+#include "window/section_memento.h"
+#include "window/section_widget.h"
 
 namespace Notify {
 struct PeerUpdate;
@@ -48,7 +48,7 @@ class SectionMemento;
 struct FilterValue {
 	// Empty "flags" means all events.
 	MTPDchannelAdminLogEventsFilter::Flags flags = 0;
-	std::vector<not_null<UserData*>> admins;
+	std::vector<not_null<UserData *>> admins;
 	bool allUsers = true;
 };
 
@@ -65,8 +65,8 @@ public:
 	LocalIdManager() = default;
 	LocalIdManager(const LocalIdManager &other) = delete;
 	LocalIdManager &operator=(const LocalIdManager &other) = delete;
-	LocalIdManager(LocalIdManager &&other) : _counter(std::exchange(other._counter, ServerMaxMsgId)) {
-	}
+	LocalIdManager(LocalIdManager &&other)
+	    : _counter(std::exchange(other._counter, ServerMaxMsgId)) {}
 	LocalIdManager &operator=(LocalIdManager &&other) {
 		_counter = std::exchange(other._counter, ServerMaxMsgId);
 		return *this;
@@ -77,14 +77,13 @@ public:
 
 private:
 	MsgId _counter = ServerMaxMsgId;
-
 };
 
 class Widget final : public Window::SectionWidget {
 public:
-	Widget(QWidget *parent, not_null<Window::Controller*> controller, not_null<ChannelData*> channel);
+	Widget(QWidget *parent, not_null<Window::Controller *> controller, not_null<ChannelData *> channel);
 
-	not_null<ChannelData*> channel() const;
+	not_null<ChannelData *> channel() const;
 	PeerData *peerForDialogs() const override {
 		return channel();
 	}
@@ -95,10 +94,10 @@ public:
 
 	QPixmap grabForShowAnimation(const Window::SectionSlideParams &params) override;
 
-	bool showInternal(not_null<Window::SectionMemento*> memento) override;
+	bool showInternal(not_null<Window::SectionMemento *> memento) override;
 	std::unique_ptr<Window::SectionMemento> createMemento() override;
 
-	void setInternalState(const QRect &geometry, not_null<SectionMemento*> memento);
+	void setInternalState(const QRect &geometry, not_null<SectionMemento *> memento);
 
 	// Float player interface.
 	bool wheelEventFromFloatPlayer(QEvent *e, Window::Column myColumn, Window::Column playerColumn) override;
@@ -120,25 +119,25 @@ private:
 	void showFilter();
 	void onScroll();
 	void updateAdaptiveLayout();
-	void saveState(not_null<SectionMemento*> memento);
-	void restoreState(not_null<SectionMemento*> memento);
+	void saveState(not_null<SectionMemento *> memento);
+	void restoreState(not_null<SectionMemento *> memento);
 
 	object_ptr<Ui::ScrollArea> _scroll;
 	QPointer<InnerWidget> _inner;
 	object_ptr<FixedBar> _fixedBar;
 	object_ptr<Ui::PlainShadow> _fixedBarShadow;
 	object_ptr<Ui::FlatButton> _whatIsThis;
-
 };
 
 class SectionMemento : public Window::SectionMemento {
 public:
-	SectionMemento(not_null<ChannelData*> channel) : _channel(channel) {
-	}
+	SectionMemento(not_null<ChannelData *> channel)
+	    : _channel(channel) {}
 
-	object_ptr<Window::SectionWidget> createWidget(QWidget *parent, not_null<Window::Controller*> controller, const QRect &geometry) override;
+	object_ptr<Window::SectionWidget> createWidget(QWidget *parent, not_null<Window::Controller *> controller,
+	                                               const QRect &geometry) override;
 
-	not_null<ChannelData*> getChannel() const {
+	not_null<ChannelData *> getChannel() const {
 		return _channel;
 	}
 	void setScrollTop(int scrollTop) {
@@ -148,20 +147,21 @@ public:
 		return _scrollTop;
 	}
 
-	void setAdmins(std::vector<not_null<UserData*>> admins) {
+	void setAdmins(std::vector<not_null<UserData *>> admins) {
 		_admins = std::move(admins);
 	}
-	void setAdminsCanEdit(std::vector<not_null<UserData*>> admins) {
+	void setAdminsCanEdit(std::vector<not_null<UserData *>> admins) {
 		_adminsCanEdit = std::move(admins);
 	}
-	std::vector<not_null<UserData*>> takeAdmins() {
+	std::vector<not_null<UserData *>> takeAdmins() {
 		return std::move(_admins);
 	}
-	std::vector<not_null<UserData*>> takeAdminsCanEdit() {
+	std::vector<not_null<UserData *>> takeAdminsCanEdit() {
 		return std::move(_adminsCanEdit);
 	}
 
-	void setItems(std::vector<HistoryItemOwned> &&items, std::map<quint64, HistoryItem*> &&itemsByIds, bool upLoaded, bool downLoaded) {
+	void setItems(std::vector<HistoryItemOwned> &&items, std::map<quint64, HistoryItem *> &&itemsByIds, bool upLoaded,
+	              bool downLoaded) {
 		_items = std::move(items);
 		_itemsByIds = std::move(itemsByIds);
 		_upLoaded = upLoaded;
@@ -179,7 +179,7 @@ public:
 	std::vector<HistoryItemOwned> takeItems() {
 		return std::move(_items);
 	}
-	std::map<quint64, HistoryItem*> takeItemsByIds() {
+	std::map<quint64, HistoryItem *> takeItemsByIds() {
 		return std::move(_itemsByIds);
 	}
 	LocalIdManager takeIdManager() {
@@ -199,18 +199,17 @@ public:
 	}
 
 private:
-	not_null<ChannelData*> _channel;
+	not_null<ChannelData *> _channel;
 	int _scrollTop = 0;
-	std::vector<not_null<UserData*>> _admins;
-	std::vector<not_null<UserData*>> _adminsCanEdit;
+	std::vector<not_null<UserData *>> _admins;
+	std::vector<not_null<UserData *>> _adminsCanEdit;
 	std::vector<HistoryItemOwned> _items;
-	std::map<quint64, HistoryItem*> _itemsByIds;
+	std::map<quint64, HistoryItem *> _itemsByIds;
 	bool _upLoaded = false;
 	bool _downLoaded = true;
 	LocalIdManager _idManager;
 	FilterValue _filter;
 	QString _searchQuery;
-
 };
 
 } // namespace AdminLog

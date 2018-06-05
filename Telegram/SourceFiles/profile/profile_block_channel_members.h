@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "profile/profile_block_widget.h"
 #include "base/object_ptr.h"
+#include "profile/profile_block_widget.h"
 
 namespace Ui {
 class LeftOutlineButton;
@@ -59,10 +59,9 @@ private:
 
 	void addButton(const QString &text, object_ptr<Ui::LeftOutlineButton> *button, const char *slot);
 
-	object_ptr<Ui::LeftOutlineButton> _members = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _admins = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _recentActions = { nullptr };
-
+	object_ptr<Ui::LeftOutlineButton> _members = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _admins = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _recentActions = {nullptr};
 };
 
 } // namespace Profile

@@ -20,25 +20,24 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_channel_members.h"
 
+#include "history/history_admin_log_section.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
 #include "profile/profile_channel_controllers.h"
 #include "styles/style_profile.h"
 #include "ui/widgets/buttons.h"
-#include "observer_peer.h"
-#include "mainwidget.h"
-#include "history/history_admin_log_section.h"
-#include "lang/lang_keys.h"
 
 namespace Profile {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
 
-ChannelMembersWidget::ChannelMembersWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_participants_section)) {
-	auto observeEvents = UpdateFlag::ChannelRightsChanged
-		| UpdateFlag::AdminsChanged
-		| UpdateFlag::MembersChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+ChannelMembersWidget::ChannelMembersWidget(QWidget *parent, PeerData *peer)
+    : BlockWidget(parent, peer, lang(lng_profile_participants_section)) {
+	auto observeEvents = UpdateFlag::ChannelRightsChanged | UpdateFlag::AdminsChanged | UpdateFlag::MembersChanged;
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	refreshButtons();
 }

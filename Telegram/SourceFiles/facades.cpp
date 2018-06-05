@@ -18,20 +18,20 @@ to link the code of portions of this program with the OpenSSL library.
 Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
-#include "profile/profile_section_memento.h"
-#include "core/click_handler_types.h"
-#include "media/media_clip_reader.h"
-#include "observer_peer.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "messenger.h"
 #include "auth_session.h"
-#include "boxes/confirm_box.h"
-#include "layerwidget.h"
-#include "lang/lang_keys.h"
 #include "base/observer.h"
 #include "base/task_queue.h"
+#include "boxes/confirm_box.h"
+#include "core/click_handler_types.h"
 #include "history/history_media.h"
+#include "lang/lang_keys.h"
+#include "layerwidget.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
+#include "media/media_clip_reader.h"
+#include "messenger.h"
+#include "observer_peer.h"
+#include "profile/profile_section_memento.h"
 
 Q_DECLARE_METATYPE(ClickHandlerPtr);
 Q_DECLARE_METATYPE(Qt::MouseButton);
@@ -121,11 +121,12 @@ void activateBotCommand(const HistoryItem *msg, int row, int col) {
 
 	case ButtonType::RequestPhone: {
 		hideSingleUseKeyboard(msg);
-		Ui::show(Box<ConfirmBox>(lang(lng_bot_share_phone), lang(lng_bot_share_phone_confirm), [peerId = msg->history()->peer->id] {
-			if (auto m = App::main()) {
-				m->onShareContact(peerId, App::self());
-			}
-		}));
+		Ui::show(Box<ConfirmBox>(lang(lng_bot_share_phone), lang(lng_bot_share_phone_confirm),
+		                         [peerId = msg->history()->peer->id] {
+			                         if (auto m = App::main()) {
+				                         m->onShareContact(peerId, App::self());
+			                         }
+		                         }));
 	} break;
 
 	case ButtonType::SwitchInlineSame:
@@ -154,7 +155,8 @@ void activateBotCommand(const HistoryItem *msg, int row, int col) {
 }
 
 void searchByHashtag(const QString &tag, PeerData *inPeer) {
-	if (MainWidget *m = main()) m->searchMessages(tag + ' ', (inPeer && inPeer->isChannel() && !inPeer->isMegagroup()) ? inPeer : 0);
+	if (MainWidget *m = main())
+		m->searchMessages(tag + ' ', (inPeer && inPeer->isChannel() && !inPeer->isMegagroup()) ? inPeer : 0);
 }
 
 void openPeerByName(const QString &username, MsgId msgId, const QString &startToken) {
@@ -185,14 +187,13 @@ void activateClickHandler(ClickHandlerPtr handler, Qt::MouseButton button) {
 	if (auto w = wnd()) {
 		qRegisterMetaType<ClickHandlerPtr>();
 		qRegisterMetaType<Qt::MouseButton>();
-		QMetaObject::invokeMethod(w, "app_activateClickHandler", Qt::QueuedConnection, Q_ARG(ClickHandlerPtr, handler), Q_ARG(Qt::MouseButton, button));
+		QMetaObject::invokeMethod(w, "app_activateClickHandler", Qt::QueuedConnection, Q_ARG(ClickHandlerPtr, handler),
+		                          Q_ARG(Qt::MouseButton, button));
 	}
 }
 
 void logOutDelayed() {
-	InvokeQueued(QCoreApplication::instance(), [] {
-		App::logOut();
-	});
+	InvokeQueued(QCoreApplication::instance(), [] { App::logOut(); });
 }
 
 } // namespace App
@@ -228,7 +229,7 @@ void hideMediaPreview() {
 
 void hideLayer(bool fast) {
 	if (auto w = App::wnd()) {
-		w->ui_showBox({ nullptr }, CloseOtherLayers | (fast ? ForceFastShowLayer : AnimatedShowLayer));
+		w->ui_showBox({nullptr}, CloseOtherLayers | (fast ? ForceFastShowLayer : AnimatedShowLayer));
 	}
 }
 
@@ -243,7 +244,7 @@ bool isLayerShown() {
 	return false;
 }
 
-void repaintHistoryItem(not_null<const HistoryItem*> item) {
+void repaintHistoryItem(not_null<const HistoryItem *> item) {
 	if (auto main = App::main()) {
 		main->ui_repaintHistoryItem(item);
 	}
@@ -251,7 +252,8 @@ void repaintHistoryItem(not_null<const HistoryItem*> item) {
 
 void autoplayMediaInlineAsync(const FullMsgId &msgId) {
 	if (auto main = App::main()) {
-		QMetaObject::invokeMethod(main, "ui_autoplayMediaInlineAsync", Qt::QueuedConnection, Q_ARG(qint32, msgId.channel), Q_ARG(qint32, msgId.msg));
+		QMetaObject::invokeMethod(main, "ui_autoplayMediaInlineAsync", Qt::QueuedConnection,
+		                          Q_ARG(qint32, msgId.channel), Q_ARG(qint32, msgId.msg));
 	}
 }
 
@@ -300,7 +302,8 @@ void showPeerHistoryAtItem(const HistoryItem *item, ShowWay way) {
 void showPeerHistoryAsync(const PeerId &peer, MsgId msgId, ShowWay way) {
 	if (MainWidget *m = App::main()) {
 		qRegisterMetaType<Ui::ShowWay>();
-		QMetaObject::invokeMethod(m, "ui_showPeerHistoryAsync", Qt::QueuedConnection, Q_ARG(quint64, peer), Q_ARG(qint32, msgId), Q_ARG(Ui::ShowWay, way));
+		QMetaObject::invokeMethod(m, "ui_showPeerHistoryAsync", Qt::QueuedConnection, Q_ARG(quint64, peer),
+		                          Q_ARG(qint32, msgId), Q_ARG(Ui::ShowWay, way));
 	}
 }
 
@@ -407,20 +410,21 @@ void unreadCounterUpdated() {
 
 } // namespace Notify
 
-#define DefineReadOnlyVar(Namespace, Type, Name) const Type &Name() { \
-	AssertCustom(Namespace##Data != nullptr, #Namespace "Data != nullptr in " #Namespace "::" #Name); \
-	return Namespace##Data->Name; \
-}
-#define DefineRefVar(Namespace, Type, Name) DefineReadOnlyVar(Namespace, Type, Name) \
-Type &Ref##Name() { \
-	AssertCustom(Namespace##Data != nullptr, #Namespace "Data != nullptr in " #Namespace "::Ref" #Name); \
-	return Namespace##Data->Name; \
-}
-#define DefineVar(Namespace, Type, Name) DefineRefVar(Namespace, Type, Name) \
-void Set##Name(const Type &Name) { \
-	AssertCustom(Namespace##Data != nullptr, #Namespace "Data != nullptr in " #Namespace "::Set" #Name); \
-	Namespace##Data->Name = Name; \
-}
+#define DefineReadOnlyVar(Namespace, Type, Name)                                                                       \
+	const Type &Name() {                                                                                               \
+		AssertCustom(Namespace##Data != nullptr, #Namespace "Data != nullptr in " #Namespace "::" #Name);              \
+		return Namespace##Data->Name;                                                                                  \
+	}
+#define DefineRefVar(Namespace, Type, Name)                                                                            \
+	DefineReadOnlyVar(Namespace, Type, Name) Type &Ref##Name() {                                                       \
+		AssertCustom(Namespace##Data != nullptr, #Namespace "Data != nullptr in " #Namespace "::Ref" #Name);           \
+		return Namespace##Data->Name;                                                                                  \
+	}
+#define DefineVar(Namespace, Type, Name)                                                                               \
+	DefineRefVar(Namespace, Type, Name) void Set##Name(const Type &Name) {                                             \
+		AssertCustom(Namespace##Data != nullptr, #Namespace "Data != nullptr in " #Namespace "::Set" #Name);           \
+		Namespace##Data->Name = Name;                                                                                  \
+	}
 
 namespace Sandbox {
 namespace internal {
@@ -502,7 +506,7 @@ void WorkingDirReady() {
 	SandboxUserTag = 0;
 	QFile usertag(cWorkingDir() + qsl("tdata/usertag"));
 	if (usertag.open(QIODevice::ReadOnly)) {
-		if (usertag.read(reinterpret_cast<char*>(&SandboxUserTag), sizeof(quint64)) != sizeof(quint64)) {
+		if (usertag.read(reinterpret_cast<char *>(&SandboxUserTag), sizeof(quint64)) != sizeof(quint64)) {
 			SandboxUserTag = 0;
 		}
 		usertag.close();
@@ -513,13 +517,13 @@ void WorkingDirReady() {
 		} while (!SandboxUserTag);
 
 		if (usertag.open(QIODevice::WriteOnly)) {
-			usertag.write(reinterpret_cast<char*>(&SandboxUserTag), sizeof(quint64));
+			usertag.write(reinterpret_cast<char *>(&SandboxUserTag), sizeof(quint64));
 			usertag.close();
 		}
 	}
 }
 
-object_ptr<SingleQueuedInvokation> MainThreadTaskHandler = { nullptr };
+object_ptr<SingleQueuedInvokation> MainThreadTaskHandler = {nullptr};
 
 void MainThreadTaskAdded() {
 	if (!started()) {
@@ -530,9 +534,7 @@ void MainThreadTaskAdded() {
 }
 
 void start() {
-	MainThreadTaskHandler.create([] {
-		base::TaskQueue::ProcessMainTasks();
-	});
+	MainThreadTaskHandler.create([] { base::TaskQueue::ProcessMainTasks(); });
 	SandboxData = std::make_unique<internal::Data>();
 }
 
@@ -558,10 +560,10 @@ namespace Global {
 namespace internal {
 
 struct Data {
-	SingleQueuedInvokation HandleHistoryUpdate = { [] { Messenger::Instance().call_handleHistoryUpdate(); } };
-	SingleQueuedInvokation HandleUnreadCounterUpdate = { [] { Messenger::Instance().call_handleUnreadCounterUpdate(); } };
-	SingleQueuedInvokation HandleDelayedPeerUpdates = { [] { Messenger::Instance().call_handleDelayedPeerUpdates(); } };
-	SingleQueuedInvokation HandleObservables = { [] { Messenger::Instance().call_handleObservables(); } };
+	SingleQueuedInvokation HandleHistoryUpdate = {[] { Messenger::Instance().call_handleHistoryUpdate(); }};
+	SingleQueuedInvokation HandleUnreadCounterUpdate = {[] { Messenger::Instance().call_handleUnreadCounterUpdate(); }};
+	SingleQueuedInvokation HandleDelayedPeerUpdates = {[] { Messenger::Instance().call_handleDelayedPeerUpdates(); }};
+	SingleQueuedInvokation HandleObservables = {[] { Messenger::Instance().call_handleObservables(); }};
 
 	Adaptive::WindowLayout AdaptiveWindowLayout = Adaptive::WindowLayout::Normal;
 	Adaptive::ChatLayout AdaptiveChatLayout = Adaptive::ChatLayout::Normal;
@@ -653,12 +655,11 @@ struct Data {
 	bool LocalPasscode = false;
 	base::Observable<void> LocalPasscodeChanged;
 
-	base::Variable<DBIWorkMode> WorkMode = { dbiwmWindowAndTray };
+	base::Variable<DBIWorkMode> WorkMode = {dbiwmWindowAndTray};
 
-	base::Observable<HistoryItem*> ItemRemoved;
+	base::Observable<HistoryItem *> ItemRemoved;
 	base::Observable<void> UnreadCounterUpdate;
 	base::Observable<void> PeerChooseCancel;
-
 };
 
 } // namespace internal
@@ -778,7 +779,7 @@ DefineRefVar(Global, base::Observable<void>, LocalPasscodeChanged);
 
 DefineRefVar(Global, base::Variable<DBIWorkMode>, WorkMode);
 
-DefineRefVar(Global, base::Observable<HistoryItem*>, ItemRemoved);
+DefineRefVar(Global, base::Observable<HistoryItem *>, ItemRemoved);
 DefineRefVar(Global, base::Observable<void>, UnreadCounterUpdate);
 DefineRefVar(Global, base::Observable<void>, PeerChooseCancel);
 

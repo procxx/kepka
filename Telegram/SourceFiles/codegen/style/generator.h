@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <map>
-#include <functional>
-#include <QtCore/QString>
-#include <QtCore/QSet>
 #include "codegen/common/cpp_file.h"
 #include "codegen/style/structure_types.h"
+#include <QtCore/QSet>
+#include <QtCore/QString>
+#include <functional>
+#include <map>
+#include <memory>
 
 namespace codegen {
 namespace style {
@@ -36,7 +36,8 @@ class Module;
 
 class Generator {
 public:
-	Generator(const structure::Module &module, const QString &destBasePath, const common::ProjectInfo &project, bool isPalette);
+	Generator(const structure::Module &module, const QString &destBasePath, const common::ProjectInfo &project,
+	          bool isPalette);
 	Generator(const Generator &other) = delete;
 	Generator &operator=(const Generator &other) = delete;
 
@@ -77,9 +78,8 @@ private:
 	QMap<QString, int> iconMasks_; // icon file -> index
 	std::map<QString, int, std::greater<QString>> paletteIndices_;
 
-	std::vector<int> _scales = { 4, 5, 6, 8 }; // scale / 4 gives our 1.00, 1.25, 1.50, 2.00
-	std::vector<const char *> _scaleNames = { "dbisOne", "dbisOneAndQuarter", "dbisOneAndHalf", "dbisTwo" };
-
+	std::vector<int> _scales = {4, 5, 6, 8}; // scale / 4 gives our 1.00, 1.25, 1.50, 2.00
+	std::vector<const char *> _scaleNames = {"dbisOne", "dbisOneAndQuarter", "dbisOneAndHalf", "dbisTwo"};
 };
 
 } // namespace style

@@ -20,29 +20,30 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "intro/intropwdcheck.h"
 
-#include "styles/style_intro.h"
-#include "styles/style_boxes.h"
-#include "core/file_utilities.h"
-#include "boxes/confirm_box.h"
-#include "lang/lang_keys.h"
 #include "application.h"
+#include "boxes/confirm_box.h"
+#include "core/file_utilities.h"
 #include "intro/introsignup.h"
+#include "lang/lang_keys.h"
+#include "styles/style_boxes.h"
+#include "styles/style_intro.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/input_fields.h"
 #include "ui/widgets/labels.h"
 
 namespace Intro {
 
-PwdCheckWidget::PwdCheckWidget(QWidget *parent, Widget::Data *data) : Step(parent, data)
-, _salt(getData()->pwdSalt)
-, _hasRecovery(getData()->hasRecovery)
-, _hint(getData()->pwdHint)
-, _pwdField(this, st::introPassword, langFactory(lng_signin_password))
-, _pwdHint(this, st::introPasswordHint)
-, _codeField(this, st::introPassword, langFactory(lng_signin_code))
-, _toRecover(this, lang(lng_signin_recover))
-, _toPassword(this, lang(lng_signin_try_password))
-, _checkRequest(this) {
+PwdCheckWidget::PwdCheckWidget(QWidget *parent, Widget::Data *data)
+    : Step(parent, data)
+    , _salt(getData()->pwdSalt)
+    , _hasRecovery(getData()->hasRecovery)
+    , _hint(getData()->pwdHint)
+    , _pwdField(this, st::introPassword, langFactory(lng_signin_password))
+    , _pwdHint(this, st::introPasswordHint)
+    , _codeField(this, st::introPassword, langFactory(lng_signin_code))
+    , _toRecover(this, lang(lng_signin_recover))
+    , _toPassword(this, lang(lng_signin_try_password))
+    , _checkRequest(this) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 
 	connect(_checkRequest, SIGNAL(timeout()), this, SLOT(onCheckRequest()));
@@ -242,7 +243,8 @@ void PwdCheckWidget::onToRecover() {
 		_codeField->setFocus();
 		updateDescriptionText();
 		if (_emailPattern.isEmpty()) {
-			MTP::send(MTPauth_RequestPasswordRecovery(), rpcDone(&PwdCheckWidget::recoverStarted), rpcFail(&PwdCheckWidget::recoverStartFail));
+			MTP::send(MTPauth_RequestPasswordRecovery(), rpcDone(&PwdCheckWidget::recoverStarted),
+			          rpcFail(&PwdCheckWidget::recoverStartFail));
 		}
 	} else {
 		Ui::show(Box<InformBox>(lang(lng_signin_no_email_forgot), [this] { showReset(); }));
@@ -290,13 +292,17 @@ void PwdCheckWidget::submit() {
 			return;
 		}
 
-		_sentRequest = MTP::send(MTPauth_RecoverPassword(MTP_string(code)), rpcDone(&PwdCheckWidget::pwdSubmitDone, true), rpcFail(&PwdCheckWidget::codeSubmitFail));
+		_sentRequest =
+		    MTP::send(MTPauth_RecoverPassword(MTP_string(code)), rpcDone(&PwdCheckWidget::pwdSubmitDone, true),
+		              rpcFail(&PwdCheckWidget::codeSubmitFail));
 	} else {
 		hideError();
 
 		QByteArray pwdData = _salt + _pwdField->getLastText().toUtf8() + _salt, pwdHash(32, Qt::Uninitialized);
 		hashSha256(pwdData.constData(), pwdData.size(), pwdHash.data());
-		_sentRequest = MTP::send(MTPauth_CheckPassword(MTP_bytes(pwdHash)), rpcDone(&PwdCheckWidget::pwdSubmitDone, false), rpcFail(&PwdCheckWidget::pwdSubmitFail));
+		_sentRequest =
+		    MTP::send(MTPauth_CheckPassword(MTP_bytes(pwdHash)), rpcDone(&PwdCheckWidget::pwdSubmitDone, false),
+		              rpcFail(&PwdCheckWidget::pwdSubmitFail));
 	}
 }
 

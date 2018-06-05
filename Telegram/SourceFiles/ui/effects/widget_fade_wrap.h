@@ -21,14 +21,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 
-#include "ui/twidget.h"
 #include "base/lambda.h"
 #include "base/object_ptr.h"
 #include "styles/style_widgets.h"
 #include "ui/animation.h"
+#include "ui/twidget.h"
 
-#include <QSize>
 #include <QPixmap>
+#include <QSize>
 
 class QWidget;
 class QPaintEvent;
@@ -82,20 +82,14 @@ private:
 
 	FinishedCallback _finishedCallback;
 	UpdatedCallback _updatedCallback;
-
 };
 
-template <typename Widget>
-class WidgetFadeWrap;
+template <typename Widget> class WidgetFadeWrap;
 
-template <>
-class WidgetFadeWrap<TWidget> : public TWidget {
+template <> class WidgetFadeWrap<TWidget> : public TWidget {
 public:
-	WidgetFadeWrap(QWidget *parent
-		, object_ptr<TWidget> entity
-		, int duration = st::widgetFadeDuration
-		, base::lambda<void()> updateCallback = base::lambda<void()>()
-		, bool scaled = false);
+	WidgetFadeWrap(QWidget *parent, object_ptr<TWidget> entity, int duration = st::widgetFadeDuration,
+	               base::lambda<void()> updateCallback = base::lambda<void()>(), bool scaled = false);
 
 	void showAnimated() {
 		toggleAnimated(true);
@@ -169,44 +163,26 @@ private:
 	base::lambda<void()> _updateCallback;
 
 	FadeAnimation _animation;
-
 };
 
-template <typename Widget>
-class WidgetFadeWrap : public WidgetFadeWrap<TWidget> {
+template <typename Widget> class WidgetFadeWrap : public WidgetFadeWrap<TWidget> {
 public:
-	WidgetFadeWrap(QWidget *parent
-		, object_ptr<Widget> entity
-		, int duration = st::widgetFadeDuration
-		, base::lambda<void()> updateCallback = base::lambda<void()>()
-		, bool scaled = false) : WidgetFadeWrap<TWidget>(parent
-			, std::move(entity)
-			, duration
-			, std::move(updateCallback)
-			, scaled) {
-	}
+	WidgetFadeWrap(QWidget *parent, object_ptr<Widget> entity, int duration = st::widgetFadeDuration,
+	               base::lambda<void()> updateCallback = base::lambda<void()>(), bool scaled = false)
+	    : WidgetFadeWrap<TWidget>(parent, std::move(entity), duration, std::move(updateCallback), scaled) {}
 	Widget *entity() {
-		return static_cast<Widget*>(WidgetFadeWrap<TWidget>::entity());
+		return static_cast<Widget *>(WidgetFadeWrap<TWidget>::entity());
 	}
 	const Widget *entity() const {
-		return static_cast<const Widget*>(WidgetFadeWrap<TWidget>::entity());
+		return static_cast<const Widget *>(WidgetFadeWrap<TWidget>::entity());
 	}
-
 };
 
-template <typename Widget>
-class WidgetScaledFadeWrap : public WidgetFadeWrap<Widget> {
+template <typename Widget> class WidgetScaledFadeWrap : public WidgetFadeWrap<Widget> {
 public:
-	WidgetScaledFadeWrap(QWidget *parent
-		, object_ptr<Widget> entity
-		, int duration = st::widgetFadeDuration
-		, base::lambda<void()> updateCallback = base::lambda<void()>()) : WidgetFadeWrap<Widget>(parent
-			, std::move(entity)
-			, duration
-			, std::move(updateCallback)
-			, true) {
-	}
-
+	WidgetScaledFadeWrap(QWidget *parent, object_ptr<Widget> entity, int duration = st::widgetFadeDuration,
+	                     base::lambda<void()> updateCallback = base::lambda<void()>())
+	    : WidgetFadeWrap<Widget>(parent, std::move(entity), duration, std::move(updateCallback), true) {}
 };
 
 } // namespace Ui

@@ -30,7 +30,7 @@ class Instance;
 
 class Track {
 public:
-	Track(not_null<Instance*> instance);
+	Track(not_null<Instance *> instance);
 
 	void samplePeakEach(TimeMs peakDuration);
 
@@ -71,7 +71,7 @@ private:
 	void ensureSourceCreated();
 	void playWithLooping(bool looping);
 
-	not_null<Instance*> _instance;
+	not_null<Instance *> _instance;
 
 	bool _failed = false;
 	bool _active = false;
@@ -95,7 +95,6 @@ private:
 	qint64 _alPosition = 0;
 	quint32 _alSource = 0;
 	quint32 _alBuffer = 0;
-
 };
 
 class Instance {
@@ -105,7 +104,7 @@ public:
 
 	std::unique_ptr<Track> createTrack();
 
-	base::Observable<Track*> &trackFinished() {
+	base::Observable<Track *> &trackFinished() {
 		return _trackFinished;
 	}
 
@@ -127,14 +126,13 @@ private:
 	void trackFinished(Track *track);
 
 private:
-	std::set<Track*> _tracks;
-	base::Observable<Track*> _trackFinished;
+	std::set<Track *> _tracks;
+	base::Observable<Track *> _trackFinished;
 
 	base::Timer _updateTimer;
 
 	base::Timer _detachFromDeviceTimer;
 	bool _detachFromDeviceForce = false;
-
 };
 
 Instance &Current();

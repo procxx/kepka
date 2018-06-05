@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/background_box.h"
 
+#include "auth_session.h"
 #include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
-#include "window/themes/window_theme.h"
-#include "styles/style_overview.h"
 #include "styles/style_boxes.h"
+#include "styles/style_overview.h"
 #include "ui/effects/round_checkbox.h"
-#include "auth_session.h"
+#include "window/themes/window_theme.h"
 
 class BackgroundBox::Inner : public TWidget, public RPCSender, private base::Subscriber {
 public:
@@ -56,11 +56,9 @@ private:
 	int _over = -1;
 	int _overDown = -1;
 	std::unique_ptr<Ui::RoundCheckbox> _check; // this is not a widget
-
 };
 
-BackgroundBox::BackgroundBox(QWidget*) {
-}
+BackgroundBox::BackgroundBox(QWidget *) {}
 
 void BackgroundBox::prepare() {
 	setTitle(langFactory(lng_backgrounds_header));
@@ -84,11 +82,13 @@ void BackgroundBox::backgroundChosen(int index) {
 	closeBox();
 }
 
-BackgroundBox::Inner::Inner(QWidget *parent) : TWidget(parent)
-, _check(std::make_unique<Ui::RoundCheckbox>(st::overviewCheck, [this] { update(); })) {
+BackgroundBox::Inner::Inner(QWidget *parent)
+    : TWidget(parent)
+    , _check(std::make_unique<Ui::RoundCheckbox>(st::overviewCheck, [this] { update(); })) {
 	_check->setChecked(true, Ui::RoundCheckbox::SetStyle::Fast);
 	if (App::cServerBackgrounds().isEmpty()) {
-		resize(BackgroundsInRow * (st::backgroundSize.width() + st::backgroundPadding) + st::backgroundPadding, 2 * (st::backgroundSize.height() + st::backgroundPadding) + st::backgroundPadding);
+		resize(BackgroundsInRow * (st::backgroundSize.width() + st::backgroundPadding) + st::backgroundPadding,
+		       2 * (st::backgroundSize.height() + st::backgroundPadding) + st::backgroundPadding);
 		MTP::send(MTPaccount_GetWallPapers(), rpcDone(&Inner::gotWallpapers));
 	} else {
 		updateWallpapers();
@@ -136,7 +136,8 @@ void BackgroundBox::Inner::gotWallpapers(const MTPVector<MTPWallPaper> &result) 
 				}
 				if (!size || !w || !h) continue;
 
-				qint32 newThumbLevel = qAbs((st::backgroundSize.width() * cIntRetinaFactor()) - w), newFullLevel = qAbs(2560 - w);
+				qint32 newThumbLevel = qAbs((st::backgroundSize.width() * cIntRetinaFactor()) - w),
+				       newFullLevel = qAbs(2560 - w);
 				if (thumbLevel < 0 || newThumbLevel < thumbLevel) {
 					thumbLevel = newThumbLevel;
 					thumb = &(*j);
@@ -147,7 +148,8 @@ void BackgroundBox::Inner::gotWallpapers(const MTPVector<MTPWallPaper> &result) 
 				}
 			}
 			if (thumb && full && full->type() != mtpc_photoSizeEmpty) {
-				wallpapers.push_back(App::WallPaper(d.vid.v ? d.vid.v : INT_MAX, App::image(*thumb), App::image(*full)));
+				wallpapers.push_back(
+				    App::WallPaper(d.vid.v ? d.vid.v : INT_MAX, App::image(*thumb), App::image(*full)));
 			}
 		} break;
 
@@ -166,7 +168,8 @@ void BackgroundBox::Inner::updateWallpapers() {
 	_rows = _bgCount / BackgroundsInRow;
 	if (_bgCount % BackgroundsInRow) ++_rows;
 
-	resize(BackgroundsInRow * (st::backgroundSize.width() + st::backgroundPadding) + st::backgroundPadding, _rows * (st::backgroundSize.height() + st::backgroundPadding) + st::backgroundPadding);
+	resize(BackgroundsInRow * (st::backgroundSize.width() + st::backgroundPadding) + st::backgroundPadding,
+	       _rows * (st::backgroundSize.height() + st::backgroundPadding) + st::backgroundPadding);
 	for (int i = 0; i < BackgroundsInRow * 3; ++i) {
 		if (i >= _bgCount) break;
 
@@ -211,10 +214,14 @@ void BackgroundBox::Inner::paintEvent(QPaintEvent *e) {
 void BackgroundBox::Inner::mouseMoveEvent(QMouseEvent *e) {
 	int x = e->pos().x(), y = e->pos().y();
 	int row = int((y - st::backgroundPadding) / (st::backgroundSize.height() + st::backgroundPadding));
-	if (y - row * (st::backgroundSize.height() + st::backgroundPadding) > st::backgroundPadding + st::backgroundSize.height()) row = _rows + 1;
+	if (y - row * (st::backgroundSize.height() + st::backgroundPadding) >
+	    st::backgroundPadding + st::backgroundSize.height())
+		row = _rows + 1;
 
 	int col = int((x - st::backgroundPadding) / (st::backgroundSize.width() + st::backgroundPadding));
-	if (x - col * (st::backgroundSize.width() + st::backgroundPadding) > st::backgroundPadding + st::backgroundSize.width()) row = _rows + 1;
+	if (x - col * (st::backgroundSize.width() + st::backgroundPadding) >
+	    st::backgroundPadding + st::backgroundSize.width())
+		row = _rows + 1;
 
 	int newOver = row * BackgroundsInRow + col;
 	if (newOver >= _bgCount) newOver = -1;

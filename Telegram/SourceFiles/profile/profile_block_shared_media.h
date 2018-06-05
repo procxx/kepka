@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "profile/profile_block_widget.h"
 #include "history/history.h"
+#include "profile/profile_block_widget.h"
 
 class History;
 
@@ -63,12 +63,11 @@ private:
 
 	void resizeButtons(int newWidth, int *top);
 
-	Ui::LeftOutlineButton *_mediaButtons[OverviewCount] = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _commonGroups = { nullptr };
+	Ui::LeftOutlineButton *_mediaButtons[OverviewCount] = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _commonGroups = {nullptr};
 
 	History *_history;
 	History *_migrated;
-
 };
 
 } // namespace Profile

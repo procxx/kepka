@@ -20,21 +20,22 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "history/history_drag_area.h"
 
-#include "styles/style_chat_helpers.h"
-#include "styles/style_boxes.h"
+#include "apiwrap.h"
 #include "boxes/confirm_box.h"
 #include "boxes/sticker_set_box.h"
-#include "inline_bots/inline_bot_result.h"
-#include "inline_bots/inline_bot_layout_item.h"
 #include "dialogs/dialogs_layout.h"
 #include "history/history_widget.h"
-#include "storage/localstorage.h"
+#include "inline_bots/inline_bot_layout_item.h"
+#include "inline_bots/inline_bot_result.h"
 #include "lang/lang_keys.h"
-#include "mainwindow.h"
-#include "apiwrap.h"
 #include "mainwidget.h"
+#include "mainwindow.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
+#include "styles/style_chat_helpers.h"
 
-DragArea::DragArea(QWidget *parent) : TWidget(parent) {
+DragArea::DragArea(QWidget *parent)
+    : TWidget(parent) {
 	setMouseTracking(true);
 	setAcceptDrops(true);
 }
@@ -46,20 +47,24 @@ bool DragArea::overlaps(const QRect &globalRect) {
 
 	auto inner = innerRect();
 	auto testRect = QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size());
-	return inner.marginsRemoved(QMargins(st::boxRadius, 0, st::boxRadius, 0)).contains(testRect)
-		|| inner.marginsRemoved(QMargins(0, st::boxRadius, 0, st::boxRadius)).contains(testRect);
+	return inner.marginsRemoved(QMargins(st::boxRadius, 0, st::boxRadius, 0)).contains(testRect) ||
+	       inner.marginsRemoved(QMargins(0, st::boxRadius, 0, st::boxRadius)).contains(testRect);
 }
 
 
 void DragArea::mouseMoveEvent(QMouseEvent *e) {
 	if (_hiding) return;
 
-	auto in = QRect(st::dragPadding.left(), st::dragPadding.top(), width() - st::dragPadding.left() - st::dragPadding.right(), height() - st::dragPadding.top() - st::dragPadding.bottom()).contains(e->pos());
+	auto in =
+	    QRect(st::dragPadding.left(), st::dragPadding.top(), width() - st::dragPadding.left() - st::dragPadding.right(),
+	          height() - st::dragPadding.top() - st::dragPadding.bottom())
+	        .contains(e->pos());
 	setIn(in);
 }
 
 void DragArea::dragMoveEvent(QDragMoveEvent *e) {
-	QRect r(st::dragPadding.left(), st::dragPadding.top(), width() - st::dragPadding.left() - st::dragPadding.right(), height() - st::dragPadding.top() - st::dragPadding.bottom());
+	QRect r(st::dragPadding.left(), st::dragPadding.top(), width() - st::dragPadding.left() - st::dragPadding.right(),
+	        height() - st::dragPadding.top() - st::dragPadding.bottom());
 	setIn(r.contains(e->pos()));
 	e->setDropAction(_in ? Qt::CopyAction : Qt::IgnoreAction);
 	e->accept();
@@ -90,7 +95,8 @@ void DragArea::paintEvent(QPaintEvent *e) {
 	auto inner = innerRect();
 
 	if (!_cache.isNull()) {
-		p.drawPixmapLeft(inner.x() - st::boxRoundShadow.extend.left(), inner.y() - st::boxRoundShadow.extend.top(), width(), _cache);
+		p.drawPixmapLeft(inner.x() - st::boxRoundShadow.extend.left(), inner.y() - st::boxRoundShadow.extend.top(),
+		                 width(), _cache);
 		return;
 	}
 
@@ -100,25 +106,28 @@ void DragArea::paintEvent(QPaintEvent *e) {
 	p.setPen(anim::pen(st::dragColor, st::dragDropColor, _a_in.current(ms, _in ? 1. : 0.)));
 
 	p.setFont(st::dragFont);
-	p.drawText(QRect(0, (height() - st::dragHeight) / 2, width(), st::dragFont->height), _text, QTextOption(style::al_top));
+	p.drawText(QRect(0, (height() - st::dragHeight) / 2, width(), st::dragFont->height), _text,
+	           QTextOption(style::al_top));
 
 	p.setFont(st::dragSubfont);
-	p.drawText(QRect(0, (height() + st::dragHeight) / 2 - st::dragSubfont->height, width(), st::dragSubfont->height * 2), _subtext, QTextOption(style::al_top));
+	p.drawText(
+	    QRect(0, (height() + st::dragHeight) / 2 - st::dragSubfont->height, width(), st::dragSubfont->height * 2),
+	    _subtext, QTextOption(style::al_top));
 }
 
 void DragArea::dragEnterEvent(QDragEnterEvent *e) {
-	static_cast<HistoryWidget*>(parentWidget())->dragEnterEvent(e);
+	static_cast<HistoryWidget *>(parentWidget())->dragEnterEvent(e);
 	e->setDropAction(Qt::IgnoreAction);
 	e->accept();
 }
 
 void DragArea::dragLeaveEvent(QDragLeaveEvent *e) {
-	static_cast<HistoryWidget*>(parentWidget())->dragLeaveEvent(e);
+	static_cast<HistoryWidget *>(parentWidget())->dragLeaveEvent(e);
 	setIn(false);
 }
 
 void DragArea::dropEvent(QDropEvent *e) {
-	static_cast<HistoryWidget*>(parentWidget())->dropEvent(e);
+	static_cast<HistoryWidget *>(parentWidget())->dropEvent(e);
 	if (e->isAccepted() && _droppedCallback) {
 		_droppedCallback(e->mimeData());
 	}

@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "private/qfontengine_p.h"
-#include "ui/style/style_core_types.h"
 #include "settings.h"
+#include "ui/style/style_core_types.h"
 
 class QString;
 
@@ -45,8 +45,9 @@ enum TextBlockFlags {
 
 class ITextBlock {
 public:
-	ITextBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex) : _from(from), _flags((flags & 0xFF) | ((lnkIndex & 0xFFFF) << 12)) {
-	}
+	ITextBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex)
+	    : _from(from)
+	    , _flags((flags & 0xFF) | ((lnkIndex & 0xFFFF) << 12)) {}
 
 	quint16 from() const {
 		return _from;
@@ -82,8 +83,7 @@ public:
 	}
 
 	virtual std::unique_ptr<ITextBlock> clone() const = 0;
-	virtual ~ITextBlock() {
-	}
+	virtual ~ITextBlock() {}
 
 protected:
 	quint16 _from = 0;
@@ -98,12 +98,14 @@ protected:
 	// (for example a text block after a link block) it is prepended with an empty
 	// word that holds those spaces as a right padding.
 	QFixed _rpadding = 0;
-
 };
 
 class NewlineBlock : public ITextBlock {
 public:
-	NewlineBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex) : ITextBlock(font, str, from, length, flags, lnkIndex), _nextDir(Qt::LayoutDirectionAuto) {
+	NewlineBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags,
+	             quint16 lnkIndex)
+	    : ITextBlock(font, str, from, length, flags, lnkIndex)
+	    , _nextDir(Qt::LayoutDirectionAuto) {
 		_flags |= ((TextBlockTNewline & 0x0F) << 8);
 	}
 
@@ -122,18 +124,16 @@ private:
 	friend class TextParser;
 
 	friend class TextPainter;
-
 };
 
 class TextWord {
 public:
 	TextWord() = default;
 	TextWord(quint16 from, QFixed width, QFixed rbearing, QFixed rpadding = 0)
-		: _from(from)
-		, _width(width)
-		, _rpadding(rpadding)
-		, _rbearing(rbearing.value() > 0x7FFF ? 0x7FFF : (rbearing.value() < -0x7FFF ? -0x7FFF : rbearing.value())) {
-	}
+	    : _from(from)
+	    , _width(width)
+	    , _rpadding(rpadding)
+	    , _rbearing(rbearing.value() > 0x7FFF ? 0x7FFF : (rbearing.value() < -0x7FFF ? -0x7FFF : rbearing.value())) {}
 	quint16 from() const {
 		return _from;
 	}
@@ -154,12 +154,12 @@ private:
 	quint16 _from = 0;
 	QFixed _width, _rpadding;
 	qint16 _rbearing = 0;
-
 };
 
 class TextBlock : public ITextBlock {
 public:
-	TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, quint16 from, quint16 length, uchar flags, quint16 lnkIndex);
+	TextBlock(const style::font &font, const QString &str, QFixed minResizeWidth, quint16 from, quint16 length,
+	          uchar flags, quint16 lnkIndex);
 
 	std::unique_ptr<ITextBlock> clone() const override {
 		return std::make_unique<TextBlock>(*this);
@@ -179,12 +179,12 @@ private:
 
 	friend class BlockParser;
 	friend class TextPainter;
-
 };
 
 class EmojiBlock : public ITextBlock {
 public:
-	EmojiBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex, EmojiPtr emoji);
+	EmojiBlock(const style::font &font, const QString &str, quint16 from, quint16 length, uchar flags, quint16 lnkIndex,
+	           EmojiPtr emoji);
 
 	std::unique_ptr<ITextBlock> clone() const {
 		return std::make_unique<EmojiBlock>(*this);
@@ -197,7 +197,6 @@ private:
 	friend class TextParser;
 
 	friend class TextPainter;
-
 };
 
 class SkipBlock : public ITextBlock {
@@ -219,5 +218,4 @@ private:
 	friend class TextParser;
 
 	friend class TextPainter;
-
 };

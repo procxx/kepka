@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "codegen/style/generator.h"
 
-#include <memory>
-#include <functional>
+#include "codegen/style/parsed_file.h"
+#include <QtCore/QBuffer>
 #include <QtCore/QDir>
 #include <QtCore/QSet>
-#include <QtCore/QBuffer>
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
-#include "codegen/style/parsed_file.h"
+#include <functional>
+#include <memory>
 
 using Module = codegen::style::structure::Module;
 using Struct = codegen::style::structure::Struct;
@@ -38,8 +38,8 @@ namespace codegen {
 namespace style {
 namespace {
 
-constexpr int kErrorBadIconSize     = 861;
-constexpr int kErrorBadIconFormat   = 862;
+constexpr int kErrorBadIconSize = 861;
+constexpr int kErrorBadIconFormat = 862;
 
 // crc32 hash, taken somewhere from the internet
 
@@ -73,7 +73,6 @@ private:
 	}
 
 	quint32 _data[256];
-
 };
 
 qint32 hashCrc32(const void *data, int len) {
@@ -99,11 +98,11 @@ char hexChar(uchar ch) {
 }
 
 char hexSecondChar(char ch) {
-	return hexChar((*reinterpret_cast<uchar*>(&ch)) & 0x0F);
+	return hexChar((*reinterpret_cast<uchar *>(&ch)) & 0x0F);
 }
 
 char hexFirstChar(char ch) {
-	return hexChar((*reinterpret_cast<uchar*>(&ch)) >> 4);
+	return hexChar((*reinterpret_cast<uchar *>(&ch)) >> 4);
 }
 
 QString stringToEncodedString(const QString &str) {
@@ -198,25 +197,26 @@ QString paletteColorComponent(uchar value) {
 }
 
 QString paletteColorValue(const structure::data::color &value) {
-	auto result = paletteColorComponent(value.red) + paletteColorComponent(value.green) + paletteColorComponent(value.blue);
+	auto result =
+	    paletteColorComponent(value.red) + paletteColorComponent(value.green) + paletteColorComponent(value.blue);
 	if (value.alpha != 255) result += paletteColorComponent(value.alpha);
 	return result;
 }
 
 } // namespace
 
-Generator::Generator(const structure::Module &module, const QString &destBasePath, const common::ProjectInfo &project, bool isPalette)
-: module_(module)
-, basePath_(destBasePath)
-, baseName_(QFileInfo(basePath_).baseName())
-, project_(project)
-, isPalette_(isPalette) {
-}
+Generator::Generator(const structure::Module &module, const QString &destBasePath, const common::ProjectInfo &project,
+                     bool isPalette)
+    : module_(module)
+    , basePath_(destBasePath)
+    , baseName_(QFileInfo(basePath_).baseName())
+    , project_(project)
+    , isPalette_(isPalette) {}
 
 bool Generator::writeHeader() {
 	header_ = std::make_unique<common::CppFile>(basePath_ + ".h", project_);
 
-    header_->include("styles/style_basic.h").newline();
+	header_->include("styles/style_basic.h").newline();
 	header_->include("ui/style/style_core.h").newline();
 
 	if (!writeHeaderStyleNamespace()) {
@@ -239,13 +239,15 @@ bool Generator::writeSource() {
 		source_->stream() << "\
 bool inited = false;\n\
 \n\
-class Module_" << baseName_ << " : public style::internal::ModuleBase {\n\
+class Module_" << baseName_
+		                  << " : public style::internal::ModuleBase {\n\
 public:\n\
 	Module_" << baseName_ << "() { style::internal::registerModule(this); }\n\
 	~Module_" << baseName_ << "() { style::internal::unregisterModule(this); }\n\
 \n\
 	void start() override {\n\
-		style::internal::init_" << baseName_ << "();\n\
+		style::internal::init_"
+		                  << baseName_ << "();\n\
 	}\n\
 	void stop() override {\n\
 	}\n\
@@ -363,7 +365,11 @@ QString Generator::valueAssignmentCode(structure::Value value) const {
 	case Tag::Align: return QString("style::al_%1").arg(value.String().c_str());
 	case Tag::Margins: {
 		auto v(value.Margins());
-		return QString("{ %1, %2, %3, %4 }").arg(pxValueName(v.left)).arg(pxValueName(v.top)).arg(pxValueName(v.right)).arg(pxValueName(v.bottom));
+		return QString("{ %1, %2, %3, %4 }")
+		    .arg(pxValueName(v.left))
+		    .arg(pxValueName(v.top))
+		    .arg(pxValueName(v.right))
+		    .arg(pxValueName(v.bottom));
 	} break;
 	case Tag::Font: {
 		auto v(value.Font());
@@ -471,15 +477,17 @@ public:\n\
 
 	int indexInPalette = 1;
 	if (!module_.enumVariables([this, &indexInPalette](const Variable &variable) -> bool {
-		auto name = variable.name.back();
-		if (variable.value.type().tag != structure::TypeTag::Color) {
-			return false;
-		}
+		    auto name = variable.name.back();
+		    if (variable.value.type().tag != structure::TypeTag::Color) {
+			    return false;
+		    }
 
-		auto index = (indexInPalette++);
-		header_->stream() << "\tinline const color &get_" << name << "() const { return _colors[" << index << "]; };\n";
-		return true;
-	})) return false;
+		    auto index = (indexInPalette++);
+		    header_->stream() << "\tinline const color &get_" << name << "() const { return _colors[" << index
+		                      << "]; };\n";
+		    return true;
+	    }))
+		return false;
 
 	auto count = indexInPalette;
 	header_->stream() << "\
@@ -512,7 +520,8 @@ public:\n\
 	}\n\
 \n\
 private:\n\
-	static constexpr auto kCount = " << count << ";\n\
+	static constexpr auto kCount = "
+	                  << count << ";\n\
 \n\
 	void clear() {\n\
 		for (int i = 0; i != kCount; ++i) {\n\
@@ -629,7 +638,8 @@ bool Generator::writeStructsDefinitions() {
 
 	bool result = module_.enumStructs([this](const Struct &value) -> bool {
 		header_->stream() << "\
-struct " << value.name.back() << " {\n";
+struct " << value.name.back()
+		                  << " {\n";
 		for (auto &field : value.fields) {
 			auto type = typeToString(field.type);
 			if (type.isEmpty()) {
@@ -677,7 +687,7 @@ bool Generator::writeIncludesInSource() {
 	}
 
 	auto includes = QStringList();
-	std::function<bool(const Module&)> collector = [this, &collector, &includes](const Module &module) {
+	std::function<bool(const Module &)> collector = [this, &collector, &includes](const Module &module) {
 		module.enumIncludes(collector);
 		auto base = moduleBaseName(module);
 		if (!includes.contains(base)) {
@@ -770,37 +780,41 @@ void palette::finalize() {\n\
 	int indexInPalette = 1;
 	QByteArray checksumString;
 	checksumString.append("&transparent:{ 255, 255, 255, 0 }");
-	auto result = module_.enumVariables([this, &indexInPalette, &checksumString, &dataRows, &names](const Variable &variable) -> bool {
-		auto name = variable.name.back();
-		auto index = indexInPalette++;
-		paletteIndices_.emplace(name, index);
-		if (variable.value.type().tag != structure::TypeTag::Color) {
-			return false;
-		}
-		auto color = variable.value.Color();
-		auto fallbackIterator = paletteIndices_.find(colorFallbackName(variable.value));
-		auto fallbackIndex = (fallbackIterator == paletteIndices_.end()) ? -1 : fallbackIterator->second;
-		auto assignment = QString("{ %1, %2, %3, %4 }").arg(color.red).arg(color.green).arg(color.blue).arg(color.alpha);
-		source_->stream() << "\tcompute(" << index << ", " << fallbackIndex << ", " << assignment << ");\n";
-		checksumString.append('&' + name + ':' + assignment);
+	auto result = module_.enumVariables(
+	    [this, &indexInPalette, &checksumString, &dataRows, &names](const Variable &variable) -> bool {
+		    auto name = variable.name.back();
+		    auto index = indexInPalette++;
+		    paletteIndices_.emplace(name, index);
+		    if (variable.value.type().tag != structure::TypeTag::Color) {
+			    return false;
+		    }
+		    auto color = variable.value.Color();
+		    auto fallbackIterator = paletteIndices_.find(colorFallbackName(variable.value));
+		    auto fallbackIndex = (fallbackIterator == paletteIndices_.end()) ? -1 : fallbackIterator->second;
+		    auto assignment =
+		        QString("{ %1, %2, %3, %4 }").arg(color.red).arg(color.green).arg(color.blue).arg(color.alpha);
+		    source_->stream() << "\tcompute(" << index << ", " << fallbackIndex << ", " << assignment << ");\n";
+		    checksumString.append('&' + name + ':' + assignment);
 
-		auto isCopy = !variable.value.copyOf().isEmpty();
-		auto colorString = paletteColorValue(color);
-		auto fallbackName = QString();
-		if (fallbackIndex > 0) {
-			auto fallbackVariable = module_.findVariableInModule(names[fallbackIndex - 1], module_);
-			if (fallbackVariable && fallbackVariable->value.type().tag == structure::TypeTag::Color) {
-				fallbackName = fallbackVariable->name.back();
-			}
-		}
-		auto value = isCopy ? fallbackName : '#' + colorString;
-		if (value.isEmpty()) {
-			return false;
-		}
+		    auto isCopy = !variable.value.copyOf().isEmpty();
+		    auto colorString = paletteColorValue(color);
+		    auto fallbackName = QString();
+		    if (fallbackIndex > 0) {
+			    auto fallbackVariable = module_.findVariableInModule(names[fallbackIndex - 1], module_);
+			    if (fallbackVariable && fallbackVariable->value.type().tag == structure::TypeTag::Color) {
+				    fallbackName = fallbackVariable->name.back();
+			    }
+		    }
+		    auto value = isCopy ? fallbackName : '#' + colorString;
+		    if (value.isEmpty()) {
+			    return false;
+		    }
 
-		dataRows.append("\tresult.push_back({ qstr(\"" + name + "\"), qstr(\"" + value + "\"), qstr(\"" + (isCopy ? QString() : fallbackName) + "\"), qstr(" + stringToEncodedString(variable.description.toStdString()) + ") });\n");
-		return true;
-	});
+		    dataRows.append("\tresult.push_back({ qstr(\"" + name + "\"), qstr(\"" + value + "\"), qstr(\"" +
+		                    (isCopy ? QString() : fallbackName) + "\"), qstr(" +
+		                    stringToEncodedString(variable.description.toStdString()) + ") });\n");
+		    return true;
+	    });
 	if (!result) {
 		return false;
 	}
@@ -811,7 +825,8 @@ void palette::finalize() {\n\
 }\n\
 \n\
 qint32 palette::Checksum() {\n\
-	return " << checksum << ";\n\
+	return " << checksum
+	                  << ";\n\
 }\n";
 
 	source_->newline().pushNamespace().newline();
@@ -820,9 +835,7 @@ int getPaletteIndex(QLatin1String name) {\n\
 	auto size = name.size();\n\
 	auto data = name.data();\n";
 
-	auto tabs = [](int size) {
-		return QString(size, '\t');
-	};
+	auto tabs = [](int size) { return QString(size, '\t'); };
 
 	enum class UsedCheckType {
 		Switch,
@@ -902,8 +915,8 @@ int getPaletteIndex(QLatin1String name) {\n\
 			auto usedIfForCheckCount = 0;
 			auto minimalLengthCheck = countMinimalLength(i, e, checking);
 			for (; checking + usedIfForCheckCount != name.size(); ++usedIfForCheckCount) {
-				if (!canUseIfForCheck(i, e, checking + usedIfForCheckCount)
-					|| countMinimalLength(i, e, checking + usedIfForCheckCount) != minimalLengthCheck) {
+				if (!canUseIfForCheck(i, e, checking + usedIfForCheckCount) ||
+				    countMinimalLength(i, e, checking + usedIfForCheckCount) != minimalLengthCheck) {
 					break;
 				}
 			}
@@ -912,15 +925,22 @@ int getPaletteIndex(QLatin1String name) {\n\
 			if (weContinueOldSwitch) {
 				weContinueOldSwitch = false;
 			} else {
-				checkLengthCondition = (minimalLengthCheck > checkLengthHistory.back()) ? ("size >= " + QString::number(minimalLengthCheck)) : QString();
+				checkLengthCondition = (minimalLengthCheck > checkLengthHistory.back()) ?
+				                           ("size >= " + QString::number(minimalLengthCheck)) :
+				                           QString();
 				if (!usedIfForCheck) {
-					source_->stream() << tabs(tabsUsed) << (checkLengthCondition.isEmpty() ? QString() : ("if (" + checkLengthCondition + ") ")) << "switch (data[" << checking << "]) {\n";
+					source_->stream() << tabs(tabsUsed)
+					                  << (checkLengthCondition.isEmpty() ? QString() :
+					                                                       ("if (" + checkLengthCondition + ") "))
+					                  << "switch (data[" << checking << "]) {\n";
 				}
 			}
 			if (usedIfForCheck) {
 				auto conditions = QStringList();
 				if (usedIfForCheckCount > 1) {
-					conditions.push_back("!memcmp(data + " + QString::number(checking) + ", \"" + name.mid(checking, usedIfForCheckCount) + "\", " + QString::number(usedIfForCheckCount) + ")");
+					conditions.push_back("!memcmp(data + " + QString::number(checking) + ", \"" +
+					                     name.mid(checking, usedIfForCheckCount) + "\", " +
+					                     QString::number(usedIfForCheckCount) + ")");
 				} else {
 					conditions.push_back("data[" + QString::number(checking) + "] == '" + keyChar + "'");
 				}
@@ -957,8 +977,10 @@ int getPaletteIndex(QLatin1String name) {\n\
 QByteArray palette::save() const {\n\
 	if (!_ready) const_cast<palette*>(this)->finalize();\n\
 \n\
-	auto result = QByteArray(" << (count * 4) << ", Qt::Uninitialized);\n\
-	for (auto i = 0, index = 0; i != " << count << "; ++i) {\n\
+	auto result = QByteArray("
+	                  << (count * 4) << ", Qt::Uninitialized);\n\
+	for (auto i = 0, index = 0; i != "
+	                  << count << "; ++i) {\n\
 		result[index++] = static_cast<uchar>(data(i)->c.red());\n\
 		result[index++] = static_cast<uchar>(data(i)->c.green());\n\
 		result[index++] = static_cast<uchar>(data(i)->c.blue());\n\
@@ -968,10 +990,12 @@ QByteArray palette::save() const {\n\
 }\n\
 \n\
 bool palette::load(const QByteArray &cache) {\n\
-	if (cache.size() != " << (count * 4) << ") return false;\n\
+	if (cache.size() != "
+	                  << (count * 4) << ") return false;\n\
 \n\
 	auto p = reinterpret_cast<const uchar*>(cache.constData());\n\
-	for (auto i = 0; i != " << count << "; ++i) {\n\
+	for (auto i = 0; i != "
+	                  << count << "; ++i) {\n\
 		setData(i, { p[i * 4 + 0], p[i * 4 + 1], p[i * 4 + 2], p[i * 4 + 3] });\n\
 	}\n\
 	return true;\n\
@@ -1036,7 +1060,8 @@ int indexOfColor(color c) {\n\
 \n\
 QList<row> data() {\n\
 	auto result = QList<row>();\n\
-	result.reserve(" << count << ");\n\
+	result.reserve(" << count
+	                  << ");\n\
 \n\
 " << dataRows << "\n\
 	return result;\n\
@@ -1072,13 +1097,14 @@ bool Generator::writeVariableInit() {
 	}
 
 	source_->stream() << "\
-void init_" << baseName_ << "() {\n\
+void init_" << baseName_
+	                  << "() {\n\
 	if (inited) return;\n\
 	inited = true;\n\n";
 
 	if (module_.hasIncludes()) {
 		bool writtenAtLeastOne = false;
-		bool result = module_.enumIncludes([this,&writtenAtLeastOne](const Module &module) -> bool {
+		bool result = module_.enumIncludes([this, &writtenAtLeastOne](const Module &module) -> bool {
 			if (module.hasVariables()) {
 				source_->stream() << "\tinit_" + moduleBaseName(module) + "();\n";
 				writtenAtLeastOne = true;
@@ -1106,14 +1132,14 @@ void init_" << baseName_ << "() {\n\
 	if (isPalette_) {
 		source_->stream() << "\t_palette.finalize();\n";
 	} else if (!module_.enumVariables([this](const Variable &variable) -> bool {
-		auto name = variable.name.back();
-		auto value = valueAssignmentCode(variable.value);
-		if (value.isEmpty()) {
-			return false;
-		}
-		source_->stream() << "\t_" << name << " = " << value << ";\n";
-		return true;
-	})) {
+		           auto name = variable.name.back();
+		           auto value = valueAssignmentCode(variable.value);
+		           if (value.isEmpty()) {
+			           return false;
+		           }
+		           source_->stream() << "\t_" << name << " = " << value << ";\n";
+		           return true;
+	           })) {
 		return false;
 	}
 	source_->stream() << "\
@@ -1162,7 +1188,8 @@ bool Generator::writeFontFamiliesInit() {
 	source_->stream() << "void initFontFamilies() {\n";
 	for (auto i = fontFamilies_.cbegin(), e = fontFamilies_.cend(); i != e; ++i) {
 		auto family = stringToEncodedString(i.key());
-		source_->stream() << "\tfont" << i.value() << "index = style::internal::registerFontFamily(" << family << ");\n";
+		source_->stream() << "\tfont" << i.value() << "index = style::internal::registerFontFamily(" << family
+		                  << ");\n";
 	}
 	source_->stream() << "}\n\n";
 	return true;
@@ -1210,19 +1237,26 @@ QByteArray iconMaskValuePng(QString filepath) {
 		return result;
 	}
 	if (png100x.width() * 2 != png200x.width() || png100x.height() * 2 != png200x.height()) {
-		common::logError(kErrorBadIconSize, filepath + ".png") << "bad icons size, 1x: " << png100x.width() << "x" << png100x.height() << ", 2x: " << png200x.width() << "x" << png200x.height();
+		common::logError(kErrorBadIconSize, filepath + ".png")
+		    << "bad icons size, 1x: " << png100x.width() << "x" << png100x.height() << ", 2x: " << png200x.width()
+		    << "x" << png200x.height();
 		return result;
 	}
 	for (auto modifierName : modifiers) {
 		if (auto modifier = GetModifier(modifierName)) {
 			modifier(png100x, png200x);
 		} else {
-			common::logError(common::kErrorInternal, filepath) << "modifier should be valid here, name: " << modifierName.toStdString();
+			common::logError(common::kErrorInternal, filepath)
+			    << "modifier should be valid here, name: " << modifierName.toStdString();
 			return result;
 		}
 	}
-	QImage png125x = png200x.scaled(structure::data::pxAdjust(png100x.width(), 5), structure::data::pxAdjust(png100x.height(), 5), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-	QImage png150x = png200x.scaled(structure::data::pxAdjust(png100x.width(), 6), structure::data::pxAdjust(png100x.height(), 6), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+	QImage png125x =
+	    png200x.scaled(structure::data::pxAdjust(png100x.width(), 5), structure::data::pxAdjust(png100x.height(), 5),
+	                   Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+	QImage png150x =
+	    png200x.scaled(structure::data::pxAdjust(png100x.width(), 6), structure::data::pxAdjust(png100x.height(), 6),
+	                   Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
 	QImage composed(png200x.width() + png100x.width(), png200x.height() + png150x.height(), png100x.format());
 	{
@@ -1265,7 +1299,9 @@ bool Generator::writeIconValues() {
 		if (maskData.isEmpty()) {
 			return false;
 		}
-		source_->stream() << "const uchar iconMask" << i.value() << "Data[] = " << stringToBinaryArray(std::string(maskData.constData(), maskData.size())) << ";\n";
+		source_->stream() << "const uchar iconMask" << i.value()
+		                  << "Data[] = " << stringToBinaryArray(std::string(maskData.constData(), maskData.size()))
+		                  << ";\n";
 		source_->stream() << "IconMask iconMask" << i.value() << "(iconMask" << i.value() << "Data);\n\n";
 	}
 	return true;
@@ -1274,7 +1310,8 @@ bool Generator::writeIconValues() {
 bool Generator::collectUniqueValues() {
 	int fontFamilyIndex = 0;
 	int iconMaskIndex = 0;
-	std::function<bool(const Variable&)> collector = [this, &collector, &fontFamilyIndex, &iconMaskIndex](const Variable &variable) {
+	std::function<bool(const Variable &)> collector = [this, &collector, &fontFamilyIndex,
+	                                                   &iconMaskIndex](const Variable &variable) {
 		auto value = variable.value;
 		if (!value.copyOf().isEmpty()) {
 			return true;

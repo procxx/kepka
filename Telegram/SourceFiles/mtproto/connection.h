@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QThread>
-#include "mtproto/core_types.h"
-#include "mtproto/auth_key.h"
-#include "mtproto/dc_options.h"
 #include "core/single_timer.h"
+#include "mtproto/auth_key.h"
+#include "mtproto/core_types.h"
+#include "mtproto/dc_options.h"
 #include "scheme.h"
+#include <QThread>
 
 namespace MTP {
 
@@ -39,7 +39,8 @@ struct ModExpFirst {
 	std::array<gsl::byte, kRandomPowerSize> randomPower;
 };
 ModExpFirst CreateModExp(int g, base::const_byte_span primeBytes, base::const_byte_span randomSeed);
-std::vector<gsl::byte> CreateAuthKey(base::const_byte_span firstBytes, base::const_byte_span randomBytes, base::const_byte_span primeBytes);
+std::vector<gsl::byte> CreateAuthKey(base::const_byte_span firstBytes, base::const_byte_span randomBytes,
+                                     base::const_byte_span primeBytes);
 
 namespace internal {
 
@@ -62,15 +63,11 @@ public:
 
 private:
 	int _threadIndex = 0;
-
 };
 
 class Connection {
 public:
-	enum ConnectionType {
-		TcpConnection,
-		HttpConnection
-	};
+	enum ConnectionType { TcpConnection, HttpConnection };
 
 	Connection(Instance *instance);
 
@@ -89,14 +86,14 @@ private:
 	Instance *_instance = nullptr;
 	std::unique_ptr<QThread> thread;
 	ConnectionPrivate *data = nullptr;
-
 };
 
 class ConnectionPrivate : public QObject {
 	Q_OBJECT
 
 public:
-	ConnectionPrivate(Instance *instance, QThread *thread, Connection *owner, SessionData *data, ShiftedDcId shiftedDcId);
+	ConnectionPrivate(Instance *instance, QThread *thread, Connection *owner, SessionData *data,
+	                  ShiftedDcId shiftedDcId);
 	~ConnectionPrivate();
 
 	void stop();
@@ -187,7 +184,8 @@ private:
 		RestartConnection,
 		ResetSession,
 	};
-	HandleResult handleOneReceived(const mtpPrime *from, const mtpPrime *end, quint64 msgId, qint32 serverTime, quint64 serverSalt, bool badTime);
+	HandleResult handleOneReceived(const mtpPrime *from, const mtpPrime *end, quint64 msgId, qint32 serverTime,
+	                               quint64 serverSalt, bool badTime);
 	mtpBuffer ungzip(const mtpPrime *from, const mtpPrime *end) const;
 	void handleMsgsStates(const QVector<MTPlong> &ids, const QByteArray &states, QVector<MTPlong> &acked);
 
@@ -202,7 +200,7 @@ private:
 	DcType _dcType = DcType::Regular;
 
 	mutable QReadWriteLock stateConnMutex;
-    qint32 _state = 0;
+	qint32 _state = 0;
 
 	bool _needSessionReset = false;
 	void resetSession();
@@ -211,7 +209,8 @@ private:
 	Connection *_owner = nullptr;
 	AbstractConnection *_conn = nullptr;
 	AbstractConnection *_conn4 = nullptr;
-	AbstractConnection *_conn6 = nullptr;;
+	AbstractConnection *_conn6 = nullptr;
+	;
 
 	SingleTimer retryTimer; // exp retry timer
 	int retryTimeout = 1;
@@ -226,7 +225,8 @@ private:
 
 	QVector<MTPlong> ackRequestData, resendRequestData;
 
-	// if badTime received - search for ids in sessionData->haveSent and sessionData->wereAcked and sync time/salt, return true if found
+	// if badTime received - search for ids in sessionData->haveSent and sessionData->wereAcked and sync time/salt,
+	// return true if found
 	bool requestsFixTimeSalt(const QVector<MTPlong> &ids, qint32 serverTime, quint64 serverSalt);
 
 	// remove msgs with such ids from sessionData->haveSent, add to sessionData->wereAcked
@@ -239,13 +239,12 @@ private:
 	SingleTimer _pingSender;
 
 	void resend(quint64 msgId, qint64 msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
-	void resendMany(QVector<quint64> msgIds, qint64 msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
+	void resendMany(QVector<quint64> msgIds, qint64 msCanWait = 0, bool forceContainer = false,
+	                bool sendMsgStateInfo = false);
 
-	template <typename TRequest>
-	void sendRequestNotSecure(const TRequest &request);
+	template <typename TRequest> void sendRequestNotSecure(const TRequest &request);
 
-	template <typename TResponse>
-	bool readResponseNotSecure(TResponse &response);
+	template <typename TResponse> bool readResponseNotSecure(TResponse &response);
 
 	bool restarted = false;
 	bool _finished = false;
@@ -261,11 +260,10 @@ private:
 	// Auth key creation fields and methods
 	struct AuthKeyCreateData {
 		AuthKeyCreateData()
-		: new_nonce(*(MTPint256*)((uchar*)new_nonce_buf))
-		, auth_key_aux_hash(*(MTPlong*)((uchar*)new_nonce_buf + 33)) {
-		}
+		    : new_nonce(*(MTPint256 *)((uchar *)new_nonce_buf))
+		    , auth_key_aux_hash(*(MTPlong *)((uchar *)new_nonce_buf + 33)) {}
 		MTPint128 nonce, server_nonce;
-		uchar new_nonce_buf[41] = { 0 }; // 32 bytes new_nonce + 1 check byte + 8 bytes of auth_key_aux_hash
+		uchar new_nonce_buf[41] = {0}; // 32 bytes new_nonce + 1 check byte + 8 bytes of auth_key_aux_hash
 		MTPint256 &new_nonce;
 		MTPlong &auth_key_aux_hash;
 
@@ -274,8 +272,8 @@ private:
 
 		qint32 g = 0;
 
-		uchar aesKey[32] = { 0 };
-		uchar aesIV[32] = { 0 };
+		uchar aesKey[32] = {0};
+		uchar aesIV[32] = {0};
 		MTPlong auth_key_hash;
 
 		quint32 req_num = 0; // sent not encrypted request number
@@ -284,7 +282,7 @@ private:
 	struct AuthKeyCreateStrings {
 		std::vector<gsl::byte> dh_prime;
 		std::vector<gsl::byte> g_a;
-		AuthKey::Data auth_key = { { gsl::byte{} } };
+		AuthKey::Data auth_key = {{gsl::byte{}}};
 	};
 	std::unique_ptr<AuthKeyCreateData> _authKeyData;
 	std::unique_ptr<AuthKeyCreateStrings> _authKeyStrings;
@@ -292,7 +290,6 @@ private:
 	void dhClientParamsSend();
 	void authKeyCreated();
 	void clearAuthKeyData();
-
 };
 
 } // namespace internal

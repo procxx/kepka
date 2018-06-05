@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/special_buttons.h"
 
+#include "app.h"
+#include "dialogs/dialogs_layout.h"
+#include "structs.h"
 #include "styles/style_boxes.h"
 #include "styles/style_history.h"
-#include "dialogs/dialogs_layout.h"
-#include "ui/effects/ripple_animation.h"
 #include "twidget.h"
-#include "structs.h"
-#include "app.h"
+#include "ui/effects/ripple_animation.h"
 
 #include <qevent.h>
 
@@ -37,8 +37,9 @@ constexpr int kWideScale = 5;
 
 } // namespace
 
-HistoryDownButton::HistoryDownButton(QWidget *parent, const style::TwoIconButton &st) : RippleButton(parent, st.ripple)
-, _st(st) {
+HistoryDownButton::HistoryDownButton(QWidget *parent, const style::TwoIconButton &st)
+    : RippleButton(parent, st.ripple)
+    , _st(st) {
 	resize(_st.width, _st.height);
 	setCursor(style::cur_pointer);
 
@@ -84,9 +85,10 @@ void HistoryDownButton::setUnreadCount(int unreadCount) {
 	}
 }
 
-EmojiButton::EmojiButton(QWidget *parent, const style::IconButton &st) : RippleButton(parent, st.ripple)
-, _st(st)
-, _a_loading(animation(this, &EmojiButton::step_loading)) {
+EmojiButton::EmojiButton(QWidget *parent, const style::IconButton &st)
+    : RippleButton(parent, st.ripple)
+    , _st(st)
+    , _a_loading(animation(this, &EmojiButton::step_loading)) {
 	resize(_st.width, _st.height);
 	setCursor(style::cur_pointer);
 }
@@ -97,7 +99,8 @@ void EmojiButton::paintEvent(QPaintEvent *e) {
 	auto ms = getms();
 
 	p.fillRect(e->rect(), st::historyComposeAreaBg);
-	paintRipple(p, _st.rippleAreaPosition.x(), _st.rippleAreaPosition.y(), ms, _rippleOverride ? &(*_rippleOverride)->c : nullptr);
+	paintRipple(p, _st.rippleAreaPosition.x(), _st.rippleAreaPosition.y(), ms,
+	            _rippleOverride ? &(*_rippleOverride)->c : nullptr);
 
 	auto loading = a_loading.current(ms, _loading ? 1 : 0);
 	p.setOpacity(1 - loading);
@@ -107,17 +110,20 @@ void EmojiButton::paintEvent(QPaintEvent *e) {
 	icon->paint(p, _st.iconPosition, width());
 
 	p.setOpacity(1.);
-	auto pen = _colorOverride ? (*_colorOverride)->p : (over ? st::historyEmojiCircleFgOver : st::historyEmojiCircleFg)->p;
+	auto pen =
+	    _colorOverride ? (*_colorOverride)->p : (over ? st::historyEmojiCircleFgOver : st::historyEmojiCircleFg)->p;
 	pen.setWidth(st::historyEmojiCircleLine);
 	pen.setCapStyle(Qt::RoundCap);
 	p.setPen(pen);
 	p.setBrush(Qt::NoBrush);
 
 	PainterHighQualityEnabler hq(p);
-	QRect inner(QPoint((width() - st::historyEmojiCircle.width()) / 2, st::historyEmojiCircleTop), st::historyEmojiCircle);
+	QRect inner(QPoint((width() - st::historyEmojiCircle.width()) / 2, st::historyEmojiCircleTop),
+	            st::historyEmojiCircle);
 	if (loading > 0) {
 		qint32 full = FullArcLength;
-		qint32 start = std::round(full * double(ms % st::historyEmojiCirclePeriod) / st::historyEmojiCirclePeriod), part = std::round(loading * full / st::historyEmojiCirclePart);
+		qint32 start = std::round(full * double(ms % st::historyEmojiCirclePeriod) / st::historyEmojiCirclePeriod),
+		       part = std::round(loading * full / st::historyEmojiCirclePart);
 		p.drawArc(inner, start, full - part);
 	} else {
 		p.drawEllipse(inner);
@@ -137,7 +143,8 @@ void EmojiButton::setLoading(bool loading) {
 	}
 }
 
-void EmojiButton::setColorOverrides(const style::icon *iconOverride, const style::color *colorOverride, const style::color *rippleOverride) {
+void EmojiButton::setColorOverrides(const style::icon *iconOverride, const style::color *colorOverride,
+                                    const style::color *rippleOverride) {
 	_iconOverride = iconOverride;
 	_colorOverride = colorOverride;
 	_rippleOverride = rippleOverride;
@@ -160,7 +167,8 @@ QImage EmojiButton::prepareRippleMask() const {
 	return RippleAnimation::ellipseMask(QSize(_st.rippleAreaSize, _st.rippleAreaSize));
 }
 
-SendButton::SendButton(QWidget *parent) : RippleButton(parent, st::historyReplyCancel.ripple) {
+SendButton::SendButton(QWidget *parent)
+    : RippleButton(parent, st::historyReplyCancel.ripple) {
 	resize(st::historySendSize);
 }
 
@@ -182,7 +190,8 @@ void SendButton::setType(Type type) {
 void SendButton::setRecordActive(bool recordActive) {
 	if (_recordActive != recordActive) {
 		_recordActive = recordActive;
-		_a_recordActive.start([this] { recordAnimationCallback(); }, _recordActive ? 0. : 1., _recordActive ? 1. : 0, st::historyRecordVoiceDuration);
+		_a_recordActive.start([this] { recordAnimationCallback(); }, _recordActive ? 0. : 1., _recordActive ? 1. : 0,
+		                      st::historyRecordVoiceDuration);
 		update();
 	}
 }
@@ -211,18 +220,22 @@ void SendButton::paintEvent(QPaintEvent *e) {
 	if (changed < 1.) {
 		PainterHighQualityEnabler hq(p);
 		p.setOpacity(1. - changed);
-		auto targetRect = QRect((1 - kWideScale) / 2 * width(), (1 - kWideScale) / 2 * height(), kWideScale * width(), kWideScale * height());
+		auto targetRect = QRect((1 - kWideScale) / 2 * width(), (1 - kWideScale) / 2 * height(), kWideScale * width(),
+		                        kWideScale * height());
 		auto hiddenWidth = anim::interpolate(0, (1 - kWideScale) / 2 * width(), changed);
 		auto hiddenHeight = anim::interpolate(0, (1 - kWideScale) / 2 * height(), changed);
-		p.drawPixmap(targetRect.marginsAdded(QMargins(hiddenWidth, hiddenHeight, hiddenWidth, hiddenHeight)), _contentFrom);
+		p.drawPixmap(targetRect.marginsAdded(QMargins(hiddenWidth, hiddenHeight, hiddenWidth, hiddenHeight)),
+		             _contentFrom);
 		p.setOpacity(changed);
 		auto shownWidth = anim::interpolate((1 - kWideScale) / 2 * width(), 0, changed);
 		auto shownHeight = anim::interpolate((1 - kWideScale) / 2 * height(), 0, changed);
 		p.drawPixmap(targetRect.marginsAdded(QMargins(shownWidth, shownHeight, shownWidth, shownHeight)), _contentTo);
 	} else if (_type == Type::Record) {
 		auto recordActive = recordActiveRatio();
-		auto rippleColor = anim::color(st::historyAttachEmoji.ripple.color, st::historyRecordVoiceRippleBgActive, recordActive);
-		paintRipple(p, (width() - st::historyAttachEmoji.rippleAreaSize) / 2, st::historyAttachEmoji.rippleAreaPosition.y(), ms, &rippleColor);
+		auto rippleColor =
+		    anim::color(st::historyAttachEmoji.ripple.color, st::historyRecordVoiceRippleBgActive, recordActive);
+		paintRipple(p, (width() - st::historyAttachEmoji.rippleAreaSize) / 2,
+		            st::historyAttachEmoji.rippleAreaPosition.y(), ms, &rippleColor);
 
 		auto fastIcon = [recordActive, over, this] {
 			if (recordActive == 1.) {
@@ -242,7 +255,8 @@ void SendButton::paintEvent(QPaintEvent *e) {
 		auto &saveIcon = over ? st::historyEditSaveIconOver : st::historyEditSaveIcon;
 		saveIcon.paint(p, st::historySendIconPosition, width());
 	} else if (_type == Type::Cancel) {
-		paintRipple(p, (width() - st::historyAttachEmoji.rippleAreaSize) / 2, st::historyAttachEmoji.rippleAreaPosition.y(), ms);
+		paintRipple(p, (width() - st::historyAttachEmoji.rippleAreaSize) / 2,
+		            st::historyAttachEmoji.rippleAreaPosition.y(), ms);
 
 		auto &cancelIcon = over ? st::historyReplyCancelIconOver : st::historyReplyCancelIcon;
 		cancelIcon.paintInCenter(p, rect());
@@ -292,7 +306,8 @@ QImage SendButton::prepareRippleMask() const {
 QPoint SendButton::prepareRippleStartPosition() const {
 	auto real = mapFromGlobal(QCursor::pos());
 	auto size = (_type == Type::Record) ? st::historyAttachEmoji.rippleAreaSize : st::historyReplyCancel.rippleAreaSize;
-	auto y = (_type == Type::Record) ? st::historyAttachEmoji.rippleAreaPosition.y() : (height() - st::historyReplyCancel.rippleAreaSize) / 2;
+	auto y = (_type == Type::Record) ? st::historyAttachEmoji.rippleAreaPosition.y() :
+	                                   (height() - st::historyReplyCancel.rippleAreaSize) / 2;
 	return real - QPoint((width() - size) / 2, y);
 }
 
@@ -303,9 +318,10 @@ void SendButton::recordAnimationCallback() {
 	}
 }
 
-PeerAvatarButton::PeerAvatarButton(QWidget *parent, PeerData *peer, const style::PeerAvatarButton &st) : AbstractButton(parent)
-, _peer(peer)
-, _st(st) {
+PeerAvatarButton::PeerAvatarButton(QWidget *parent, PeerData *peer, const style::PeerAvatarButton &st)
+    : AbstractButton(parent)
+    , _peer(peer)
+    , _st(st) {
 	resize(_st.size, _st.size);
 }
 
@@ -316,8 +332,9 @@ void PeerAvatarButton::paintEvent(QPaintEvent *e) {
 	}
 }
 
-NewAvatarButton::NewAvatarButton(QWidget *parent, int size, QPoint position) : RippleButton(parent, st::defaultActiveButton.ripple)
-, _position(position) {
+NewAvatarButton::NewAvatarButton(QWidget *parent, int size, QPoint position)
+    : RippleButton(parent, st::defaultActiveButton.ripple)
+    , _position(position) {
 	resize(size, size);
 }
 

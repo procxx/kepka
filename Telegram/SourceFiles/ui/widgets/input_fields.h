@@ -20,20 +20,20 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QTextEdit>
-#include <QTouchEvent>
-#include <QTextFragment>
 #include <QLineEdit>
+#include <QTextEdit>
+#include <QTextFragment>
+#include <QTouchEvent>
 
 #include "base/lambda.h"
-#include "styles/style_widgets.h"
 #include "history/history.h"
+#include "styles/style_widgets.h"
 #include "ui/twidget.h"
 class UserData;
 
 namespace Ui {
 
-static UserData * const LookingUpInlineBot = SharedMemoryLocation<UserData, 0>();
+static UserData *const LookingUpInlineBot = SharedMemoryLocation<UserData, 0>();
 
 class FlatTextarea : public TWidgetHelper<QTextEdit>, private base::Subscriber {
 	Q_OBJECT
@@ -45,7 +45,9 @@ public:
 	static TagList deserializeTagsList(QByteArray data, int textLength);
 	static QString tagsMimeType();
 
-	FlatTextarea(QWidget *parent, const style::FlatTextarea &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString(), const TagList &tags = TagList());
+	FlatTextarea(QWidget *parent, const style::FlatTextarea &st,
+	             base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString(),
+	             const TagList &tags = TagList());
 
 	void setMaxLength(int maxLength);
 	void setMinHeight(int minHeight);
@@ -100,11 +102,7 @@ public:
 		return _lastTextWithTags.text.isEmpty();
 	}
 
-	enum UndoHistoryAction {
-		AddToUndoHistory,
-		MergeWithUndoHistory,
-		ClearUndoHistory
-	};
+	enum UndoHistoryAction { AddToUndoHistory, MergeWithUndoHistory, ClearUndoHistory };
 	void setTextWithTags(const TextWithTags &textWithTags, UndoHistoryAction undoHistoryAction = AddToUndoHistory);
 
 	// If you need to make some preparations of tags before putting them to QMimeData
@@ -113,8 +111,7 @@ public:
 	public:
 		virtual QString mimeTagFromTag(const QString &tagId) = 0;
 		virtual QString tagFromMimeTag(const QString &mimeTag) = 0;
-		virtual ~TagMimeProcessor() {
-		}
+		virtual ~TagMimeProcessor() {}
 	};
 	void setTagMimeProcessor(std::unique_ptr<TagMimeProcessor> &&processor);
 
@@ -148,8 +145,7 @@ protected:
 	void dropEvent(QDropEvent *e) override;
 	void contextMenuEvent(QContextMenuEvent *e) override;
 
-	virtual void correctValue(const QString &was, QString &now, TagList &nowTags) {
-	}
+	virtual void correctValue(const QString &was, QString &now, TagList &nowTags) {}
 
 	void insertEmoji(EmojiPtr emoji, QTextCursor c);
 
@@ -244,7 +240,8 @@ class FlatInput : public TWidgetHelper<QLineEdit>, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	FlatInput(QWidget *parent, const style::FlatInput &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
+	FlatInput(QWidget *parent, const style::FlatInput &st,
+	          base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
 
 	void updatePlaceholder();
 	void setPlaceholder(base::lambda<QString()> placeholderFactory);
@@ -327,7 +324,8 @@ class InputArea : public TWidget, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	InputArea(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
+	InputArea(QWidget *parent, const style::InputField &st,
+	          base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
 
 	void showError();
 
@@ -409,10 +407,10 @@ protected:
 
 	void insertEmoji(EmojiPtr emoji, QTextCursor c);
 	TWidget *tparent() {
-		return qobject_cast<TWidget*>(parentWidget());
+		return qobject_cast<TWidget *>(parentWidget());
 	}
 	const TWidget *tparent() const {
-		return qobject_cast<const TWidget*>(parentWidget());
+		return qobject_cast<const TWidget *>(parentWidget());
 	}
 
 	void touchEvent(QTouchEvent *e);
@@ -440,10 +438,9 @@ private:
 
 	private:
 		InputArea *f() const {
-			return static_cast<InputArea*>(parentWidget());
+			return static_cast<InputArea *>(parentWidget());
 		}
 		friend class InputArea;
-
 	};
 	friend class Inner;
 
@@ -499,14 +496,14 @@ private:
 	QPoint _touchStart;
 
 	bool _correcting = false;
-
 };
 
 class InputField : public TWidget, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	InputField(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
+	InputField(QWidget *parent, const style::InputField &st,
+	           base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
 
 	void setMaxLength(int maxLength) {
 		_maxLength = maxLength;
@@ -598,10 +595,10 @@ protected:
 
 	void insertEmoji(EmojiPtr emoji, QTextCursor c);
 	TWidget *tparent() {
-		return qobject_cast<TWidget*>(parentWidget());
+		return qobject_cast<TWidget *>(parentWidget());
 	}
 	const TWidget *tparent() const {
-		return qobject_cast<const TWidget*>(parentWidget());
+		return qobject_cast<const TWidget *>(parentWidget());
 	}
 
 	void touchEvent(QTouchEvent *e);
@@ -629,10 +626,9 @@ private:
 
 	private:
 		InputField *f() const {
-			return static_cast<InputField*>(parentWidget());
+			return static_cast<InputField *>(parentWidget());
 		}
 		friend class InputField;
-
 	};
 	friend class Inner;
 
@@ -690,7 +686,9 @@ class MaskedInputField : public TWidgetHelper<QLineEdit>, private base::Subscrib
 	Q_OBJECT
 
 public:
-	MaskedInputField(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
+	MaskedInputField(QWidget *parent, const style::InputField &st,
+	                 base::lambda<QString()> placeholderFactory = base::lambda<QString()>(),
+	                 const QString &val = QString());
 
 	void showError();
 
@@ -757,12 +755,10 @@ protected:
 	void contextMenuEvent(QContextMenuEvent *e) override;
 	void inputMethodEvent(QInputMethodEvent *e) override;
 
-	virtual void correctValue(const QString &was, int wasCursor, QString &now, int &nowCursor) {
-	}
+	virtual void correctValue(const QString &was, int wasCursor, QString &now, int &nowCursor) {}
 	void setCorrectedText(QString &now, int &nowCursor, const QString &newText, int newPos);
 
-	virtual void paintAdditionalPlaceholder(Painter &p, TimeMs ms) {
-	}
+	virtual void paintAdditionalPlaceholder(Painter &p, TimeMs ms) {}
 
 	style::font phFont() {
 		return _st.font;
@@ -838,7 +834,6 @@ protected:
 
 private:
 	bool _nosignal;
-
 };
 
 class PhonePartInput : public MaskedInputField {
@@ -863,27 +858,28 @@ protected:
 private:
 	QVector<int> _pattern;
 	QString _additionalPlaceholder;
-
 };
 
 class PasswordInput : public MaskedInputField {
 public:
-	PasswordInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory = base::lambda<QString()>(), const QString &val = QString());
-
+	PasswordInput(QWidget *parent, const style::InputField &st,
+	              base::lambda<QString()> placeholderFactory = base::lambda<QString()>(),
+	              const QString &val = QString());
 };
 
 class PortInput : public MaskedInputField {
 public:
-	PortInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory, const QString &val);
+	PortInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory,
+	          const QString &val);
 
 protected:
 	void correctValue(const QString &was, int wasCursor, QString &now, int &nowCursor) override;
-
 };
 
 class UsernameInput : public MaskedInputField {
 public:
-	UsernameInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory, const QString &val, bool isLink);
+	UsernameInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory,
+	              const QString &val, bool isLink);
 
 	void setLinkPlaceholder(const QString &placeholder);
 
@@ -893,12 +889,12 @@ protected:
 
 private:
 	QString _linkPlaceholder;
-
 };
 
 class PhoneInput : public MaskedInputField {
 public:
-	PhoneInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory, const QString &val);
+	PhoneInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory,
+	           const QString &val);
 
 	void clearText();
 
@@ -911,7 +907,6 @@ protected:
 private:
 	QVector<int> _pattern;
 	QString _additionalPlaceholder;
-
 };
 
 } // namespace Ui

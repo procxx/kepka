@@ -21,11 +21,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/observer.h"
-#include "window/notifications_manager.h"
 #include "core/single_timer.h"
 #include "history/history_item.h"
 #include "structs.h"
 #include "ui/animation.h"
+#include "window/notifications_manager.h"
 
 class History;
 
@@ -51,11 +51,8 @@ class Manager : public Notifications::Manager, private base::Subscriber {
 public:
 	Manager(System *system);
 
-	template <typename Method>
-	void enumerateNotifications(Method method) {
-		for_const (auto &notification, _notifications) {
-			method(notification);
-		}
+	template <typename Method> void enumerateNotifications(Method method) {
+		for_const (auto &notification, _notifications) { method(notification); }
 	}
 
 	~Manager();
@@ -102,12 +99,11 @@ private:
 
 	struct QueuedNotification {
 		QueuedNotification(HistoryItem *item, int forwardedCount)
-		: history(item->history())
-		, peer(history->peer)
-		, author((item->hasFromName() && !item->isPost()) ? item->author() : nullptr)
-		, item((forwardedCount > 1) ? nullptr : item)
-		, forwardedCount(forwardedCount) {
-		}
+		    : history(item->history())
+		    , peer(history->peer)
+		    , author((item->hasFromName() && !item->isPost()) ? item->author() : nullptr)
+		    , item((forwardedCount > 1) ? nullptr : item)
+		    , forwardedCount(forwardedCount) {}
 
 		History *history;
 		PeerData *peer;
@@ -120,7 +116,6 @@ private:
 	Animation _demoMasterOpacity;
 
 	mutable QPixmap _hiddenUserpicPlaceholder;
-
 };
 
 namespace internal {
@@ -176,7 +171,6 @@ private:
 	Direction _direction;
 	anim::value a_shift;
 	BasicAnimation _a_shift;
-
 };
 
 class Background : public TWidget {
@@ -185,14 +179,14 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *e) override;
-
 };
 
 class Notification : public Widget {
 	Q_OBJECT
 
 public:
-	Notification(Manager *manager, History *history, PeerData *peer, PeerData *author, HistoryItem *item, int forwardedCount, QPoint startPosition, int shift, Direction shiftDirection);
+	Notification(Manager *manager, History *history, PeerData *peer, PeerData *author, HistoryItem *item,
+	             int forwardedCount, QPoint startPosition, int shift, Direction shiftDirection);
 
 	void startHiding();
 	void stopHiding();
@@ -257,9 +251,9 @@ private:
 	int _forwardedCount;
 	object_ptr<Ui::IconButton> _close;
 	object_ptr<Ui::RoundButton> _reply;
-	object_ptr<Background> _background = { nullptr };
-	object_ptr<Ui::InputArea> _replyArea = { nullptr };
-	object_ptr<Ui::IconButton> _replySend = { nullptr };
+	object_ptr<Background> _background = {nullptr};
+	object_ptr<Ui::InputArea> _replyArea = {nullptr};
+	object_ptr<Ui::IconButton> _replySend = {nullptr};
 	bool _waitingForInput = true;
 
 	QTimer _hideTimer;
@@ -267,7 +261,6 @@ private:
 	int _replyPadding = 0;
 
 	bool _userpicLoaded = false;
-
 };
 
 class HideAllButton : public Widget {
@@ -288,7 +281,6 @@ protected:
 private:
 	bool _mouseOver = false;
 	bool _mouseDown = false;
-
 };
 
 } // namespace internal

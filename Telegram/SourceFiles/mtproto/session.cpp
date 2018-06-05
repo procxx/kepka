@@ -21,11 +21,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "mtproto/session.h"
 #include "mtproto/mtp_instance.h"
 
+#include "facade.h"
+#include "mtproto/auth_key.h"
 #include "mtproto/connection.h"
 #include "mtproto/dcenter.h"
-#include "mtproto/auth_key.h"
 #include "scheme.h"
-#include "facade.h"
 
 namespace MTP {
 namespace internal {
@@ -35,7 +35,9 @@ void SessionData::setKey(const AuthKeyPtr &key) {
 		quint64 session = rand_value<quint64>();
 		_authKey = key;
 
-		DEBUG_LOG(("MTP Info: new auth key set in SessionData, id %1, setting random server_session %2").arg(key ? key->keyId() : 0).arg(session));
+		DEBUG_LOG(("MTP Info: new auth key set in SessionData, id %1, setting random server_session %2")
+		              .arg(key ? key->keyId() : 0)
+		              .arg(session));
 		QWriteLocker locker(&_lock);
 		if (_session != session) {
 			_session = session;
@@ -48,7 +50,8 @@ void SessionData::setKey(const AuthKeyPtr &key) {
 void SessionData::clear(Instance *instance) {
 	RPCCallbackClears clearCallbacks;
 	{
-		QReadLocker locker1(haveSentMutex()), locker2(toResendMutex()), locker3(haveReceivedMutex()), locker4(wereAckedMutex());
+		QReadLocker locker1(haveSentMutex()), locker2(toResendMutex()), locker3(haveReceivedMutex()),
+		    locker4(wereAckedMutex());
 		auto receivedResponsesEnd = _receivedResponses.cend();
 		clearCallbacks.reserve(_haveSent.size() + _wereAcked.size());
 		for (auto i = _haveSent.cbegin(), e = _haveSent.cend(); i != e; ++i) {
@@ -89,10 +92,11 @@ void SessionData::clear(Instance *instance) {
 	instance->clearCallbacksDelayed(clearCallbacks);
 }
 
-Session::Session(not_null<Instance*> instance, ShiftedDcId shiftedDcId) : QObject()
-, _instance(instance)
-, data(this)
-, dcWithShift(shiftedDcId) {
+Session::Session(not_null<Instance *> instance, ShiftedDcId shiftedDcId)
+    : QObject()
+    , _instance(instance)
+    , data(this)
+    , dcWithShift(shiftedDcId) {
 	connect(&timeouter, SIGNAL(timeout()), this, SLOT(checkRequestsByTimer()));
 	timeouter.start(1000);
 
@@ -139,7 +143,8 @@ mtpRequest Session::getRequest(mtpRequestId requestId) {
 	return _instance->getRequest(requestId);
 }
 
-bool Session::rpcErrorOccured(mtpRequestId requestId, const RPCFailHandlerPtr &onFail, const RPCError &err) { // return true if need to clean request data
+bool Session::rpcErrorOccured(mtpRequestId requestId, const RPCFailHandlerPtr &onFail,
+                              const RPCError &err) { // return true if need to clean request data
 	return _instance->rpcErrorOccured(requestId, onFail, err);
 }
 
@@ -197,11 +202,17 @@ void Session::sendAnything(qint64 msCanWait) {
 		msWait = msCanWait;
 	}
 	if (msWait) {
-		DEBUG_LOG(("MTP Info: dcWithShift %1 can wait for %2ms from current %3").arg(dcWithShift).arg(msWait).arg(msSendCall));
+		DEBUG_LOG(("MTP Info: dcWithShift %1 can wait for %2ms from current %3")
+		              .arg(dcWithShift)
+		              .arg(msWait)
+		              .arg(msSendCall));
 		msSendCall = ms;
 		sender.start(msWait);
 	} else {
-		DEBUG_LOG(("MTP Info: dcWithShift %1 stopped send timer, can wait for %2ms from current %3").arg(dcWithShift).arg(msWait).arg(msSendCall));
+		DEBUG_LOG(("MTP Info: dcWithShift %1 stopped send timer, can wait for %2ms from current %3")
+		              .arg(dcWithShift)
+		              .arg(msWait)
+		              .arg(msSendCall));
 		sender.stop();
 		msSendCall = 0;
 		needToResumeAndSend();
@@ -236,7 +247,7 @@ void Session::sendMsgsStateInfo(quint64 msgId, QByteArray data) {
 	if (!data.isEmpty()) {
 		info.resize(data.size());
 		auto src = gsl::as_bytes(gsl::make_span(data));
-//		auto dst = gsl::as_writeable_bytes(gsl::make_span(info));
+		//		auto dst = gsl::as_writeable_bytes(gsl::make_span(info));
 		auto dst = gsl::as_writeable_bytes(gsl::make_span(&info[0], info.size()));
 		base::copy_bytes(dst, src);
 	}
@@ -453,13 +464,14 @@ void Session::resendAll() {
 	}
 }
 
-void Session::sendPrepared(const mtpRequest &request, TimeMs msCanWait, bool newRequest) { // returns true, if emit of needToSend() is needed
+void Session::sendPrepared(const mtpRequest &request, TimeMs msCanWait,
+                           bool newRequest) { // returns true, if emit of needToSend() is needed
 	{
 		QWriteLocker locker(data.toSendMutex());
 		data.toSendMap().insert(request->requestId, request);
 
 		if (newRequest) {
-			*(mtpMsgId*)(request->data() + 4) = 0;
+			*(mtpMsgId *)(request->data() + 4) = 0;
 			*(request->data() + 6) = 0;
 		}
 	}
@@ -474,7 +486,8 @@ QReadWriteLock *Session::keyMutex() const {
 }
 
 void Session::authKeyCreatedForDC() {
-	DEBUG_LOG(("AuthKey Info: Session::authKeyCreatedForDC slot, emitting authKeyCreated(), dcWithShift %1").arg(dcWithShift));
+	DEBUG_LOG(("AuthKey Info: Session::authKeyCreatedForDC slot, emitting authKeyCreated(), dcWithShift %1")
+	              .arg(dcWithShift));
 	data.setKey(dc->getKey());
 	emit authKeyCreated();
 }
@@ -490,7 +503,8 @@ void Session::layerWasInitedForDC(bool wasInited) {
 }
 
 void Session::notifyLayerInited(bool wasInited) {
-	DEBUG_LOG(("MTP Info: emitting MTProtoDC::layerWasInited(%1), dcWithShift %2").arg(Logs::b(wasInited)).arg(dcWithShift));
+	DEBUG_LOG(
+	    ("MTP Info: emitting MTProtoDC::layerWasInited(%1), dcWithShift %2").arg(Logs::b(wasInited)).arg(dcWithShift));
 	dc->setConnectionInited(wasInited);
 	emit dc->layerWasInited(wasInited);
 }
@@ -559,7 +573,9 @@ Session::~Session() {
 }
 
 MTPrpcError rpcClientError(const QString &type, const QString &description) {
-	return MTP_rpc_error(MTP_int(0), MTP_string(("CLIENT_" + type + (description.length() ? (": " + description) : "")).toUtf8().constData()));
+	return MTP_rpc_error(
+	    MTP_int(0),
+	    MTP_string(("CLIENT_" + type + (description.length() ? (": " + description) : "")).toUtf8().constData()));
 }
 
 } // namespace internal

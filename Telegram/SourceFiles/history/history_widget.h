@@ -20,15 +20,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "storage/localimageloader.h"
-#include "ui/widgets/tooltip.h"
-#include "history/history_common.h"
-#include "chat_helpers/field_autocomplete.h"
-#include "window/section_widget.h"
-#include "core/single_timer.h"
-#include "ui/widgets/input_fields.h"
 #include "base/flags.h"
+#include "chat_helpers/field_autocomplete.h"
+#include "core/single_timer.h"
+#include "history/history_common.h"
 #include "history/history_item.h"
+#include "storage/localimageloader.h"
+#include "ui/widgets/input_fields.h"
+#include "ui/widgets/tooltip.h"
+#include "window/section_widget.h"
 
 namespace InlineBots {
 namespace Layout {
@@ -95,7 +95,6 @@ private:
 	object_ptr<Ui::FlatButton> _report;
 	object_ptr<Ui::FlatButton> _hide;
 	object_ptr<Ui::LinkButton> _clear;
-
 };
 
 class MainWidget;
@@ -166,14 +165,13 @@ private:
 	Text _toText;
 	qint32 _toTextWidth = 0;
 	QPixmap _cacheForAnim;
-
 };
 
 class HistoryWidget final : public Window::AbstractSectionWidget, public RPCSender {
 	Q_OBJECT
 
 public:
-	HistoryWidget(QWidget *parent, not_null<Window::Controller*> controller);
+	HistoryWidget(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void start();
 
@@ -187,7 +185,7 @@ public:
 	void leaveToChildEvent(QEvent *e, QWidget *child) override;
 	void dragEnterEvent(QDragEnterEvent *e) override;
 	void dragLeaveEvent(QDragLeaveEvent *e) override;
-    void dropEvent(QDropEvent *e) override;
+	void dropEvent(QDropEvent *e) override;
 
 	bool isItemCompletelyHidden(HistoryItem *item) const;
 	void updateTopBarSelection();
@@ -225,11 +223,17 @@ public:
 	void updateFieldPlaceholder();
 	void updateStickersByEmoji();
 
-	bool confirmSendingFiles(const QList<QUrl> &files, CompressConfirm compressed = CompressConfirm::Auto, const QString *addedComment = nullptr);
-	bool confirmSendingFiles(const QStringList &files, CompressConfirm compressed = CompressConfirm::Auto, const QString *addedComment = nullptr);
-	bool confirmSendingFiles(const QImage &image, const QByteArray &content, CompressConfirm compressed = CompressConfirm::Auto, const QString &insertTextOnCancel = QString());
-	bool confirmSendingFiles(const QMimeData *data, CompressConfirm compressed = CompressConfirm::Auto, const QString &insertTextOnCancel = QString());
-	bool confirmShareContact(const QString &phone, const QString &fname, const QString &lname, const QString *addedComment = nullptr);
+	bool confirmSendingFiles(const QList<QUrl> &files, CompressConfirm compressed = CompressConfirm::Auto,
+	                         const QString *addedComment = nullptr);
+	bool confirmSendingFiles(const QStringList &files, CompressConfirm compressed = CompressConfirm::Auto,
+	                         const QString *addedComment = nullptr);
+	bool confirmSendingFiles(const QImage &image, const QByteArray &content,
+	                         CompressConfirm compressed = CompressConfirm::Auto,
+	                         const QString &insertTextOnCancel = QString());
+	bool confirmSendingFiles(const QMimeData *data, CompressConfirm compressed = CompressConfirm::Auto,
+	                         const QString &insertTextOnCancel = QString());
+	bool confirmShareContact(const QString &phone, const QString &fname, const QString &lname,
+	                         const QString *addedComment = nullptr);
 
 	void uploadFile(const QByteArray &fileContent, SendMediaType type);
 	void uploadFiles(const QStringList &files, SendMediaType type);
@@ -243,7 +247,8 @@ public:
 
 	void onShareContact(const PeerId &peer, UserData *contact);
 
-	void shareContact(const PeerId &peer, const QString &phone, const QString &fname, const QString &lname, MsgId replyTo, qint32 userId = 0);
+	void shareContact(const PeerId &peer, const QString &phone, const QString &fname, const QString &lname,
+	                  MsgId replyTo, qint32 userId = 0);
 
 	History *history() const;
 	PeerData *peer() const;
@@ -265,8 +270,8 @@ public:
 
 	bool touchScroll(const QPoint &delta);
 
-	void enqueueMessageHighlight(not_null<HistoryItem*> item);
-	TimeMs highlightStartTime(not_null<const HistoryItem*> item) const;
+	void enqueueMessageHighlight(not_null<HistoryItem *> item);
+	TimeMs highlightStartTime(not_null<const HistoryItem *> item) const;
 
 	SelectedItemSet getSelectedItems() const;
 	void itemEdited(HistoryItem *item);
@@ -310,7 +315,8 @@ public:
 	DragState getDragState(const QMimeData *d);
 
 	void fastShowAtEnd(History *h);
-	void applyDraft(bool parseLinks = true, Ui::FlatTextarea::UndoHistoryAction undoHistoryAction = Ui::FlatTextarea::ClearUndoHistory);
+	void applyDraft(bool parseLinks = true,
+	                Ui::FlatTextarea::UndoHistoryAction undoHistoryAction = Ui::FlatTextarea::ClearUndoHistory);
 	void showHistory(const PeerId &peer, MsgId showAtMsgId, bool reload = false);
 	void clearDelayedShowAt();
 	void clearAllLoadRequests();
@@ -352,9 +358,10 @@ public:
 	bool wheelEventFromFloatPlayer(QEvent *e, Window::Column myColumn, Window::Column playerColumn) override;
 	QRect rectForFloatPlayer(Window::Column myColumn, Window::Column playerColumn) override;
 
-	void app_sendBotCallback(const HistoryMessageReplyMarkup::Button *button, not_null<const HistoryItem*> msg, int row, int col);
+	void app_sendBotCallback(const HistoryMessageReplyMarkup::Button *button, not_null<const HistoryItem *> msg,
+	                         int row, int col);
 
-	void ui_repaintHistoryItem(not_null<const HistoryItem*> item);
+	void ui_repaintHistoryItem(not_null<const HistoryItem *> item);
 	PeerData *ui_getPeerForMouseAction();
 
 	void notify_historyItemLayoutChanged(const HistoryItem *item);
@@ -403,7 +410,8 @@ public slots:
 
 	void onPhotoUploaded(const FullMsgId &msgId, bool silent, const MTPInputFile &file);
 	void onDocumentUploaded(const FullMsgId &msgId, bool silent, const MTPInputFile &file);
-	void onThumbDocumentUploaded(const FullMsgId &msgId, bool silent, const MTPInputFile &file, const MTPInputFile &thumb);
+	void onThumbDocumentUploaded(const FullMsgId &msgId, bool silent, const MTPInputFile &file,
+	                             const MTPInputFile &thumb);
 
 	void onPhotoProgress(const FullMsgId &msgId);
 	void onDocumentProgress(const FullMsgId &msgId);
@@ -512,14 +520,17 @@ private:
 	SendingFilesLists getSendingFilesLists(const QList<QUrl> &files);
 	SendingFilesLists getSendingFilesLists(const QStringList &files);
 	void getSendingLocalFileInfo(SendingFilesLists &result, const QString &filepath);
-	bool confirmSendingFiles(const SendingFilesLists &lists, CompressConfirm compressed = CompressConfirm::Auto, const QString *addedComment = nullptr);
-	template <typename Callback>
-	bool validateSendingFiles(const SendingFilesLists &lists, Callback callback);
+	bool confirmSendingFiles(const SendingFilesLists &lists, CompressConfirm compressed = CompressConfirm::Auto,
+	                         const QString *addedComment = nullptr);
+	template <typename Callback> bool validateSendingFiles(const SendingFilesLists &lists, Callback callback);
 	template <typename SendCallback>
-	bool showSendFilesBox(object_ptr<SendFilesBox> box, const QString &insertTextOnCancel, const QString *addedComment, SendCallback callback);
+	bool showSendFilesBox(object_ptr<SendFilesBox> box, const QString &insertTextOnCancel, const QString *addedComment,
+	                      SendCallback callback);
 
 	// If an empty filepath is found we upload (possible) "image" with (possible) "content".
-	void uploadFilesAfterConfirmation(const QStringList &files, const QByteArray &content, const QImage &image, std::unique_ptr<FileLoadTask::MediaInformation> information, SendMediaType type, QString caption);
+	void uploadFilesAfterConfirmation(const QStringList &files, const QByteArray &content, const QImage &image,
+	                                  std::unique_ptr<FileLoadTask::MediaInformation> information, SendMediaType type,
+	                                  QString caption);
 
 	void itemRemoved(HistoryItem *item);
 
@@ -659,7 +670,8 @@ private:
 		ScrollChangeType type;
 		int value;
 	};
-	void updateHistoryGeometry(bool initial = false, bool loadedDown = false, const ScrollChange &change = { ScrollChangeNone, 0 });
+	void updateHistoryGeometry(bool initial = false, bool loadedDown = false,
+	                           const ScrollChange &change = {ScrollChangeNone, 0});
 	void updateListSize();
 
 	// Does any of the shown histories has this flag set.
@@ -670,7 +682,7 @@ private:
 	// Counts scrollTop for placing the scroll right at the unread
 	// messages bar, choosing from _history and _migrated unreadBar.
 	int unreadBarTop() const;
-	int itemTopForHighlight(not_null<HistoryItem*> item) const;
+	int itemTopForHighlight(not_null<HistoryItem *> item) const;
 	void scrollToCurrentVoiceMessage(FullMsgId fromId, FullMsgId toId);
 
 	// Scroll to current y without updating the _lastUserScrolled time.
@@ -693,16 +705,20 @@ private:
 	void countHistoryShowFrom();
 
 	enum class TextUpdateEvent {
-		SaveDraft  = (1 << 0),
+		SaveDraft = (1 << 0),
 		SendTyping = (1 << 1),
 	};
 	using TextUpdateEvents = base::flags<TextUpdateEvent>;
-	friend inline constexpr bool is_flag_type(TextUpdateEvent) { return true; };
+	friend inline constexpr bool is_flag_type(TextUpdateEvent) {
+		return true;
+	};
 
 	void writeDrafts(Data::Draft **localDraft, Data::Draft **editDraft);
 	void writeDrafts(History *history);
-	void setFieldText(const TextWithTags &textWithTags, TextUpdateEvents events = 0, Ui::FlatTextarea::UndoHistoryAction undoHistoryAction = Ui::FlatTextarea::ClearUndoHistory);
-	void clearFieldText(TextUpdateEvents events = 0, Ui::FlatTextarea::UndoHistoryAction undoHistoryAction = Ui::FlatTextarea::ClearUndoHistory) {
+	void setFieldText(const TextWithTags &textWithTags, TextUpdateEvents events = 0,
+	                  Ui::FlatTextarea::UndoHistoryAction undoHistoryAction = Ui::FlatTextarea::ClearUndoHistory);
+	void clearFieldText(TextUpdateEvents events = 0,
+	                    Ui::FlatTextarea::UndoHistoryAction undoHistoryAction = Ui::FlatTextarea::ClearUndoHistory) {
 		setFieldText(TextWithTags(), events, undoHistoryAction);
 	}
 
@@ -737,7 +753,7 @@ private:
 	MsgId _delayedShowAtMsgId = -1; // wtf?
 	mtpRequestId _delayedShowAtRequest = 0;
 
-	object_ptr<Ui::AbstractButton> _backAnimationButton = { nullptr };
+	object_ptr<Ui::AbstractButton> _backAnimationButton = {nullptr};
 	object_ptr<Window::TopBarWidget> _topBar;
 	object_ptr<Ui::ScrollArea> _scroll;
 	QPointer<HistoryInner> _list;
@@ -781,7 +797,7 @@ private:
 	bool showRecordButton() const;
 	bool showInlineBotCancel() const;
 
-	object_ptr<ReportSpamPanel> _reportSpamPanel = { nullptr };
+	object_ptr<ReportSpamPanel> _reportSpamPanel = {nullptr};
 
 	object_ptr<Ui::SendButton> _send;
 	object_ptr<Ui::FlatButton> _unblock;
@@ -792,7 +808,7 @@ private:
 	mtpRequestId _reportSpamRequest = 0;
 	object_ptr<Ui::IconButton> _attachToggle;
 	object_ptr<Ui::EmojiButton> _tabbedSelectorToggle;
-	object_ptr<Ui::ImportantTooltip> _tabbedSelectorToggleTooltip = { nullptr };
+	object_ptr<Ui::ImportantTooltip> _tabbedSelectorToggleTooltip = {nullptr};
 	bool _tabbedSelectorToggleTooltipShown = false;
 	object_ptr<Ui::IconButton> _botKeyboardShow;
 	object_ptr<Ui::IconButton> _botKeyboardHide;
@@ -820,23 +836,24 @@ private:
 	object_ptr<Ui::ScrollArea> _kbScroll;
 	QPointer<BotKeyboard> _keyboard;
 
-	object_ptr<Ui::InnerDropdown> _membersDropdown = { nullptr };
+	object_ptr<Ui::InnerDropdown> _membersDropdown = {nullptr};
 	QTimer _membersDropdownShowTimer;
 
-	object_ptr<InlineBots::Layout::Widget> _inlineResults = { nullptr };
+	object_ptr<InlineBots::Layout::Widget> _inlineResults = {nullptr};
 	object_ptr<ChatHelpers::TabbedPanel> _tabbedPanel;
-	object_ptr<ChatHelpers::TabbedSection> _tabbedSection = { nullptr };
+	object_ptr<ChatHelpers::TabbedSection> _tabbedSection = {nullptr};
 	QPointer<ChatHelpers::TabbedSelector> _tabbedSelector;
 	bool _tabbedSectionUsed = false;
 	DragState _attachDrag = DragStateNone;
 	object_ptr<DragArea> _attachDragDocument, _attachDragPhoto;
 
-	object_ptr<Ui::Emoji::SuggestionsController> _emojiSuggestions = { nullptr };
+	object_ptr<Ui::Emoji::SuggestionsController> _emojiSuggestions = {nullptr};
 
 	bool _nonEmptySelection = false;
 
 	TaskQueue _fileLoader;
-	TextUpdateEvents _textUpdateEvents = (TextUpdateEvents() | TextUpdateEvent::SaveDraft | TextUpdateEvent::SendTyping);
+	TextUpdateEvents _textUpdateEvents =
+	    (TextUpdateEvents() | TextUpdateEvent::SaveDraft | TextUpdateEvent::SendTyping);
 
 	qint64 _serviceImageCacheSize = 0;
 	QString _confirmSource;
@@ -857,7 +874,7 @@ private:
 	base::Timer _highlightTimer;
 	TimeMs _highlightStart = 0;
 
-	QMap<QPair<History*, SendAction::Type>, mtpRequestId> _sendActionRequests;
+	QMap<QPair<History *, SendAction::Type>, mtpRequestId> _sendActionRequests;
 	QTimer _sendActionStopTimer;
 
 	TimeMs _saveDraftStart = 0;
@@ -865,7 +882,6 @@ private:
 	QTimer _saveDraftTimer, _saveCloudDraftTimer;
 
 	object_ptr<Ui::PlainShadow> _topShadow;
-	object_ptr<Ui::PlainShadow> _rightShadow = { nullptr };
+	object_ptr<Ui::PlainShadow> _rightShadow = {nullptr};
 	bool _inGrab = false;
-
 };

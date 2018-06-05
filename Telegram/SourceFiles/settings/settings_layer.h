@@ -27,8 +27,7 @@ class BoxLayerTitleShadow;
 namespace Ui {
 class ScrollArea;
 class IconButton;
-template <typename Widget>
-class WidgetFadeWrap;
+template <typename Widget> class WidgetFadeWrap;
 } // namespace Ui
 
 namespace Settings {
@@ -36,13 +35,12 @@ namespace Settings {
 class FixedBar;
 class LayerInner : public TWidget {
 public:
-	LayerInner(QWidget *parent) : TWidget(parent) {
-	}
+	LayerInner(QWidget *parent)
+	    : TWidget(parent) {}
 
 	virtual void resizeToWidth(int newWidth, int contentLeft) {
 		TWidget::resizeToWidth(newWidth);
 	}
-
 };
 
 class Layer : public LayerWidget {
@@ -58,8 +56,7 @@ protected:
 	void paintEvent(QPaintEvent *e) override;
 	void resizeEvent(QResizeEvent *e) override;
 
-	template <typename Widget>
-	QPointer<Widget> setInnerWidget(object_ptr<Widget> widget) {
+	template <typename Widget> QPointer<Widget> setInnerWidget(object_ptr<Widget> widget) {
 		auto result = QPointer<Widget>(widget);
 		doSetInnerWidget(std::move(widget));
 		return result;
@@ -88,7 +85,6 @@ private:
 	object_ptr<Ui::WidgetFadeWrap<BoxLayerTitleShadow>> _fixedBarShadow;
 
 	bool _roundedCorners = false;
-
 };
 
 } // namespace Settings

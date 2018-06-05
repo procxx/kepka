@@ -26,13 +26,11 @@ namespace Serialize {
 
 class Document {
 public:
-
 	struct StickerSetInfo {
 		StickerSetInfo(quint64 setId, quint64 accessHash, QString shortName)
-			: setId(setId)
-			, accessHash(accessHash)
-			, shortName(shortName) {
-		}
+		    : setId(setId)
+		    , accessHash(accessHash)
+		    , shortName(shortName) {}
 		quint64 setId;
 		quint64 accessHash;
 		QString shortName;
@@ -45,7 +43,6 @@ public:
 
 private:
 	static DocumentData *readFromStreamHelper(int streamAppVersion, QDataStream &stream, const StickerSetInfo *info);
-
 };
 
 } // namespace Serialize

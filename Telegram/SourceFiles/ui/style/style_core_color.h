@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include <QBrush>
 #include <QColor>
 #include <QPen>
-#include <QBrush>
 
 namespace style {
 
@@ -50,13 +50,11 @@ private:
 
 	friend class Color;
 	friend class style::palette;
-
 };
 
 class Color {
 public:
-	Color(Qt::Initialization = Qt::Uninitialized) {
-	}
+	Color(Qt::Initialization = Qt::Uninitialized) {}
 	Color(const Color &other) = default;
 	Color &operator=(const Color &other) = default;
 
@@ -88,29 +86,39 @@ public:
 
 private:
 	friend class style::palette;
-	Color(ColorData *data) : _data(data) {
-	}
+	Color(ColorData *data)
+	    : _data(data) {}
 
 	ColorData *_data = nullptr;
-
 };
 
 class Color::Proxy {
 public:
-	Proxy(Color color) : _color(color) {
-	}
+	Proxy(Color color)
+	    : _color(color) {}
 	Proxy(const Proxy &other) = default;
 
-	operator const QBrush &() const { return _color; }
-	operator const QPen &() const { return _color; }
-	ColorData *operator->() const { return _color.v(); }
-	ColorData *v() const { return _color.v(); }
-	explicit operator bool() const { return _color ? true : false; }
-	Color clone() const { return _color; }
+	operator const QBrush &() const {
+		return _color;
+	}
+	operator const QPen &() const {
+		return _color;
+	}
+	ColorData *operator->() const {
+		return _color.v();
+	}
+	ColorData *v() const {
+		return _color.v();
+	}
+	explicit operator bool() const {
+		return _color ? true : false;
+	}
+	Color clone() const {
+		return _color;
+	}
 
 private:
 	Color _color;
-
 };
 
 inline bool operator==(Color a, Color b) {

@@ -85,7 +85,6 @@ public:
 
 private:
 	QMap<mtpMsgId, bool> _idsNeedAck;
-
 };
 
 using SerializedMessage = mtpBuffer;
@@ -94,15 +93,15 @@ inline bool ResponseNeedsAck(const SerializedMessage &response) {
 	if (response.size() < 8) {
 		return false;
 	}
-	auto seqNo = *(quint32*)(response.constData() + 6);
+	auto seqNo = *(quint32 *)(response.constData() + 6);
 	return (seqNo & 0x01) ? true : false;
 }
 
 class Session;
 class SessionData {
 public:
-	SessionData(not_null<Session*> creator) : _owner(creator) {
-	}
+	SessionData(not_null<Session *> creator)
+	    : _owner(creator) {}
 
 	void setSession(quint64 session) {
 		DEBUG_LOG(("MTP Info: setting server_session: %1").arg(session));
@@ -166,27 +165,27 @@ public:
 		_keyChecked = checked;
 	}
 
-	not_null<QReadWriteLock*> keyMutex() const;
+	not_null<QReadWriteLock *> keyMutex() const;
 
-	not_null<QReadWriteLock*> toSendMutex() const {
+	not_null<QReadWriteLock *> toSendMutex() const {
 		return &_toSendLock;
 	}
-	not_null<QReadWriteLock*> haveSentMutex() const {
+	not_null<QReadWriteLock *> haveSentMutex() const {
 		return &_haveSentLock;
 	}
-	not_null<QReadWriteLock*> toResendMutex() const {
+	not_null<QReadWriteLock *> toResendMutex() const {
 		return &_toResendLock;
 	}
-	not_null<QReadWriteLock*> wereAckedMutex() const {
+	not_null<QReadWriteLock *> wereAckedMutex() const {
 		return &_wereAckedLock;
 	}
-	not_null<QReadWriteLock*> receivedIdsMutex() const {
+	not_null<QReadWriteLock *> receivedIdsMutex() const {
 		return &_receivedIdsLock;
 	}
-	not_null<QReadWriteLock*> haveReceivedMutex() const {
+	not_null<QReadWriteLock *> haveReceivedMutex() const {
 		return &_haveReceivedLock;
 	}
-	not_null<QReadWriteLock*> stateRequestMutex() const {
+	not_null<QReadWriteLock *> stateRequestMutex() const {
 		return &_stateRequestLock;
 	}
 
@@ -239,10 +238,10 @@ public:
 		return _stateRequest;
 	}
 
-	not_null<Session*> owner() {
+	not_null<Session *> owner() {
 		return _owner;
 	}
-	not_null<const Session*> owner() const {
+	not_null<const Session *> owner() const {
 		return _owner;
 	}
 
@@ -261,7 +260,7 @@ private:
 
 	quint32 _messagesSent = 0;
 
-	not_null<Session*> _owner;
+	not_null<Session *> _owner;
 
 	AuthKeyPtr _authKey;
 	bool _keyChecked = false;
@@ -270,13 +269,16 @@ private:
 	QString _cloudLangCode;
 
 	mtpPreRequestMap _toSend; // map of request_id -> request, that is waiting to be sent
-	mtpRequestMap _haveSent; // map of msg_id -> request, that was sent, msDate = 0 for msgs_state_req (no resend / state req), msDate = 0, seqNo = 0 for containers
-	mtpRequestIdsMap _toResend; // map of msg_id -> request_id, that request_id -> request lies in toSend and is waiting to be resent
+	mtpRequestMap _haveSent; // map of msg_id -> request, that was sent, msDate = 0 for msgs_state_req (no resend /
+	                         // state req), msDate = 0, seqNo = 0 for containers
+	mtpRequestIdsMap
+	    _toResend; // map of msg_id -> request_id, that request_id -> request lies in toSend and is waiting to be resent
 	ReceivedMsgIds _receivedIds; // set of received msg_id's, for checking new msg_ids
 	mtpRequestIdsMap _wereAcked; // map of msg_id -> request_id, this msg_ids already were acked or do not need ack
 	mtpMsgIdsSet _stateRequest; // set of msg_id's, whose state should be requested
 
-	QMap<mtpRequestId, SerializedMessage> _receivedResponses; // map of request_id -> response that should be processed in the main thread
+	QMap<mtpRequestId, SerializedMessage>
+	    _receivedResponses; // map of request_id -> response that should be processed in the main thread
 	QList<SerializedMessage> _receivedUpdates; // list of updates that should be processed in the main thread
 
 	// mutexes
@@ -288,14 +290,13 @@ private:
 	mutable QReadWriteLock _wereAckedLock;
 	mutable QReadWriteLock _haveReceivedLock;
 	mutable QReadWriteLock _stateRequestLock;
-
 };
 
 class Session : public QObject {
 	Q_OBJECT
 
 public:
-	Session(not_null<Instance*> instance, ShiftedDcId shiftedDcId);
+	Session(not_null<Instance *> instance, ShiftedDcId shiftedDcId);
 
 	void start();
 	void restart();
@@ -312,7 +313,9 @@ public:
 	void notifyLayerInited(bool wasInited);
 
 	template <typename TRequest>
-	mtpRequestId send(const TRequest &request, RPCResponseHandler callbacks = RPCResponseHandler(), TimeMs msCanWait = 0, bool needsLayer = false, bool toMainDC = false, mtpRequestId after = 0); // send mtp request
+	mtpRequestId send(const TRequest &request, RPCResponseHandler callbacks = RPCResponseHandler(),
+	                  TimeMs msCanWait = 0, bool needsLayer = false, bool toMainDC = false,
+	                  mtpRequestId after = 0); // send mtp request
 
 	void ping();
 	void cancel(mtpRequestId requestId, mtpMsgId msgId);
@@ -320,7 +323,8 @@ public:
 	qint32 getState() const;
 	QString transport() const;
 
-	void sendPrepared(const mtpRequest &request, TimeMs msCanWait = 0, bool newRequest = true); // nulls msgId and seqNo in request, if newRequest = true
+	void sendPrepared(const mtpRequest &request, TimeMs msCanWait = 0,
+	                  bool newRequest = true); // nulls msgId and seqNo in request, if newRequest = true
 
 	~Session();
 
@@ -333,7 +337,8 @@ signals:
 public slots:
 	void needToResumeAndSend();
 
-	mtpRequestId resend(quint64 msgId, qint64 msCanWait = 0, bool forceContainer = false, bool sendMsgStateInfo = false);
+	mtpRequestId resend(quint64 msgId, qint64 msCanWait = 0, bool forceContainer = false,
+	                    bool sendMsgStateInfo = false);
 	void resendMany(QVector<quint64> msgIds, qint64 msCanWait, bool forceContainer, bool sendMsgStateInfo);
 	void resendAll(); // after connection restart
 
@@ -357,7 +362,7 @@ private:
 	mtpRequest getRequest(mtpRequestId requestId);
 	bool rpcErrorOccured(mtpRequestId requestId, const RPCFailHandlerPtr &onFail, const RPCError &err);
 
-	not_null<Instance*> _instance;
+	not_null<Instance *> _instance;
 	std::unique_ptr<Connection> _connection;
 
 	bool _killed = false;
@@ -375,10 +380,9 @@ private:
 
 	QTimer timeouter;
 	SingleTimer sender;
-
 };
 
-inline not_null<QReadWriteLock*> SessionData::keyMutex() const {
+inline not_null<QReadWriteLock *> SessionData::keyMutex() const {
 	return _owner->keyMutex();
 }
 

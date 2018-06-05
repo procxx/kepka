@@ -19,21 +19,23 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "ui/effects/round_checkbox.h"
-#include "ui/twidget.h"
 #include "ui/animation.h"
+#include "ui/twidget.h"
 
-#include <QPainter>
 #include "app.h"
+#include <QPainter>
 
 namespace Ui {
 namespace {
 
 static constexpr int kWideScale = 3;
 
-void prepareCheckCaches(const style::RoundCheckbox *st, bool displayInactive, QPixmap &checkBgCache, QPixmap &checkFullCache) {
+void prepareCheckCaches(const style::RoundCheckbox *st, bool displayInactive, QPixmap &checkBgCache,
+                        QPixmap &checkFullCache) {
 	auto size = st->size;
 	auto wideSize = size * kWideScale;
-	auto cache = QImage(wideSize * cIntRetinaFactor(), wideSize * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
+	auto cache =
+	    QImage(wideSize * cIntRetinaFactor(), wideSize * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	cache.setDevicePixelRatio(cRetinaFactor());
 	cache.fill(Qt::transparent);
 	{
@@ -64,9 +66,8 @@ void prepareCheckCaches(const style::RoundCheckbox *st, bool displayInactive, QP
 } // namespace
 
 RoundCheckbox::RoundCheckbox(const style::RoundCheckbox &st, base::lambda<void()> updateCallback)
-: _st(st)
-, _updateCallback(updateCallback) {
-}
+    : _st(st)
+    , _updateCallback(updateCallback) {}
 
 QRect RoundCheckbox::cacheDestRect(int x, int y, double scale) const {
 	auto iconSizeFull = kWideScale * _st.size;
@@ -109,8 +110,11 @@ void RoundCheckbox::paint(Painter &p, TimeMs ms, int x, int y, int outerWidth, d
 			auto realDivider = ((kWideScale - 1) * _st.size / 2 + std::max(fadeIn - 0.5, 0.) * 2. * _st.size);
 			auto divider = std::round(realDivider * masterScale);
 			auto cacheDivider = std::round(realDivider) * cIntRetinaFactor();
-			p.drawPixmapLeft(QRect(to.x(), to.y(), divider, to.height()), outerWidth, _wideCheckFullCache, QRect(0, 0, cacheDivider, cacheFrom.height()));
-			p.drawPixmapLeft(QRect(to.x() + divider, to.y(), to.width() - divider, to.height()), outerWidth, _wideCheckBgCache, QRect(cacheDivider, 0, cacheFrom.width() - cacheDivider, _wideCheckBgCache.height()));
+			p.drawPixmapLeft(QRect(to.x(), to.y(), divider, to.height()), outerWidth, _wideCheckFullCache,
+			                 QRect(0, 0, cacheDivider, cacheFrom.height()));
+			p.drawPixmapLeft(QRect(to.x() + divider, to.y(), to.width() - divider, to.height()), outerWidth,
+			                 _wideCheckBgCache,
+			                 QRect(cacheDivider, 0, cacheFrom.width() - cacheDivider, _wideCheckBgCache.height()));
 		}
 	}
 	p.setOpacity(1.);
@@ -189,17 +193,21 @@ void RoundCheckbox::removeFadeOutedIcons() {
 void RoundCheckbox::prepareWideCheckIconCache(Icon *icon) {
 	auto cacheWidth = _wideCheckBgCache.width() / _wideCheckBgCache.devicePixelRatio();
 	auto cacheHeight = _wideCheckBgCache.height() / _wideCheckBgCache.devicePixelRatio();
-	auto wideCache = QImage(cacheWidth * cIntRetinaFactor(), cacheHeight * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
+	auto wideCache =
+	    QImage(cacheWidth * cIntRetinaFactor(), cacheHeight * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	wideCache.setDevicePixelRatio(cRetinaFactor());
 	{
 		Painter p(&wideCache);
 		p.setCompositionMode(QPainter::CompositionMode_Source);
 		auto iconSize = kWideScale * _st.size;
-		auto realDivider = ((kWideScale - 1) * _st.size / 2 + std::max(icon->fadeIn.current(1.) - 0.5, 0.) * 2. * _st.size);
+		auto realDivider =
+		    ((kWideScale - 1) * _st.size / 2 + std::max(icon->fadeIn.current(1.) - 0.5, 0.) * 2. * _st.size);
 		auto divider = std::round(realDivider);
 		auto cacheDivider = std::round(realDivider) * cIntRetinaFactor();
-		p.drawPixmapLeft(QRect(0, 0, divider, iconSize), cacheWidth, _wideCheckFullCache, QRect(0, 0, divider * cIntRetinaFactor(), _wideCheckFullCache.height()));
-		p.drawPixmapLeft(QRect(divider, 0, iconSize - divider, iconSize), cacheWidth, _wideCheckBgCache, QRect(cacheDivider, 0, _wideCheckBgCache.width() - cacheDivider, _wideCheckBgCache.height()));
+		p.drawPixmapLeft(QRect(0, 0, divider, iconSize), cacheWidth, _wideCheckFullCache,
+		                 QRect(0, 0, divider * cIntRetinaFactor(), _wideCheckFullCache.height()));
+		p.drawPixmapLeft(QRect(divider, 0, iconSize - divider, iconSize), cacheWidth, _wideCheckBgCache,
+		                 QRect(cacheDivider, 0, _wideCheckBgCache.width() - cacheDivider, _wideCheckBgCache.height()));
 	}
 	icon->wideCheckCache = App::pixmapFromImageInPlace(std::move(wideCache));
 	icon->wideCheckCache.setDevicePixelRatio(cRetinaFactor());
@@ -209,7 +217,8 @@ void RoundCheckbox::prepareInactiveCache() {
 	auto wideSize = _st.size * kWideScale;
 	auto ellipse = QRect((wideSize - _st.size) / 2, (wideSize - _st.size) / 2, _st.size, _st.size);
 
-	auto cacheBg = QImage(wideSize * cIntRetinaFactor(), wideSize * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
+	auto cacheBg =
+	    QImage(wideSize * cIntRetinaFactor(), wideSize * cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	cacheBg.setDevicePixelRatio(cRetinaFactor());
 	cacheBg.fill(Qt::transparent);
 	auto cacheFg = cacheBg;
@@ -236,19 +245,20 @@ void RoundCheckbox::prepareInactiveCache() {
 	_inactiveCacheFg = App::pixmapFromImageInPlace(std::move(cacheFg));
 }
 
-RoundImageCheckbox::RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback, PaintRoundImage &&paintRoundImage)
-: _st(st)
-, _updateCallback(updateCallback)
-, _paintRoundImage(std::move(paintRoundImage))
-, _check(_st.check, _updateCallback) {
-}
+RoundImageCheckbox::RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback,
+                                       PaintRoundImage &&paintRoundImage)
+    : _st(st)
+    , _updateCallback(updateCallback)
+    , _paintRoundImage(std::move(paintRoundImage))
+    , _check(_st.check, _updateCallback) {}
 
 void RoundImageCheckbox::paint(Painter &p, TimeMs ms, int x, int y, int outerWidth) {
 	_selection.step(ms);
 
 	auto selectionLevel = _selection.current(checked() ? 1. : 0.);
 	if (_selection.animating()) {
-		auto userpicRadius = std::round(kWideScale * (_st.imageRadius + (_st.imageSmallRadius - _st.imageRadius) * selectionLevel));
+		auto userpicRadius =
+		    std::round(kWideScale * (_st.imageRadius + (_st.imageSmallRadius - _st.imageRadius) * selectionLevel));
 		auto userpicShift = kWideScale * _st.imageRadius - userpicRadius;
 		auto userpicLeft = x - (kWideScale - 1) * _st.imageRadius + userpicShift;
 		auto userpicTop = y - (kWideScale - 1) * _st.imageRadius + userpicShift;

@@ -48,8 +48,7 @@ private:
 	void refreshLink();
 	void refreshVisibility();
 
-	object_ptr<Ui::FlatLabel> _link = { nullptr };
-
+	object_ptr<Ui::FlatLabel> _link = {nullptr};
 };
 
 } // namespace Profile

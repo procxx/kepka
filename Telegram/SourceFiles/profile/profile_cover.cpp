@@ -20,25 +20,25 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_cover.h"
 
-#include "styles/style_profile.h"
-#include "styles/style_window.h"
-#include "profile/profile_cover_drop_area.h"
-#include "profile/profile_userpic_button.h"
-#include "ui/widgets/buttons.h"
-#include "core/file_utilities.h"
-#include "ui/widgets/labels.h"
-#include "observer_peer.h"
-#include "boxes/confirm_box.h"
-#include "boxes/photo_crop_box.h"
-#include "boxes/peer_list_controllers.h"
-#include "lang/lang_keys.h"
 #include "apiwrap.h"
 #include "auth_session.h"
+#include "boxes/confirm_box.h"
+#include "boxes/peer_list_controllers.h"
+#include "boxes/photo_crop_box.h"
+#include "core/file_utilities.h"
+#include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
 #include "messenger.h"
+#include "observer_peer.h"
 #include "platform/platform_file_utilities.h"
+#include "profile/profile_cover_drop_area.h"
+#include "profile/profile_userpic_button.h"
+#include "styles/style_profile.h"
 #include "styles/style_widgets.h"
+#include "styles/style_window.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/labels.h"
 
 #include <QWidget>
 
@@ -46,22 +46,20 @@ namespace Profile {
 namespace {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
-const auto ButtonsUpdateFlags = UpdateFlag::UserCanShareContact
-	| UpdateFlag::BotCanAddToGroups
-	| UpdateFlag::ChatCanEdit
-	| UpdateFlag::ChannelRightsChanged
-	| UpdateFlag::ChannelAmIn;
+const auto ButtonsUpdateFlags = UpdateFlag::UserCanShareContact | UpdateFlag::BotCanAddToGroups |
+                                UpdateFlag::ChatCanEdit | UpdateFlag::ChannelRightsChanged | UpdateFlag::ChannelAmIn;
 
 } // namespace
 
-CoverWidget::CoverWidget(QWidget *parent, PeerData *peer) : TWidget(parent)
-, _peer(peer)
-, _peerUser(peer->asUser())
-, _peerChat(peer->asChat())
-, _peerChannel(peer->asChannel())
-, _peerMegagroup(peer->isMegagroup() ? _peerChannel : nullptr)
-, _userpicButton(this, peer)
-, _name(this, st::profileNameLabel) {
+CoverWidget::CoverWidget(QWidget *parent, PeerData *peer)
+    : TWidget(parent)
+    , _peer(peer)
+    , _peerUser(peer->asUser())
+    , _peerChat(peer->asChat())
+    , _peerChannel(peer->asChannel())
+    , _peerMegagroup(peer->isMegagroup() ? _peerChannel : nullptr)
+    , _userpicButton(this, peer)
+    , _name(this, st::profileNameLabel) {
 	_peer->updateFull();
 
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
@@ -72,14 +70,11 @@ CoverWidget::CoverWidget(QWidget *parent, PeerData *peer) : TWidget(parent)
 	_name->setSelectable(true);
 	_name->setContextCopyText(lang(lng_profile_copy_fullname));
 
-	auto observeEvents = ButtonsUpdateFlags
-		| UpdateFlag::NameChanged
-		| UpdateFlag::UserOnlineChanged
-		| UpdateFlag::MembersChanged
-		| UpdateFlag::PhotoChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+	auto observeEvents = ButtonsUpdateFlags | UpdateFlag::NameChanged | UpdateFlag::UserOnlineChanged |
+	                     UpdateFlag::MembersChanged | UpdateFlag::PhotoChanged;
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	connect(&Messenger::Instance(), SIGNAL(peerPhotoDone(PeerId)), this, SLOT(onPhotoUploadStatusChanged(PeerId)));
 	connect(&Messenger::Instance(), SIGNAL(peerPhotoFail(PeerId)), this, SLOT(onPhotoUploadStatusChanged(PeerId)));
@@ -137,7 +132,9 @@ int CoverWidget::resizeGetHeight(int newWidth) {
 	int infoLeft = _userpicButton->x() + _userpicButton->width();
 	_statusPosition = QPoint(infoLeft + st::profileStatusLeft, _userpicButton->y() + st::profileStatusTop);
 	if (_cancelPhotoUpload) {
-		_cancelPhotoUpload->moveToLeft(_statusPosition.x() + st::profileStatusFont->width(_statusText) + st::profileStatusFont->spacew, _statusPosition.y());
+		_cancelPhotoUpload->moveToLeft(_statusPosition.x() + st::profileStatusFont->width(_statusText) +
+		                                   st::profileStatusFont->spacew,
+		                               _statusPosition.y());
 	}
 
 	moveAndToggleButtons(newWidth);
@@ -216,7 +213,8 @@ void CoverWidget::paintEvent(QPaintEvent *e) {
 	p.drawTextLeft(_statusPosition.x(), _statusPosition.y(), width(), _statusText);
 
 	if (_peer->isVerified()) {
-		st::profileVerifiedCheck.paint(p, _name->x() + _name->width() + st::profileVerifiedCheckShift, _name->y(), width());
+		st::profileVerifiedCheck.paint(p, _name->x() + _name->width() + st::profileVerifiedCheckShift, _name->y(),
+		                               width());
 	}
 
 	paintDivider(p);
@@ -334,9 +332,11 @@ void CoverWidget::paintDivider(Painter &p) {
 		st::profileDividerLeft.paint(p, QPoint(dividerLeft, _dividerTop), width());
 	}
 	auto dividerFillLeft = Adaptive::OneColumn() ? 0 : (st::lineWidth + st::profileDividerLeft.width());
-	auto dividerFillTop = rtlrect(dividerFillLeft, _dividerTop, width() - dividerFillLeft, st::profileDividerTop.height(), width());
+	auto dividerFillTop =
+	    rtlrect(dividerFillLeft, _dividerTop, width() - dividerFillLeft, st::profileDividerTop.height(), width());
 	st::profileDividerTop.fill(p, dividerFillTop);
-	auto dividerFillBottom = rtlrect(dividerFillLeft, _dividerTop + dividerHeight - st::profileDividerBottom.height(), width() - dividerFillLeft, st::profileDividerBottom.height(), width());
+	auto dividerFillBottom = rtlrect(dividerFillLeft, _dividerTop + dividerHeight - st::profileDividerBottom.height(),
+	                                 width() - dividerFillLeft, st::profileDividerBottom.height(), width());
 	st::profileDividerBottom.fill(p, dividerFillBottom);
 }
 
@@ -371,7 +371,9 @@ void CoverWidget::refreshStatusText() {
 			_cancelPhotoUpload.create(this, lang(lng_cancel), st::defaultLinkButton);
 			connect(_cancelPhotoUpload, SIGNAL(clicked()), this, SLOT(onCancelPhotoUpload()));
 			_cancelPhotoUpload->show();
-			_cancelPhotoUpload->moveToLeft(_statusPosition.x() + st::profileStatusFont->width(_statusText) + st::profileStatusFont->spacew, _statusPosition.y());
+			_cancelPhotoUpload->moveToLeft(_statusPosition.x() + st::profileStatusFont->width(_statusText) +
+			                                   st::profileStatusFont->spacew,
+			                               _statusPosition.y());
 		}
 		update();
 		return;
@@ -471,19 +473,21 @@ void CoverWidget::clearButtons() {
 	}
 }
 
-void CoverWidget::addButton(base::lambda<QString()> textFactory, const char *slot, const style::RoundButton *replacementStyle) {
+void CoverWidget::addButton(base::lambda<QString()> textFactory, const char *slot,
+                            const style::RoundButton *replacementStyle) {
 	auto &buttonStyle = _buttons.isEmpty() ? st::profilePrimaryButton : st::profileSecondaryButton;
 	auto button = new Ui::RoundButton(this, std::move(textFactory), buttonStyle);
 	connect(button, SIGNAL(clicked()), this, slot);
 	button->show();
 
-	auto replacement = replacementStyle ? new Ui::RoundButton(this, base::lambda<QString()>(), *replacementStyle) : nullptr;
+	auto replacement =
+	    replacementStyle ? new Ui::RoundButton(this, base::lambda<QString()>(), *replacementStyle) : nullptr;
 	if (replacement) {
 		connect(replacement, SIGNAL(clicked()), this, slot);
 		replacement->hide();
 	}
 
-	_buttons.push_back({ button, replacement });
+	_buttons.push_back({button, replacement});
 }
 
 void CoverWidget::onOnlineCountUpdated(int onlineCount) {
@@ -503,20 +507,21 @@ void CoverWidget::onSetPhoto() {
 	App::CallDelayed(st::profilePrimaryButton.ripple.hideDuration, this, [this] {
 		auto imgExtensions = cImgExtensions();
 		auto filter = qsl("Image files (*") + imgExtensions.join(qsl(" *")) + qsl(");;") + FileDialog::AllFilesFilter();
-		FileDialog::GetOpenPath(lang(lng_choose_image), filter, base::lambda_guarded(this, [this](const FileDialog::OpenResult &result) {
-			if (result.paths.isEmpty() && result.remoteContent.isEmpty()) {
-				return;
-			}
+		FileDialog::GetOpenPath(lang(lng_choose_image), filter,
+		                        base::lambda_guarded(this, [this](const FileDialog::OpenResult &result) {
+			                        if (result.paths.isEmpty() && result.remoteContent.isEmpty()) {
+				                        return;
+			                        }
 
-			QImage img;
-			if (!result.remoteContent.isEmpty()) {
-				img = App::readImage(result.remoteContent);
-			} else {
-				img = App::readImage(result.paths.front());
-			}
+			                        QImage img;
+			                        if (!result.remoteContent.isEmpty()) {
+				                        img = App::readImage(result.remoteContent);
+			                        } else {
+				                        img = App::readImage(result.paths.front());
+			                        }
 
-			showSetPhotoBox(img);
-		}));
+			                        showSetPhotoBox(img);
+		                        }));
 	});
 }
 
@@ -545,7 +550,7 @@ void CoverWidget::onAddMember() {
 		}
 	} else if (_peerChannel && _peerChannel->mgInfo) {
 		auto &participants = _peerChannel->mgInfo->lastParticipants;
-		AddParticipantsBoxController::Start(_peerChannel, { participants.cbegin(), participants.cend() });
+		AddParticipantsBoxController::Start(_peerChannel, {participants.cbegin(), participants.cend()});
 	}
 }
 

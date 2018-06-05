@@ -20,14 +20,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "media/player/media_player_instance.h"
 
-#include "media/media_audio.h"
-#include "media/media_audio_capture.h"
-#include "observer_peer.h"
-#include "messenger.h"
+#include "app.h"
 #include "auth_session.h"
 #include "calls/calls_instance.h"
 #include "history/history_media.h"
-#include "app.h"
+#include "media/media_audio.h"
+#include "media/media_audio_capture.h"
+#include "messenger.h"
+#include "observer_peer.h"
 
 namespace Media {
 namespace Player {
@@ -52,15 +52,13 @@ void finish() {
 }
 
 Instance::Instance()
-: _songData(AudioMsgId::Type::Song, OverviewMusicFiles)
-, _voiceData(AudioMsgId::Type::Voice, OverviewRoundVoiceFiles) {
-	subscribe(Media::Player::Updated(), [this](const AudioMsgId &audioId) {
-		handleSongUpdate(audioId);
-	});
+    : _songData(AudioMsgId::Type::Song, OverviewMusicFiles)
+    , _voiceData(AudioMsgId::Type::Voice, OverviewRoundVoiceFiles) {
+	subscribe(Media::Player::Updated(), [this](const AudioMsgId &audioId) { handleSongUpdate(audioId); });
 	auto observeEvents = Notify::PeerUpdate::Flag::SharedMediaChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 	subscribe(Global::RefSelfChanged(), [this] {
 		if (!App::self()) {
 			handleLogout();
@@ -78,9 +76,7 @@ Instance::Instance()
 			});
 		}
 	};
-	subscribe(Messenger::Instance().authSessionChanged(), [handleAuthSessionChange] {
-		handleAuthSessionChange();
-	});
+	subscribe(Messenger::Instance().authSessionChanged(), [handleAuthSessionChange] { handleAuthSessionChange(); });
 	handleAuthSessionChange();
 }
 
@@ -117,9 +113,7 @@ void Instance::checkPeerUpdate(AudioMsgId::Type type, const Notify::PeerUpdate &
 }
 
 void Instance::handleSongUpdate(const AudioMsgId &audioId) {
-	emitUpdate(audioId.type(), [&audioId](const AudioMsgId &playing) {
-		return (audioId == playing);
-	});
+	emitUpdate(audioId.type(), [&audioId](const AudioMsgId &playing) { return (audioId == playing); });
 }
 
 void Instance::setCurrent(const AudioMsgId &audioId) {
@@ -183,7 +177,7 @@ bool Instance::moveInPlaylist(Data *data, int delta, bool autonext) {
 		if (auto media = item->getMedia()) {
 			if (auto document = media->getDocument()) {
 				if (autonext) {
-					_switchToNextNotifier.notify({ data->current, msgId });
+					_switchToNextNotifier.notify({data->current, msgId});
 				}
 				DocumentOpenClickHandler::doOpen(media->getDocument(), item, ActionOnLoadPlayInline);
 				return true;
@@ -284,7 +278,8 @@ void Instance::playPauseCancelClicked(AudioMsgId::Type type) {
 
 	auto state = mixer()->currentState(type);
 	auto stopped = IsStoppedOrStopping(state.state);
-	auto showPause = !stopped && (state.state == State::Playing || state.state == State::Resuming || state.state == State::Starting);
+	auto showPause =
+	    !stopped && (state.state == State::Playing || state.state == State::Resuming || state.state == State::Starting);
 	auto audio = state.id.audio();
 	if (audio && audio->loading()) {
 		audio->cancel();
@@ -311,13 +306,11 @@ void Instance::stopSeeking(AudioMsgId::Type type) {
 }
 
 void Instance::documentLoadProgress(DocumentData *document) {
-	emitUpdate(document->song() ? AudioMsgId::Type::Song : AudioMsgId::Type::Voice, [document](const AudioMsgId &audioId) {
-		return (audioId.audio() == document);
-	});
+	emitUpdate(document->song() ? AudioMsgId::Type::Song : AudioMsgId::Type::Voice,
+	           [document](const AudioMsgId &audioId) { return (audioId.audio() == document); });
 }
 
-template <typename CheckCallback>
-void Instance::emitUpdate(AudioMsgId::Type type, CheckCallback check) {
+template <typename CheckCallback> void Instance::emitUpdate(AudioMsgId::Type type, CheckCallback check) {
 	auto state = mixer()->currentState(type);
 	if (!state.id || !check(state.id)) {
 		return;

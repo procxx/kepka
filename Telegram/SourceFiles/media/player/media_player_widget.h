@@ -19,8 +19,8 @@ Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE
 Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
-#include "structs.h"
 #include "base/observer.h"
+#include "structs.h"
 
 class AudioMsgId;
 
@@ -111,17 +111,16 @@ private:
 	class PlayButton;
 	object_ptr<Ui::FlatLabel> _nameLabel;
 	object_ptr<Ui::LabelSimple> _timeLabel;
-	object_ptr<Ui::IconButton> _previousTrack = { nullptr };
+	object_ptr<Ui::IconButton> _previousTrack = {nullptr};
 	object_ptr<PlayButton> _playPause;
-	object_ptr<Ui::IconButton> _nextTrack = { nullptr };
+	object_ptr<Ui::IconButton> _nextTrack = {nullptr};
 	object_ptr<Ui::IconButton> _volumeToggle;
 	object_ptr<Ui::IconButton> _repeatTrack;
 	object_ptr<Ui::IconButton> _close;
-	object_ptr<Ui::PlainShadow> _shadow = { nullptr };
+	object_ptr<Ui::PlainShadow> _shadow = {nullptr};
 	object_ptr<Ui::FilledSlider> _playbackSlider;
 	std::unique_ptr<Clip::Playback> _playback;
-
 };
 
-} // namespace Clip
+} // namespace Player
 } // namespace Media

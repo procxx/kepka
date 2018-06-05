@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "storage/localimageloader.h"
-#include "window/notifications_manager_default.h"
 #include "ui/animation.h"
+#include "window/notifications_manager_default.h"
 
 class FileLocation;
 
@@ -45,7 +45,8 @@ struct FrameRequest {
 	int outerw = 0;
 	int outerh = 0;
 	ImageRoundRadius radius = ImageRoundRadius::None;
-	ImageRoundCorners corners = ImageRoundCorner::TopLeft | ImageRoundCorner::TopRight | ImageRoundCorner::BottomLeft | ImageRoundCorner::BottomRight;
+	ImageRoundCorners corners = ImageRoundCorner::TopLeft | ImageRoundCorner::TopRight | ImageRoundCorner::BottomLeft |
+	                            ImageRoundCorner::BottomRight;
 };
 
 enum ReaderSteps {
@@ -64,7 +65,8 @@ public:
 	};
 
 	Reader(const QString &filepath, Callback &&callback, Mode mode = Mode::Gif, TimeMs seekMs = 0);
-	Reader(not_null<DocumentData*> document, FullMsgId msgId, Callback &&callback, Mode mode = Mode::Gif, TimeMs seekMs = 0);
+	Reader(not_null<DocumentData *> document, FullMsgId msgId, Callback &&callback, Mode mode = Mode::Gif,
+	       TimeMs seekMs = 0);
 
 	static void callback(Reader *reader, int threadIndex, Notification notification); // reader can be deleted
 
@@ -83,7 +85,8 @@ public:
 	}
 
 	void start(int framew, int frameh, int outerw, int outerh, ImageRoundRadius radius, ImageRoundCorners corners);
-	QPixmap current(int framew, int frameh, int outerw, int outerh, ImageRoundRadius radius, ImageRoundCorners corners, TimeMs ms);
+	QPixmap current(int framew, int frameh, int outerw, int outerh, ImageRoundRadius radius, ImageRoundCorners corners,
+	                TimeMs ms);
 	QPixmap current();
 	QPixmap frameOriginal() const {
 		if (auto frame = frameToShow()) {
@@ -178,11 +181,9 @@ private:
 	friend class Manager;
 
 	ReaderPrivate *_private = nullptr;
-
 };
 
-template <typename ...Args>
-inline ReaderPointer MakeReader(Args&&... args) {
+template <typename... Args> inline ReaderPointer MakeReader(Args &&... args) {
 	return ReaderPointer(new Reader(std::forward<Args>(args)...));
 }
 
@@ -200,7 +201,6 @@ class Manager : public QObject {
 	Q_OBJECT
 
 public:
-
 	Manager(QThread *thread);
 	qint32 loadLevel() const {
 		return _loadLevel.load();
@@ -222,11 +222,10 @@ public slots:
 	void finish();
 
 private:
-
 	void clear();
 
 	QAtomicInt _loadLevel;
-	using ReaderPointers = QMap<Reader*, QAtomicInt>;
+	using ReaderPointers = QMap<Reader *, QAtomicInt>;
 	ReaderPointers _readerPointers;
 	mutable QMutex _readerPointersMutex;
 
@@ -242,13 +241,12 @@ private:
 	};
 	ResultHandleState handleResult(ReaderPrivate *reader, ProcessResult result, TimeMs ms);
 
-	typedef QMap<ReaderPrivate*, TimeMs> Readers;
+	typedef QMap<ReaderPrivate *, TimeMs> Readers;
 	Readers _readers;
 
 	QTimer _timer;
 	QThread *_processingInThread;
 	bool _needReProcess;
-
 };
 
 FileLoadTask::Video PrepareForSending(const QString &fname, const QByteArray &data);

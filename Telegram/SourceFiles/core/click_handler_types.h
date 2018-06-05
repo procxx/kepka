@@ -20,17 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QUrl>
-#include <QApplication>
-#include <QClipboard>
 #include "core/click_handler.h"
 #include "structs.h"
+#include <QApplication>
+#include <QClipboard>
+#include <QUrl>
 
 class TextClickHandler : public ClickHandler {
 public:
-
-	TextClickHandler(bool fullDisplayed = true) : _fullDisplayed(fullDisplayed) {
-	}
+	TextClickHandler(bool fullDisplayed = true)
+	    : _fullDisplayed(fullDisplayed) {}
 
 	void copyToClipboard() const override {
 		auto u = url();
@@ -54,12 +53,13 @@ protected:
 	}
 
 	bool _fullDisplayed;
-
 };
 
 class UrlClickHandler : public TextClickHandler {
 public:
-	UrlClickHandler(const QString &url, bool fullDisplayed = true) : TextClickHandler(fullDisplayed), _originalUrl(url) {
+	UrlClickHandler(const QString &url, bool fullDisplayed = true)
+	    : TextClickHandler(fullDisplayed)
+	    , _originalUrl(url) {
 		if (isEmail()) {
 			_readable = _originalUrl;
 		} else {
@@ -74,7 +74,8 @@ public:
 	}
 
 	QString getExpandedLinkText(ExpandLinksMode mode, const QStringRef &textPart) const override;
-	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset, const QStringRef &textPart) const override;
+	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset,
+	                                                 const QStringRef &textPart) const override;
 
 	static void doOpen(QString url);
 	void onClick(Qt::MouseButton button) const override {
@@ -99,14 +100,13 @@ private:
 	}
 
 	QString _originalUrl, _readable;
-
 };
 typedef QSharedPointer<TextClickHandler> TextClickHandlerPtr;
 
 class HiddenUrlClickHandler : public UrlClickHandler {
 public:
-	HiddenUrlClickHandler(QString url) : UrlClickHandler(url, false) {
-	}
+	HiddenUrlClickHandler(QString url)
+	    : UrlClickHandler(url, false) {}
 	QString copyToClipboardContextItemText() const override {
 		return url().isEmpty() ? QString() : UrlClickHandler::copyToClipboardContextItemText();
 	}
@@ -119,25 +119,25 @@ public:
 	}
 
 	QString getExpandedLinkText(ExpandLinksMode mode, const QStringRef &textPart) const override;
-	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset, const QStringRef &textPart) const override;
-
+	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset,
+	                                                 const QStringRef &textPart) const override;
 };
 
 class BotGameUrlClickHandler : public UrlClickHandler {
 public:
-	BotGameUrlClickHandler(UserData *bot, QString url) : UrlClickHandler(url, false), _bot(bot) {
-	}
+	BotGameUrlClickHandler(UserData *bot, QString url)
+	    : UrlClickHandler(url, false)
+	    , _bot(bot) {}
 	void onClick(Qt::MouseButton button) const override;
 
 private:
 	UserData *_bot;
-
 };
 
 class MentionClickHandler : public TextClickHandler {
 public:
-	MentionClickHandler(const QString &tag) : _tag(tag) {
-	}
+	MentionClickHandler(const QString &tag)
+	    : _tag(tag) {}
 
 	void onClick(Qt::MouseButton button) const override;
 
@@ -147,7 +147,8 @@ public:
 
 	QString copyToClipboardContextItemText() const override;
 
-	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset, const QStringRef &textPart) const override;
+	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset,
+	                                                 const QStringRef &textPart) const override;
 
 protected:
 	QString url() const override {
@@ -156,20 +157,19 @@ protected:
 
 private:
 	QString _tag;
-
 };
 
 class MentionNameClickHandler : public ClickHandler {
 public:
 	MentionNameClickHandler(QString text, UserId userId, quint64 accessHash)
-		: _text(text)
-		, _userId(userId)
-		, _accessHash(accessHash) {
-	}
+	    : _text(text)
+	    , _userId(userId)
+	    , _accessHash(accessHash) {}
 
 	void onClick(Qt::MouseButton button) const override;
 
-	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset, const QStringRef &textPart) const override;
+	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset,
+	                                                 const QStringRef &textPart) const override;
 
 	QString tooltip() const override;
 
@@ -177,13 +177,12 @@ private:
 	QString _text;
 	UserId _userId;
 	quint64 _accessHash;
-
 };
 
 class HashtagClickHandler : public TextClickHandler {
 public:
-	HashtagClickHandler(const QString &tag) : _tag(tag) {
-	}
+	HashtagClickHandler(const QString &tag)
+	    : _tag(tag) {}
 
 	void onClick(Qt::MouseButton button) const override;
 
@@ -193,7 +192,8 @@ public:
 
 	QString copyToClipboardContextItemText() const override;
 
-	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset, const QStringRef &textPart) const override;
+	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset,
+	                                                 const QStringRef &textPart) const override;
 
 protected:
 	QString url() const override {
@@ -202,15 +202,14 @@ protected:
 
 private:
 	QString _tag;
-
 };
 
 class PeerData;
 class UserData;
 class BotCommandClickHandler : public TextClickHandler {
 public:
-	BotCommandClickHandler(const QString &cmd) : _cmd(cmd) {
-	}
+	BotCommandClickHandler(const QString &cmd)
+	    : _cmd(cmd) {}
 
 	void onClick(Qt::MouseButton button) const override;
 
@@ -225,7 +224,8 @@ public:
 		_bot = bot;
 	}
 
-	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset, const QStringRef &textPart) const override;
+	TextWithEntities getExpandedLinkTextWithEntities(ExpandLinksMode mode, int entityOffset,
+	                                                 const QStringRef &textPart) const override;
 
 protected:
 	QString url() const override {
@@ -243,5 +243,4 @@ private:
 
 	static PeerData *_peer;
 	static UserData *_bot;
-
 };

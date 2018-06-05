@@ -30,13 +30,13 @@ constexpr int kTypingDotsCount = 3;
 constexpr int kRecordArcsCount = 4;
 constexpr int kUploadArrowsCount = 3;
 
-using ImplementationsMap = QMap<SendAction::Type, const SendActionAnimation::Impl::MetaData*>;
+using ImplementationsMap = QMap<SendAction::Type, const SendActionAnimation::Impl::MetaData *>;
 NeverFreedPointer<ImplementationsMap> Implementations;
 
 class TypingAnimation : public SendActionAnimation::Impl {
 public:
-	TypingAnimation() : Impl(st::historySendActionTypingDuration) {
-	}
+	TypingAnimation()
+	    : Impl(st::historySendActionTypingDuration) {}
 
 	static const MetaData kMeta;
 	static std::unique_ptr<Impl> create() {
@@ -52,10 +52,9 @@ public:
 
 private:
 	void paintFrame(Painter &p, style::color color, int x, int y, int outerWidth, int frameMs) override;
-
 };
 
-const TypingAnimation::MetaData TypingAnimation::kMeta = { 0, &TypingAnimation::create };
+const TypingAnimation::MetaData TypingAnimation::kMeta = {0, &TypingAnimation::create};
 
 void TypingAnimation::paintFrame(Painter &p, style::color color, int x, int y, int outerWidth, int frameMs) {
 	PainterHighQualityEnabler hq(p);
@@ -65,23 +64,26 @@ void TypingAnimation::paintFrame(Painter &p, style::color color, int x, int y, i
 	for (auto i = 0; i != kTypingDotsCount; ++i) {
 		auto r = st::historySendActionTypingSmallNumerator / st::historySendActionTypingDenominator;
 		if (frameMs < 2 * st::historySendActionTypingHalfPeriod) {
-			auto delta = (st::historySendActionTypingLargeNumerator - st::historySendActionTypingSmallNumerator) / st::historySendActionTypingDenominator;
+			auto delta = (st::historySendActionTypingLargeNumerator - st::historySendActionTypingSmallNumerator) /
+			             st::historySendActionTypingDenominator;
 			if (frameMs < st::historySendActionTypingHalfPeriod) {
 				r += delta * anim::easeOutCirc(1., double(frameMs) / st::historySendActionTypingHalfPeriod);
 			} else {
-				r += delta * (1. - anim::easeOutCirc(1., double(frameMs - st::historySendActionTypingHalfPeriod) / st::historySendActionTypingHalfPeriod));
+				r += delta * (1. - anim::easeOutCirc(1., double(frameMs - st::historySendActionTypingHalfPeriod) /
+				                                             st::historySendActionTypingHalfPeriod));
 			}
 		}
 		p.drawEllipse(position, r, r);
 		position.setX(position.x() + st::historySendActionTypingDelta);
-		frameMs = (frameMs + st::historySendActionTypingDuration - st::historySendActionTypingDeltaTime) % st::historySendActionTypingDuration;
+		frameMs = (frameMs + st::historySendActionTypingDuration - st::historySendActionTypingDeltaTime) %
+		          st::historySendActionTypingDuration;
 	}
 }
 
 class RecordAnimation : public SendActionAnimation::Impl {
 public:
-	RecordAnimation() : Impl(st::historySendActionRecordDuration) {
-	}
+	RecordAnimation()
+	    : Impl(st::historySendActionRecordDuration) {}
 
 	static const MetaData kMeta;
 	static std::unique_ptr<Impl> create() {
@@ -97,10 +99,9 @@ public:
 
 private:
 	void paintFrame(Painter &p, style::color color, int x, int y, int outerWidth, int frameMs) override;
-
 };
 
-const RecordAnimation::MetaData RecordAnimation::kMeta = { 0, &RecordAnimation::create };
+const RecordAnimation::MetaData RecordAnimation::kMeta = {0, &RecordAnimation::create};
 
 void RecordAnimation::paintFrame(Painter &p, style::color color, int x, int y, int outerWidth, int frameMs) {
 	PainterHighQualityEnabler hq(p);
@@ -124,8 +125,8 @@ void RecordAnimation::paintFrame(Painter &p, style::color color, int x, int y, i
 
 class UploadAnimation : public SendActionAnimation::Impl {
 public:
-	UploadAnimation() : Impl(st::historySendActionUploadDuration) {
-	}
+	UploadAnimation()
+	    : Impl(st::historySendActionUploadDuration) {}
 
 	static const MetaData kMeta;
 	static std::unique_ptr<Impl> create() {
@@ -141,10 +142,9 @@ public:
 
 private:
 	void paintFrame(Painter &p, style::color color, int x, int y, int outerWidth, int frameMs) override;
-
 };
 
-const UploadAnimation::MetaData UploadAnimation::kMeta = { 0, &UploadAnimation::create };
+const UploadAnimation::MetaData UploadAnimation::kMeta = {0, &UploadAnimation::create};
 
 void UploadAnimation::paintFrame(Painter &p, style::color color, int x, int y, int outerWidth, int frameMs) {
 	PainterHighQualityEnabler hq(p);
@@ -178,23 +178,15 @@ void CreateImplementationsMap() {
 	using Type = SendAction::Type;
 	Implementations.createIfNull();
 	Type recordTypes[] = {
-		Type::RecordVideo,
-		Type::RecordVoice,
-		Type::RecordRound,
+	    Type::RecordVideo,
+	    Type::RecordVoice,
+	    Type::RecordRound,
 	};
-	for_const (auto type, recordTypes) {
-		Implementations->insert(type, &RecordAnimation::kMeta);
-	}
+	for_const (auto type, recordTypes) { Implementations->insert(type, &RecordAnimation::kMeta); }
 	Type uploadTypes[] = {
-		Type::UploadFile,
-		Type::UploadPhoto,
-		Type::UploadVideo,
-		Type::UploadVoice,
-		Type::UploadRound,
+	    Type::UploadFile, Type::UploadPhoto, Type::UploadVideo, Type::UploadVoice, Type::UploadRound,
 	};
-	for_const (auto type, uploadTypes) {
-		Implementations->insert(type, &UploadAnimation::kMeta);
-	}
+	for_const (auto type, uploadTypes) { Implementations->insert(type, &UploadAnimation::kMeta); }
 }
 
 } // namespace

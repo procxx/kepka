@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QWidget>
-#include <QResizeEvent>
-#include <QPaintEvent>
 #include "base/object_ptr.h"
 #include "ui/animation.h"
 #include "ui/twidget.h"
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QWidget>
 
 namespace Ui {
 class PasswordInput;
@@ -66,5 +66,4 @@ private:
 	object_ptr<Ui::RoundButton> _submit;
 	object_ptr<Ui::LinkButton> _logout;
 	QString _error;
-
 };

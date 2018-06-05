@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <windows.h>
 #include <QAbstractNativeEventFilter>
+#include <windows.h>
 
 namespace Platform {
 
@@ -42,11 +42,9 @@ public:
 	static void destroy();
 
 private:
-	EventFilter() {
-	}
+	EventFilter() {}
 
 	bool _sessionLoggedOff = false;
-
 };
 
 } // namespace Platform

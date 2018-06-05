@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
+#include "inline_bots/inline_bot_layout_item.h"
+#include "mtproto/sender.h"
 #include "ui/abstract_button.h"
 #include "ui/effects/panel_animation.h"
-#include "mtproto/sender.h"
-#include "inline_bots/inline_bot_layout_item.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 class ScrollArea;
@@ -33,7 +33,7 @@ class LinkButton;
 class RoundButton;
 class FlatLabel;
 class RippleAnimation;
-} // namesapce Ui
+} // namespace Ui
 
 namespace Window {
 class Controller;
@@ -63,7 +63,7 @@ class Inner : public TWidget, public Context, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	Inner(QWidget *parent, not_null<Window::Controller*> controller);
+	Inner(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void hideFinish(bool completely);
 
@@ -118,7 +118,7 @@ private:
 
 	void refreshSwitchPmButton(const CacheEntry *entry);
 
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 
 	int _visibleTop = 0;
 	int _visibleBottom = 0;
@@ -129,19 +129,19 @@ private:
 	QTimer _updateInlineItems;
 	bool _inlineWithThumb = false;
 
-	object_ptr<Ui::RoundButton> _switchPmButton = { nullptr };
+	object_ptr<Ui::RoundButton> _switchPmButton = {nullptr};
 	QString _switchPmStartToken;
 
-	object_ptr<Ui::FlatLabel> _restrictedLabel = { nullptr };
+	object_ptr<Ui::FlatLabel> _restrictedLabel = {nullptr};
 
 	struct Row {
 		int height = 0;
-		QVector<ItemBase*> items;
+		QVector<ItemBase *> items;
 	};
 	QVector<Row> _rows;
 	void clearInlineRows(bool resultsDeleted);
 
-	std::map<Result*, std::unique_ptr<ItemBase>> _inlineLayouts;
+	std::map<Result *, std::unique_ptr<ItemBase>> _inlineLayouts;
 	ItemBase *layoutPrepareInlineResult(Result *result, qint32 position);
 
 	bool inlineRowsAddItem(Result *result, Row &row, qint32 &sumWidth);
@@ -161,7 +161,6 @@ private:
 	bool _previewShown = false;
 
 	base::lambda<void(Result *result, UserData *bot)> _resultSelectedCallback;
-
 };
 
 } // namespace internal
@@ -170,7 +169,7 @@ class Widget : public TWidget, private MTP::Sender {
 	Q_OBJECT
 
 public:
-	Widget(QWidget *parent, not_null<Window::Controller*> controller);
+	Widget(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void moveBottom(int bottom);
 
@@ -240,7 +239,7 @@ private:
 	bool refreshInlineRows(int *added = nullptr);
 	void inlineResultsDone(const MTPmessages_BotResults &result);
 
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 
 	int _contentMaxHeight = 0;
 	int _contentHeight = 0;
@@ -268,7 +267,6 @@ private:
 	PeerData *_inlineQueryPeer = nullptr;
 	QString _inlineQuery, _inlineNextQuery, _inlineNextOffset;
 	mtpRequestId _inlineRequestId = 0;
-
 };
 
 } // namespace Layout

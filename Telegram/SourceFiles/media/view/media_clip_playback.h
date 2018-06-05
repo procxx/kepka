@@ -64,7 +64,6 @@ private:
 	qint64 _length = 0;
 
 	bool _playing = false;
-
 };
 
 } // namespace Clip

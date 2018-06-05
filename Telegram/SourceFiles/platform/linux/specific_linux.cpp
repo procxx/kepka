@@ -17,21 +17,21 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/specific_linux.h"
 
-#include "platform/linux/linux_libs.h"
-#include "lang/lang_keys.h"
 #include "application.h"
+#include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
 #include "platform/linux/file_utilities_linux.h"
+#include "platform/linux/linux_libs.h"
 #include "platform/platform_notifications_manager.h"
 #include "storage/localstorage.h"
 
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <cstdlib>
-#include <unistd.h>
 #include <dirent.h>
 #include <pwd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include <iostream>
 
@@ -48,7 +48,7 @@ namespace Platform {
 
 QString CurrentExecutablePath(int argc, char *argv[]) {
 	constexpr auto kMaxPath = 1024;
-	char result[kMaxPath] = { 0 };
+	char result[kMaxPath] = {0};
 	auto count = readlink("/proc/self/exe", result, kMaxPath);
 	if (count > 0) {
 		auto filename = QFile::decodeName(result);
@@ -70,8 +70,8 @@ namespace {
 class _PsEventFilter : public QAbstractNativeEventFilter {
 public:
 	bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) {
-		//auto wnd = App::wnd();
-		//if (!wnd) return false;
+		// auto wnd = App::wnd();
+		// if (!wnd) return false;
 
 		return false;
 	}
@@ -106,8 +106,7 @@ QAbstractNativeEventFilter *psNativeEventFilter() {
 	return _psEventFilter;
 }
 
-void psWriteDump() {
-}
+void psWriteDump() {}
 
 QString demanglestr(const QString &mangled) {
 	if (mangled.isEmpty()) return mangled;
@@ -117,7 +116,7 @@ QString demanglestr(const QString &mangled) {
 	if (!f) return "BAD_SYMBOL_" + mangled;
 
 	QString result;
-	char buffer[4096] = { 0 };
+	char buffer[4096] = {0};
 	while (!feof(f)) {
 		if (fgets(buffer, 4096, f) != NULL) {
 			result += buffer;
@@ -152,7 +151,8 @@ QStringList addr2linestr(quint64 *addresses, int count) {
 	}
 	for (int i = 0, j = 0; i < count; ++i) {
 		if (addresses[i]) {
-			if (j < addr2lineResult.size() && !addr2lineResult.at(j).isEmpty() && !addr2lineResult.at(j).startsWith(qstr("0x"))) {
+			if (j < addr2lineResult.size() && !addr2lineResult.at(j).isEmpty() &&
+			    !addr2lineResult.at(j).startsWith(qstr("0x"))) {
 				QString res = addr2lineResult.at(j).trimmed();
 				if (int index = res.indexOf(qstr("/Telegram/"))) {
 					if (index > 0) {
@@ -178,7 +178,7 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	qint32 i = 0, l = lines.size();
 
 	while (i < l) {
-		quint64 addresses[1024] = { 0 };
+		quint64 addresses[1024] = {0};
 		for (; i < l; ++i) {
 			result.append(lines.at(i)).append('\n');
 			QString line = lines.at(i).trimmed();
@@ -193,11 +193,13 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			QString line = lines.at(i).trimmed();
 			if (line.isEmpty()) break;
 
-			QRegularExpressionMatch m1 = QRegularExpression(qsl("^(.+)\\(([^+]+)\\+([^\\)]+)\\)\\[(.+)\\]$")).match(line);
+			QRegularExpressionMatch m1 =
+			    QRegularExpression(qsl("^(.+)\\(([^+]+)\\+([^\\)]+)\\)\\[(.+)\\]$")).match(line);
 			QRegularExpressionMatch m2 = QRegularExpression(qsl("^(.+)\\[(.+)\\]$")).match(line);
 			QString addrstr = m1.hasMatch() ? m1.captured(4) : (m2.hasMatch() ? m2.captured(2) : QString());
 			if (!addrstr.isEmpty()) {
-				quint64 addr = addrstr.startsWith(qstr("0x")) ? addrstr.mid(2).toULongLong(0, 16) : addrstr.toULongLong();
+				quint64 addr =
+				    addrstr.startsWith(qstr("0x")) ? addrstr.mid(2).toULongLong(0, 16) : addrstr.toULongLong();
 				if (addr > 1) {
 					addresses[i - start] = addr;
 				}
@@ -227,7 +229,12 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 			}
 
 			if (m1.hasMatch()) {
-				result.append(demanglestr(m1.captured(2))).append(qsl(" + ")).append(m1.captured(3)).append(qsl(" [")).append(m1.captured(1)).append(qsl("] "));
+				result.append(demanglestr(m1.captured(2)))
+				    .append(qsl(" + "))
+				    .append(m1.captured(3))
+				    .append(qsl(" ["))
+				    .append(m1.captured(1))
+				    .append(qsl("] "));
 				if (!addr2line.at(i - start).isEmpty() && addr2line.at(i - start) != qsl("??:0")) {
 					result.append(qsl(" (")).append(addr2line.at(i - start)).append(qsl(")\n"));
 				} else {
@@ -246,7 +253,10 @@ QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile) {
 	return result;
 }
 
-bool _removeDirectory(const QString &path) { // from http://stackoverflow.com/questions/2256945/removing-a-non-empty-directory-programmatically-in-c-or-c
+bool _removeDirectory(
+    const QString
+        &path) { // from
+	             // http://stackoverflow.com/questions/2256945/removing-a-non-empty-directory-programmatically-in-c-or-c
 	QByteArray pathRaw = QFile::encodeName(path);
 	DIR *d = opendir(pathRaw.constData());
 	if (!d) return false;
@@ -300,7 +310,7 @@ TimeMs psIdleTime() {
 }
 
 void psActivateProcess(quint64 pid) {
-//	objc_activateProgram();
+	//	objc_activateProgram();
 }
 
 namespace {
@@ -344,8 +354,7 @@ int psCleanup() {
 	return 0;
 }
 
-void psDoFixPrevious() {
-}
+void psDoFixPrevious() {}
 
 int psFixPrevious() {
 	psDoFixPrevious();
@@ -354,8 +363,7 @@ int psFixPrevious() {
 
 namespace Platform {
 
-void start() {
-}
+void start() {}
 
 void finish() {
 	Notifications::Finish();
@@ -365,12 +373,13 @@ void finish() {
 }
 
 bool TranslucentWindowsSupported(QPoint globalPosition) {
-	if (auto app = static_cast<QGuiApplication*>(QCoreApplication::instance())) {
+	if (auto app = static_cast<QGuiApplication *>(QCoreApplication::instance())) {
 		if (auto native = app->platformNativeInterface()) {
 			if (auto desktop = QApplication::desktop()) {
 				auto index = desktop->screenNumber(globalPosition);
 				auto screens = QGuiApplication::screens();
-				if (auto screen = (index >= 0 && index < screens.size()) ? screens[index] : QGuiApplication::primaryScreen()) {
+				if (auto screen =
+				        (index >= 0 && index < screens.size()) ? screens[index] : QGuiApplication::primaryScreen()) {
 					if (native->nativeResourceForScreen(QByteArray("compositingEnabled"), screen)) {
 						return true;
 					}
@@ -378,10 +387,16 @@ bool TranslucentWindowsSupported(QPoint globalPosition) {
 					static OrderedSet<int> WarnedAbout;
 					if (!WarnedAbout.contains(index)) {
 						WarnedAbout.insert(index);
-						LOG(("WARNING: Compositing is disabled for screen index %1 (for position %2,%3)").arg(index).arg(globalPosition.x()).arg(globalPosition.y()));
+						LOG(("WARNING: Compositing is disabled for screen index %1 (for position %2,%3)")
+						        .arg(index)
+						        .arg(globalPosition.x())
+						        .arg(globalPosition.y()));
 					}
 				} else {
-					LOG(("WARNING: Could not get screen for index %1 (for position %2,%3)").arg(index).arg(globalPosition.x()).arg(globalPosition.y()));
+					LOG(("WARNING: Could not get screen for index %1 (for position %2,%3)")
+					        .arg(index)
+					        .arg(globalPosition.x())
+					        .arg(globalPosition.y()));
 				}
 			}
 		}
@@ -404,8 +419,7 @@ void start() {
 	MainWindow::LibsLoaded();
 }
 
-void finish() {
-}
+void finish() {}
 
 } // namespace ThirdParty
 
@@ -473,11 +487,14 @@ void psRegisterCustomScheme() {
 			s << "MimeType=x-scheme-handler/tg;\n";
 			f.close();
 
-			if (_psRunCommand("desktop-file-install --dir=" + EscapeShell(QFile::encodeName(home + qsl(".local/share/applications"))) + " --delete-original " + EscapeShell(QFile::encodeName(file)))) {
+			if (_psRunCommand("desktop-file-install --dir=" +
+			                  EscapeShell(QFile::encodeName(home + qsl(".local/share/applications"))) +
+			                  " --delete-original " + EscapeShell(QFile::encodeName(file)))) {
 				DEBUG_LOG(("App Info: removing old .desktop file"));
 				QFile(qsl("%1.local/share/applications/telegram.desktop").arg(home)).remove();
 
-				_psRunCommand("update-desktop-database " + EscapeShell(QFile::encodeName(home + qsl(".local/share/applications"))));
+				_psRunCommand("update-desktop-database " +
+				              EscapeShell(QFile::encodeName(home + qsl(".local/share/applications"))));
 				_psRunCommand("xdg-mime default telegramdesktop.desktop x-scheme-handler/tg");
 			}
 		} else {
@@ -487,7 +504,8 @@ void psRegisterCustomScheme() {
 #endif // !TDESKTOP_DISABLE_DESKTOP_FILE_GENERATION
 
 	DEBUG_LOG(("App Info: registerting for Gnome"));
-	if (_psRunCommand("gconftool-2 -t string -s /desktop/gnome/url-handlers/tg/command " + EscapeShell(EscapeShell(QFile::encodeName(cExeDir() + cExeName())) + " -- %s"))) {
+	if (_psRunCommand("gconftool-2 -t string -s /desktop/gnome/url-handlers/tg/command " +
+	                  EscapeShell(EscapeShell(QFile::encodeName(cExeDir() + cExeName())) + " -- %s"))) {
 		_psRunCommand("gconftool-2 -t bool -s /desktop/gnome/url-handlers/tg/needs_terminal false");
 		_psRunCommand("gconftool-2 -t bool -s /desktop/gnome/url-handlers/tg/enabled true");
 	}
@@ -540,23 +558,23 @@ bool _execUpdater(bool update = true, const QString &crashreport = QString()) {
 	QByteArray data(QFile::encodeName(cExeDir() + (update ? "Updater" : cExeName())));
 	memcpy(path, data.constData(), data.size());
 
-	char *args[MaxArgsCount] = { 0 };
+	char *args[MaxArgsCount] = {0};
 	char p_noupdate[] = "-noupdate";
 	char p_autostart[] = "-autostart";
 	char p_debug[] = "-debug";
 	char p_tosettings[] = "-tosettings";
 	char p_key[] = "-key";
-	char p_datafile[MaxLen] = { 0 };
+	char p_datafile[MaxLen] = {0};
 	char p_path[] = "-workpath";
-	char p_pathbuf[MaxLen] = { 0 };
+	char p_pathbuf[MaxLen] = {0};
 	char p_startintray[] = "-startintray";
 	char p_testmode[] = "-testmode";
 	char p_crashreport[] = "-crashreport";
-	char p_crashreportbuf[MaxLen] = { 0 };
+	char p_crashreportbuf[MaxLen] = {0};
 	char p_exe[] = "-exename";
-	char p_exebuf[MaxLen] = { 0 };
+	char p_exebuf[MaxLen] = {0};
 	char p_exepath[] = "-exepath";
-	char p_exepathbuf[MaxLen] = { 0 };
+	char p_exepathbuf[MaxLen] = {0};
 	int argIndex = 0;
 	args[argIndex++] = path;
 	if (!update) {
@@ -626,14 +644,11 @@ bool psShowOpenWithMenu(int x, int y, const QString &file) {
 	return false;
 }
 
-void psAutoStart(bool start, bool silent) {
-}
+void psAutoStart(bool start, bool silent) {}
 
-void psSendToMenu(bool send, bool silent) {
-}
+void psSendToMenu(bool send, bool silent) {}
 
-void psUpdateOverlayed(QWidget *widget) {
-}
+void psUpdateOverlayed(QWidget *widget) {}
 
 bool linuxMoveFile(const char *from, const char *to) {
 	FILE *ffrom = fopen(from, "rb"), *fto = fopen(to, "wb");
@@ -651,20 +666,22 @@ bool linuxMoveFile(const char *from, const char *to) {
 		fwrite(buf, 1, size, fto);
 	}
 
-	struct stat fst; // from http://stackoverflow.com/questions/5486774/keeping-fileowner-and-permissions-after-copying-file-in-c
-	//let's say this wont fail since you already worked OK on that fp
+	struct stat
+	    fst; // from
+	         // http://stackoverflow.com/questions/5486774/keeping-fileowner-and-permissions-after-copying-file-in-c
+	// let's say this wont fail since you already worked OK on that fp
 	if (fstat(fileno(ffrom), &fst) != 0) {
 		fclose(ffrom);
 		fclose(fto);
 		return false;
 	}
-	//update to the same uid/gid
+	// update to the same uid/gid
 	if (fchown(fileno(fto), fst.st_uid, fst.st_gid) != 0) {
 		fclose(ffrom);
 		fclose(fto);
 		return false;
 	}
-	//update the permissions
+	// update the permissions
 	if (fchmod(fileno(fto), fst.st_mode) != 0) {
 		fclose(ffrom);
 		fclose(fto);

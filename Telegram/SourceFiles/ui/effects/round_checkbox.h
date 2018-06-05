@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "styles/style_widgets.h"
 #include "base/lambda.h"
+#include "styles/style_widgets.h"
 #include "ui/animation.h"
 
 #include <QPixmap>
@@ -70,13 +70,13 @@ private:
 
 	// Those pixmaps are shared among all checkboxes that have the same style.
 	QPixmap _wideCheckBgCache, _wideCheckFullCache;
-
 };
 
 class RoundImageCheckbox {
 public:
 	using PaintRoundImage = base::lambda<void(Painter &p, int x, int y, int outerWidth, int size)>;
-	RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback, PaintRoundImage &&paintRoundImage);
+	RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback,
+	                   PaintRoundImage &&paintRoundImage);
 
 	void paint(Painter &p, TimeMs ms, int x, int y, int outerWidth);
 	double checkedAnimationRatio() const;
@@ -102,7 +102,6 @@ private:
 	Animation _selection;
 
 	RoundCheckbox _check;
-
 };
 
 } // namespace Ui

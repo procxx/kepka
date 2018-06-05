@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "core/basic_types.h"
-#include "ui/twidget.h"
 #include "ui/text/text.h"
+#include "ui/twidget.h"
 
 class HistoryService;
 
@@ -32,10 +32,9 @@ int WideChatWidth();
 
 struct PaintContext {
 	PaintContext(TimeMs ms, const QRect &clip, TextSelection selection)
-		: ms(ms)
-		, clip(clip)
-		, selection(selection) {
-	}
+	    : ms(ms)
+	    , clip(clip)
+	    , selection(selection) {}
 	TimeMs ms;
 	const QRect &clip;
 	TextSelection selection;
@@ -43,11 +42,7 @@ struct PaintContext {
 
 class ServiceMessagePainter {
 public:
-	static void paint(
-		Painter &p,
-		not_null<const HistoryService*> message,
-		const PaintContext &context,
-		int height);
+	static void paint(Painter &p, not_null<const HistoryService *> message, const PaintContext &context, int height);
 
 	static void paintDate(Painter &p, const QDateTime &date, int y, int w);
 	static void paintDate(Painter &p, const QString &dateText, int dateTextWidth, int y, int w);
@@ -57,7 +52,6 @@ public:
 private:
 	static void paintComplexBubble(Painter &p, int left, int width, const Text &text, const QRect &textRect);
 	static QVector<int> countLineWidths(const Text &text, const QRect &textRect);
-
 };
 
 void paintEmpty(Painter &p, int width, int height);

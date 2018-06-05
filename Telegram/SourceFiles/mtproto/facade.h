@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "mtproto/type_utils.h"
-#include "mtproto/session.h"
 #include "core/single_timer.h"
 #include "mtproto/mtp_instance.h"
+#include "mtproto/session.h"
+#include "mtproto/type_utils.h"
 
 namespace MTP {
 namespace internal {
@@ -63,7 +63,6 @@ public:
 
 private:
 	bool _paused = false;
-
 };
 
 constexpr DcId bareDcId(ShiftedDcId shiftedDcId) {
@@ -105,7 +104,8 @@ inline ShiftedDcId downloadDcId(DcId dcId, int index) {
 }
 
 inline constexpr bool isDownloadDcId(ShiftedDcId shiftedDcId) {
-	return (shiftedDcId >= internal::downloadDcId(0, 0)) && (shiftedDcId < internal::downloadDcId(0, kDownloadSessionsCount - 1) + internal::kDcShift);
+	return (shiftedDcId >= internal::downloadDcId(0, 0)) &&
+	       (shiftedDcId < internal::downloadDcId(0, kDownloadSessionsCount - 1) + internal::kDcShift);
 }
 
 inline bool isCdnDc(MTPDdcOption::Flags flags) {
@@ -144,7 +144,8 @@ inline ShiftedDcId uploadDcId(int index) {
 };
 
 constexpr bool isUploadDcId(ShiftedDcId shiftedDcId) {
-	return (shiftedDcId >= internal::uploadDcId(0, 0)) && (shiftedDcId < internal::uploadDcId(0, kUploadSessionsCount - 1) + internal::kDcShift);
+	return (shiftedDcId >= internal::uploadDcId(0, 0)) &&
+	       (shiftedDcId < internal::uploadDcId(0, kUploadSessionsCount - 1) + internal::kDcShift);
 }
 
 inline ShiftedDcId destroyKeyNextDcId(ShiftedDcId shiftedDcId) {
@@ -158,11 +159,7 @@ enum {
 	ConnectedState = 2,
 };
 
-enum {
-	RequestSent = 0,
-	RequestConnecting = 1,
-	RequestSending = 2
-};
+enum { RequestSent = 0, RequestConnecting = 1, RequestSending = 2 };
 
 Instance *MainInstance();
 
@@ -193,12 +190,15 @@ inline QString dctransport(ShiftedDcId shiftedDcId = 0) {
 }
 
 template <typename TRequest>
-inline mtpRequestId send(const TRequest &request, RPCResponseHandler callbacks = RPCResponseHandler(), ShiftedDcId dcId = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
+inline mtpRequestId send(const TRequest &request, RPCResponseHandler callbacks = RPCResponseHandler(),
+                         ShiftedDcId dcId = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
 	return MainInstance()->send(request, std::move(callbacks), dcId, msCanWait, after);
 }
 
 template <typename TRequest>
-inline mtpRequestId send(const TRequest &request, RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFail = RPCFailHandlerPtr(), ShiftedDcId dcId = 0, TimeMs msCanWait = 0, mtpRequestId after = 0) {
+inline mtpRequestId send(const TRequest &request, RPCDoneHandlerPtr onDone,
+                         RPCFailHandlerPtr onFail = RPCFailHandlerPtr(), ShiftedDcId dcId = 0, TimeMs msCanWait = 0,
+                         mtpRequestId after = 0) {
 	return MainInstance()->send(request, std::move(onDone), std::move(onFail), dcId, msCanWait, after);
 }
 
@@ -229,7 +229,8 @@ inline qint32 state(mtpRequestId requestId) { // < 0 means waiting for such coun
 namespace internal {
 
 template <typename TRequest>
-mtpRequestId Session::send(const TRequest &request, RPCResponseHandler callbacks, TimeMs msCanWait, bool needsLayer, bool toMainDC, mtpRequestId after) {
+mtpRequestId Session::send(const TRequest &request, RPCResponseHandler callbacks, TimeMs msCanWait, bool needsLayer,
+                           bool toMainDC, mtpRequestId after) {
 	mtpRequestId requestId = 0;
 	try {
 		quint32 requestSize = request.innerLength() >> 2;
@@ -246,7 +247,9 @@ mtpRequestId Session::send(const TRequest &request, RPCResponseHandler callbacks
 		sendPrepared(reqSerialized, msCanWait);
 	} catch (Exception &e) {
 		requestId = 0;
-		rpcErrorOccured(requestId, callbacks.onFail, rpcClientError("NO_REQUEST_ID", QString("send() failed to queue request, exception: %1").arg(e.what())));
+		rpcErrorOccured(
+		    requestId, callbacks.onFail,
+		    rpcClientError("NO_REQUEST_ID", QString("send() failed to queue request, exception: %1").arg(e.what())));
 	}
 	if (requestId) registerRequest(requestId, toMainDC ? -getDcWithShift() : getDcWithShift());
 	return requestId;

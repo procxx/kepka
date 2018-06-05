@@ -22,8 +22,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/observer.h"
 #include "core/basic_types.h"
-#include "ui/twidget.h"
 #include "structs.h"
+#include "ui/twidget.h"
 
 class HistoryItem;
 
@@ -40,7 +40,7 @@ class ListWidget : public TWidget, private base::Subscriber {
 public:
 	ListWidget(QWidget *parent);
 
-	void ui_repaintHistoryItem(not_null<const HistoryItem*> item);
+	void ui_repaintHistoryItem(not_null<const HistoryItem *> item);
 
 	QRect getCurrentTrackGeometry() const;
 
@@ -61,15 +61,14 @@ private:
 	void playlistUpdated();
 
 	using Layout = Overview::Layout::Document;
-	using Layouts = QMap<FullMsgId, Layout*>;
+	using Layouts = QMap<FullMsgId, Layout *>;
 	Layouts _layouts;
 
-	using List = QList<Layout*>;
+	using List = QList<Layout *>;
 	List _list;
 
 	style::cursor _cursor = style::cur_default;
-
 };
 
-} // namespace Clip
+} // namespace Player
 } // namespace Media

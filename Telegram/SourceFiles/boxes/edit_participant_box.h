@@ -34,22 +34,21 @@ class CalendarBox;
 
 class EditParticipantBox : public BoxContent {
 public:
-	EditParticipantBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, bool hasAdminRights);
+	EditParticipantBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user, bool hasAdminRights);
 
 protected:
 	void prepare() override;
 
 	void resizeToContent();
 
-	not_null<UserData*> user() const {
+	not_null<UserData *> user() const {
 		return _user;
 	}
-	not_null<ChannelData*> channel() const {
+	not_null<ChannelData *> channel() const {
 		return _channel;
 	}
 
-	template <typename Widget>
-	QPointer<Widget> addControl(object_ptr<Widget> widget, QMargins margin);
+	template <typename Widget> QPointer<Widget> addControl(object_ptr<Widget> widget, QMargins margin);
 
 	void removeControl(QPointer<TWidget> widget);
 
@@ -58,18 +57,18 @@ protected:
 	}
 
 private:
-	not_null<ChannelData*> _channel;
-	not_null<UserData*> _user;
+	not_null<ChannelData *> _channel;
+	not_null<UserData *> _user;
 	bool _hasAdminRights = false;
 
 	class Inner;
 	QPointer<Inner> _inner;
-
 };
 
 class EditAdminBox : public EditParticipantBox {
 public:
-	EditAdminBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, const MTPChannelAdminRights &rights);
+	EditAdminBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user,
+	             const MTPChannelAdminRights &rights);
 
 	void setSaveCallback(base::lambda<void(MTPChannelAdminRights, MTPChannelAdminRights)> callback) {
 		_saveCallback = std::move(callback);
@@ -82,7 +81,7 @@ private:
 	using Flag = MTPDchannelAdminRights::Flag;
 	using Flags = MTPDchannelAdminRights::Flags;
 
-	static MTPChannelAdminRights DefaultRights(not_null<ChannelData*> channel);
+	static MTPChannelAdminRights DefaultRights(not_null<ChannelData *> channel);
 
 	bool canSave() const {
 		return !!_saveCallback;
@@ -96,7 +95,6 @@ private:
 
 	std::map<Flags, QPointer<Ui::Checkbox>> _checkboxes;
 	QPointer<Ui::FlatLabel> _aboutAddAdmins;
-
 };
 
 // Restricted box works with flags in the opposite way.
@@ -104,7 +102,8 @@ private:
 
 class EditRestrictedBox : public EditParticipantBox {
 public:
-	EditRestrictedBox(QWidget*, not_null<ChannelData*> channel, not_null<UserData*> user, bool hasAdminRights, const MTPChannelBannedRights &rights);
+	EditRestrictedBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user, bool hasAdminRights,
+	                  const MTPChannelBannedRights &rights);
 
 	void setSaveCallback(base::lambda<void(MTPChannelBannedRights, MTPChannelBannedRights)> callback) {
 		_saveCallback = std::move(callback);
@@ -117,7 +116,7 @@ private:
 	using Flag = MTPDchannelBannedRights::Flag;
 	using Flags = MTPDchannelBannedRights::Flags;
 
-	static MTPChannelBannedRights DefaultRights(not_null<ChannelData*> channel);
+	static MTPChannelBannedRights DefaultRights(not_null<ChannelData *> channel);
 
 	bool canSave() const {
 		return !!_saveCallback;
@@ -147,5 +146,4 @@ private:
 	static constexpr auto kUntilOneDay = -1;
 	static constexpr auto kUntilOneWeek = -2;
 	static constexpr auto kUntilCustom = -3;
-
 };

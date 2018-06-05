@@ -45,7 +45,6 @@ private:
 	void applyVolumeChange(double volume);
 
 	object_ptr<Ui::MediaSlider> _slider;
-
 };
 
 class VolumeWidget : public TWidget {
@@ -87,8 +86,7 @@ private:
 	QTimer _hideTimer, _showTimer;
 
 	object_ptr<VolumeController> _controller;
-
 };
 
-} // namespace Clip
+} // namespace Player
 } // namespace Media

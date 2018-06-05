@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "core/basic_types.h"
-#include "storage/file_download.h"
 #include "auth_session.h"
+#include "core/basic_types.h"
 #include "history/history.h"
+#include "storage/file_download.h"
 
 namespace Window {
 namespace Theme {
@@ -79,7 +79,6 @@ private:
 	~ClearManager();
 
 	ClearManagerData *data;
-
 };
 
 enum ReadMapState {
@@ -94,10 +93,9 @@ qint32 oldSettingsVersion();
 
 struct MessageDraft {
 	MessageDraft(MsgId msgId = 0, TextWithTags textWithTags = TextWithTags(), bool previewCancelled = false)
-		: msgId(msgId)
-		, textWithTags(textWithTags)
-		, previewCancelled(previewCancelled) {
-	}
+	    : msgId(msgId)
+	    , textWithTags(textWithTags)
+	    , previewCancelled(previewCancelled) {}
 	MsgId msgId;
 	TextWithTags textWithTags;
 	bool previewCancelled;
@@ -161,7 +159,8 @@ qint32 countSavedGifsHash();
 void writeBackground(qint32 id, const QImage &img);
 bool readBackground();
 
-void writeTheme(const QString &pathRelative, const QString &pathAbsolute, const QByteArray &content, const Window::Theme::Cached &cache);
+void writeTheme(const QString &pathRelative, const QString &pathAbsolute, const QByteArray &content,
+                const Window::Theme::Cached &cache);
 void clearTheme();
 bool hasTheme();
 QString themeAbsolutePath();
@@ -206,7 +205,6 @@ public slots:
 private:
 	QTimer _mapWriteTimer;
 	QTimer _locationsWriteTimer;
-
 };
 
 } // namespace internal

@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QImage>
 #include "base/observer.h"
-#include "mtproto/auth_key.h"
 #include "base/timer.h"
+#include "core/single_timer.h"
+#include "mtproto/auth_key.h"
 #include "mtproto/rpc_sender.h"
 #include "structs.h"
-#include "core/single_timer.h"
+#include <QImage>
 
 namespace App {
 void quit();
@@ -94,10 +94,10 @@ public:
 	// MediaView interface.
 	void checkMediaViewActivation();
 	bool hideMediaView();
-	void showPhoto(not_null<const PhotoOpenClickHandler*> link, HistoryItem *item = nullptr);
-	void showPhoto(not_null<PhotoData*> photo, HistoryItem *item);
-	void showPhoto(not_null<PhotoData*> photo, PeerData *item);
-	void showDocument(not_null<DocumentData*> document, HistoryItem *item);
+	void showPhoto(not_null<const PhotoOpenClickHandler *> link, HistoryItem *item = nullptr);
+	void showPhoto(not_null<PhotoData *> photo, HistoryItem *item);
+	void showPhoto(not_null<PhotoData *> photo, PeerData *item);
+	void showDocument(not_null<DocumentData *> document, HistoryItem *item);
 	PeerData *ui_getPeerForMouseAction();
 
 	QPoint getPointForCallPanelCenter() const;
@@ -261,5 +261,4 @@ private:
 	QImage _logoNoMargin;
 
 	base::DelayedCallTimer _callDelayedTimer;
-
 };

@@ -20,16 +20,16 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_fixed_bar.h"
 
+#include "boxes/add_contact_box.h"
+#include "boxes/confirm_box.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "observer_peer.h"
+#include "profile/profile_back_button.h"
+#include "styles/style_boxes.h"
 #include "styles/style_profile.h"
 #include "styles/style_window.h"
 #include "ui/widgets/buttons.h"
-#include "lang/lang_keys.h"
-#include "mainwidget.h"
-#include "boxes/add_contact_box.h"
-#include "boxes/confirm_box.h"
-#include "observer_peer.h"
-#include "styles/style_boxes.h"
-#include "profile/profile_back_button.h"
 
 #include <QWidget>
 
@@ -37,30 +37,28 @@ namespace Profile {
 namespace {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
-const auto ButtonsUpdateFlags = UpdateFlag::UserCanShareContact
-	| UpdateFlag::UserIsContact
-	| UpdateFlag::ChatCanEdit
-	| UpdateFlag::ChannelRightsChanged;
+const auto ButtonsUpdateFlags = UpdateFlag::UserCanShareContact | UpdateFlag::UserIsContact | UpdateFlag::ChatCanEdit |
+                                UpdateFlag::ChannelRightsChanged;
 
 } // namespace
 
-FixedBar::FixedBar(QWidget *parent, PeerData *peer) : TWidget(parent)
-, _peer(peer)
-, _peerUser(peer->asUser())
-, _peerChat(peer->asChat())
-, _peerChannel(peer->asChannel())
-, _peerMegagroup(peer->isMegagroup() ? _peerChannel : nullptr)
-, _backButton(this, lang(lng_menu_back)) {
+FixedBar::FixedBar(QWidget *parent, PeerData *peer)
+    : TWidget(parent)
+    , _peer(peer)
+    , _peerUser(peer->asUser())
+    , _peerChat(peer->asChat())
+    , _peerChannel(peer->asChannel())
+    , _peerMegagroup(peer->isMegagroup() ? _peerChannel : nullptr)
+    , _backButton(this, lang(lng_menu_back)) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 
 	_backButton->moveToLeft(0, 0);
 	connect(_backButton, SIGNAL(clicked()), this, SLOT(onBack()));
 
-	auto observeEvents = ButtonsUpdateFlags
-		| UpdateFlag::MigrationChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdate(update);
-	}));
+	auto observeEvents = ButtonsUpdateFlags | UpdateFlag::MigrationChanged;
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdate(update); }));
 
 	refreshRightActions();
 }
@@ -101,11 +99,13 @@ void FixedBar::refreshRightActions() {
 
 void FixedBar::setUserActions() {
 	if (_peerUser->canShareThisContact()) {
-		addRightAction(RightActionType::ShareContact, langFactory(lng_profile_top_bar_share_contact), SLOT(onShareContact()));
+		addRightAction(RightActionType::ShareContact, langFactory(lng_profile_top_bar_share_contact),
+		               SLOT(onShareContact()));
 	}
 	if (_peerUser->isContact()) {
 		addRightAction(RightActionType::EditContact, langFactory(lng_profile_edit_contact), SLOT(onEditContact()));
-		addRightAction(RightActionType::DeleteContact, langFactory(lng_profile_delete_contact), SLOT(onDeleteContact()));
+		addRightAction(RightActionType::DeleteContact, langFactory(lng_profile_delete_contact),
+		               SLOT(onDeleteContact()));
 	} else if (_peerUser->canAddContact()) {
 		addRightAction(RightActionType::AddContact, langFactory(lng_profile_add_contact), SLOT(onAddContact()));
 	}
@@ -179,19 +179,20 @@ void FixedBar::onShareContact() {
 void FixedBar::onDeleteContact() {
 	auto text = lng_sure_delete_contact(lt_contact, App::peerName(_peerUser));
 	Ui::show(Box<ConfirmBox>(text, lang(lng_box_delete), base::lambda_guarded(this, [this] {
-		Ui::showChatsList();
-		Ui::hideLayer();
-		MTP::send(MTPcontacts_DeleteContact(_peerUser->inputUser), App::main()->rpcDone(&MainWidget::deletedContact, _peerUser));
-	})));
+		                         Ui::showChatsList();
+		                         Ui::hideLayer();
+		                         MTP::send(MTPcontacts_DeleteContact(_peerUser->inputUser),
+		                                   App::main()->rpcDone(&MainWidget::deletedContact, _peerUser));
+	                         })));
 }
 
 void FixedBar::onLeaveGroup() {
 	auto text = lng_sure_delete_and_exit(lt_group, App::peerName(_peerChat));
 	Ui::show(Box<ConfirmBox>(text, lang(lng_box_leave), st::attentionBoxButton, base::lambda_guarded(this, [this] {
-		Ui::showChatsList();
-		Ui::hideLayer();
-		App::main()->deleteAndExit(_peerChat);
-	})));
+		                         Ui::showChatsList();
+		                         Ui::hideLayer();
+		                         App::main()->deleteAndExit(_peerChat);
+	                         })));
 }
 
 int FixedBar::resizeGetHeight(int newWidth) {

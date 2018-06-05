@@ -32,19 +32,16 @@ namespace Layout {
 class PaintContext : public PaintContextBase {
 public:
 	PaintContext(TimeMs ms, bool selecting, bool paused, bool lastRow)
-		: PaintContextBase(ms, selecting)
-		, paused(paused)
-		, lastRow(lastRow) {
-	}
+	    : PaintContextBase(ms, selecting)
+	    , paused(paused)
+	    , lastRow(lastRow) {}
 	bool paused, lastRow;
-
 };
 
 // this type used as a flag, we dynamic_cast<> to it
 class SendClickHandler : public ClickHandler {
 public:
-	void onClick(Qt::MouseButton) const override {
-	}
+	void onClick(Qt::MouseButton) const override {}
 };
 
 class ItemBase;
@@ -58,12 +55,14 @@ public:
 
 class ItemBase : public LayoutItemBase {
 public:
-	ItemBase(not_null<Context*> context, Result *result) : _result(result), _context(context) {
-	}
-	ItemBase(not_null<Context*> context, DocumentData *doc) : _doc(doc), _context(context) {
-	}
+	ItemBase(not_null<Context *> context, Result *result)
+	    : _result(result)
+	    , _context(context) {}
+	ItemBase(not_null<Context *> context, DocumentData *doc)
+	    : _doc(doc)
+	    , _context(context) {}
 	// Not used anywhere currently.
-	//ItemBase(not_null<Context*> context, PhotoData *photo) : _photo(photo), _context(context) {
+	// ItemBase(not_null<Context*> context, PhotoData *photo) : _photo(photo), _context(context) {
 	//}
 
 	virtual void paint(Painter &p, const QRect &clip, const PaintContext *context) const = 0;
@@ -100,8 +99,8 @@ public:
 		update();
 	}
 
-	static std::unique_ptr<ItemBase> createLayout(not_null<Context*> context, Result *result, bool forceThumb);
-	static std::unique_ptr<ItemBase> createLayoutGif(not_null<Context*> context, DocumentData *document);
+	static std::unique_ptr<ItemBase> createLayout(not_null<Context *> context, Result *result, bool forceThumb);
+	static std::unique_ptr<ItemBase> createLayoutGif(not_null<Context *> context, DocumentData *document);
 
 protected:
 	DocumentData *getResultDocument() const;
@@ -114,7 +113,7 @@ protected:
 	ClickHandlerPtr getResultContentUrlHandler() const;
 	QString getResultThumbLetter() const;
 
-	not_null<Context*> context() const {
+	not_null<Context *> context() const {
 		return _context;
 	}
 
@@ -122,16 +121,15 @@ protected:
 	DocumentData *_doc = nullptr;
 	PhotoData *_photo = nullptr;
 
-	ClickHandlerPtr _send = ClickHandlerPtr{ new SendClickHandler() };
+	ClickHandlerPtr _send = ClickHandlerPtr{new SendClickHandler()};
 
 	int _position = 0; // < 0 means removed from layout
 
 private:
-	not_null<Context*> _context;
-
+	not_null<Context *> _context;
 };
 
-using DocumentItems = QMap<DocumentData*, OrderedSet<ItemBase*>>;
+using DocumentItems = QMap<DocumentData *, OrderedSet<ItemBase *>>;
 const DocumentItems *documentItems();
 
 namespace internal {

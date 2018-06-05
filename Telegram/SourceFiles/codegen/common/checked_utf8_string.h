@@ -50,7 +50,6 @@ public:
 private:
 	QString string_;
 	bool valid_ = true;
-
 };
 
 } // namespace common

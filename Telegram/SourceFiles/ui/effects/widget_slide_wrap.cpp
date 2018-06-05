@@ -22,15 +22,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Ui {
 
-WidgetSlideWrap<TWidget>::WidgetSlideWrap(QWidget *parent
-, object_ptr<TWidget> entity
-, style::margins entityPadding
-, base::lambda<void()> updateCallback
-, int duration) : TWidget(parent)
-, _entity(std::move(entity))
-, _padding(entityPadding)
-, _duration(duration)
-, _updateCallback(std::move(updateCallback)) {
+WidgetSlideWrap<TWidget>::WidgetSlideWrap(QWidget *parent, object_ptr<TWidget> entity, style::margins entityPadding,
+                                          base::lambda<void()> updateCallback, int duration)
+    : TWidget(parent)
+    , _entity(std::move(entity))
+    , _padding(entityPadding)
+    , _duration(duration)
+    , _updateCallback(std::move(updateCallback)) {
 	_entity->setParent(this);
 	auto margins = getMargins();
 	_entity->moveToLeft(margins.left() + _padding.left(), margins.top() + _padding.top());

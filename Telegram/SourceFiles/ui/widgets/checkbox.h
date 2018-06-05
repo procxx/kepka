@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/widgets/buttons.h"
-#include "ui/text/text.h"
 #include "styles/style_widgets.h"
+#include "ui/text/text.h"
+#include "ui/widgets/buttons.h"
 
 namespace Ui {
 
@@ -59,7 +59,6 @@ private:
 	bool _checked = false;
 	base::lambda<void()> _updateCallback;
 	Animation _toggleAnimation;
-
 };
 
 class CheckView : public AbstractCheckView {
@@ -76,8 +75,7 @@ public:
 private:
 	QSize rippleSize() const;
 
-	not_null<const style::Check*> _st;
-
+	not_null<const style::Check *> _st;
 };
 
 class RadioView : public AbstractCheckView {
@@ -94,8 +92,7 @@ public:
 private:
 	QSize rippleSize() const;
 
-	not_null<const style::Radio*> _st;
-
+	not_null<const style::Radio *> _st;
 };
 
 class ToggleView : public AbstractCheckView {
@@ -113,14 +110,15 @@ private:
 	void paintXV(Painter &p, int left, int top, int outerWidth, double toggled, const QBrush &brush);
 	QSize rippleSize() const;
 
-	not_null<const style::Toggle*> _st;
-
+	not_null<const style::Toggle *> _st;
 };
 
 class Checkbox : public RippleButton {
 public:
-	Checkbox(QWidget *parent, const QString &text, bool checked = false, const style::Checkbox &st = st::defaultCheckbox, const style::Check &checkSt = st::defaultCheck);
-	Checkbox(QWidget *parent, const QString &text, bool checked, const style::Checkbox &st, const style::Toggle &toggleSt);
+	Checkbox(QWidget *parent, const QString &text, bool checked = false,
+	         const style::Checkbox &st = st::defaultCheckbox, const style::Check &checkSt = st::defaultCheck);
+	Checkbox(QWidget *parent, const QString &text, bool checked, const style::Checkbox &st,
+	         const style::Toggle &toggleSt);
 	Checkbox(QWidget *parent, const QString &text, const style::Checkbox &st, std::unique_ptr<AbstractCheckView> check);
 
 	void setText(const QString &text);
@@ -165,7 +163,6 @@ private:
 
 	Text _text;
 	QRect _checkRect;
-
 };
 
 class Radiobutton;
@@ -173,8 +170,9 @@ class Radiobutton;
 class RadiobuttonGroup {
 public:
 	RadiobuttonGroup() = default;
-	RadiobuttonGroup(int value) : _value(value), _hasValue(true) {
-	}
+	RadiobuttonGroup(int value)
+	    : _value(value)
+	    , _hasValue(true) {}
 
 	void setChangedCallback(base::lambda<void(int value)> callback) {
 		_changedCallback = std::move(callback);
@@ -202,13 +200,13 @@ private:
 	int _value = 0;
 	bool _hasValue = false;
 	base::lambda<void(int value)> _changedCallback;
-	std::vector<Radiobutton*> _buttons;
-
+	std::vector<Radiobutton *> _buttons;
 };
 
 class Radiobutton : public Checkbox, private base::Subscriber {
 public:
-	Radiobutton(QWidget *parent, const std::shared_ptr<RadiobuttonGroup> &group, int value, const QString &text, const style::Checkbox &st = st::defaultCheckbox, const style::Radio &radioSt = st::defaultRadio);
+	Radiobutton(QWidget *parent, const std::shared_ptr<RadiobuttonGroup> &group, int value, const QString &text,
+	            const style::Checkbox &st = st::defaultCheckbox, const style::Radio &radioSt = st::defaultRadio);
 	~Radiobutton();
 
 protected:
@@ -231,24 +229,18 @@ private:
 
 	std::shared_ptr<RadiobuttonGroup> _group;
 	int _value = 0;
-
 };
 
-template <typename Enum>
-class Radioenum;
+template <typename Enum> class Radioenum;
 
-template <typename Enum>
-class RadioenumGroup {
+template <typename Enum> class RadioenumGroup {
 public:
 	RadioenumGroup() = default;
-	RadioenumGroup(Enum value) : _group(static_cast<int>(value)) {
-	}
+	RadioenumGroup(Enum value)
+	    : _group(static_cast<int>(value)) {}
 
-	template <typename Callback>
-	void setChangedCallback(Callback &&callback) {
-		_group.setChangedCallback([callback](int value) {
-			callback(static_cast<Enum>(value));
-		});
+	template <typename Callback> void setChangedCallback(Callback &&callback) {
+		_group.setChangedCallback([callback](int value) { callback(static_cast<Enum>(value)); });
 	}
 
 	bool hasValue() const {
@@ -262,20 +254,17 @@ public:
 	}
 
 private:
-	template <typename OtherEnum>
-	friend class Radioenum;
+	template <typename OtherEnum> friend class Radioenum;
 
 	RadiobuttonGroup _group;
-
 };
 
-template <typename Enum>
-class Radioenum : public Radiobutton {
+template <typename Enum> class Radioenum : public Radiobutton {
 public:
-	Radioenum(QWidget *parent, const std::shared_ptr<RadioenumGroup<Enum>> &group, Enum value, const QString &text, const style::Checkbox &st = st::defaultCheckbox)
-		: Radiobutton(parent, std::shared_ptr<RadiobuttonGroup>(group, &group->_group), static_cast<int>(value), text, st) {
-	}
-
+	Radioenum(QWidget *parent, const std::shared_ptr<RadioenumGroup<Enum>> &group, Enum value, const QString &text,
+	          const style::Checkbox &st = st::defaultCheckbox)
+	    : Radiobutton(parent, std::shared_ptr<RadiobuttonGroup>(group, &group->_group), static_cast<int>(value), text,
+	                  st) {}
 };
 
 } // namespace Ui

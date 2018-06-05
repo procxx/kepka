@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QClipboard>
-#include <gsl/gsl>
+#include "base/timer.h"
 #include "history/history_admin_log_item.h"
 #include "history/history_admin_log_section.h"
-#include "ui/widgets/tooltip.h"
 #include "mtproto/sender.h"
-#include "base/timer.h"
+#include "ui/widgets/tooltip.h"
+#include <QClipboard>
+#include <gsl/gsl>
 
 namespace Ui {
 class PopupMenu;
@@ -40,15 +40,18 @@ namespace AdminLog {
 
 class SectionMemento;
 
-class InnerWidget final : public TWidget, public Ui::AbstractTooltipShower, private MTP::Sender, private base::Subscriber {
+class InnerWidget final : public TWidget,
+                          public Ui::AbstractTooltipShower,
+                          private MTP::Sender,
+                          private base::Subscriber {
 public:
-	InnerWidget(QWidget *parent, not_null<Window::Controller*> controller, not_null<ChannelData*> channel);
+	InnerWidget(QWidget *parent, not_null<Window::Controller *> controller, not_null<ChannelData *> channel);
 
 	base::Observable<void> showSearchSignal;
 	base::Observable<int> scrollToSignal;
 	base::Observable<void> cancelledSignal;
 
-	not_null<ChannelData*> channel() const {
+	not_null<ChannelData *> channel() const {
 		return _channel;
 	}
 
@@ -63,8 +66,8 @@ public:
 		return TWidget::resizeToWidth(newWidth);
 	}
 
-	void saveState(not_null<SectionMemento*> memento);
-	void restoreState(not_null<SectionMemento*> memento);
+	void saveState(not_null<SectionMemento *> memento);
+	void restoreState(not_null<SectionMemento *> memento);
 
 	// Empty "flags" means all events.
 	void applyFilter(FilterValue &&value);
@@ -113,7 +116,7 @@ private:
 	void mouseActionCancel();
 	void updateSelected();
 	void performDrag();
-	int itemTop(not_null<const HistoryItem*> item) const;
+	int itemTop(not_null<const HistoryItem *> item) const;
 	void repaintItem(const HistoryItem *item);
 	QPoint mapPointToItem(QPoint point, const HistoryItem *item) const;
 	void handlePendingHistoryResize();
@@ -131,9 +134,10 @@ private:
 	void copySelectedText();
 	TextWithEntities getSelectedText() const;
 	void setToClipboard(const TextWithEntities &forClipboard, QClipboard::Mode mode = QClipboard::Clipboard);
-	void suggestRestrictUser(not_null<UserData*> user);
-	void restrictUser(not_null<UserData*> user, const MTPChannelBannedRights &oldRights, const MTPChannelBannedRights &newRights);
-	void restrictUserDone(not_null<UserData*> user, const MTPChannelBannedRights &rights);
+	void suggestRestrictUser(not_null<UserData *> user);
+	void restrictUser(not_null<UserData *> user, const MTPChannelBannedRights &oldRights,
+	                  const MTPChannelBannedRights &newRights);
+	void restrictUserDone(not_null<UserData *> user, const MTPChannelBannedRights &rights);
 
 	void requestAdmins();
 	void checkPreloadMore();
@@ -160,30 +164,27 @@ private:
 	//
 	// Method has "bool (*Method)(HistoryItem *item, int itemtop, int itembottom)" signature
 	// if it returns false the enumeration stops immidiately.
-	template <EnumItemsDirection direction, typename Method>
-	void enumerateItems(Method method);
+	template <EnumItemsDirection direction, typename Method> void enumerateItems(Method method);
 
 	// This function finds all userpics on the left that are displayed and calls template method
 	// for each found userpic (from the top to the bottom) using enumerateItems() method.
 	//
 	// Method has "bool (*Method)(not_null<HistoryMessage*> message, int userpicTop)" signature
 	// if it returns false the enumeration stops immidiately.
-	template <typename Method>
-	void enumerateUserpics(Method method);
+	template <typename Method> void enumerateUserpics(Method method);
 
 	// This function finds all date elements that are displayed and calls template method
 	// for each found date element (from the bottom to the top) using enumerateItems() method.
 	//
 	// Method has "bool (*Method)(not_null<HistoryItem*> item, int itemtop, int dateTop)" signature
 	// if it returns false the enumeration stops immidiately.
-	template <typename Method>
-	void enumerateDates(Method method);
+	template <typename Method> void enumerateDates(Method method);
 
-	not_null<Window::Controller*> _controller;
-	not_null<ChannelData*> _channel;
-	not_null<History*> _history;
+	not_null<Window::Controller *> _controller;
+	not_null<ChannelData *> _channel;
+	not_null<History *> _history;
 	std::vector<HistoryItemOwned> _items;
-	std::map<quint64, HistoryItem*> _itemsByIds;
+	std::map<quint64, HistoryItem *> _itemsByIds;
 	int _itemsTop = 0;
 	int _itemsHeight = 0;
 
@@ -237,10 +238,9 @@ private:
 
 	FilterValue _filter;
 	QString _searchQuery;
-	std::vector<not_null<UserData*>> _admins;
-	std::vector<not_null<UserData*>> _adminsCanEdit;
+	std::vector<not_null<UserData *>> _admins;
+	std::vector<not_null<UserData *>> _adminsCanEdit;
 	base::lambda<void(FilterValue &&filter)> _showFilterCallback;
-
 };
 
 } // namespace AdminLog

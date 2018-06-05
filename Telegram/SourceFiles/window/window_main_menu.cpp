@@ -20,35 +20,34 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/window_main_menu.h"
 
-#include "styles/style_window.h"
-#include "styles/style_dialogs.h"
-#include "profile/profile_userpic_button.h"
-#include "window/themes/window_theme.h"
-#include "ui/widgets/buttons.h"
-#include "ui/widgets/labels.h"
-#include "ui/widgets/menu.h"
-#include "mainwindow.h"
-#include "storage/localstorage.h"
+#include "auth_session.h"
 #include "boxes/about_box.h"
 #include "boxes/peer_list_controllers.h"
 #include "calls/calls_box_controller.h"
-#include "lang/lang_keys.h"
 #include "core/click_handler_types.h"
-#include "observer_peer.h"
-#include "auth_session.h"
+#include "lang/lang_keys.h"
 #include "mainwidget.h"
+#include "mainwindow.h"
+#include "observer_peer.h"
+#include "profile/profile_userpic_button.h"
+#include "storage/localstorage.h"
+#include "styles/style_dialogs.h"
+#include "styles/style_window.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/labels.h"
+#include "ui/widgets/menu.h"
+#include "window/themes/window_theme.h"
 
 namespace Window {
 
-MainMenu::MainMenu(QWidget *parent) : TWidget(parent)
-, _menu(this, st::mainMenu)
-, _telegram(this, st::mainMenuTelegramLabel)
-, _version(this, st::mainMenuVersionLabel) {
+MainMenu::MainMenu(QWidget *parent)
+    : TWidget(parent)
+    , _menu(this, st::mainMenu)
+    , _telegram(this, st::mainMenuTelegramLabel)
+    , _version(this, st::mainMenuVersionLabel) {
 	setAttribute(Qt::WA_OpaquePaintEvent);
 
-	subscribe(Global::RefSelfChanged(), [this] {
-		checkSelf();
-	});
+	subscribe(Global::RefSelfChanged(), [this] { checkSelf(); });
 	checkSelf();
 
 	_nightThemeSwitch.setCallback([this] {
@@ -60,24 +59,25 @@ MainMenu::MainMenu(QWidget *parent) : TWidget(parent)
 	});
 
 	resize(st::mainMenuWidth, parentWidget()->height());
-	_menu->setTriggeredCallback([](QAction *action, int actionTop, Ui::Menu::TriggeredSource source) {
-		emit action->triggered();
-	});
+	_menu->setTriggeredCallback(
+	    [](QAction *action, int actionTop, Ui::Menu::TriggeredSource source) { emit action->triggered(); });
 	refreshMenu();
 
 	_telegram->setRichText(textcmdLink(1, str_const_toString(AppName)));
 	_telegram->setLink(1, MakeShared<UrlClickHandler>(lang(lng_url_about)));
-	_version->setRichText(textcmdLink(1, lng_settings_current_version(lt_version, currentVersionText())) + QChar(' ') + QChar(8211) + QChar(' ') + textcmdLink(2, lang(lng_menu_about)));
+	_version->setRichText(textcmdLink(1, lng_settings_current_version(lt_version, currentVersionText())) + QChar(' ') +
+	                      QChar(8211) + QChar(' ') + textcmdLink(2, lang(lng_menu_about)));
 	_version->setLink(1, MakeShared<UrlClickHandler>(lang(lng_url_changelog)));
 	_version->setLink(2, MakeShared<LambdaClickHandler>([] { Ui::show(Box<AboutBox>()); }));
 
 	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
 	subscribe(Auth().downloaderTaskFinished(), [this] { update(); });
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserPhoneChanged, [this](const Notify::PeerUpdate &update) {
-		if (update.peer->isSelf()) {
-			updatePhone();
-		}
-	}));
+	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserPhoneChanged,
+	                                                            [this](const Notify::PeerUpdate &update) {
+		                                                            if (update.peer->isSelf()) {
+			                                                            updatePhone();
+		                                                            }
+	                                                            }));
 	subscribe(Global::RefPhoneCallsEnabledChanged(), [this] { refreshMenu(); });
 	subscribe(Window::Theme::Background(), [this](const Window::Theme::BackgroundUpdate &update) {
 		if (update.type == Window::Theme::BackgroundUpdate::Type::ApplyingTheme) {
@@ -89,37 +89,42 @@ MainMenu::MainMenu(QWidget *parent) : TWidget(parent)
 
 void MainMenu::refreshMenu() {
 	_menu->clearActions();
-	_menu->addAction(lang(lng_create_group_title), [] {
-		App::wnd()->onShowNewGroup();
-	}, &st::mainMenuNewGroup, &st::mainMenuNewGroupOver);
-	_menu->addAction(lang(lng_create_channel_title), [] {
-		App::wnd()->onShowNewChannel();
-	}, &st::mainMenuNewChannel, &st::mainMenuNewChannelOver);
-	_menu->addAction(lang(lng_menu_contacts), [] {
-		Ui::show(Box<PeerListBox>(std::make_unique<ContactsBoxController>(), [](not_null<PeerListBox*> box) {
-			box->addButton(langFactory(lng_close), [box] { box->closeBox(); });
-			box->addLeftButton(langFactory(lng_profile_add_contact), [] { App::wnd()->onShowAddContact(); });
-		}));
-	}, &st::mainMenuContacts, &st::mainMenuContactsOver);
+	_menu->addAction(lang(lng_create_group_title), [] { App::wnd()->onShowNewGroup(); }, &st::mainMenuNewGroup,
+	                 &st::mainMenuNewGroupOver);
+	_menu->addAction(lang(lng_create_channel_title), [] { App::wnd()->onShowNewChannel(); }, &st::mainMenuNewChannel,
+	                 &st::mainMenuNewChannelOver);
+	_menu->addAction(
+	    lang(lng_menu_contacts),
+	    [] {
+		    Ui::show(Box<PeerListBox>(std::make_unique<ContactsBoxController>(), [](not_null<PeerListBox *> box) {
+			    box->addButton(langFactory(lng_close), [box] { box->closeBox(); });
+			    box->addLeftButton(langFactory(lng_profile_add_contact), [] { App::wnd()->onShowAddContact(); });
+		    }));
+	    },
+	    &st::mainMenuContacts, &st::mainMenuContactsOver);
 	if (Global::PhoneCallsEnabled()) {
-		_menu->addAction(lang(lng_menu_calls), [] {
-			Ui::show(Box<PeerListBox>(std::make_unique<Calls::BoxController>(), [](not_null<PeerListBox*> box) {
-				box->addButton(langFactory(lng_close), [box] { box->closeBox(); });
-			}));
-		}, &st::mainMenuCalls, &st::mainMenuCallsOver);
+		_menu->addAction(
+		    lang(lng_menu_calls),
+		    [] {
+			    Ui::show(Box<PeerListBox>(std::make_unique<Calls::BoxController>(), [](not_null<PeerListBox *> box) {
+				    box->addButton(langFactory(lng_close), [box] { box->closeBox(); });
+			    }));
+		    },
+		    &st::mainMenuCalls, &st::mainMenuCallsOver);
 	}
-	_menu->addAction(lang(lng_menu_settings), [] {
-		App::wnd()->showSettings();
-	}, &st::mainMenuSettings, &st::mainMenuSettingsOver);
+	_menu->addAction(lang(lng_menu_settings), [] { App::wnd()->showSettings(); }, &st::mainMenuSettings,
+	                 &st::mainMenuSettingsOver);
 
 	if (!Window::Theme::IsNonDefaultUsed()) {
 		_nightThemeAction = std::make_shared<QPointer<QAction>>(nullptr);
-		auto action = _menu->addAction(lang(lng_menu_night_mode), [this] {
-			if (auto action = *_nightThemeAction) {
-				action->setChecked(!action->isChecked());
-				_nightThemeSwitch.callOnce(st::mainMenu.itemToggle.duration);
-			}
-		}, &st::mainMenuNightMode, &st::mainMenuNightModeOver);
+		auto action = _menu->addAction(lang(lng_menu_night_mode),
+		                               [this] {
+			                               if (auto action = *_nightThemeAction) {
+				                               action->setChecked(!action->isChecked());
+				                               _nightThemeSwitch.callOnce(st::mainMenu.itemToggle.duration);
+			                               }
+		                               },
+		                               &st::mainMenuNightMode, &st::mainMenuNightModeOver);
 		*_nightThemeAction = action;
 		action->setCheckable(true);
 		action->setChecked(Window::Theme::IsNightTheme());
@@ -195,7 +200,8 @@ void MainMenu::paintEvent(QPaintEvent *e) {
 		p.setPen(st::mainMenuCoverFg);
 		p.setFont(st::semiboldFont);
 		if (auto self = App::self()) {
-			self->nameText.drawLeftElided(p, st::mainMenuCoverTextLeft, st::mainMenuCoverNameTop, width() - 2 * st::mainMenuCoverTextLeft, width());
+			self->nameText.drawLeftElided(p, st::mainMenuCoverTextLeft, st::mainMenuCoverNameTop,
+			                              width() - 2 * st::mainMenuCoverTextLeft, width());
 			p.setFont(st::normalFont);
 			p.drawTextLeft(st::mainMenuCoverTextLeft, st::mainMenuCoverStatusTop, width(), _phoneText);
 		}
@@ -204,8 +210,8 @@ void MainMenu::paintEvent(QPaintEvent *e) {
 			p.setPen(Qt::NoPen);
 			p.setBrush(st::mainMenuCloudBg);
 			auto cloudBg = QRect(_cloudButton->x() + (_cloudButton->width() - st::mainMenuCloudSize) / 2,
-				_cloudButton->y() + (_cloudButton->height() - st::mainMenuCloudSize) / 2,
-				st::mainMenuCloudSize, st::mainMenuCloudSize);
+			                     _cloudButton->y() + (_cloudButton->height() - st::mainMenuCloudSize) / 2,
+			                     st::mainMenuCloudSize, st::mainMenuCloudSize);
 			p.drawEllipse(cloudBg);
 		}
 	}

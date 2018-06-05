@@ -20,8 +20,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "platform/platform_notifications_manager.h"
 #include "base/weak_unique_ptr.h"
+#include "platform/platform_notifications_manager.h"
 
 namespace Platform {
 namespace Notifications {
@@ -35,14 +35,14 @@ public:
 	~Manager();
 
 protected:
-	void doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle, const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) override;
+	void doShowNativeNotification(PeerData *peer, MsgId msgId, const QString &title, const QString &subtitle,
+	                              const QString &msg, bool hideNameAndPhoto, bool hideReplyButton) override;
 	void doClearAllFast() override;
 	void doClearFromHistory(History *history) override;
 
 private:
 	class Private;
 	const std::unique_ptr<Private> _private;
-
 };
 
 } // namespace Notifications

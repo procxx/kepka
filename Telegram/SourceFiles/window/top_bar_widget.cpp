@@ -20,33 +20,34 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "window/top_bar_widget.h"
 
-#include "styles/style_window.h"
 #include "boxes/add_contact_box.h"
 #include "boxes/confirm_box.h"
+#include "calls/calls_instance.h"
+#include "dialogs/dialogs_layout.h"
+#include "lang/lang_keys.h"
 #include "mainwidget.h"
 #include "mainwindow.h"
+#include "observer_peer.h"
 #include "shortcuts.h"
-#include "lang/lang_keys.h"
+#include "styles/style_window.h"
 #include "ui/special_buttons.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/dropdown_menu.h"
-#include "dialogs/dialogs_layout.h"
 #include "window/window_controller.h"
-#include "calls/calls_instance.h"
-#include "observer_peer.h"
 
 namespace Window {
 
-TopBarWidget::TopBarWidget(QWidget *parent, not_null<Window::Controller*> controller) : TWidget(parent)
-, _controller(controller)
-, _clearSelection(this, langFactory(lng_selected_clear), st::topBarClearButton)
-, _forward(this, langFactory(lng_selected_forward), st::defaultActiveButton)
-, _delete(this, langFactory(lng_selected_delete), st::defaultActiveButton)
-, _info(this, nullptr, st::topBarInfoButton)
-, _mediaType(this, langFactory(lng_media_type), st::topBarButton)
-, _call(this, st::topBarCall)
-, _search(this, st::topBarSearch)
-, _menuToggle(this, st::topBarMenuToggle) {
+TopBarWidget::TopBarWidget(QWidget *parent, not_null<Window::Controller *> controller)
+    : TWidget(parent)
+    , _controller(controller)
+    , _clearSelection(this, langFactory(lng_selected_clear), st::topBarClearButton)
+    , _forward(this, langFactory(lng_selected_forward), st::defaultActiveButton)
+    , _delete(this, langFactory(lng_selected_delete), st::defaultActiveButton)
+    , _info(this, nullptr, st::topBarInfoButton)
+    , _mediaType(this, langFactory(lng_media_type), st::topBarButton)
+    , _call(this, st::topBarCall)
+    , _search(this, st::topBarSearch)
+    , _menuToggle(this, st::topBarMenuToggle) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 
 	_forward->setClickedCallback([this] { onForwardSelection(); });
@@ -75,16 +76,18 @@ TopBarWidget::TopBarWidget(QWidget *parent, not_null<Window::Controller*> contro
 			rtlupdate(0, 0, st::titleUnreadCounterRight, st::titleUnreadCounterTop);
 		});
 	}
-	subscribe(App::histories().sendActionAnimationUpdated(), [this](const Histories::SendActionAnimationUpdate &update) {
-		if (App::main() && update.history->peer == App::main()->historyPeer()) {
-			rtlupdate(0, 0, width(), height());
-		}
-	});
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserHasCalls, [this](const Notify::PeerUpdate &update) {
-		if (update.peer->isUser()) {
-			updateControlsVisibility();
-		}
-	}));
+	subscribe(App::histories().sendActionAnimationUpdated(),
+	          [this](const Histories::SendActionAnimationUpdate &update) {
+		          if (App::main() && update.history->peer == App::main()->historyPeer()) {
+			          rtlupdate(0, 0, width(), height());
+		          }
+	          });
+	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(Notify::PeerUpdate::Flag::UserHasCalls,
+	                                                            [this](const Notify::PeerUpdate &update) {
+		                                                            if (update.peer->isUser()) {
+			                                                            updateControlsVisibility();
+		                                                            }
+	                                                            }));
 	subscribe(Global::RefPhoneCallsEnabledChanged(), [this] { updateControlsVisibility(); });
 
 	setCursor(style::cur_pointer);
@@ -153,10 +156,13 @@ void TopBarWidget::showMenu() {
 					}
 				}));
 				_menuToggle->installEventFilter(_menu);
-				App::main()->fillPeerMenu(peer, [this](const QString &text, base::lambda<void()> callback) {
-					return _menu->addAction(text, std::move(callback));
-				}, false);
-				_menu->moveToRight((parentWidget()->width() - width()) + st::topBarMenuPosition.x(), st::topBarMenuPosition.y());
+				App::main()->fillPeerMenu(peer,
+				                          [this](const QString &text, base::lambda<void()> callback) {
+					                          return _menu->addAction(text, std::move(callback));
+				                          },
+				                          false);
+				_menu->moveToRight((parentWidget()->width() - width()) + st::topBarMenuPosition.x(),
+				                   st::topBarMenuPosition.y());
 				_menu->showAnimated(Ui::PanelAnimation::Origin::TopRight);
 			}
 		}
@@ -166,17 +172,11 @@ void TopBarWidget::showMenu() {
 bool TopBarWidget::eventFilter(QObject *obj, QEvent *e) {
 	if (obj == _membersShowArea) {
 		switch (e->type()) {
-		case QEvent::MouseButtonPress:
-			mousePressEvent(static_cast<QMouseEvent*>(e));
-			return true;
+		case QEvent::MouseButtonPress: mousePressEvent(static_cast<QMouseEvent *>(e)); return true;
 
-		case QEvent::Enter:
-			App::main()->setMembersShowAreaActive(true);
-			break;
+		case QEvent::Enter: App::main()->setMembersShowAreaActive(true); break;
 
-		case QEvent::Leave:
-			App::main()->setMembersShowAreaActive(false);
-			break;
+		case QEvent::Leave: App::main()->setMembersShowAreaActive(false); break;
 		}
 	}
 	return TWidget::eventFilter(obj, e);
@@ -400,7 +400,8 @@ void TopBarWidget::showSelected(SelectedState state) {
 		setCursor(hasSelected ? style::cur_default : style::cur_pointer);
 
 		updateMembersShowArea();
-		_selectedShown.start([this] { selectedShowCallback(); }, hasSelected ? 0. : 1., hasSelected ? 1. : 0., st::topBarSlideDuration, anim::easeOutCirc);
+		_selectedShown.start([this] { selectedShowCallback(); }, hasSelected ? 0. : 1., hasSelected ? 1. : 0.,
+		                     st::topBarSlideDuration, anim::easeOutCirc);
 	} else {
 		updateControlsGeometry();
 	}

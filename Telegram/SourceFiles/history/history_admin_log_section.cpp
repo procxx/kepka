@@ -20,28 +20,28 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "history/history_admin_log_section.h"
 
-#include "history/history_admin_log_inner.h"
+#include "apiwrap.h"
+#include "base/timer.h"
+#include "boxes/confirm_box.h"
 #include "history/history_admin_log_filter.h"
+#include "history/history_admin_log_inner.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
 #include "profile/profile_back_button.h"
 #include "styles/style_history.h"
 #include "styles/style_window.h"
-#include "ui/widgets/scroll_area.h"
-#include "ui/widgets/shadow.h"
 #include "ui/widgets/buttons.h"
 #include "ui/widgets/input_fields.h"
-#include "mainwidget.h"
-#include "mainwindow.h"
-#include "apiwrap.h"
+#include "ui/widgets/scroll_area.h"
+#include "ui/widgets/shadow.h"
 #include "window/themes/window_theme.h"
-#include "boxes/confirm_box.h"
-#include "base/timer.h"
-#include "lang/lang_keys.h"
 
 namespace AdminLog {
 
 class FixedBar final : public TWidget, private base::Subscriber {
 public:
-	FixedBar(QWidget *parent, not_null<ChannelData*> channel);
+	FixedBar(QWidget *parent, not_null<ChannelData *> channel);
 
 	base::Observable<void> showFilterSignal;
 	base::Observable<void> searchCancelledSignal;
@@ -74,7 +74,7 @@ private:
 	void applySearch();
 	void searchAnimationCallback();
 
-	not_null<ChannelData*> _channel;
+	not_null<ChannelData *> _channel;
 	object_ptr<Ui::FlatInput> _field;
 	object_ptr<Profile::BackButton> _backButton;
 	object_ptr<Ui::IconButton> _search;
@@ -85,22 +85,23 @@ private:
 	bool _searchShown = false;
 	bool _animatingMode = false;
 	base::Timer _searchTimer;
-
 };
 
-object_ptr<Window::SectionWidget> SectionMemento::createWidget(QWidget *parent, not_null<Window::Controller*> controller, const QRect &geometry) {
+object_ptr<Window::SectionWidget>
+SectionMemento::createWidget(QWidget *parent, not_null<Window::Controller *> controller, const QRect &geometry) {
 	auto result = object_ptr<Widget>(parent, controller, _channel);
 	result->setInternalState(geometry, this);
 	return std::move(result);
 }
 
-FixedBar::FixedBar(QWidget *parent, not_null<ChannelData*> channel) : TWidget(parent)
-, _channel(channel)
-, _field(this, st::historyAdminLogSearchField, langFactory(lng_dlg_filter))
-, _backButton(this, lang(lng_admin_log_title_all))
-, _search(this, st::topBarSearch)
-, _cancel(this, st::historyAdminLogCancelSearch)
-, _filter(this, langFactory(lng_admin_log_filter), st::topBarButton) {
+FixedBar::FixedBar(QWidget *parent, not_null<ChannelData *> channel)
+    : TWidget(parent)
+    , _channel(channel)
+    , _field(this, st::historyAdminLogSearchField, langFactory(lng_dlg_filter))
+    , _backButton(this, lang(lng_admin_log_title_all))
+    , _search(this, st::topBarSearch)
+    , _cancel(this, st::historyAdminLogCancelSearch)
+    , _filter(this, langFactory(lng_admin_log_filter), st::topBarButton) {
 	_backButton->moveToLeft(0, 0);
 	_backButton->setClickedCallback([this] { goBack(); });
 	_filter->setClickedCallback([this] { showFilterSignal.notify(); });
@@ -133,7 +134,8 @@ void FixedBar::showSearch() {
 void FixedBar::toggleSearch() {
 	_searchShown = !_searchShown;
 	_cancel->toggleAnimated(_searchShown);
-	_searchShownAnimation.start([this] { searchAnimationCallback(); }, _searchShown ? 0. : 1., _searchShown ? 1. : 0., st::historyAdminLogSearchSlideDuration);
+	_searchShownAnimation.start([this] { searchAnimationCallback(); }, _searchShown ? 0. : 1., _searchShown ? 1. : 0.,
+	                            st::historyAdminLogSearchSlideDuration);
 	_search->setDisabled(_searchShown);
 	if (_searchShown) {
 		_field->show();
@@ -146,7 +148,8 @@ void FixedBar::toggleSearch() {
 void FixedBar::searchAnimationCallback() {
 	if (!_searchShownAnimation.animating()) {
 		_field->setVisible(_searchShown);
-		_search->setIconOverride(_searchShown ? &st::topBarSearch.icon : nullptr, _searchShown ? &st::topBarSearch.icon : nullptr);
+		_search->setIconOverride(_searchShown ? &st::topBarSearch.icon : nullptr,
+		                         _searchShown ? &st::topBarSearch.icon : nullptr);
 		_search->setRippleColorOverride(_searchShown ? &st::topBarBg : nullptr);
 		_search->setCursor(_searchShown ? style::cur_default : style::cur_pointer);
 	}
@@ -232,11 +235,12 @@ void FixedBar::mousePressEvent(QMouseEvent *e) {
 	}
 }
 
-Widget::Widget(QWidget *parent, not_null<Window::Controller*> controller, not_null<ChannelData*> channel) : Window::SectionWidget(parent, controller)
-, _scroll(this, st::historyScroll, false)
-, _fixedBar(this, channel)
-, _fixedBarShadow(this, st::shadowFg)
-, _whatIsThis(this, lang(lng_admin_log_about).toUpper(), st::historyComposeButton) {
+Widget::Widget(QWidget *parent, not_null<Window::Controller *> controller, not_null<ChannelData *> channel)
+    : Window::SectionWidget(parent, controller)
+    , _scroll(this, st::historyScroll, false)
+    , _fixedBar(this, channel)
+    , _fixedBarShadow(this, st::shadowFg)
+    , _whatIsThis(this, lang(lng_admin_log_about).toUpper(), st::historyComposeButton) {
 	_fixedBar->move(0, 0);
 	_fixedBar->resizeToWidth(width());
 	subscribe(_fixedBar->showFilterSignal, [this] { showFilter(); });
@@ -271,7 +275,7 @@ void Widget::updateAdaptiveLayout() {
 	_fixedBarShadow->moveToLeft(Adaptive::OneColumn() ? 0 : st::lineWidth, _fixedBar->height());
 }
 
-not_null<ChannelData*> Widget::channel() const {
+not_null<ChannelData *> Widget::channel() const {
 	return _inner->channel();
 }
 
@@ -288,8 +292,8 @@ void Widget::doSetInnerFocus() {
 	}
 }
 
-bool Widget::showInternal(not_null<Window::SectionMemento*> memento) {
-	if (auto logMemento = dynamic_cast<SectionMemento*>(memento.get())) {
+bool Widget::showInternal(not_null<Window::SectionMemento *> memento) {
+	if (auto logMemento = dynamic_cast<SectionMemento *>(memento.get())) {
 		if (logMemento->getChannel() == channel()) {
 			restoreState(logMemento);
 			return true;
@@ -298,7 +302,7 @@ bool Widget::showInternal(not_null<Window::SectionMemento*> memento) {
 	return false;
 }
 
-void Widget::setInternalState(const QRect &geometry, not_null<SectionMemento*> memento) {
+void Widget::setInternalState(const QRect &geometry, not_null<SectionMemento *> memento) {
 	setGeometry(geometry);
 	myEnsureResized(this);
 	restoreState(memento);
@@ -318,12 +322,12 @@ std::unique_ptr<Window::SectionMemento> Widget::createMemento() {
 	return std::move(result);
 }
 
-void Widget::saveState(not_null<SectionMemento*> memento) {
+void Widget::saveState(not_null<SectionMemento *> memento) {
 	memento->setScrollTop(_scroll->scrollTop());
 	_inner->saveState(memento);
 }
 
-void Widget::restoreState(not_null<SectionMemento*> memento) {
+void Widget::restoreState(not_null<SectionMemento *> memento) {
 	_inner->restoreState(memento);
 	auto scrollTop = memento->getScrollTop();
 	_scroll->scrollToY(scrollTop);
@@ -369,7 +373,7 @@ void Widget::paintEvent(QPaintEvent *e) {
 	if (Ui::skipPaintEvent(this, e)) {
 		return;
 	}
-	//if (hasPendingResizedItems()) {
+	// if (hasPendingResizedItems()) {
 	//	updateListSize();
 	//}
 
@@ -441,4 +445,3 @@ void Widget::applyFilter(FilterValue &&value) {
 }
 
 } // namespace AdminLog
-

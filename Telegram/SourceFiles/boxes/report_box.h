@@ -23,10 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/abstract_box.h"
 
 namespace Ui {
-template <typename Enum>
-class RadioenumGroup;
-template <typename Enum>
-class Radioenum;
+template <typename Enum> class RadioenumGroup;
+template <typename Enum> class Radioenum;
 class InputArea;
 } // namespace Ui
 
@@ -34,7 +32,7 @@ class ReportBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	ReportBox(QWidget*, PeerData *peer);
+	ReportBox(QWidget *, PeerData *peer);
 
 private slots:
 	void onReport();
@@ -69,8 +67,7 @@ private:
 	object_ptr<Ui::Radioenum<Reason>> _reasonViolence;
 	object_ptr<Ui::Radioenum<Reason>> _reasonPornography;
 	object_ptr<Ui::Radioenum<Reason>> _reasonOther;
-	object_ptr<Ui::InputArea> _reasonOtherText = { nullptr };
+	object_ptr<Ui::InputArea> _reasonOtherText = {nullptr};
 
 	mtpRequestId _requestId = 0;
-
 };

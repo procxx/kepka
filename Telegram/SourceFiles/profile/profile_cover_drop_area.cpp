@@ -21,17 +21,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "profile/profile_cover_drop_area.h"
 
 #include "styles/style_profile.h"
-#include <QWidget>
 #include <QPaintEvent>
+#include <QWidget>
 
 namespace Profile {
 
-CoverDropArea::CoverDropArea(QWidget *parent, const QString &title, const QString &subtitle) : TWidget(parent)
-, _title(title)
-, _subtitle(subtitle)
-, _titleWidth(st::profileDropAreaTitleFont->width(_title))
-, _subtitleWidth(st::profileDropAreaSubtitleFont->width(_subtitle)) {
-}
+CoverDropArea::CoverDropArea(QWidget *parent, const QString &title, const QString &subtitle)
+    : TWidget(parent)
+    , _title(title)
+    , _subtitle(subtitle)
+    , _titleWidth(st::profileDropAreaTitleFont->width(_title))
+    , _subtitleWidth(st::profileDropAreaSubtitleFont->width(_subtitle)) {}
 
 void CoverDropArea::showAnimated() {
 	show();

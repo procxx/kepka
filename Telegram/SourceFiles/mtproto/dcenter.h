@@ -40,7 +40,7 @@ class Dcenter : public QObject {
 	Q_OBJECT
 
 public:
-	Dcenter(gsl::not_null<Instance*> instance, DcId dcId, AuthKeyPtr &&key);
+	Dcenter(gsl::not_null<Instance *> instance, DcId dcId, AuthKeyPtr &&key);
 
 	QReadWriteLock *keyMutex() const;
 	const AuthKeyPtr &getKey() const;
@@ -67,11 +67,10 @@ private slots:
 private:
 	mutable QReadWriteLock keyLock;
 	mutable QMutex initLock;
-	gsl::not_null<Instance*> _instance;
+	gsl::not_null<Instance *> _instance;
 	DcId _id = 0;
 	AuthKeyPtr _key;
 	bool _connectionInited = false;
-
 };
 
 } // namespace internal

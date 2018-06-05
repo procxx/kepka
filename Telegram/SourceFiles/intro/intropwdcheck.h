@@ -81,7 +81,6 @@ private:
 	QByteArray _pwdSalt;
 
 	object_ptr<QTimer> _checkRequest;
-
 };
 
 } // namespace Intro

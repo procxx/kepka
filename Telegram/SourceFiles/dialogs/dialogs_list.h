@@ -20,9 +20,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "structs.h"
 #include "dialogs/dialogs_common.h"
 #include "dialogs/dialogs_row.h"
+#include "structs.h"
 
 class PeerData;
 namespace Dialogs {
@@ -64,47 +64,102 @@ public:
 
 	class const_iterator {
 	public:
-		using value_type = Row*;
-		using pointer = Row**;
-		using reference = Row*&;
+		using value_type = Row *;
+		using pointer = Row **;
+		using reference = Row *&;
 
-		explicit const_iterator(Row *p) : _p(p) {
+		explicit const_iterator(Row *p)
+		    : _p(p) {}
+		inline Row *operator*() const {
+			return _p;
 		}
-		inline Row* operator*() const { return _p; }
-		inline Row* const* operator->() const { return &_p; }
-		inline bool operator==(const const_iterator &other) const { return _p == other._p; }
-		inline bool operator!=(const const_iterator &other) const { return !(*this == other); }
-		inline const_iterator &operator++() { _p = next(_p); return *this; }
-		inline const_iterator operator++(int) { const_iterator result(*this); ++(*this); return result; }
-		inline const_iterator &operator--() { _p = prev(_p); return *this; }
-		inline const_iterator operator--(int) { const_iterator result(*this); --(*this); return result; }
-		inline const_iterator operator+(int j) const { const_iterator result = *this; return result += j; }
-		inline const_iterator operator-(int j) const { const_iterator result = *this; return result -= j; }
-		inline const_iterator &operator+=(int j) { if (j < 0) return (*this -= (-j)); while (j--) ++*this; return *this; }
-		inline const_iterator &operator-=(int j) { if (j < 0) return (*this += (-j)); while (j--) --*this; return *this; }
+		inline Row *const *operator->() const {
+			return &_p;
+		}
+		inline bool operator==(const const_iterator &other) const {
+			return _p == other._p;
+		}
+		inline bool operator!=(const const_iterator &other) const {
+			return !(*this == other);
+		}
+		inline const_iterator &operator++() {
+			_p = next(_p);
+			return *this;
+		}
+		inline const_iterator operator++(int) {
+			const_iterator result(*this);
+			++(*this);
+			return result;
+		}
+		inline const_iterator &operator--() {
+			_p = prev(_p);
+			return *this;
+		}
+		inline const_iterator operator--(int) {
+			const_iterator result(*this);
+			--(*this);
+			return result;
+		}
+		inline const_iterator operator+(int j) const {
+			const_iterator result = *this;
+			return result += j;
+		}
+		inline const_iterator operator-(int j) const {
+			const_iterator result = *this;
+			return result -= j;
+		}
+		inline const_iterator &operator+=(int j) {
+			if (j < 0) return (*this -= (-j));
+			while (j--) ++*this;
+			return *this;
+		}
+		inline const_iterator &operator-=(int j) {
+			if (j < 0) return (*this += (-j));
+			while (j--) --*this;
+			return *this;
+		}
 
 	private:
 		Row *_p;
 		friend class List;
-
 	};
 	friend class const_iterator;
 	using iterator = const_iterator;
 
-	const_iterator cbegin() const { return const_iterator(_begin); }
-	const_iterator cend() const { return const_iterator(_end); }
-	const_iterator begin() const { return cbegin(); }
-	const_iterator end() const { return cend(); }
-	iterator begin() { return iterator(_begin); }
-	iterator end() { return iterator(_end); }
-	const_iterator cfind(Row *value) const { return value ? const_iterator(value) : cend(); }
-	const_iterator find(Row *value) const { return cfind(value); }
-	iterator find(Row *value) { return value ? iterator(value) : end(); }
+	const_iterator cbegin() const {
+		return const_iterator(_begin);
+	}
+	const_iterator cend() const {
+		return const_iterator(_end);
+	}
+	const_iterator begin() const {
+		return cbegin();
+	}
+	const_iterator end() const {
+		return cend();
+	}
+	iterator begin() {
+		return iterator(_begin);
+	}
+	iterator end() {
+		return iterator(_end);
+	}
+	const_iterator cfind(Row *value) const {
+		return value ? const_iterator(value) : cend();
+	}
+	const_iterator find(Row *value) const {
+		return cfind(value);
+	}
+	iterator find(Row *value) {
+		return value ? iterator(value) : end();
+	}
 	const_iterator cfind(int y, int h) const {
 		adjustCurrent(y, h);
 		return iterator(_current);
 	}
-	const_iterator find(int y, int h) const { return cfind(y, h); }
+	const_iterator find(int y, int h) const {
+		return cfind(y, h);
+	}
 	iterator find(int y, int h) {
 		adjustCurrent(y, h);
 		return iterator(_current);
@@ -129,7 +184,7 @@ private:
 	SortMode _sortMode;
 	int _count = 0;
 
-	typedef QHash<PeerId, Row*> RowByPeer;
+	typedef QHash<PeerId, Row *> RowByPeer;
 	RowByPeer _rowByPeer;
 
 	mutable Row *_current; // cache

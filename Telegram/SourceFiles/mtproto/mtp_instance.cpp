@@ -20,25 +20,25 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mtproto/mtp_instance.h"
 
-#include "mtproto/dc_options.h"
-#include "mtproto/dcenter.h"
+#include "apiwrap.h"
+#include "auth_session.h"
+#include "base/timer.h"
+#include "lang/lang_cloud_manager.h"
+#include "lang/lang_instance.h"
+#include "messenger.h"
 #include "mtproto/config_loader.h"
 #include "mtproto/connection.h"
-#include "mtproto/sender.h"
+#include "mtproto/dc_options.h"
+#include "mtproto/dcenter.h"
 #include "mtproto/rsa_public_key.h"
+#include "mtproto/sender.h"
 #include "storage/localstorage.h"
-#include "auth_session.h"
-#include "apiwrap.h"
-#include "messenger.h"
-#include "lang/lang_instance.h"
-#include "lang/lang_cloud_manager.h"
-#include "base/timer.h"
 
 namespace MTP {
 
 class Instance::Private : private Sender {
 public:
-	Private(not_null<Instance*> instance, not_null<DcOptions*> options, Instance::Mode mode);
+	Private(not_null<Instance *> instance, not_null<DcOptions *> options, Instance::Mode mode);
 
 	void start(Config &&config);
 
@@ -50,7 +50,7 @@ public:
 	AuthKeysList getKeysForWrite() const;
 	void addKeysForDestroy(AuthKeysList &&keys);
 
-	not_null<DcOptions*> dcOptions();
+	not_null<DcOptions *> dcOptions();
 
 	void requestConfig();
 	void requestCDNConfig();
@@ -78,7 +78,8 @@ public:
 	void unregisterRequest(mtpRequestId requestId);
 	mtpRequestId storeRequest(mtpRequest &request, const RPCResponseHandler &parser);
 	mtpRequest getRequest(mtpRequestId requestId);
-	void clearCallbacks(mtpRequestId requestId, qint32 errorCode = RPCError::NoError); // 0 - do not toggle onError callback
+	void clearCallbacks(mtpRequestId requestId,
+	                    qint32 errorCode = RPCError::NoError); // 0 - do not toggle onError callback
 	void clearCallbacksDelayed(const RPCCallbackClears &requestIds);
 	void performDelayedClear();
 	void execCallback(mtpRequestId requestId, const mtpPrime *from, const mtpPrime *end);
@@ -137,8 +138,8 @@ private:
 
 	void checkDelayedRequests();
 
-	not_null<Instance*> _instance;
-	not_null<DcOptions*> _dcOptions;
+	not_null<Instance *> _instance;
+	not_null<DcOptions *> _dcOptions;
 	Instance::Mode _mode = Instance::Mode::Normal;
 
 	DcId _mainDcId = Config::kDefaultMainDc;
@@ -191,18 +192,18 @@ private:
 
 	// Debug flag to find out how we end up crashing.
 	bool MustNotCreateSessions = false;
-
 };
 
-Instance::Private::Private(not_null<Instance*> instance, not_null<DcOptions*> options, Instance::Mode mode) : Sender()
-, _instance(instance)
-, _dcOptions(options)
-, _mode(mode) {
-}
+Instance::Private::Private(not_null<Instance *> instance, not_null<DcOptions *> options, Instance::Mode mode)
+    : Sender()
+    , _instance(instance)
+    , _dcOptions(options)
+    , _mode(mode) {}
 
 void Instance::Private::start(Config &&config) {
 	if (isKeysDestroyer()) {
-		_instance->connect(_instance, SIGNAL(keyDestroyed(qint32)), _instance, SLOT(onKeyDestroyed(qint32)), Qt::QueuedConnection);
+		_instance->connect(_instance, SIGNAL(keyDestroyed(qint32)), _instance, SLOT(onKeyDestroyed(qint32)),
+		                   Qt::QueuedConnection);
 	} else if (isNormal()) {
 		unixtimeInit();
 	}
@@ -283,11 +284,9 @@ void Instance::Private::requestConfig() {
 	if (_configLoader) {
 		return;
 	}
-	_configLoader = std::make_unique<internal::ConfigLoader>(_instance, rpcDone([this](const MTPConfig &result) {
-		configLoadDone(result);
-	}), rpcFail([this](const RPCError &error) {
-		return configLoadFail(error);
-	}));
+	_configLoader = std::make_unique<internal::ConfigLoader>(
+	    _instance, rpcDone([this](const MTPConfig &result) { configLoadDone(result); }),
+	    rpcFail([this](const RPCError &error) { return configLoadFail(error); }));
 	_configLoader->load();
 }
 
@@ -295,16 +294,18 @@ void Instance::Private::requestCDNConfig() {
 	if (_cdnConfigLoadRequestId || _mainDcId == Config::kNoneMainDc) {
 		return;
 	}
-	_cdnConfigLoadRequestId = request(MTPhelp_GetCdnConfig()).done([this](const MTPCdnConfig &result) {
-		_cdnConfigLoadRequestId = 0;
+	_cdnConfigLoadRequestId = request(MTPhelp_GetCdnConfig())
+	                              .done([this](const MTPCdnConfig &result) {
+		                              _cdnConfigLoadRequestId = 0;
 
-		Expects(result.type() == mtpc_cdnConfig);
-		dcOptions()->setCDNConfig(result.c_cdnConfig());
+		                              Expects(result.type() == mtpc_cdnConfig);
+		                              dcOptions()->setCDNConfig(result.c_cdnConfig());
 
-		Local::writeSettings();
+		                              Local::writeSettings();
 
-		emit _instance->cdnConfigLoaded();
-	}).send();
+		                              emit _instance->cdnConfigLoaded();
+	                              })
+	                              .send();
 }
 
 void Instance::Private::restart() {
@@ -374,7 +375,7 @@ void Instance::Private::cancel(mtpRequestId requestId) {
 		QWriteLocker locker(&_requestMapLock);
 		auto it = _requestMap.find(requestId);
 		if (it != _requestMap.end()) {
-			msgId = *(mtpMsgId*)(it->second->constData() + 4);
+			msgId = *(mtpMsgId *)(it->second->constData() + 4);
 			_requestMap.erase(it);
 		}
 	}
@@ -429,9 +430,7 @@ void Instance::Private::killSession(ShiftedDcId shiftedDcId) {
 		_sessions.emplace(_mainDcId, std::move(main));
 		_mainSession->start();
 	}
-	InvokeQueued(_instance, [this] {
-		clearKilledSessions();
-	});
+	InvokeQueued(_instance, [this] { clearKilledSessions(); });
 }
 
 void Instance::Private::clearKilledSessions() {
@@ -466,11 +465,9 @@ void Instance::Private::logout(RPCDoneHandlerPtr onDone, RPCFailHandlerPtr onFai
 	for (auto dcId : dcIds) {
 		if (dcId != mainDcId() && dcOptions()->dcType(dcId) != DcType::Cdn) {
 			auto shiftedDcId = MTP::logoutDcId(dcId);
-			auto requestId = _instance->send(MTPauth_LogOut(), rpcDone([this](mtpRequestId requestId) {
-				logoutGuestDone(requestId);
-			}), rpcFail([this](mtpRequestId requestId) {
-				return logoutGuestDone(requestId);
-			}), shiftedDcId);
+			auto requestId = _instance->send(
+			    MTPauth_LogOut(), rpcDone([this](mtpRequestId requestId) { logoutGuestDone(requestId); }),
+			    rpcFail([this](mtpRequestId requestId) { return logoutGuestDone(requestId); }), shiftedDcId);
 			_logoutGuestRequestIds.emplace(shiftedDcId, requestId);
 		}
 	}
@@ -556,7 +553,7 @@ void Instance::Private::addKeysForDestroy(AuthKeysList &&keys) {
 	}
 }
 
-not_null<DcOptions*> Instance::Private::dcOptions() {
+not_null<DcOptions *> Instance::Private::dcOptions() {
 	return _dcOptions;
 }
 
@@ -583,7 +580,12 @@ void Instance::Private::configLoadDone(const MTPConfig &result) {
 	_configLoader.reset();
 
 	auto &data = result.c_config();
-	DEBUG_LOG(("MTP Info: got config, chat_size_max: %1, date: %2, test_mode: %3, this_dc: %4, dc_options.length: %5").arg(data.vchat_size_max.v).arg(data.vdate.v).arg(mtpIsTrue(data.vtest_mode)).arg(data.vthis_dc.v).arg(data.vdc_options.v.size()));
+	DEBUG_LOG(("MTP Info: got config, chat_size_max: %1, date: %2, test_mode: %3, this_dc: %4, dc_options.length: %5")
+	              .arg(data.vchat_size_max.v)
+	              .arg(data.vdate.v)
+	              .arg(mtpIsTrue(data.vtest_mode))
+	              .arg(data.vthis_dc.v)
+	              .arg(data.vdc_options.v.size()));
 	if (data.vdc_options.v.empty()) {
 		LOG(("MTP Error: config with empty dc_options received!"));
 	} else {
@@ -616,7 +618,8 @@ void Instance::Private::configLoadDone(const MTPConfig &result) {
 		Global::SetPhoneCallsEnabled(data.is_phonecalls_enabled());
 		Global::RefPhoneCallsEnabledChanged().notify();
 	}
-	Lang::CurrentCloudManager().setSuggestedLanguage(data.has_suggested_lang_code() ? qs(data.vsuggested_lang_code) : QString());
+	Lang::CurrentCloudManager().setSuggestedLanguage(data.has_suggested_lang_code() ? qs(data.vsuggested_lang_code) :
+	                                                                                  QString());
 
 	Local::writeSettings();
 
@@ -730,7 +733,10 @@ void Instance::Private::clearCallbacks(mtpRequestId requestId, qint32 errorCode)
 		}
 	}
 	if (errorCode && found) {
-		rpcErrorOccured(requestId, h, internal::rpcClientError("CLEAR_CALLBACK", QString("did not handle request %1, error code %2").arg(requestId).arg(errorCode)));
+		rpcErrorOccured(
+		    requestId, h,
+		    internal::rpcClientError(
+		        "CLEAR_CALLBACK", QString("did not handle request %1, error code %2").arg(requestId).arg(errorCode)));
 	}
 }
 
@@ -763,7 +769,9 @@ void Instance::Private::performDelayedClear() {
 			if (cDebug()) {
 				QMutexLocker locker(&_parserMapLock);
 				if (_parserMap.find(clearRequest.requestId) != _parserMap.end()) {
-					DEBUG_LOG(("RPC Info: clearing delayed callback %1, error code %2").arg(clearRequest.requestId).arg(clearRequest.errorCode));
+					DEBUG_LOG(("RPC Info: clearing delayed callback %1, error code %2")
+					              .arg(clearRequest.requestId)
+					              .arg(clearRequest.errorCode));
 				}
 			}
 			clearCallbacks(clearRequest.requestId, clearRequest.errorCode);
@@ -793,7 +801,10 @@ void Instance::Private::execCallback(mtpRequestId requestId, const mtpPrime *fro
 				auto mtpError = MTPRpcError();
 				mtpError.read(from, end);
 				auto error = RPCError(mtpError);
-				DEBUG_LOG(("RPC Info: error received, code %1, type %2, description: %3").arg(error.code()).arg(error.type()).arg(error.description()));
+				DEBUG_LOG(("RPC Info: error received, code %1, type %2, description: %3")
+				              .arg(error.code())
+				              .arg(error.type())
+				              .arg(error.description()));
 				if (!rpcErrorOccured(requestId, h, error)) {
 					QMutexLocker locker(&_parserMapLock);
 					_parserMap.emplace(requestId, h);
@@ -805,7 +816,9 @@ void Instance::Private::execCallback(mtpRequestId requestId, const mtpPrime *fro
 				}
 			}
 		} catch (Exception &e) {
-			if (!rpcErrorOccured(requestId, h, internal::rpcClientError("RESPONSE_PARSE_FAILED", QString("exception text: ") + e.what()))) {
+			if (!rpcErrorOccured(
+			        requestId, h,
+			        internal::rpcClientError("RESPONSE_PARSE_FAILED", QString("exception text: ") + e.what()))) {
 				QMutexLocker locker(&_parserMapLock);
 				_parserMap.emplace(requestId, h);
 				return;
@@ -841,7 +854,8 @@ void Instance::Private::onSessionReset(qint32 dcWithShift) {
 	}
 }
 
-bool Instance::Private::rpcErrorOccured(mtpRequestId requestId, const RPCFailHandlerPtr &onFail, const RPCError &err) { // return true if need to clean request data
+bool Instance::Private::rpcErrorOccured(mtpRequestId requestId, const RPCFailHandlerPtr &onFail,
+                                        const RPCError &err) { // return true if need to clean request data
 	if (isDefaultHandledError(err)) {
 		if (onFail && (*onFail)(requestId, err)) return true;
 	}
@@ -849,7 +863,11 @@ bool Instance::Private::rpcErrorOccured(mtpRequestId requestId, const RPCFailHan
 	if (onErrorDefault(requestId, err)) {
 		return false;
 	}
-	LOG(("RPC Error: request %1 got fail with code %2, error %3%4").arg(requestId).arg(err.code()).arg(err.type()).arg(err.description().isEmpty() ? QString() : QString(": %1").arg(err.description())));
+	LOG(("RPC Error: request %1 got fail with code %2, error %3%4")
+	        .arg(requestId)
+	        .arg(err.code())
+	        .arg(err.type())
+	        .arg(err.description().isEmpty() ? QString() : QString(": %1").arg(err.description())));
 	onFail && (*onFail)(requestId, err);
 	return true;
 }
@@ -864,7 +882,8 @@ void Instance::Private::importDone(const MTPauth_Authorization &result, mtpReque
 	auto it = _requestsByDc.find(requestId);
 	if (it == _requestsByDc.end()) {
 		LOG(("MTP Error: auth import request not found in requestsByDC, requestId: %1").arg(requestId));
-		RPCError error(internal::rpcClientError("AUTH_IMPORT_FAIL", QString("did not find import request in requestsByDC, request %1").arg(requestId)));
+		RPCError error(internal::rpcClientError(
+		    "AUTH_IMPORT_FAIL", QString("did not find import request in requestsByDC, request %1").arg(requestId)));
 		if (_globalHandler.onFail && hasAuthorization()) {
 			(*_globalHandler.onFail)(requestId, error); // auth failed in main dc
 		}
@@ -897,7 +916,8 @@ void Instance::Private::importDone(const MTPauth_Authorization &result, mtpReque
 					dcWithShift = shiftDcId(newdc, getDcIdShift(k->second));
 					k->second = dcWithShift;
 				}
-				DEBUG_LOG(("MTP Info: resending request %1 to dc %2 after import auth").arg(waitedRequestId).arg(k->second));
+				DEBUG_LOG(
+				    ("MTP Info: resending request %1 to dc %2 after import auth").arg(waitedRequestId).arg(k->second));
 			}
 			if (auto session = getSession(dcWithShift)) {
 				session->sendPrepared(it->second);
@@ -920,7 +940,8 @@ void Instance::Private::exportDone(const MTPauth_ExportedAuthorization &result, 
 	auto it = _authExportRequests.find(requestId);
 	if (it == _authExportRequests.cend()) {
 		LOG(("MTP Error: auth export request target dcWithShift not found, requestId: %1").arg(requestId));
-		RPCError error(internal::rpcClientError("AUTH_IMPORT_FAIL", QString("did not find target dcWithShift, request %1").arg(requestId)));
+		RPCError error(internal::rpcClientError("AUTH_IMPORT_FAIL",
+		                                        QString("did not find target dcWithShift, request %1").arg(requestId)));
 		if (_globalHandler.onFail && hasAuthorization()) {
 			(*_globalHandler.onFail)(requestId, error); // auth failed in main dc
 		}
@@ -928,11 +949,11 @@ void Instance::Private::exportDone(const MTPauth_ExportedAuthorization &result, 
 	}
 
 	auto &data = result.c_auth_exportedAuthorization();
-	_instance->send(MTPauth_ImportAuthorization(data.vid, data.vbytes), rpcDone([this](const MTPauth_Authorization &result, mtpRequestId requestId) {
-		importDone(result, requestId);
-	}), rpcFail([this](const RPCError &error, mtpRequestId requestId) {
-		return importFail(error, requestId);
-	}), it->second);
+	_instance->send(
+	    MTPauth_ImportAuthorization(data.vid, data.vbytes),
+	    rpcDone([this](const MTPauth_Authorization &result, mtpRequestId requestId) { importDone(result, requestId); }),
+	    rpcFail([this](const RPCError &error, mtpRequestId requestId) { return importFail(error, requestId); }),
+	    it->second);
 	_authExportRequests.erase(requestId);
 }
 
@@ -972,7 +993,10 @@ bool Instance::Private::onErrorDefault(mtpRequestId requestId, const RPCError &e
 		}
 		if (!dcWithShift || !newdcWithShift) return false;
 
-		DEBUG_LOG(("MTP Info: changing request %1 from dcWithShift%2 to dc%3").arg(requestId).arg(dcWithShift).arg(newdcWithShift));
+		DEBUG_LOG(("MTP Info: changing request %1 from dcWithShift%2 to dc%3")
+		              .arg(requestId)
+		              .arg(dcWithShift)
+		              .arg(newdcWithShift));
 		if (dcWithShift < 0) { // newdc shift = 0
 			if (false && hasAuthorization() && _authExportRequests.find(requestId) == _authExportRequests.cend()) {
 				//
@@ -1028,7 +1052,7 @@ bool Instance::Private::onErrorDefault(mtpRequestId requestId, const RPCError &e
 			}
 		} else {
 			secs = m.captured(1).toInt();
-//			if (secs >= 60) return false;
+			//			if (secs >= 60) return false;
 		}
 		auto sendAt = getms(true) + secs * 1000 + 10;
 		auto it = _delayedRequests.begin(), e = _delayedRequests.end();
@@ -1063,11 +1087,14 @@ bool Instance::Private::onErrorDefault(mtpRequestId requestId, const RPCError &e
 		DEBUG_LOG(("MTP Info: importing auth to dcWithShift %1").arg(dcWithShift));
 		auto &waiters(_authWaiters[newdc]);
 		if (!waiters.size()) {
-			auto exportRequestId = _instance->send(MTPauth_ExportAuthorization(MTP_int(newdc)), rpcDone([this](const MTPauth_ExportedAuthorization &result, mtpRequestId requestId) {
-				exportDone(result, requestId);
-			}), rpcFail([this](const RPCError &error, mtpRequestId requestId) {
-				return exportFail(error, requestId);
-			}));
+			auto exportRequestId =
+			    _instance->send(MTPauth_ExportAuthorization(MTP_int(newdc)),
+			                    rpcDone([this](const MTPauth_ExportedAuthorization &result, mtpRequestId requestId) {
+				                    exportDone(result, requestId);
+			                    }),
+			                    rpcFail([this](const RPCError &error, mtpRequestId requestId) {
+				                    return exportFail(error, requestId);
+			                    }));
 			_authExportRequests.emplace(exportRequestId, abs(dcWithShift));
 		}
 		waiters.push_back(requestId);
@@ -1194,33 +1221,38 @@ internal::Session *Instance::Private::getSession(ShiftedDcId shiftedDcId) {
 void Instance::Private::scheduleKeyDestroy(ShiftedDcId shiftedDcId) {
 	Expects(isKeysDestroyer());
 
-	_instance->send(MTPauth_LogOut(), rpcDone([this, shiftedDcId](const MTPBool &result) {
-		performKeyDestroy(shiftedDcId);
-	}), rpcFail([this, shiftedDcId](const RPCError &error) {
-		if (isDefaultHandledError(error)) return false;
-		performKeyDestroy(shiftedDcId);
-		return true;
-	}), shiftedDcId);
+	_instance->send(MTPauth_LogOut(),
+	                rpcDone([this, shiftedDcId](const MTPBool &result) { performKeyDestroy(shiftedDcId); }),
+	                rpcFail([this, shiftedDcId](const RPCError &error) {
+		                if (isDefaultHandledError(error)) return false;
+		                performKeyDestroy(shiftedDcId);
+		                return true;
+	                }),
+	                shiftedDcId);
 }
 
 void Instance::Private::performKeyDestroy(ShiftedDcId shiftedDcId) {
 	Expects(isKeysDestroyer());
 
 	_instance->send(MTPDestroy_auth_key(), rpcDone([this, shiftedDcId](const MTPDestroyAuthKeyRes &result) {
-		switch (result.type()) {
-		case mtpc_destroy_auth_key_ok: LOG(("MTP Info: key %1 destroyed.").arg(shiftedDcId)); break;
-		case mtpc_destroy_auth_key_fail: {
-			LOG(("MTP Error: key %1 destruction fail, leave it for now.").arg(shiftedDcId));
-			killSession(shiftedDcId);
-		} break;
-		case mtpc_destroy_auth_key_none: LOG(("MTP Info: key %1 already destroyed.").arg(shiftedDcId)); break;
-		}
-		emit _instance->keyDestroyed(shiftedDcId);
-	}), rpcFail([this, shiftedDcId](const RPCError &error) {
-		LOG(("MTP Error: key %1 destruction resulted in error: %2").arg(shiftedDcId).arg(error.type()));
-		emit _instance->keyDestroyed(shiftedDcId);
-		return true;
-	}), shiftedDcId);
+		                switch (result.type()) {
+		                case mtpc_destroy_auth_key_ok: LOG(("MTP Info: key %1 destroyed.").arg(shiftedDcId)); break;
+		                case mtpc_destroy_auth_key_fail: {
+			                LOG(("MTP Error: key %1 destruction fail, leave it for now.").arg(shiftedDcId));
+			                killSession(shiftedDcId);
+		                } break;
+		                case mtpc_destroy_auth_key_none:
+			                LOG(("MTP Info: key %1 already destroyed.").arg(shiftedDcId));
+			                break;
+		                }
+		                emit _instance->keyDestroyed(shiftedDcId);
+	                }),
+	                rpcFail([this, shiftedDcId](const RPCError &error) {
+		                LOG(("MTP Error: key %1 destruction resulted in error: %2").arg(shiftedDcId).arg(error.type()));
+		                emit _instance->keyDestroyed(shiftedDcId);
+		                return true;
+	                }),
+	                shiftedDcId);
 }
 
 void Instance::Private::completedKeyDestroy(ShiftedDcId shiftedDcId) {
@@ -1256,7 +1288,7 @@ void Instance::Private::setSessionResetHandler(base::lambda<void(ShiftedDcId shi
 void Instance::Private::clearGlobalHandlers() {
 	setUpdatesHandler(RPCDoneHandlerPtr());
 	setGlobalFailHandler(RPCFailHandlerPtr());
-	setStateChangedHandler(base::lambda<void(ShiftedDcId,qint32)>());
+	setStateChangedHandler(base::lambda<void(ShiftedDcId, qint32)>());
 	setSessionResetHandler(base::lambda<void(ShiftedDcId)>());
 }
 
@@ -1274,8 +1306,9 @@ void Instance::Private::prepareToDestroy() {
 	MustNotCreateSessions = true;
 }
 
-Instance::Instance(not_null<DcOptions*> options, Mode mode, Config &&config) : QObject()
-, _private(std::make_unique<Private>(this, options, mode)) {
+Instance::Instance(not_null<DcOptions *> options, Mode mode, Config &&config)
+    : QObject()
+    , _private(std::make_unique<Private>(this, options, mode)) {
 	_private->start(std::move(config));
 }
 
@@ -1371,7 +1404,7 @@ void Instance::addKeysForDestroy(AuthKeysList &&keys) {
 	_private->addKeysForDestroy(std::move(keys));
 }
 
-not_null<DcOptions*> Instance::dcOptions() {
+not_null<DcOptions *> Instance::dcOptions() {
 	return _private->dcOptions();
 }
 

@@ -29,11 +29,12 @@ namespace internal {
 
 namespace {
 
-NeverFreedPointer<QMap<QObject*, Manager*>> _managers;
+NeverFreedPointer<QMap<QObject *, Manager *>> _managers;
 
 } // namespace
 
-Manager::Manager(QWidget *parent) : QObject(parent) {
+Manager::Manager(QWidget *parent)
+    : QObject(parent) {
 	connect(&_hideTimer, SIGNAL(timeout()), this, SLOT(onHideTimeout()));
 }
 
@@ -67,7 +68,7 @@ void Manager::addToast(std::unique_ptr<Instance> &&toast) {
 	Widget *widget = t->_widget.get();
 
 	_toastByWidget.insert(widget, t);
-	connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(onToastWidgetDestroyed(QObject*)));
+	connect(widget, SIGNAL(destroyed(QObject *)), this, SLOT(onToastWidgetDestroyed(QObject *)));
 	if (auto parent = widget->parentWidget()) {
 		auto found = false;
 		for (auto i = _toastParents.begin(); i != _toastParents.cend();) {
@@ -108,7 +109,7 @@ void Manager::onHideTimeout() {
 }
 
 void Manager::onToastWidgetDestroyed(QObject *widget) {
-	auto i = _toastByWidget.find(static_cast<Widget*>(widget));
+	auto i = _toastByWidget.find(static_cast<Widget *>(widget));
 	if (i != _toastByWidget.cend()) {
 		auto toast = i.value();
 		_toastByWidget.erase(i);

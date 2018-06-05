@@ -23,9 +23,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <QMouseEvent>
 
 #include "base/lambda.h"
-#include "ui/twidget.h"
-#include "ui/animation.h"
 #include "structs.h"
+#include "ui/animation.h"
+#include "ui/twidget.h"
 
 class BoxContent;
 
@@ -41,8 +41,7 @@ public:
 	using TWidget::TWidget;
 
 	virtual void parentResized() = 0;
-	virtual void showFinished() {
-	}
+	virtual void showFinished() {}
 	void setInnerFocus();
 	bool setClosing() {
 		if (!_closing) {
@@ -79,14 +78,12 @@ protected:
 	virtual void doSetInnerFocus() {
 		setFocus();
 	}
-	virtual void closeHook() {
-	}
+	virtual void closeHook() {}
 
 private:
 	bool _closing = false;
 	base::lambda<void()> _closedCallback;
 	base::lambda<void()> _resizedCallback;
-
 };
 
 class LayerStackWidget : public TWidget {
@@ -159,26 +156,25 @@ private:
 		return _layers.empty() ? nullptr : _layers.back();
 	}
 	const LayerWidget *currentLayer() const {
-		return const_cast<LayerStackWidget*>(this)->currentLayer();
+		return const_cast<LayerStackWidget *>(this)->currentLayer();
 	}
 
 	Window::Controller *_controller = nullptr;
 
-	QList<LayerWidget*> _layers;
+	QList<LayerWidget *> _layers;
 
-	object_ptr<LayerWidget> _specialLayer = { nullptr };
-	object_ptr<Window::MainMenu> _mainMenu = { nullptr };
+	object_ptr<LayerWidget> _specialLayer = {nullptr};
+	object_ptr<Window::MainMenu> _mainMenu = {nullptr};
 
 	class BackgroundWidget;
 	object_ptr<BackgroundWidget> _background;
-
 };
 
 class MediaPreviewWidget : public TWidget, private base::Subscriber {
 	Q_OBJECT
 
 public:
-	MediaPreviewWidget(QWidget *parent, not_null<Window::Controller*> controller);
+	MediaPreviewWidget(QWidget *parent, not_null<Window::Controller *> controller);
 
 	void showPreview(DocumentData *document);
 	void showPreview(PhotoData *photo);
@@ -197,7 +193,7 @@ private:
 	void fillEmojiString();
 	void resetGifAndCache();
 
-	not_null<Window::Controller*> _controller;
+	not_null<Window::Controller *> _controller;
 
 	Animation _a_shown;
 	bool _hiding = false;
@@ -218,11 +214,9 @@ private:
 	mutable CacheStatus _cacheStatus = CacheNotLoaded;
 	mutable QPixmap _cache;
 	mutable QSize _cachedSize;
-
 };
 
-template <typename BoxType, typename ...Args>
-inline object_ptr<BoxType> Box(Args&&... args) {
-	auto parent = static_cast<QWidget*>(nullptr);
+template <typename BoxType, typename... Args> inline object_ptr<BoxType> Box(Args &&... args) {
+	auto parent = static_cast<QWidget *>(nullptr);
 	return object_ptr<BoxType>(parent, std::forward<Args>(args)...);
 }

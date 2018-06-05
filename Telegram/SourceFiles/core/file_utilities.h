@@ -20,17 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QUrl>
+#include "base/observer.h"
+#include <QByteArray>
 #include <QPoint>
 #include <QString>
-#include <QByteArray>
 #include <QStringList>
-#include "base/observer.h"
+#include <QUrl>
 
 // legacy
 bool filedialogGetSaveFile(QString &file, const QString &caption, const QString &filter, const QString &initialPath);
 
-QString filedialogDefaultName(const QString &prefix, const QString &extension, const QString &path = QString(), bool skipExistance = false, int fileTime = 0);
+QString filedialogDefaultName(const QString &prefix, const QString &extension, const QString &path = QString(),
+                              bool skipExistance = false, int fileTime = 0);
 QString filedialogNextFilename(const QString &name, const QString &cur, const QString &path = QString());
 
 namespace File {
@@ -59,10 +60,15 @@ struct OpenResult {
 	QStringList paths;
 	QByteArray remoteContent;
 };
-void GetOpenPath(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback, base::lambda<void()> failed = base::lambda<void()>());
-void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback, base::lambda<void()> failed = base::lambda<void()>());
-void GetWritePath(const QString &caption, const QString &filter, const QString &initialPath, base::lambda<void(const QString &result)> callback, base::lambda<void()> failed = base::lambda<void()>());
-void GetFolder(const QString &caption, const QString &initialPath, base::lambda<void(const QString &result)> callback, base::lambda<void()> failed = base::lambda<void()>());
+void GetOpenPath(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback,
+                 base::lambda<void()> failed = base::lambda<void()>());
+void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback,
+                  base::lambda<void()> failed = base::lambda<void()>());
+void GetWritePath(const QString &caption, const QString &filter, const QString &initialPath,
+                  base::lambda<void(const QString &result)> callback,
+                  base::lambda<void()> failed = base::lambda<void()>());
+void GetFolder(const QString &caption, const QString &initialPath, base::lambda<void(const QString &result)> callback,
+               base::lambda<void()> failed = base::lambda<void()>());
 
 QString AllFilesFilter();
 
@@ -77,7 +83,8 @@ enum class Type {
 
 void InitLastPathDefault();
 
-bool GetDefault(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter, ::FileDialog::internal::Type type, QString startFile);
+bool GetDefault(QStringList &files, QByteArray &remoteContent, const QString &caption, const QString &filter,
+                ::FileDialog::internal::Type type, QString startFile);
 
 } // namespace internal
 } // namespace FileDialog

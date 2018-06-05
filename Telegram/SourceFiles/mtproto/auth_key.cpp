@@ -51,8 +51,8 @@ void AuthKey::prepareAES_oldmtp(const MTPint128 &msgKey, MTPint256 &aesKey, MTPi
 	memcpy(data_d + 16, _key.data() + 96 + x, 32);
 	hashSha1(data_d, 16 + 32, sha1_d);
 
-	auto key = reinterpret_cast<uchar*>(&aesKey);
-	auto iv = reinterpret_cast<uchar*>(&aesIV);
+	auto key = reinterpret_cast<uchar *>(&aesKey);
+	auto iv = reinterpret_cast<uchar *>(&aesIV);
 	memcpy(key, sha1_a, 8);
 	memcpy(key + 8, sha1_b + 8, 12);
 	memcpy(key + 8 + 12, sha1_c + 4, 12);
@@ -75,8 +75,8 @@ void AuthKey::prepareAES(const MTPint128 &msgKey, MTPint256 &aesKey, MTPint256 &
 	memcpy(data_b + 36, &msgKey, 16);
 	hashSha256(data_b, 36 + 16, sha256_b);
 
-	auto key = reinterpret_cast<uchar*>(&aesKey);
-	auto iv = reinterpret_cast<uchar*>(&aesIV);
+	auto key = reinterpret_cast<uchar *>(&aesKey);
+	auto iv = reinterpret_cast<uchar *>(&aesIV);
 	memcpy(key, sha256_a, 8);
 	memcpy(key + 8, sha256_b + 8, 16);
 	memcpy(key + 8 + 16, sha256_a + 24, 8);
@@ -92,7 +92,7 @@ void aesIgeEncryptRaw(const void *src, void *dst, quint32 len, const void *key, 
 
 	AES_KEY aes;
 	AES_set_encrypt_key(aes_key, 256, &aes);
-	AES_ige_encrypt(static_cast<const uchar*>(src), static_cast<uchar*>(dst), len, &aes, aes_iv, AES_ENCRYPT);
+	AES_ige_encrypt(static_cast<const uchar *>(src), static_cast<uchar *>(dst), len, &aes, aes_iv, AES_ENCRYPT);
 }
 
 void aesIgeDecryptRaw(const void *src, void *dst, quint32 len, const void *key, const void *iv) {
@@ -102,17 +102,18 @@ void aesIgeDecryptRaw(const void *src, void *dst, quint32 len, const void *key, 
 
 	AES_KEY aes;
 	AES_set_decrypt_key(aes_key, 256, &aes);
-	AES_ige_encrypt(static_cast<const uchar*>(src), static_cast<uchar*>(dst), len, &aes, aes_iv, AES_DECRYPT);
+	AES_ige_encrypt(static_cast<const uchar *>(src), static_cast<uchar *>(dst), len, &aes, aes_iv, AES_DECRYPT);
 }
 
 void aesCtrEncrypt(void *data, quint32 len, const void *key, CTRState *state) {
 	AES_KEY aes;
-	AES_set_encrypt_key(static_cast<const uchar*>(key), 256, &aes);
+	AES_set_encrypt_key(static_cast<const uchar *>(key), 256, &aes);
 
 	static_assert(CTRState::IvecSize == AES_BLOCK_SIZE, "Wrong size of ctr ivec!");
 	static_assert(CTRState::EcountSize == AES_BLOCK_SIZE, "Wrong size of ctr ecount!");
 
-	CRYPTO_ctr128_encrypt(static_cast<const uchar*>(data), static_cast<uchar*>(data), len, &aes, state->ivec, state->ecount, &state->num, (block128_f) AES_encrypt);
+	CRYPTO_ctr128_encrypt(static_cast<const uchar *>(data), static_cast<uchar *>(data), len, &aes, state->ivec,
+	                      state->ecount, &state->num, (block128_f)AES_encrypt);
 }
 
 } // namespace MTP

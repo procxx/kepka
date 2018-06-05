@@ -20,26 +20,25 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/weak_unique_ptr.h"
 #include "base/timer.h"
+#include "base/weak_unique_ptr.h"
 #include "calls/calls_call.h"
 #include "ui/widgets/tooltip.h"
 
 namespace Ui {
 class IconButton;
 class FlatLabel;
-template <typename Widget>
-class WidgetFadeWrap;
+template <typename Widget> class WidgetFadeWrap;
 } // namespace Ui
 
 namespace Calls {
 
 class Panel : public TWidget, private base::Subscriber, private Ui::AbstractTooltipShower {
 public:
-	Panel(not_null<Call*> call);
+	Panel(not_null<Call *> call);
 
 	void showAndActivate();
-	void replaceCall(not_null<Call*> call);
+	void replaceCall(not_null<Call *> call);
 	void hideAndDestroy();
 
 protected:
@@ -89,7 +88,7 @@ private:
 	void destroyDelayed();
 
 	Call *_call = nullptr;
-	not_null<UserData*> _user;
+	not_null<UserData *> _user;
 
 	bool _useTransparency = true;
 	style::margins _padding;
@@ -125,7 +124,6 @@ private:
 	QPixmap _animationCache;
 	QPixmap _bottomCache;
 	QPixmap _cache;
-
 };
 
 } // namespace Calls

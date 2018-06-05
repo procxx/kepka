@@ -29,15 +29,14 @@ void MuteSettingsBox::prepare() {
 
 	object_ptr<Ui::FlatLabel> title(this, st::muteChatTitle);
 	title->setText(App::peerName(_peer, true));
-	title->moveToLeft(st::boxPadding.left(),
-		y + icon->height() / 2 - title->height() / 2);
+	title->moveToLeft(st::boxPadding.left(), y + icon->height() / 2 - title->height() / 2);
 	// the icon is always higher than this chat title
 	y += icon->height() + st::boxMediumSkip;
 
-	const int FOREVER = 8760;  // in fact, this is mute only for 1 year
+	const int FOREVER = 8760; // in fact, this is mute only for 1 year
 	auto group = std::make_shared<Ui::RadiobuttonGroup>(FOREVER);
 	y += st::boxOptionListPadding.top();
-	for (int value : { 1, 4, 18, 72, FOREVER }) {  // periods in hours
+	for (int value : {1, 4, 18, 72, FOREVER}) { // periods in hours
 		QString text;
 		if (value < 24) {
 			text = lng_mute_duration_hours(lt_count, value);
@@ -53,8 +52,7 @@ void MuteSettingsBox::prepare() {
 	y += st::boxOptionListPadding.bottom() - st::boxOptionListSkip + st::defaultCheckbox.margin.bottom();
 
 	addButton(langFactory(lng_box_ok), [this, group] {
-		App::main()->updateNotifySetting(_peer, NotifySettingSetMuted,
-			SilentNotifiesDontChange, group->value() * 3600);
+		App::main()->updateNotifySetting(_peer, NotifySettingSetMuted, SilentNotifiesDontChange, group->value() * 3600);
 		closeBox();
 	});
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });

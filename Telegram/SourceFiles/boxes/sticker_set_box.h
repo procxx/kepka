@@ -33,7 +33,7 @@ class StickerSetBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	StickerSetBox(QWidget*, const MTPInputStickerSet &set);
+	StickerSetBox(QWidget *, const MTPInputStickerSet &set);
 
 signals:
 	void installed(quint64 id);
@@ -57,7 +57,6 @@ private:
 
 	class Inner;
 	QPointer<Inner> _inner;
-
 };
 
 // This class is hold in header because it requires Qt preprocessing.
@@ -129,5 +128,4 @@ private:
 
 	QTimer _previewTimer;
 	int _previewShown = -1;
-
 };

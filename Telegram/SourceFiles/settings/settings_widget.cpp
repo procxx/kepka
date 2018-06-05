@@ -20,27 +20,27 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "settings/settings_widget.h"
 
-#include "settings/settings_inner_widget.h"
+#include "boxes/confirm_box.h"
+#include "core/file_utilities.h"
+#include "lang/lang_cloud_manager.h"
+#include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "mainwindow.h"
+#include "media/media_audio_track.h"
+#include "messenger.h"
+#include "mtproto/dc_options.h"
+#include "mtproto/mtp_instance.h"
 #include "settings/settings_fixed_bar.h"
+#include "settings/settings_inner_widget.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
 #include "styles/style_settings.h"
 #include "styles/style_window.h"
-#include "styles/style_boxes.h"
 #include "ui/effects/widget_fade_wrap.h"
-#include "ui/widgets/scroll_area.h"
 #include "ui/widgets/buttons.h"
-#include "mainwindow.h"
-#include "mainwidget.h"
-#include "storage/localstorage.h"
-#include "boxes/confirm_box.h"
-#include "lang/lang_keys.h"
-#include "lang/lang_cloud_manager.h"
-#include "messenger.h"
-#include "mtproto/mtp_instance.h"
-#include "mtproto/dc_options.h"
-#include "core/file_utilities.h"
+#include "ui/widgets/scroll_area.h"
 #include "window/themes/window_theme.h"
 #include "window/themes/window_theme_editor.h"
-#include "media/media_audio_track.h"
 
 namespace Settings {
 namespace {
@@ -50,20 +50,16 @@ QMap<QString, base::lambda<void()>> Codes;
 
 void fillCodes() {
 	Codes.insert(qsl("debugmode"), [] {
-		QString text = cDebug() ? qsl("Do you want to disable DEBUG logs?") : qsl("Do you want to enable DEBUG logs?\n\nAll network events will be logged.");
-		Ui::show(Box<ConfirmBox>(text, [] {
-			Messenger::Instance().onSwitchDebugMode();
-		}));
+		QString text = cDebug() ? qsl("Do you want to disable DEBUG logs?") :
+		                          qsl("Do you want to enable DEBUG logs?\n\nAll network events will be logged.");
+		Ui::show(Box<ConfirmBox>(text, [] { Messenger::Instance().onSwitchDebugMode(); }));
 	});
 	Codes.insert(qsl("testmode"), [] {
-		auto text = cTestMode() ? qsl("Do you want to disable TEST mode?") : qsl("Do you want to enable TEST mode?\n\nYou will be switched to test cloud.");
-		Ui::show(Box<ConfirmBox>(text, [] {
-			Messenger::Instance().onSwitchTestMode();
-		}));
+		auto text = cTestMode() ? qsl("Do you want to disable TEST mode?") :
+		                          qsl("Do you want to enable TEST mode?\n\nYou will be switched to test cloud.");
+		Ui::show(Box<ConfirmBox>(text, [] { Messenger::Instance().onSwitchTestMode(); }));
 	});
-	Codes.insert(qsl("loadlang"), [] {
-		Lang::CurrentCloudManager().switchToLanguage(qsl("custom"));
-	});
+	Codes.insert(qsl("loadlang"), [] { Lang::CurrentCloudManager().switchToLanguage(qsl("custom")); });
 	Codes.insert(qsl("debugfiles"), [] {
 		if (!cDebug()) return;
 		if (DebugLogging::FileLoader()) {
@@ -71,16 +67,13 @@ void fillCodes() {
 		} else {
 			Global::RefDebugLoggingFlags() |= DebugLogging::FileLoaderFlag;
 		}
-		Ui::show(Box<InformBox>(DebugLogging::FileLoader() ? qsl("Enabled file download logging") : qsl("Disabled file download logging")));
+		Ui::show(Box<InformBox>(DebugLogging::FileLoader() ? qsl("Enabled file download logging") :
+		                                                     qsl("Disabled file download logging")));
 	});
-	Codes.insert(qsl("crashplease"), [] {
-		Unexpected("Crashed in Settings!");
-	});
+	Codes.insert(qsl("crashplease"), [] { Unexpected("Crashed in Settings!"); });
 	Codes.insert(qsl("workmode"), [] {
 		auto text = Global::DialogsModeEnabled() ? qsl("Disable work mode?") : qsl("Enable work mode?");
-		Ui::show(Box<ConfirmBox>(text, [] {
-			Messenger::Instance().onSwitchWorkMode();
-		}));
+		Ui::show(Box<ConfirmBox>(text, [] { Messenger::Instance().onSwitchWorkMode(); }));
 	});
 	Codes.insert(qsl("moderate"), [] {
 		auto text = Global::ModerateModeEnabled() ? qsl("Disable moderate mode?") : qsl("Enable moderate mode?");
@@ -96,15 +89,14 @@ void fillCodes() {
 		}
 	});
 	Codes.insert(qsl("loadcolors"), [] {
-		FileDialog::GetOpenPath("Open palette file", "Palette (*.tdesktop-palette)", [](const FileDialog::OpenResult &result) {
-			if (!result.paths.isEmpty()) {
-				Window::Theme::Apply(result.paths.front());
-			}
-		});
+		FileDialog::GetOpenPath("Open palette file", "Palette (*.tdesktop-palette)",
+		                        [](const FileDialog::OpenResult &result) {
+			                        if (!result.paths.isEmpty()) {
+				                        Window::Theme::Apply(result.paths.front());
+			                        }
+		                        });
 	});
-	Codes.insert(qsl("edittheme"), [] {
-		Window::Theme::Editor::Start();
-	});
+	Codes.insert(qsl("edittheme"), [] { Window::Theme::Editor::Start(); });
 	Codes.insert(qsl("videoplayer"), [] {
 		auto text = cUseExternalVideoPlayer() ? qsl("Use internal video player?") : qsl("Use external video player?");
 		Ui::show(Box<ConfirmBox>(text, [] {
@@ -114,23 +106,20 @@ void fillCodes() {
 		}));
 	});
 	Codes.insert(qsl("endpoints"), [] {
-		FileDialog::GetOpenPath("Open DC endpoints", "DC Endpoints (*.tdesktop-endpoints)", [](const FileDialog::OpenResult &result) {
-			if (!result.paths.isEmpty()) {
-				if (!Messenger::Instance().mtp()->dcOptions()->loadFromFile(result.paths.front())) {
-					Ui::show(Box<InformBox>("Could not load endpoints :( Errors in 'log.txt'."));
-				}
-			}
-		});
+		FileDialog::GetOpenPath(
+		    "Open DC endpoints", "DC Endpoints (*.tdesktop-endpoints)", [](const FileDialog::OpenResult &result) {
+			    if (!result.paths.isEmpty()) {
+				    if (!Messenger::Instance().mtp()->dcOptions()->loadFromFile(result.paths.front())) {
+					    Ui::show(Box<InformBox>("Could not load endpoints :( Errors in 'log.txt'."));
+				    }
+			    }
+		    });
 	});
 
 	auto audioFilters = qsl("Audio files (*.wav *.mp3);;") + FileDialog::AllFilesFilter();
 	auto audioKeys = {
-		qsl("msg_incoming"),
-		qsl("call_incoming"),
-		qsl("call_outgoing"),
-		qsl("call_busy"),
-		qsl("call_connect"),
-		qsl("call_end"),
+	    qsl("msg_incoming"), qsl("call_incoming"), qsl("call_outgoing"),
+	    qsl("call_busy"),    qsl("call_connect"),  qsl("call_end"),
 	};
 	for (auto &key : audioKeys) {
 		Codes.insert(key, [audioFilters, key] {
@@ -199,9 +188,7 @@ Widget::Widget(QWidget *parent) {
 	subscribe(Lang::Current().updated(), [this] { refreshLang(); });
 
 	_inner = setInnerWidget(object_ptr<InnerWidget>(this));
-	setCloseClickHandler([]() {
-		Ui::hideSettingsAndLayer();
-	});
+	setCloseClickHandler([]() { Ui::hideSettingsAndLayer(); });
 }
 
 void Widget::refreshLang() {
@@ -230,7 +217,8 @@ void Widget::parentResized() {
 		if (windowWidth > st::windowMinWidth) {
 			// Width changes from st::windowMinWidth to st::settingsMaxWidth.
 			// Padding changes from st::settingsMinPadding to st::settingsMaxPadding.
-			newContentLeft += ((newWidth - st::windowMinWidth) * (st::settingsMaxPadding - st::settingsMinPadding)) / (st::settingsMaxWidth - st::windowMinWidth);
+			newContentLeft += ((newWidth - st::windowMinWidth) * (st::settingsMaxPadding - st::settingsMinPadding)) /
+			                  (st::settingsMaxWidth - st::windowMinWidth);
 		}
 	} else if (windowWidth < st::settingsMaxWidth + 2 * st::settingsMargin) {
 		newWidth = windowWidth - 2 * st::settingsMargin;
@@ -238,7 +226,8 @@ void Widget::parentResized() {
 		if (windowWidth > st::windowMinWidth) {
 			// Width changes from st::windowMinWidth to st::settingsMaxWidth.
 			// Padding changes from st::settingsMinPadding to st::settingsMaxPadding.
-			newContentLeft += ((newWidth - st::windowMinWidth) * (st::settingsMaxPadding - st::settingsMinPadding)) / (st::settingsMaxWidth - st::windowMinWidth);
+			newContentLeft += ((newWidth - st::windowMinWidth) * (st::settingsMaxPadding - st::settingsMinPadding)) /
+			                  (st::settingsMaxWidth - st::windowMinWidth);
 		}
 	}
 	resizeToWidth(newWidth, newContentLeft);

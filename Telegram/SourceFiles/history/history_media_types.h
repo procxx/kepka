@@ -110,21 +110,19 @@ protected:
 
 	struct AnimationData {
 		AnimationData(AnimationCallbacks &&radialCallbacks)
-			: radial(std::move(radialCallbacks)) {
-		}
+		    : radial(std::move(radialCallbacks)) {}
 		Animation a_thumbOver;
 		Ui::RadialAnimation radial;
 	};
 	mutable std::unique_ptr<AnimationData> _animation;
-
 };
 
 class HistoryPhoto : public HistoryFileMedia {
 public:
-	HistoryPhoto(not_null<HistoryItem*> parent, not_null<PhotoData*> photo, const QString &caption);
-	HistoryPhoto(not_null<HistoryItem*> parent, not_null<PeerData*> chat, not_null<PhotoData*> photo, int width);
-	HistoryPhoto(not_null<HistoryItem*> parent, not_null<PeerData*> chat, const MTPDphoto &photo, int width);
-	HistoryPhoto(not_null<HistoryItem*> parent, const HistoryPhoto &other);
+	HistoryPhoto(not_null<HistoryItem *> parent, not_null<PhotoData *> photo, const QString &caption);
+	HistoryPhoto(not_null<HistoryItem *> parent, not_null<PeerData *> chat, not_null<PhotoData *> photo, int width);
+	HistoryPhoto(not_null<HistoryItem *> parent, not_null<PeerData *> chat, const MTPDphoto &photo, int width);
+	HistoryPhoto(not_null<HistoryItem *> parent, const HistoryPhoto &other);
 
 	void init();
 	HistoryMediaType type() const override {
@@ -201,17 +199,16 @@ protected:
 	}
 
 private:
-	not_null<PhotoData*> _data;
+	not_null<PhotoData *> _data;
 	qint16 _pixw = 1;
 	qint16 _pixh = 1;
 	Text _caption;
-
 };
 
 class HistoryVideo : public HistoryFileMedia {
 public:
-	HistoryVideo(not_null<HistoryItem*> parent, DocumentData *document, const QString &caption);
-	HistoryVideo(not_null<HistoryItem*> parent, const HistoryVideo &other);
+	HistoryVideo(not_null<HistoryItem *> parent, DocumentData *document, const QString &caption);
+	HistoryVideo(not_null<HistoryItem *> parent, const HistoryVideo &other);
 	HistoryMediaType type() const override {
 		return MediaTypeVideo;
 	}
@@ -287,13 +284,12 @@ protected:
 	}
 
 private:
-	not_null<DocumentData*> _data;
+	not_null<DocumentData *> _data;
 	qint32 _thumbw;
 	Text _caption;
 
 	void setStatusSize(qint32 newSize) const;
 	void updateStatusText() const;
-
 };
 
 struct HistoryDocumentThumbed : public RuntimeComponent<HistoryDocumentThumbed> {
@@ -355,13 +351,12 @@ private:
 
 	mutable int _seekingStart = 0;
 	mutable int _seekingCurrent = 0;
-
 };
 
 class HistoryDocument : public HistoryFileMedia, public RuntimeComposer {
 public:
-	HistoryDocument(not_null<HistoryItem*> parent, DocumentData *document, const QString &caption);
-	HistoryDocument(not_null<HistoryItem*> parent, const HistoryDocument &other);
+	HistoryDocument(not_null<HistoryItem *> parent, DocumentData *document, const QString &caption);
+	HistoryDocument(not_null<HistoryItem *> parent, const HistoryDocument &other);
 	HistoryMediaType type() const override {
 		return _data->voice() ? MediaTypeVoiceFile : (_data->song() ? MediaTypeMusicFile : MediaTypeFile);
 	}
@@ -462,19 +457,17 @@ private:
 	void setStatusSize(qint32 newSize, qint64 realDuration = 0) const;
 	bool updateStatusText() const; // returns showPause
 
-								   // Callback is a void(const QString &, const QString &, const Text &) functor.
-								   // It will be called as callback(attachType, attachFileName, attachCaption).
-	template <typename Callback>
-	void buildStringRepresentation(Callback callback) const;
+	// Callback is a void(const QString &, const QString &, const Text &) functor.
+	// It will be called as callback(attachType, attachFileName, attachCaption).
+	template <typename Callback> void buildStringRepresentation(Callback callback) const;
 
-	not_null<DocumentData*> _data;
-
+	not_null<DocumentData *> _data;
 };
 
 class HistoryGif : public HistoryFileMedia {
 public:
-	HistoryGif(not_null<HistoryItem*> parent, DocumentData *document, const QString &caption);
-	HistoryGif(not_null<HistoryItem*> parent, const HistoryGif &other);
+	HistoryGif(not_null<HistoryItem *> parent, DocumentData *document, const QString &caption);
+	HistoryGif(not_null<HistoryItem *> parent, const HistoryGif &other);
 	HistoryMediaType type() const override {
 		return MediaTypeGif;
 	}
@@ -563,14 +556,16 @@ protected:
 	}
 
 private:
-	int additionalWidth(const HistoryMessageVia *via, const HistoryMessageReply *reply, const HistoryMessageForwarded *forwarded) const;
+	int additionalWidth(const HistoryMessageVia *via, const HistoryMessageReply *reply,
+	                    const HistoryMessageForwarded *forwarded) const;
 	int additionalWidth() const {
-		return additionalWidth(_parent->Get<HistoryMessageVia>(), _parent->Get<HistoryMessageReply>(), _parent->Get<HistoryMessageForwarded>());
+		return additionalWidth(_parent->Get<HistoryMessageVia>(), _parent->Get<HistoryMessageReply>(),
+		                       _parent->Get<HistoryMessageForwarded>());
 	}
 	QString mediaTypeString() const;
 	bool isSeparateRoundVideo() const;
 
-	not_null<DocumentData*> _data;
+	not_null<DocumentData *> _data;
 	ClickHandlerPtr _openInMediaviewLink;
 	qint32 _thumbw = 1;
 	qint32 _thumbh = 1;
@@ -581,12 +576,11 @@ private:
 
 	void setStatusSize(qint32 newSize) const;
 	void updateStatusText() const;
-
 };
 
 class HistorySticker : public HistoryMedia {
 public:
-	HistorySticker(not_null<HistoryItem*> parent, DocumentData *document);
+	HistorySticker(not_null<HistoryItem *> parent, DocumentData *document);
 	HistoryMediaType type() const override {
 		return MediaTypeSticker;
 	}
@@ -648,14 +642,14 @@ private:
 	qint16 _pixw = 1;
 	qint16 _pixh = 1;
 	ClickHandlerPtr _packLink;
-	not_null<DocumentData*> _data;
+	not_null<DocumentData *> _data;
 	QString _emoji;
-
 };
 
 class HistoryContact : public HistoryMedia {
 public:
-	HistoryContact(not_null<HistoryItem*> parent, qint32 userId, const QString &first, const QString &last, const QString &phone);
+	HistoryContact(not_null<HistoryItem *> parent, qint32 userId, const QString &first, const QString &last,
+	               const QString &phone);
 	HistoryMediaType type() const override {
 		return MediaTypeContact;
 	}
@@ -712,12 +706,11 @@ private:
 	ClickHandlerPtr _linkl;
 	int _linkw = 0;
 	QString _link;
-
 };
 
 class HistoryCall : public HistoryMedia {
 public:
-	HistoryCall(not_null<HistoryItem*> parent, const MTPDmessageActionPhoneCall &call);
+	HistoryCall(not_null<HistoryItem *> parent, const MTPDmessageActionPhoneCall &call);
 	HistoryMediaType type() const override {
 		return MediaTypeCall;
 	}
@@ -767,13 +760,12 @@ private:
 	QString _status;
 
 	ClickHandlerPtr _link;
-
 };
 
 class HistoryWebPage : public HistoryMedia {
 public:
-	HistoryWebPage(not_null<HistoryItem*> parent, not_null<WebPageData*> data);
-	HistoryWebPage(not_null<HistoryItem*> parent, const HistoryWebPage &other);
+	HistoryWebPage(not_null<HistoryItem *> parent, not_null<WebPageData *> data);
+	HistoryWebPage(not_null<HistoryItem *> parent, const HistoryWebPage &other);
 	HistoryMediaType type() const override {
 		return MediaTypeWebPage;
 	}
@@ -829,7 +821,7 @@ public:
 	bool hasReplyPreview() const override;
 	ImagePtr replyPreview() override;
 
-	not_null<WebPageData*> webpage() {
+	not_null<WebPageData *> webpage() {
 		return _data;
 	}
 
@@ -858,7 +850,7 @@ private:
 	int bottomInfoPadding() const;
 	bool isLogEntryOriginal() const;
 
-	not_null<WebPageData*> _data;
+	not_null<WebPageData *> _data;
 	ClickHandlerPtr _openl;
 	std::unique_ptr<HistoryMedia> _attach;
 
@@ -873,13 +865,12 @@ private:
 
 	qint16 _pixw = 0;
 	qint16 _pixh = 0;
-
 };
 
 class HistoryGame : public HistoryMedia {
 public:
-	HistoryGame(not_null<HistoryItem*> parent, GameData *data);
-	HistoryGame(not_null<HistoryItem*> parent, const HistoryGame &other);
+	HistoryGame(not_null<HistoryItem *> parent, GameData *data);
+	HistoryGame(not_null<HistoryItem *> parent, const HistoryGame &other);
 	HistoryMediaType type() const override {
 		return MediaTypeGame;
 	}
@@ -936,7 +927,8 @@ public:
 	void detachFromParent() override;
 
 	bool hasReplyPreview() const override {
-		return (_data->photo && !_data->photo->thumb->isNull()) || (_data->document && !_data->document->thumb->isNull());
+		return (_data->photo && !_data->photo->thumb->isNull()) ||
+		       (_data->document && !_data->document->thumb->isNull());
 	}
 	ImagePtr replyPreview() override;
 
@@ -980,13 +972,12 @@ private:
 	Text _title, _description;
 
 	int _gameTagWidth = 0;
-
 };
 
 class HistoryInvoice : public HistoryMedia {
 public:
-	HistoryInvoice(not_null<HistoryItem*> parent, const MTPDmessageMediaInvoice &data);
-	HistoryInvoice(not_null<HistoryItem*> parent, const HistoryInvoice &other);
+	HistoryInvoice(not_null<HistoryItem *> parent, const MTPDmessageMediaInvoice &data);
+	HistoryInvoice(not_null<HistoryItem *> parent, const HistoryInvoice &other);
 	HistoryMediaType type() const override {
 		return MediaTypeInvoice;
 	}
@@ -1071,7 +1062,6 @@ private:
 	Text _status;
 
 	MsgId _receiptMsgId = 0;
-
 };
 
 class LocationCoords;
@@ -1079,8 +1069,9 @@ struct LocationData;
 
 class HistoryLocation : public HistoryMedia {
 public:
-	HistoryLocation(not_null<HistoryItem*> parent, const LocationCoords &coords, const QString &title = QString(), const QString &description = QString());
-	HistoryLocation(not_null<HistoryItem*> parent, const HistoryLocation &other);
+	HistoryLocation(not_null<HistoryItem *> parent, const LocationCoords &coords, const QString &title = QString(),
+	                const QString &description = QString());
+	HistoryLocation(not_null<HistoryItem *> parent, const HistoryLocation &other);
 	HistoryMediaType type() const override {
 		return MediaTypeLocation;
 	}
@@ -1136,5 +1127,4 @@ private:
 
 	qint32 fullWidth() const;
 	qint32 fullHeight() const;
-
 };

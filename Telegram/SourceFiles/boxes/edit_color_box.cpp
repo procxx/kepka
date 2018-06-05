@@ -20,12 +20,12 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "boxes/edit_color_box.h"
 
+#include "app.h"
 #include "lang/lang_keys.h"
 #include "styles/style_boxes.h"
-#include "ui/widgets/shadow.h"
 #include "styles/style_mediaview.h"
 #include "ui/widgets/input_fields.h"
-#include "app.h"
+#include "ui/widgets/shadow.h"
 
 class EditColorBox::Picker : public TWidget {
 public:
@@ -70,7 +70,6 @@ private:
 
 	bool _choosing = false;
 	base::Observable<void> _changed;
-
 };
 
 QCursor EditColorBox::Picker::generateCursor() {
@@ -97,7 +96,8 @@ QCursor EditColorBox::Picker::generateCursor() {
 	return QCursor(QPixmap::fromImage(cursor));
 }
 
-EditColorBox::Picker::Picker(QWidget *parent, QColor color) : TWidget(parent) {
+EditColorBox::Picker::Picker(QWidget *parent, QColor color)
+    : TWidget(parent) {
 	setCursor(generateCursor());
 
 	auto size = QSize(st::colorPickerSize, st::colorPickerSize);
@@ -128,7 +128,8 @@ void EditColorBox::Picker::paintEvent(QPaintEvent *e) {
 	auto y = anim::interpolate(0, height() - 1, _y);
 	PainterHighQualityEnabler hq(p);
 
-	p.drawEllipse(QRect(x - st::colorPickerMarkRadius, y - st::colorPickerMarkRadius, 2 * st::colorPickerMarkRadius, 2 * st::colorPickerMarkRadius));
+	p.drawEllipse(QRect(x - st::colorPickerMarkRadius, y - st::colorPickerMarkRadius, 2 * st::colorPickerMarkRadius,
+	                    2 * st::colorPickerMarkRadius));
 }
 
 void EditColorBox::Picker::mousePressEvent(QMouseEvent *e) {
@@ -151,7 +152,7 @@ void EditColorBox::Picker::preparePalette() {
 	_paletteInvalidated = false;
 
 	auto size = _palette.width();
-	auto ints = reinterpret_cast<quint32*>(_palette.bits());
+	auto ints = reinterpret_cast<quint32 *>(_palette.bits());
 	auto intsAddPerLine = (_palette.bytesPerLine() - size * sizeof(quint32)) / sizeof(quint32);
 
 	constexpr auto Large = 1024 * 1024;
@@ -280,15 +281,15 @@ private:
 
 	bool _choosing = false;
 	base::Observable<void> _changed;
-
 };
 
-EditColorBox::Slider::Slider(QWidget *parent, Direction direction, Type type, QColor color) : TWidget(parent)
-, _direction(direction)
-, _type(type)
-, _color(color.red(), color.green(), color.blue())
-, _value(valueFromColor(color))
-, _transparent((_type == Type::Hue) ? QBrush() : style::transparentPlaceholderBrush()) {
+EditColorBox::Slider::Slider(QWidget *parent, Direction direction, Type type, QColor color)
+    : TWidget(parent)
+    , _direction(direction)
+    , _type(type)
+    , _color(color.red(), color.green(), color.blue())
+    , _value(valueFromColor(color))
+    , _transparent((_type == Type::Hue) ? QBrush() : style::transparentPlaceholderBrush()) {
 	prepareMinSize();
 }
 
@@ -299,7 +300,8 @@ void EditColorBox::Slider::prepareMinSize() {
 
 void EditColorBox::Slider::paintEvent(QPaintEvent *e) {
 	Painter p(this);
-	auto to = rect().marginsRemoved(QMargins(st::colorSliderSkip, st::colorSliderSkip, st::colorSliderSkip, st::colorSliderSkip));
+	auto to = rect().marginsRemoved(
+	    QMargins(st::colorSliderSkip, st::colorSliderSkip, st::colorSliderSkip, st::colorSliderSkip));
 	Ui::Shadow::paint(p, to, width(), st::defaultRoundShadow);
 	if (_type == Type::Opacity) {
 		p.fillRect(to, _transparent);
@@ -308,11 +310,13 @@ void EditColorBox::Slider::paintEvent(QPaintEvent *e) {
 	if (isHorizontal()) {
 		auto x = st::colorSliderSkip + std::round(_value * to.width());
 		st::colorSliderArrowTop.paint(p, x - st::colorSliderArrowTop.width() / 2, 0, width());
-		st::colorSliderArrowBottom.paint(p, x - st::colorSliderArrowBottom.width() / 2, height() - st::colorSliderArrowBottom.height(), width());
+		st::colorSliderArrowBottom.paint(p, x - st::colorSliderArrowBottom.width() / 2,
+		                                 height() - st::colorSliderArrowBottom.height(), width());
 	} else {
 		auto y = st::colorSliderSkip + std::round(_value * to.height());
 		st::colorSliderArrowLeft.paint(p, 0, y - st::colorSliderArrowLeft.height() / 2, width());
-		st::colorSliderArrowRight.paint(p, width() - st::colorSliderArrowRight.width(), y - st::colorSliderArrowRight.height() / 2, width());
+		st::colorSliderArrowRight.paint(p, width() - st::colorSliderArrowRight.width(),
+		                                y - st::colorSliderArrowRight.height() / 2, width());
 	}
 }
 
@@ -340,7 +344,7 @@ void EditColorBox::Slider::generatePixmap() {
 	auto size = (isHorizontal() ? width() : height()) * cIntRetinaFactor();
 	auto image = QImage(size, cIntRetinaFactor(), QImage::Format_ARGB32_Premultiplied);
 	image.setDevicePixelRatio(cRetinaFactor());
-	auto ints = reinterpret_cast<quint32*>(image.bits());
+	auto ints = reinterpret_cast<quint32 *>(image.bits());
 	auto intsPerLine = image.bytesPerLine() / sizeof(quint32);
 	auto intsPerLineAdded = intsPerLine - size;
 
@@ -441,7 +445,8 @@ void EditColorBox::Slider::updateCurrentPoint(QPoint localPosition) {
 
 class EditColorBox::Field : public Ui::MaskedInputField {
 public:
-	Field(QWidget *parent, const style::InputField &st, const QString &placeholder, int limit, const QString &units = QString());
+	Field(QWidget *parent, const style::InputField &st, const QString &placeholder, int limit,
+	      const QString &units = QString());
 
 	int value() const {
 		return getLastText().toInt();
@@ -468,15 +473,15 @@ private:
 	int _limit = 0;
 	int _digitLimit = 1;
 	int _wheelDelta = 0;
-
 };
 
-EditColorBox::Field::Field(QWidget *parent, const style::InputField &st, const QString &placeholder, int limit, const QString &units) : Ui::MaskedInputField(parent, st)
-, _placeholder(placeholder)
-, _units(units)
-, _limit(limit)
-, _digitLimit(QString::number(_limit).size()) {
-}
+EditColorBox::Field::Field(QWidget *parent, const style::InputField &st, const QString &placeholder, int limit,
+                           const QString &units)
+    : Ui::MaskedInputField(parent, st)
+    , _placeholder(placeholder)
+    , _units(units)
+    , _limit(limit)
+    , _digitLimit(QString::number(_limit).size()) {}
 
 void EditColorBox::Field::correctValue(const QString &was, int wasCursor, QString &now, int &nowCursor) {
 	QString newText;
@@ -518,7 +523,8 @@ void EditColorBox::Field::correctValue(const QString &was, int wasCursor, QStrin
 void EditColorBox::Field::paintAdditionalPlaceholder(Painter &p, TimeMs ms) {
 	p.setFont(_st.font);
 	p.setPen(_st.placeholderFg);
-	auto inner = QRect(_st.textMargins.right(), _st.textMargins.top(), width() - 2 * _st.textMargins.right(), height() - _st.textMargins.top() - _st.textMargins.bottom());
+	auto inner = QRect(_st.textMargins.right(), _st.textMargins.top(), width() - 2 * _st.textMargins.right(),
+	                   height() - _st.textMargins.top() - _st.textMargins.bottom());
 	p.drawText(inner, _placeholder, style::al_topleft);
 	if (!_units.isEmpty()) {
 		p.drawText(inner, _units, style::al_topright);
@@ -580,11 +586,10 @@ public:
 protected:
 	void correctValue(const QString &was, int wasCursor, QString &now, int &nowCursor) override;
 	void paintAdditionalPlaceholder(Painter &p, TimeMs ms) override;
-
 };
 
-EditColorBox::ResultField::ResultField(QWidget *parent, const style::InputField &st) : Ui::MaskedInputField(parent, st) {
-}
+EditColorBox::ResultField::ResultField(QWidget *parent, const style::InputField &st)
+    : Ui::MaskedInputField(parent, st) {}
 
 void EditColorBox::ResultField::correctValue(const QString &was, int wasCursor, QString &now, int &nowCursor) {
 	QString newText;
@@ -623,25 +628,27 @@ void EditColorBox::ResultField::correctValue(const QString &was, int wasCursor, 
 void EditColorBox::ResultField::paintAdditionalPlaceholder(Painter &p, TimeMs ms) {
 	p.setFont(_st.font);
 	p.setPen(_st.placeholderFg);
-	p.drawText(QRect(_st.textMargins.right(), _st.textMargins.top(), width(), height() - _st.textMargins.top() - _st.textMargins.bottom()), "#", style::al_topleft);
+	p.drawText(QRect(_st.textMargins.right(), _st.textMargins.top(), width(),
+	                 height() - _st.textMargins.top() - _st.textMargins.bottom()),
+	           "#", style::al_topleft);
 }
 
-EditColorBox::EditColorBox(QWidget*, const QString &title, QColor current) : BoxContent()
-, _title(title)
-, _picker(this, current)
-, _hueSlider(this, Slider::Direction::Vertical, Slider::Type::Hue, current)
-, _opacitySlider(this, Slider::Direction::Horizontal, Slider::Type::Opacity, current)
-, _hueField(this, st::colorValueInput, "H", 360, QString() + QChar(176)) // degree character
-, _saturationField(this, st::colorValueInput, "S", 100, "%")
-, _brightnessField(this, st::colorValueInput, "B", 100, "%")
-, _redField(this, st::colorValueInput, "R", 255)
-, _greenField(this, st::colorValueInput, "G", 255)
-, _blueField(this, st::colorValueInput, "B", 255)
-, _result(this, st::colorResultInput)
-, _transparent(style::transparentPlaceholderBrush())
-, _current(current)
-, _new(current) {
-}
+EditColorBox::EditColorBox(QWidget *, const QString &title, QColor current)
+    : BoxContent()
+    , _title(title)
+    , _picker(this, current)
+    , _hueSlider(this, Slider::Direction::Vertical, Slider::Type::Hue, current)
+    , _opacitySlider(this, Slider::Direction::Horizontal, Slider::Type::Opacity, current)
+    , _hueField(this, st::colorValueInput, "H", 360, QString() + QChar(176)) // degree character
+    , _saturationField(this, st::colorValueInput, "S", 100, "%")
+    , _brightnessField(this, st::colorValueInput, "B", 100, "%")
+    , _redField(this, st::colorValueInput, "R", 255)
+    , _greenField(this, st::colorValueInput, "G", 255)
+    , _blueField(this, st::colorValueInput, "B", 255)
+    , _result(this, st::colorResultInput)
+    , _transparent(style::transparentPlaceholderBrush())
+    , _current(current)
+    , _new(current) {}
 
 void EditColorBox::prepare() {
 	setTitle([this] { return _title; });
@@ -665,7 +672,8 @@ void EditColorBox::prepare() {
 	addButton(langFactory(lng_settings_save), [this] { saveColor(); });
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });
 
-	auto height = st::colorEditSkip + st::colorPickerSize + st::colorEditSkip + st::colorSliderWidth + st::colorEditSkip;
+	auto height =
+	    st::colorEditSkip + st::colorPickerSize + st::colorEditSkip + st::colorSliderWidth + st::colorEditSkip;
 	setDimensions(st::colorEditWidth, height);
 
 	subscribe(_picker->changed(), [this] { updateFromControls(); });
@@ -708,15 +716,8 @@ void EditColorBox::onFieldChanged() {
 }
 
 void EditColorBox::onFieldSubmitted() {
-	Ui::MaskedInputField *fields[] = {
-		_hueField,
-		_saturationField,
-		_brightnessField,
-		_redField,
-		_greenField,
-		_blueField,
-		_result
-	};
+	Ui::MaskedInputField *fields[] = {_hueField,   _saturationField, _brightnessField, _redField,
+	                                  _greenField, _blueField,       _result};
 	for (auto i = 0, count = int(base::array_size(fields)); i + 1 != count; ++i) {
 		if (fields[i]->hasFocus()) {
 			fields[i + 1]->setFocus();
@@ -776,23 +777,33 @@ void EditColorBox::updateResultField() {
 }
 
 void EditColorBox::resizeEvent(QResizeEvent *e) {
-	auto fullwidth = _picker->width() + 2 * (st::colorEditSkip - st::colorSliderSkip) + _hueSlider->width() + st::colorSampleSize.width();
+	auto fullwidth = _picker->width() + 2 * (st::colorEditSkip - st::colorSliderSkip) + _hueSlider->width() +
+	                 st::colorSampleSize.width();
 	auto left = (width() - fullwidth) / 2;
 	_picker->moveToLeft(left, st::colorEditSkip);
-	_hueSlider->setGeometryToLeft(_picker->x() + _picker->width() + st::colorEditSkip - st::colorSliderSkip, st::colorEditSkip - st::colorSliderSkip, _hueSlider->width(), st::colorPickerSize + 2 * st::colorSliderSkip);
-	_opacitySlider->setGeometryToLeft(_picker->x() - st::colorSliderSkip, _picker->y() + _picker->height() + st::colorEditSkip - st::colorSliderSkip, _picker->width() + 2 * st::colorSliderSkip, _opacitySlider->height());
+	_hueSlider->setGeometryToLeft(_picker->x() + _picker->width() + st::colorEditSkip - st::colorSliderSkip,
+	                              st::colorEditSkip - st::colorSliderSkip, _hueSlider->width(),
+	                              st::colorPickerSize + 2 * st::colorSliderSkip);
+	_opacitySlider->setGeometryToLeft(_picker->x() - st::colorSliderSkip,
+	                                  _picker->y() + _picker->height() + st::colorEditSkip - st::colorSliderSkip,
+	                                  _picker->width() + 2 * st::colorSliderSkip, _opacitySlider->height());
 	auto fieldLeft = _hueSlider->x() + _hueSlider->width() - st::colorSliderSkip + st::colorEditSkip;
 	auto fieldWidth = st::colorSampleSize.width();
 	auto fieldHeight = _hueField->height();
 	_newRect = QRect(fieldLeft, st::colorEditSkip, fieldWidth, st::colorSampleSize.height());
 	_currentRect = _newRect.translated(0, st::colorSampleSize.height());
-	_hueField->setGeometryToLeft(fieldLeft, _currentRect.y() + _currentRect.height() + st::colorFieldSkip, fieldWidth, fieldHeight);
+	_hueField->setGeometryToLeft(fieldLeft, _currentRect.y() + _currentRect.height() + st::colorFieldSkip, fieldWidth,
+	                             fieldHeight);
 	_saturationField->setGeometryToLeft(fieldLeft, _hueField->y() + _hueField->height(), fieldWidth, fieldHeight);
-	_brightnessField->setGeometryToLeft(fieldLeft, _saturationField->y() + _saturationField->height(), fieldWidth, fieldHeight);
-	_redField->setGeometryToLeft(fieldLeft, _brightnessField->y() + _brightnessField->height() + st::colorFieldSkip, fieldWidth, fieldHeight);
+	_brightnessField->setGeometryToLeft(fieldLeft, _saturationField->y() + _saturationField->height(), fieldWidth,
+	                                    fieldHeight);
+	_redField->setGeometryToLeft(fieldLeft, _brightnessField->y() + _brightnessField->height() + st::colorFieldSkip,
+	                             fieldWidth, fieldHeight);
 	_greenField->setGeometryToLeft(fieldLeft, _redField->y() + _redField->height(), fieldWidth, fieldHeight);
 	_blueField->setGeometryToLeft(fieldLeft, _greenField->y() + _greenField->height(), fieldWidth, fieldHeight);
-	_result->setGeometryToLeft(fieldLeft - (st::colorEditSkip + st::colorSliderWidth), _opacitySlider->y() + _opacitySlider->height() - st::colorSliderSkip - _result->height(), fieldWidth + (st::colorEditSkip + st::colorSliderWidth), fieldHeight);
+	_result->setGeometryToLeft(fieldLeft - (st::colorEditSkip + st::colorSliderWidth),
+	                           _opacitySlider->y() + _opacitySlider->height() - st::colorSliderSkip - _result->height(),
+	                           fieldWidth + (st::colorEditSkip + st::colorSliderWidth), fieldHeight);
 }
 
 void EditColorBox::paintEvent(QPaintEvent *e) {
@@ -801,7 +812,8 @@ void EditColorBox::paintEvent(QPaintEvent *e) {
 	Painter p(this);
 	Ui::Shadow::paint(p, _picker->geometry(), width(), st::defaultRoundShadow);
 
-	Ui::Shadow::paint(p, QRect(_newRect.x(), _newRect.y(), _newRect.width(), _newRect.height() + _currentRect.height()), width(), st::defaultRoundShadow);
+	Ui::Shadow::paint(p, QRect(_newRect.x(), _newRect.y(), _newRect.width(), _newRect.height() + _currentRect.height()),
+	                  width(), st::defaultRoundShadow);
 	if (_new.alphaF() < 1.) {
 		p.fillRect(myrtlrect(_newRect), _transparent);
 	}
@@ -870,9 +882,7 @@ void EditColorBox::updateFromResultField() {
 		}
 		return code - '0';
 	};
-	auto fromChars = [fromHex](QChar a, QChar b) {
-		return fromHex(a) * 0x10 + fromHex(b);
-	};
+	auto fromChars = [fromHex](QChar a, QChar b) { return fromHex(a) * 0x10 + fromHex(b); };
 	auto red = fromChars(text[0], text[1]);
 	auto green = fromChars(text[2], text[3]);
 	auto blue = fromChars(text[4], text[5]);

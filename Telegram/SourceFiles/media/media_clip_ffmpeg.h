@@ -26,8 +26,8 @@ extern "C" {
 
 } // extern "C"
 
-#include "media/media_clip_implementation.h"
 #include "media/media_child_ffmpeg_loader.h"
+#include "media/media_clip_implementation.h"
 
 namespace Media {
 namespace Clip {
@@ -129,7 +129,6 @@ private:
 
 	TimeMs _frameTime = 0;
 	TimeMs _frameTimeCorrection = 0;
-
 };
 
 } // namespace internal

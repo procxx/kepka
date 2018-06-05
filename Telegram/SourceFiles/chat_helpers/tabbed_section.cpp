@@ -20,16 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "chat_helpers/tabbed_section.h"
 
-#include "styles/style_chat_helpers.h"
 #include "chat_helpers/tabbed_selector.h"
+#include "styles/style_chat_helpers.h"
 
 namespace ChatHelpers {
 
-TabbedSection::TabbedSection(QWidget *parent, not_null<Window::Controller*> controller) : TabbedSection(parent, controller, object_ptr<TabbedSelector>(this, controller)) {
-}
+TabbedSection::TabbedSection(QWidget *parent, not_null<Window::Controller *> controller)
+    : TabbedSection(parent, controller, object_ptr<TabbedSelector>(this, controller)) {}
 
-TabbedSection::TabbedSection(QWidget *parent, not_null<Window::Controller*> controller, object_ptr<TabbedSelector> selector) : Window::AbstractSectionWidget(parent, controller)
-, _selector(std::move(selector)) {
+TabbedSection::TabbedSection(QWidget *parent, not_null<Window::Controller *> controller,
+                             object_ptr<TabbedSelector> selector)
+    : Window::AbstractSectionWidget(parent, controller)
+    , _selector(std::move(selector)) {
 	resize(st::emojiPanWidth, st::emojiPanMaxHeight);
 
 	_selector->setParent(this);

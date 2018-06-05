@@ -25,16 +25,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 // We use base::variant<> alias and base::get_if() helper while we don't have std::variant<>.
 namespace base {
 
-template <typename... Types>
-using variant = mapbox::util::variant<Types...>;
+template <typename... Types> using variant = mapbox::util::variant<Types...>;
 
-template <typename T, typename... Types>
-inline T *get_if(variant<Types...> *v) {
+template <typename T, typename... Types> inline T *get_if(variant<Types...> *v) {
 	return (v && v->template is<T>()) ? &v->template get_unchecked<T>() : nullptr;
 }
 
-template <typename T, typename... Types>
-inline const T *get_if(const variant<Types...> *v) {
+template <typename T, typename... Types> inline const T *get_if(const variant<Types...> *v) {
 	return (v && v->template is<T>()) ? &v->template get_unchecked<T>() : nullptr;
 }
 

@@ -21,21 +21,21 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "boxes/photo_crop_box.h"
 
 #include "lang/lang_keys.h"
-#include "messenger.h"
 #include "mainwidget.h"
+#include "messenger.h"
 #include "storage/file_upload.h"
-#include "ui/widgets/buttons.h"
 #include "styles/style_boxes.h"
+#include "ui/widgets/buttons.h"
 
-PhotoCropBox::PhotoCropBox(QWidget*, const QImage &img, const PeerId &peer)
-: _img(img)
-, _peerId(peer) {
+PhotoCropBox::PhotoCropBox(QWidget *, const QImage &img, const PeerId &peer)
+    : _img(img)
+    , _peerId(peer) {
 	init(img, nullptr);
 }
 
-PhotoCropBox::PhotoCropBox(QWidget*, const QImage &img, PeerData *peer)
-: _img(img)
-, _peerId(peer->id) {
+PhotoCropBox::PhotoCropBox(QWidget *, const QImage &img, PeerData *peer)
+    : _img(img)
+    , _peerId(peer->id) {
 	init(img, peer);
 }
 
@@ -53,11 +53,12 @@ void PhotoCropBox::prepare() {
 	addButton(langFactory(lng_settings_save), [this] { sendPhoto(); });
 	addButton(langFactory(lng_cancel), [this] { closeBox(); });
 	if (peerToBareInt(_peerId)) {
-		connect(this, SIGNAL(ready(const QImage&)), this, SLOT(onReady(const QImage&)));
+		connect(this, SIGNAL(ready(const QImage &)), this, SLOT(onReady(const QImage &)));
 	}
 
 	qint32 s = st::boxWideWidth - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
-	_thumb = App::pixmapFromImageInPlace(_img.scaled(s * cIntRetinaFactor(), s * cIntRetinaFactor(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	_thumb = App::pixmapFromImageInPlace(
+	    _img.scaled(s * cIntRetinaFactor(), s * cIntRetinaFactor(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 	_thumb.setDevicePixelRatio(cRetinaFactor());
 	_mask = QImage(_thumb.size(), QImage::Format_ARGB32_Premultiplied);
 	_mask.setDevicePixelRatio(cRetinaFactor());
@@ -77,7 +78,8 @@ void PhotoCropBox::prepare() {
 	_thumby = st::boxPhotoPadding.top();
 	setMouseTracking(true);
 
-	setDimensions(st::boxWideWidth, st::boxPhotoPadding.top() + _thumbh + st::boxPhotoPadding.bottom() + st::boxTextFont->height + st::cropSkip);
+	setDimensions(st::boxWideWidth, st::boxPhotoPadding.top() + _thumbh + st::boxPhotoPadding.bottom() +
+	                                    st::boxTextFont->height + st::cropSkip);
 }
 
 void PhotoCropBox::mousePressEvent(QMouseEvent *e) {
@@ -231,7 +233,9 @@ void PhotoCropBox::paintEvent(QPaintEvent *e) {
 
 	p.setFont(st::boxTextFont);
 	p.setPen(st::boxPhotoTextFg);
-	p.drawText(QRect(st::boxPhotoPadding.left(), st::boxPhotoPadding.top() + _thumbh + st::boxPhotoPadding.bottom(), width() - st::boxPhotoPadding.left() - st::boxPhotoPadding.right(), st::boxTextFont->height), _title, style::al_top);
+	p.drawText(QRect(st::boxPhotoPadding.left(), st::boxPhotoPadding.top() + _thumbh + st::boxPhotoPadding.bottom(),
+	                 width() - st::boxPhotoPadding.left() - st::boxPhotoPadding.right(), st::boxTextFont->height),
+	           _title, style::al_top);
 
 	p.translate(_thumbx, _thumby);
 	p.drawPixmap(0, 0, _thumb);

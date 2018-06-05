@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <QtCore/QString>
-#include <QtCore/QSet>
 #include "codegen/common/cpp_file.h"
 #include "codegen/numbers/parsed_file.h"
+#include <QtCore/QSet>
+#include <QtCore/QString>
+#include <memory>
 
 namespace codegen {
 namespace numbers {
@@ -43,7 +43,6 @@ private:
 	QString basePath_;
 	const common::ProjectInfo &project_;
 	std::unique_ptr<common::CppFile> source_, header_;
-
 };
 
 } // namespace numbers

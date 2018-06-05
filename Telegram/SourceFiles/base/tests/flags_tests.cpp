@@ -25,8 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace MethodNamespace {
 
-template <typename Enum>
-void TestFlags(Enum a, Enum b, Enum c) {
+template <typename Enum> void TestFlags(Enum a, Enum b, Enum c) {
 	auto abc = a | b;
 	abc |= c;
 	auto test = abc != a;
@@ -66,7 +65,9 @@ enum class Flag : int {
 	two = (1 << 1),
 	three = (1 << 2),
 };
-inline constexpr auto is_flag_type(Flag) { return true; }
+inline constexpr auto is_flag_type(Flag) {
+	return true;
+}
 
 class Class {
 public:
@@ -75,7 +76,9 @@ public:
 		two = (1 << 1),
 		three = (1 << 0),
 	};
-	friend inline constexpr auto is_flag_type(Public) { return true; }
+	friend inline constexpr auto is_flag_type(Public) {
+		return true;
+	}
 
 	static void TestPrivate();
 
@@ -85,8 +88,9 @@ private:
 		two = (1 << 1),
 		three = (1 << 2),
 	};
-	friend inline constexpr auto is_flag_type(Private) { return true; }
-
+	friend inline constexpr auto is_flag_type(Private) {
+		return true;
+	}
 };
 
 void Class::TestPrivate() {
@@ -107,34 +111,24 @@ enum class Flag : int {
 
 namespace base {
 
-template<>
-struct extended_flags<ExtendedNamespace::Flag> {
-	using type = FlagsNamespace::Flag;
-};
+template <> struct extended_flags<ExtendedNamespace::Flag> { using type = FlagsNamespace::Flag; };
 
 } // namespace base
 
 TEST_CASE("flags operators on scoped enums", "[flags]") {
 	SECTION("testing non-member flags") {
-		MethodNamespace::TestFlags(
-			FlagsNamespace::Flag::one,
-			FlagsNamespace::Flag::two,
-			FlagsNamespace::Flag::three);
+		MethodNamespace::TestFlags(FlagsNamespace::Flag::one, FlagsNamespace::Flag::two, FlagsNamespace::Flag::three);
 	}
 	SECTION("testing public member flags") {
-		MethodNamespace::TestFlags(
-			FlagsNamespace::Class::Public::one,
-			FlagsNamespace::Class::Public::two,
-			FlagsNamespace::Class::Public::three);
+		MethodNamespace::TestFlags(FlagsNamespace::Class::Public::one, FlagsNamespace::Class::Public::two,
+		                           FlagsNamespace::Class::Public::three);
 	}
 	SECTION("testing private member flags") {
 		FlagsNamespace::Class::TestPrivate();
 	}
 	SECTION("testing extended flags") {
-		MethodNamespace::TestFlags(
-			ExtendedNamespace::Flag::one,
-			ExtendedNamespace::Flag::two,
-			ExtendedNamespace::Flag::three);
+		MethodNamespace::TestFlags(ExtendedNamespace::Flag::one, ExtendedNamespace::Flag::two,
+		                           ExtendedNamespace::Flag::three);
 
 		auto onetwo = FlagsNamespace::Flag::one | ExtendedNamespace::Flag::two;
 		auto twoone = ExtendedNamespace::Flag::two | FlagsNamespace::Flag::one;

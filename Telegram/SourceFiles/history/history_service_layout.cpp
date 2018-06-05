@@ -20,30 +20,30 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "history/history_service_layout.h"
 
-#include "history/history_service.h"
-#include "history/history_media.h"
 #include "data/data_abstract_structure.h"
-#include "styles/style_history.h"
-#include "mainwidget.h"
+#include "history/history_media.h"
+#include "history/history_service.h"
 #include "lang/lang_keys.h"
+#include "mainwidget.h"
+#include "styles/style_history.h"
 
 namespace HistoryLayout {
 namespace {
 
 enum CircleMask {
-	NormalMask     = 0x00,
-	InvertedMask   = 0x01,
+	NormalMask = 0x00,
+	InvertedMask = 0x01,
 };
 enum CircleMaskMultiplier {
 	MaskMultiplier = 0x04,
 };
 enum CornerVerticalSide {
-	CornerTop      = 0x00,
-	CornerBottom   = 0x02,
+	CornerTop = 0x00,
+	CornerBottom = 0x02,
 };
 enum CornerHorizontalSide {
-	CornerLeft     = 0x00,
-	CornerRight    = 0x01,
+	CornerLeft = 0x00,
+	CornerRight = 0x01,
 };
 
 class ServiceMessageStyleData : public Data::AbstractStructure {
@@ -73,9 +73,7 @@ int historyServiceMsgInvertedRadius() {
 }
 
 int historyServiceMsgInvertedShrink() {
-	static int HistoryServiceMsgInvertedShrink = ([]() {
-		return (historyServiceMsgInvertedRadius() * 2) / 3;
-	})();
+	static int HistoryServiceMsgInvertedShrink = ([]() { return (historyServiceMsgInvertedRadius() * 2) / 3; })();
 	return HistoryServiceMsgInvertedShrink;
 }
 
@@ -142,7 +140,8 @@ int paintBubbleSide(Painter &p, int x, int y, int width, SideStyle style, Corner
 	return 0;
 }
 
-void paintBubblePart(Painter &p, int x, int y, int width, int height, SideStyle topStyle, SideStyle bottomStyle, bool forceShrink = false) {
+void paintBubblePart(Painter &p, int x, int y, int width, int height, SideStyle topStyle, SideStyle bottomStyle,
+                     bool forceShrink = false) {
 	if (topStyle == SideStyle::Inverted || bottomStyle == SideStyle::Inverted || forceShrink) {
 		width -= historyServiceMsgInvertedShrink() * 2;
 		x += historyServiceMsgInvertedShrink();
@@ -175,24 +174,24 @@ void paintPreparedDate(Painter &p, const QString &dateText, int dateTextWidth, i
 
 	left += (w - dateTextWidth - st::msgServicePadding.left() - st::msgServicePadding.right()) / 2;
 	int height = st::msgServicePadding.top() + st::msgServiceFont->height + st::msgServicePadding.bottom();
-	ServiceMessagePainter::paintBubble(p, left, y + st::msgServiceMargin.top(), dateTextWidth + st::msgServicePadding.left() + st::msgServicePadding.left(), height);
+	ServiceMessagePainter::paintBubble(p, left, y + st::msgServiceMargin.top(),
+	                                   dateTextWidth + st::msgServicePadding.left() + st::msgServicePadding.left(),
+	                                   height);
 
 	p.setFont(st::msgServiceFont);
 	p.setPen(st::msgServiceFg);
-	p.drawText(left + st::msgServicePadding.left(), y + st::msgServiceMargin.top() + st::msgServicePadding.top() + st::msgServiceFont->ascent, dateText);
+	p.drawText(left + st::msgServicePadding.left(),
+	           y + st::msgServiceMargin.top() + st::msgServicePadding.top() + st::msgServiceFont->ascent, dateText);
 }
 
-} // namepsace
+} // namespace
 
 int WideChatWidth() {
 	return st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left();
 }
 
-void ServiceMessagePainter::paint(
-		Painter &p,
-		not_null<const HistoryService*> message,
-		const PaintContext &context,
-		int height) {
+void ServiceMessagePainter::paint(Painter &p, not_null<const HistoryService *> message, const PaintContext &context,
+                                  int height) {
 	auto g = message->countGeometry();
 	if (g.width() < 1) return;
 
@@ -206,7 +205,9 @@ void ServiceMessagePainter::paint(
 			auto skiptop = top - fill;
 			auto fillheight = fill + height + fill;
 
-			auto dt = (animms > st::activeFadeInDuration) ? (1. - (animms - st::activeFadeInDuration) / double(st::activeFadeOutDuration)) : (animms / double(st::activeFadeInDuration));
+			auto dt = (animms > st::activeFadeInDuration) ?
+			              (1. - (animms - st::activeFadeInDuration) / double(st::activeFadeOutDuration)) :
+			              (animms / double(st::activeFadeInDuration));
 			auto o = p.opacity();
 			p.setOpacity(o * dt);
 			p.fillRect(0, skiptop, message->history()->width, fillheight, st::defaultTextPalette.selectOverlay);
@@ -218,7 +219,8 @@ void ServiceMessagePainter::paint(
 
 	if (auto media = message->getMedia()) {
 		height -= st::msgServiceMargin.top() + media->height();
-		auto left = st::msgServiceMargin.left() + (g.width() - media->maxWidth()) / 2, top = st::msgServiceMargin.top() + height + st::msgServiceMargin.top();
+		auto left = st::msgServiceMargin.left() + (g.width() - media->maxWidth()) / 2,
+		     top = st::msgServiceMargin.top() + height + st::msgServiceMargin.top();
 		p.translate(left, top);
 		media->draw(p, context.clip.translated(-left, -top), message->skipTextSelection(context.selection), context.ms);
 		p.translate(-left, -top);
@@ -252,7 +254,8 @@ void ServiceMessagePainter::paintBubble(Painter &p, int x, int y, int w, int h) 
 	paintBubblePart(p, x, y, w, h, SideStyle::Rounded, SideStyle::Rounded);
 }
 
-void ServiceMessagePainter::paintComplexBubble(Painter &p, int left, int width, const Text &text, const QRect &textRect) {
+void ServiceMessagePainter::paintComplexBubble(Painter &p, int left, int width, const Text &text,
+                                               const QRect &textRect) {
 	createCircleMasks();
 
 	auto lineWidths = countLineWidths(text, textRect);
@@ -288,7 +291,8 @@ void ServiceMessagePainter::paintComplexBubble(Painter &p, int left, int width, 
 			richHeight -= st::msgServicePadding.top();
 		}
 		forceShrink = previousShrink && (richWidth == previousRichWidth);
-		paintBubblePart(p, left + ((width - richWidth) / 2), y, richWidth, richHeight, topStyle, bottomStyle, forceShrink);
+		paintBubblePart(p, left + ((width - richWidth) / 2), y, richWidth, richHeight, topStyle, bottomStyle,
+		                forceShrink);
 		y += richHeight;
 
 		previousShrink = forceShrink || (topStyle == SideStyle::Inverted) || (bottomStyle == SideStyle::Inverted);
@@ -310,7 +314,8 @@ QVector<int> ServiceMessagePainter::countLineWidths(const Text &text, const QRec
 	lineWidths.reserve(linesCount);
 	text.countLineWidths(textRect.width(), &lineWidths);
 
-	int minDelta = 2 * (historyServiceMsgRadius() + historyServiceMsgInvertedRadius() - historyServiceMsgInvertedShrink());
+	int minDelta =
+	    2 * (historyServiceMsgRadius() + historyServiceMsgInvertedRadius() - historyServiceMsgInvertedShrink());
 	for (int i = 0, count = lineWidths.size(); i < count; ++i) {
 		int width = std::max(lineWidths.at(i), 0);
 		if (i > 0) {
@@ -338,8 +343,7 @@ QVector<int> ServiceMessagePainter::countLineWidths(const Text &text, const QRec
 	return lineWidths;
 }
 
-void paintEmpty(Painter &p, int width, int height) {
-}
+void paintEmpty(Painter &p, int width, int height) {}
 
 void serviceColorsUpdated() {
 	if (serviceMessageStyle) {
@@ -351,21 +355,29 @@ void serviceColorsUpdated() {
 
 void paintBubble(Painter &p, QRect rect, int outerWidth, bool selected, bool outbg, RectPart tailSide) {
 	auto &bg = selected ? (outbg ? st::msgOutBgSelected : st::msgInBgSelected) : (outbg ? st::msgOutBg : st::msgInBg);
-	auto &sh = selected ? (outbg ? st::msgOutShadowSelected : st::msgInShadowSelected) : (outbg ? st::msgOutShadow : st::msgInShadow);
-	auto cors = selected ? (outbg ? MessageOutSelectedCorners : MessageInSelectedCorners) : (outbg ? MessageOutCorners : MessageInCorners);
+	auto &sh = selected ? (outbg ? st::msgOutShadowSelected : st::msgInShadowSelected) :
+	                      (outbg ? st::msgOutShadow : st::msgInShadow);
+	auto cors = selected ? (outbg ? MessageOutSelectedCorners : MessageInSelectedCorners) :
+	                       (outbg ? MessageOutCorners : MessageInCorners);
 	auto parts = RectPart::FullTop | RectPart::NoTopBottom | RectPart::Bottom;
 	if (tailSide == RectPart::Right) {
 		parts |= RectPart::BottomLeft;
-		p.fillRect(rect.x() + rect.width() - st::historyMessageRadius, rect.y() + rect.height() - st::historyMessageRadius, st::historyMessageRadius, st::historyMessageRadius, bg);
+		p.fillRect(rect.x() + rect.width() - st::historyMessageRadius,
+		           rect.y() + rect.height() - st::historyMessageRadius, st::historyMessageRadius,
+		           st::historyMessageRadius, bg);
 		auto &tail = selected ? st::historyBubbleTailOutRightSelected : st::historyBubbleTailOutRight;
 		tail.paint(p, rect.x() + rect.width(), rect.y() + rect.height() - tail.height(), outerWidth);
-		p.fillRect(rect.x() + rect.width() - st::historyMessageRadius, rect.y() + rect.height(), st::historyMessageRadius + tail.width(), st::msgShadow, sh);
+		p.fillRect(rect.x() + rect.width() - st::historyMessageRadius, rect.y() + rect.height(),
+		           st::historyMessageRadius + tail.width(), st::msgShadow, sh);
 	} else if (tailSide == RectPart::Left) {
 		parts |= RectPart::BottomRight;
-		p.fillRect(rect.x(), rect.y() + rect.height() - st::historyMessageRadius, st::historyMessageRadius, st::historyMessageRadius, bg);
-		auto &tail = selected ? (outbg ? st::historyBubbleTailOutLeftSelected : st::historyBubbleTailInLeftSelected) : (outbg ? st::historyBubbleTailOutLeft : st::historyBubbleTailInLeft);
+		p.fillRect(rect.x(), rect.y() + rect.height() - st::historyMessageRadius, st::historyMessageRadius,
+		           st::historyMessageRadius, bg);
+		auto &tail = selected ? (outbg ? st::historyBubbleTailOutLeftSelected : st::historyBubbleTailInLeftSelected) :
+		                        (outbg ? st::historyBubbleTailOutLeft : st::historyBubbleTailInLeft);
 		tail.paint(p, rect.x() - tail.width(), rect.y() + rect.height() - tail.height(), outerWidth);
-		p.fillRect(rect.x() - tail.width(), rect.y() + rect.height(), st::historyMessageRadius + tail.width(), st::msgShadow, sh);
+		p.fillRect(rect.x() - tail.width(), rect.y() + rect.height(), st::historyMessageRadius + tail.width(),
+		           st::msgShadow, sh);
 	} else {
 		parts |= RectPart::FullBottom;
 	}

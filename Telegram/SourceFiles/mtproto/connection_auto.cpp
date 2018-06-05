@@ -26,13 +26,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace MTP {
 namespace internal {
 
-AutoConnection::AutoConnection(QThread *thread) : AbstractTCPConnection(thread)
-, status(WaitingBoth)
-, tcpNonce(rand_value<MTPint128>())
-, httpNonce(rand_value<MTPint128>())
-, _flagsTcp(0)
-, _flagsHttp(0)
-, _tcpTimeout(MTPMinReceiveDelay) {
+AutoConnection::AutoConnection(QThread *thread)
+    : AbstractTCPConnection(thread)
+    , status(WaitingBoth)
+    , tcpNonce(rand_value<MTPint128>())
+    , httpNonce(rand_value<MTPint128>())
+    , _flagsTcp(0)
+    , _flagsHttp(0)
+    , _tcpTimeout(MTPMinReceiveDelay) {
 	manager.moveToThread(thread);
 #ifndef TDESKTOP_DISABLE_NETWORK_PROXY
 	manager.setProxy(QNetworkProxy(QNetworkProxy::DefaultProxy));
@@ -57,7 +58,8 @@ AutoConnection::AutoConnection(QThread *thread) : AbstractTCPConnection(thread)
 
 void AutoConnection::onHttpStart() {
 	if (status == HttpReady) {
-		DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by timer").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+		DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by timer")
+		              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 		status = UsingHttp;
 		sock.disconnectFromHost();
 		emit connected();
@@ -68,7 +70,8 @@ void AutoConnection::onSocketConnected() {
 	if (status == HttpReady || status == WaitingBoth || status == WaitingTcp) {
 		mtpBuffer buffer(preparePQFake(tcpNonce));
 
-		DEBUG_LOG(("Connection Info: sending fake req_pq through TCP/%1 transport").arg((_flagsTcp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+		DEBUG_LOG(("Connection Info: sending fake req_pq through TCP/%1 transport")
+		              .arg((_flagsTcp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 
 		if (_tcpTimeout < 0) _tcpTimeout = -_tcpTimeout;
 		tcpTimeoutTimer.start(_tcpTimeout);
@@ -85,7 +88,8 @@ void AutoConnection::onTcpTimeoutTimer() {
 		_tcpTimeout = -_tcpTimeout;
 
 		QAbstractSocket::SocketState state = sock.state();
-		if (state == QAbstractSocket::ConnectedState || state == QAbstractSocket::ConnectingState || state == QAbstractSocket::HostLookupState) {
+		if (state == QAbstractSocket::ConnectedState || state == QAbstractSocket::ConnectingState ||
+		    state == QAbstractSocket::HostLookupState) {
 			sock.disconnectFromHost();
 		} else if (state != QAbstractSocket::ClosingState) {
 			sock.connectToHost(QHostAddress(_addrTcp), _portTcp);
@@ -106,7 +110,8 @@ void AutoConnection::onSocketDisconnected() {
 	} else if (status == WaitingTcp || status == UsingTcp) {
 		emit disconnected();
 	} else if (status == HttpReady) {
-		DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by socket disconnect").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+		DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by socket disconnect")
+		              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 		status = UsingHttp;
 		emit connected();
 	}
@@ -134,10 +139,10 @@ void AutoConnection::httpSend(mtpBuffer &buffer) {
 
 	QNetworkRequest request(address);
 	request.setHeader(QNetworkRequest::ContentLengthHeader, QVariant(requestSize));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(qsl("application/x-www-form-urlencoded")));
+	request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant(qsl("application/x-www-form-urlencoded")));
 
 	TCP_LOG(("HTTP Info: sending %1 len request").arg(requestSize));
-	requests.insert(manager.post(request, QByteArray((const char*)(&buffer[2]), requestSize)));
+	requests.insert(manager.post(request, QByteArray((const char *)(&buffer[2]), requestSize)));
 }
 
 void AutoConnection::disconnectFromServer() {
@@ -151,7 +156,7 @@ void AutoConnection::disconnectFromServer() {
 		(*i)->deleteLater();
 	}
 
-	disconnect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(requestFinished(QNetworkReply*)));
+	disconnect(&manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 
 	address = QUrl();
 
@@ -176,13 +181,16 @@ void AutoConnection::connectHttp(const DcOptions::Endpoint &endpoint) {
 	_flagsHttp = endpoint.flags;
 
 	// not endpoint.port - always 80 port for http transport
-	address = QUrl(((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? qsl("http://[%1]:%2/api") : qsl("http://%1:%2/api")).arg(_addrHttp).arg(80));
+	address = QUrl(((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? qsl("http://[%1]:%2/api") : qsl("http://%1:%2/api"))
+	                   .arg(_addrHttp)
+	                   .arg(80));
 	TCP_LOG(("HTTP Info: address is %1").arg(address.toDisplayString()));
-	connect(&manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(requestFinished(QNetworkReply*)));
+	connect(&manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(requestFinished(QNetworkReply *)));
 
 	mtpBuffer buffer(preparePQFake(httpNonce));
 
-	DEBUG_LOG(("Connection Info: sending fake req_pq through HTTP/%1 transport").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+	DEBUG_LOG(("Connection Info: sending fake req_pq through HTTP/%1 transport")
+	              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 
 	httpSend(buffer);
 }
@@ -218,7 +226,8 @@ void AutoConnection::requestFinished(QNetworkReply *reply) {
 							status = HttpReady;
 							httpStartTimer.start(MTPTcpConnectionWaitTimeout);
 						} else {
-							DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by pq-response, awaited").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+							DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by pq-response, awaited")
+							              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 							status = UsingHttp;
 							sock.disconnectFromHost();
 							emit connected();
@@ -260,7 +269,8 @@ void AutoConnection::socketPacket(const char *packet, quint32 length) {
 			status = WaitingHttp;
 			sock.disconnectFromHost();
 		} else if (status == HttpReady) {
-			DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by bad tcp response, ready").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+			DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by bad tcp response, ready")
+			              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 			status = UsingHttp;
 			sock.disconnectFromHost();
 			emit connected();
@@ -278,7 +288,8 @@ void AutoConnection::socketPacket(const char *packet, quint32 length) {
 			auto res_pq = readPQFakeReply(data);
 			const auto &res_pq_data(res_pq.c_resPQ());
 			if (res_pq_data.vnonce == tcpNonce) {
-				DEBUG_LOG(("Connection Info: TCP/%1-transport chosen by pq-response").arg((_flagsTcp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+				DEBUG_LOG(("Connection Info: TCP/%1-transport chosen by pq-response")
+				              .arg((_flagsTcp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 				status = UsingTcp;
 				emit connected();
 			}
@@ -288,7 +299,8 @@ void AutoConnection::socketPacket(const char *packet, quint32 length) {
 				status = WaitingHttp;
 				sock.disconnectFromHost();
 			} else if (status == HttpReady) {
-				DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by bad tcp response, awaited").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+				DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by bad tcp response, awaited")
+				              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 				status = UsingHttp;
 				sock.disconnectFromHost();
 				emit connected();
@@ -328,7 +340,8 @@ void AutoConnection::socketError(QAbstractSocket::SocketError e) {
 	if (status == WaitingBoth) {
 		status = WaitingHttp;
 	} else if (status == HttpReady) {
-		DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by tcp error, ready").arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
+		DEBUG_LOG(("Connection Info: HTTP/%1-transport chosen by tcp error, ready")
+		              .arg((_flagsHttp & MTPDdcOption::Flag::f_ipv6) ? "IPv6" : "IPv4"));
 		status = UsingHttp;
 		emit connected();
 	} else if (status == WaitingTcp || status == UsingTcp) {

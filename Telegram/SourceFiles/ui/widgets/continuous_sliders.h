@@ -23,8 +23,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/lambda.h"
 #include "core/single_timer.h"
 #include "styles/style_widgets.h"
-#include "ui/twidget.h"
 #include "ui/animation.h"
+#include "ui/twidget.h"
 namespace Ui {
 
 class ContinuousSlider : public TWidget {
@@ -114,7 +114,6 @@ private:
 	double _downValue = 0.;
 
 	double _fadeOpacity = 1.;
-
 };
 
 class FilledSlider : public ContinuousSlider {
@@ -129,7 +128,6 @@ private:
 	double getOverDuration() const override;
 
 	const style::FilledSlider &_st;
-
 };
 
 class MediaSlider : public ContinuousSlider {
@@ -150,7 +148,6 @@ private:
 
 	const style::MediaSlider &_st;
 	bool _alwaysDisplayMarker = false;
-
 };
 
 } // namespace Ui

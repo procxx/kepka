@@ -20,11 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QIcon>
-#include <QTimer>
-#include <QMimeData>
-#include "window/window_title.h"
 #include "base/timer.h"
+#include "window/window_title.h"
+#include <QIcon>
+#include <QMimeData>
+#include <QTimer>
 
 class MediaView;
 class TWidget;
@@ -83,8 +83,7 @@ public:
 	bool canExtendWidthBy(int addToWidth);
 	void tryToExtendWidthBy(int addToWidth);
 
-	virtual void updateTrayMenu(bool force = false) {
-	}
+	virtual void updateTrayMenu(bool force = false) {}
 
 	virtual ~MainWindow();
 
@@ -113,42 +112,33 @@ protected:
 	void handleStateChanged(Qt::WindowState state);
 	void handleActiveChanged();
 
-	virtual void initHook() {
-	}
+	virtual void initHook() {}
 
-	virtual void updateIsActiveHook() {
-	}
+	virtual void updateIsActiveHook() {}
 
 	void clearWidgets();
-	virtual void clearWidgetsHook() {
-	}
+	virtual void clearWidgetsHook() {}
 
 	virtual void updateWindowIcon();
 
-	virtual void stateChangedHook(Qt::WindowState state) {
-	}
+	virtual void stateChangedHook(Qt::WindowState state) {}
 
-	virtual void titleVisibilityChangedHook() {
-	}
+	virtual void titleVisibilityChangedHook() {}
 
-	virtual void unreadCounterChangedHook() {
-	}
+	virtual void unreadCounterChangedHook() {}
 
 	virtual void closeWithoutDestroy() {
 		hide();
 	}
 
-	virtual void updateGlobalMenuHook() {
-	}
+	virtual void updateGlobalMenuHook() {}
 
 	virtual bool hasTrayIcon() const {
 		return false;
 	}
-	virtual void showTrayTooltip() {
-	}
+	virtual void showTrayTooltip() {}
 
-	virtual void workmodeUpdated(DBIWorkMode mode) {
-	}
+	virtual void workmodeUpdated(DBIWorkMode mode) {}
 
 	virtual void updateControlsGeometry();
 
@@ -175,9 +165,9 @@ private:
 	bool _positionInited = false;
 
 	std::unique_ptr<Window::Controller> _controller;
-	object_ptr<TitleWidget> _title = { nullptr };
+	object_ptr<TitleWidget> _title = {nullptr};
 	object_ptr<TWidget> _body;
-	object_ptr<TWidget> _rightColumn = { nullptr };
+	object_ptr<TWidget> _rightColumn = {nullptr};
 
 	QIcon _icon;
 	QString _titleText;
@@ -189,7 +179,6 @@ private:
 
 	base::Observable<void> _dragFinished;
 	base::Observable<void> _widgetGrabbed;
-
 };
 
 } // namespace Window

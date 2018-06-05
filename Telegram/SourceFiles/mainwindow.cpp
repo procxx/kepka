@@ -20,58 +20,56 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "mainwindow.h"
 
-#include "dialogs/dialogs_layout.h"
-#include "styles/style_dialogs.h"
-#include "styles/style_window.h"
-#include "styles/style_boxes.h"
-#include "ui/widgets/popup_menu.h"
-#include "ui/widgets/buttons.h"
+#include "apiwrap.h"
+#include "application.h"
+#include "auth_session.h"
+#include "base/task_queue.h"
 #include "base/zlib_help.h"
+#include "boxes/add_contact_box.h"
+#include "boxes/confirm_box.h"
+#include "boxes/connection_box.h"
+#include "dialogs/dialogs_layout.h"
+#include "intro/introwidget.h"
 #include "lang/lang_cloud_manager.h"
 #include "lang/lang_instance.h"
 #include "lang/lang_keys.h"
-#include "shortcuts.h"
-#include "messenger.h"
-#include "application.h"
-#include "platform/platform_specific.h"
-#include "passcodewidget.h"
-#include "intro/introwidget.h"
-#include "mainwidget.h"
 #include "layerwidget.h"
-#include "boxes/confirm_box.h"
-#include "boxes/add_contact_box.h"
-#include "boxes/connection_box.h"
-#include "observer_peer.h"
+#include "mainwidget.h"
 #include "mediaview.h"
-#include "storage/localstorage.h"
-#include "apiwrap.h"
-#include "settings/settings_widget.h"
+#include "messenger.h"
+#include "observer_peer.h"
+#include "passcodewidget.h"
 #include "platform/platform_notifications_manager.h"
+#include "platform/platform_specific.h"
+#include "settings/settings_widget.h"
+#include "shortcuts.h"
+#include "storage/localstorage.h"
+#include "styles/style_boxes.h"
+#include "styles/style_dialogs.h"
+#include "styles/style_window.h"
+#include "ui/widgets/buttons.h"
+#include "ui/widgets/popup_menu.h"
 #include "window/notifications_manager.h"
 #include "window/themes/window_theme.h"
 #include "window/themes/window_theme_warning.h"
-#include "window/window_main_menu.h"
-#include "base/task_queue.h"
-#include "auth_session.h"
 #include "window/window_controller.h"
+#include "window/window_main_menu.h"
 
-#include <QWindow>
 #include <QAction>
-#include <QScreen>
-#include <QFileDialog>
-#include <QStandardPaths>
 #include <QDesktopServices>
+#include <QFileDialog>
 #include <QHttpMultiPart>
+#include <QScreen>
+#include <QStandardPaths>
+#include <QWindow>
 
 namespace {
 
 // Code for testing languages is F7-F6-F7-F8
 void FeedLangTestingKey(int key) {
 	static auto codeState = 0;
-	if ((codeState == 0 && key == Qt::Key_F7)
-		|| (codeState == 1 && key == Qt::Key_F6)
-		|| (codeState == 2 && key == Qt::Key_F7)
-		|| (codeState == 3 && key == Qt::Key_F8)) {
+	if ((codeState == 0 && key == Qt::Key_F7) || (codeState == 1 && key == Qt::Key_F6) ||
+	    (codeState == 2 && key == Qt::Key_F7) || (codeState == 3 && key == Qt::Key_F8)) {
 		++codeState;
 	} else {
 		codeState = 0;
@@ -84,8 +82,9 @@ void FeedLangTestingKey(int key) {
 
 } // namespace
 
-ConnectingWidget::ConnectingWidget(QWidget *parent, const QString &text, const QString &reconnect) : TWidget(parent)
-, _reconnect(this, QString()) {
+ConnectingWidget::ConnectingWidget(QWidget *parent, const QString &text, const QString &reconnect)
+    : TWidget(parent)
+    , _reconnect(this, QString()) {
 	set(text, reconnect);
 	connect(_reconnect, SIGNAL(clicked()), this, SLOT(onReconnect()));
 }
@@ -99,10 +98,14 @@ void ConnectingWidget::set(const QString &text, const QString &reconnect) {
 	} else {
 		_reconnect->setText(reconnect);
 		_reconnect->show();
-		_reconnect->move(st::connectingPadding.left() + _textWidth, st::boxRoundShadow.extend.top() + st::connectingPadding.top());
+		_reconnect->move(st::connectingPadding.left() + _textWidth,
+		                 st::boxRoundShadow.extend.top() + st::connectingPadding.top());
 		_reconnectWidth = _reconnect->width();
 	}
-	resize(st::connectingPadding.left() + _textWidth + _reconnectWidth + st::connectingPadding.right() + st::boxRoundShadow.extend.right(), st::boxRoundShadow.extend.top() + st::connectingPadding.top() + st::normalFont->height + st::connectingPadding.bottom());
+	resize(st::connectingPadding.left() + _textWidth + _reconnectWidth + st::connectingPadding.right() +
+	           st::boxRoundShadow.extend.right(),
+	       st::boxRoundShadow.extend.top() + st::connectingPadding.top() + st::normalFont->height +
+	           st::connectingPadding.bottom());
 	update();
 }
 
@@ -110,13 +113,21 @@ void ConnectingWidget::paintEvent(QPaintEvent *e) {
 	Painter p(this);
 
 	auto sides = RectPart::Top | RectPart::Right;
-	Ui::Shadow::paint(p, QRect(0, st::boxRoundShadow.extend.top(), width() - st::boxRoundShadow.extend.right(), height() - st::boxRoundShadow.extend.top()), width(), st::boxRoundShadow, sides);
+	Ui::Shadow::paint(p,
+	                  QRect(0, st::boxRoundShadow.extend.top(), width() - st::boxRoundShadow.extend.right(),
+	                        height() - st::boxRoundShadow.extend.top()),
+	                  width(), st::boxRoundShadow, sides);
 	auto parts = RectPart::Top | RectPart::TopRight | RectPart::Center | RectPart::Right;
-	App::roundRect(p, QRect(-st::boxRadius, st::boxRoundShadow.extend.top(), width() - st::boxRoundShadow.extend.right() + st::boxRadius, height() - st::boxRoundShadow.extend.top() + st::boxRadius), st::boxBg, BoxCorners, nullptr, parts);
+	App::roundRect(p,
+	               QRect(-st::boxRadius, st::boxRoundShadow.extend.top(),
+	                     width() - st::boxRoundShadow.extend.right() + st::boxRadius,
+	                     height() - st::boxRoundShadow.extend.top() + st::boxRadius),
+	               st::boxBg, BoxCorners, nullptr, parts);
 
 	p.setFont(st::normalFont);
 	p.setPen(st::windowSubTextFg);
-	p.drawText(st::connectingPadding.left(), st::boxRoundShadow.extend.top() + st::connectingPadding.top() + st::normalFont->ascent, _text);
+	p.drawText(st::connectingPadding.left(),
+	           st::boxRoundShadow.extend.top() + st::connectingPadding.top() + st::normalFont->ascent, _text);
 }
 
 void ConnectingWidget::onReconnect() {
@@ -144,9 +155,7 @@ MainWindow::MainWindow() {
 	setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
 
 	subscribe(Global::RefSelfChanged(), [this] { updateGlobalMenu(); });
-	subscribe(Window::Theme::Background(), [this](const Window::Theme::BackgroundUpdate &data) {
-		themeUpdated(data);
-	});
+	subscribe(Window::Theme::Background(), [this](const Window::Theme::BackgroundUpdate &data) { themeUpdated(data); });
 	subscribe(Messenger::Instance().passcodedChanged(), [this] { updateGlobalMenu(); });
 
 	setAttribute(Qt::WA_NoSystemBackground);
@@ -169,19 +178,21 @@ void MainWindow::firstShow() {
 #endif // else for Q_OS_WIN
 
 	auto isLinux = (cPlatform() == dbipLinux32 || cPlatform() == dbipLinux64);
-	auto notificationActionText = lang(Global::DesktopNotify()
-		? lng_disable_notifications_from_tray
-		: lng_enable_notifications_from_tray);
+	auto notificationActionText =
+	    lang(Global::DesktopNotify() ? lng_disable_notifications_from_tray : lng_enable_notifications_from_tray);
 
 	if (isLinux) {
-		trayIconMenu->addAction(lng_open_from_tray(lt_appname, lang(appname)), this, SLOT(showFromTray()))->setEnabled(true);
+		trayIconMenu->addAction(lng_open_from_tray(lt_appname, lang(appname)), this, SLOT(showFromTray()))
+		    ->setEnabled(true);
 		trayIconMenu->addAction(lang(lng_minimize_to_tray), this, SLOT(minimizeToTray()))->setEnabled(true);
 		trayIconMenu->addAction(notificationActionText, this, SLOT(toggleDisplayNotifyFromTray()))->setEnabled(true);
-		trayIconMenu->addAction(lng_quit_from_tray(lt_appname, lang(appname)), this, SLOT(quitFromTray()))->setEnabled(true);
+		trayIconMenu->addAction(lng_quit_from_tray(lt_appname, lang(appname)), this, SLOT(quitFromTray()))
+		    ->setEnabled(true);
 	} else {
 		trayIconMenu->addAction(lang(lng_minimize_to_tray), this, SLOT(minimizeToTray()))->setEnabled(true);
 		trayIconMenu->addAction(notificationActionText, this, SLOT(toggleDisplayNotifyFromTray()))->setEnabled(true);
-		trayIconMenu->addAction(lng_quit_from_tray(lt_appname, lang(appname)), this, SLOT(quitFromTray()))->setEnabled(true);
+		trayIconMenu->addAction(lng_quit_from_tray(lt_appname, lang(appname)), this, SLOT(quitFromTray()))
+		    ->setEnabled(true);
 	}
 	Global::RefWorkMode().setForced(Global::WorkMode().value(), true);
 
@@ -272,7 +283,8 @@ void MainWindow::setupIntro() {
 	}
 }
 
-void MainWindow::serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date, bool force) {
+void MainWindow::serviceNotification(const TextWithEntities &message, const MTPMessageMedia &media, qint32 date,
+                                     bool force) {
 	if (date <= 0) date = unixtime();
 	auto h = (_main && App::userLoaded(ServiceUserId)) ? App::history(ServiceUserId).get() : nullptr;
 	if (!h || (!force && h->isEmpty())) {
@@ -294,10 +306,16 @@ void MainWindow::sendServiceHistoryRequest() {
 
 	UserData *user = App::userLoaded(ServiceUserId);
 	if (!user) {
-		auto userFlags = MTPDuser::Flag::f_first_name | MTPDuser::Flag::f_phone | MTPDuser::Flag::f_status | MTPDuser::Flag::f_verified;
-		user = App::feedUsers(MTP_vector<MTPUser>(1, MTP_user(MTP_flags(userFlags), MTP_int(ServiceUserId), MTPlong(), MTP_string("Telegram"), MTPstring(), MTPstring(), MTP_string("42777"), MTP_userProfilePhotoEmpty(), MTP_userStatusRecently(), MTPint(), MTPstring(), MTPstring(), MTPstring())));
+		auto userFlags = MTPDuser::Flag::f_first_name | MTPDuser::Flag::f_phone | MTPDuser::Flag::f_status |
+		                 MTPDuser::Flag::f_verified;
+		user = App::feedUsers(MTP_vector<MTPUser>(
+		    1, MTP_user(MTP_flags(userFlags), MTP_int(ServiceUserId), MTPlong(), MTP_string("Telegram"), MTPstring(),
+		                MTPstring(), MTP_string("42777"), MTP_userProfilePhotoEmpty(), MTP_userStatusRecently(),
+		                MTPint(), MTPstring(), MTPstring(), MTPstring())));
 	}
-	_serviceHistoryRequest = MTP::send(MTPmessages_GetHistory(user->input, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(1), MTP_int(0), MTP_int(0)), _main->rpcDone(&MainWidget::serviceHistoryDone), _main->rpcFail(&MainWidget::serviceHistoryFail));
+	_serviceHistoryRequest = MTP::send(
+	    MTPmessages_GetHistory(user->input, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(1), MTP_int(0), MTP_int(0)),
+	    _main->rpcDone(&MainWidget::serviceHistoryDone), _main->rpcFail(&MainWidget::serviceHistoryFail));
 }
 
 void MainWindow::setupMain(const MTPUser *self) {
@@ -385,10 +403,12 @@ void MainWindow::updateConnectingStatus() {
 	auto throughProxy = (Global::ConnectionType() != dbictAuto);
 	if (state == MTP::ConnectingState || state == MTP::DisconnectedState || (state < 0 && state > -600)) {
 		if (_main || getms() > 5000 || _connecting) {
-			showConnecting(lang(throughProxy ? lng_connecting_to_proxy : lng_connecting), throughProxy ? lang(lng_connecting_settings) : QString());
+			showConnecting(lang(throughProxy ? lng_connecting_to_proxy : lng_connecting),
+			               throughProxy ? lang(lng_connecting_settings) : QString());
 		}
 	} else if (state < 0) {
-		showConnecting(lng_reconnecting(lt_count, ((-state) / 1000) + 1), lang(throughProxy ? lng_connecting_settings : lng_reconnecting_try_now));
+		showConnecting(lng_reconnecting(lt_count, ((-state) / 1000) + 1),
+		               lang(throughProxy ? lng_connecting_settings : lng_reconnecting_try_now));
 		QTimer::singleShot((-state) % 1000, this, SLOT(updateConnectingStatus()));
 	} else {
 		hideConnecting();
@@ -558,7 +578,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *e) {
 	switch (e->type()) {
 	case QEvent::KeyPress: {
 		if (cDebug() && e->type() == QEvent::KeyPress && object == windowHandle()) {
-			auto key = static_cast<QKeyEvent*>(e)->key();
+			auto key = static_cast<QKeyEvent *>(e)->key();
 			FeedLangTestingKey(key);
 		}
 	} break;
@@ -576,17 +596,17 @@ bool MainWindow::eventFilter(QObject *object, QEvent *e) {
 
 	case QEvent::ApplicationActivate: {
 		if (object == QCoreApplication::instance()) {
-			InvokeQueued(this, [this] {
-				handleActiveChanged();
-			});
+			InvokeQueued(this, [this] { handleActiveChanged(); });
 		}
 	} break;
 
 	case QEvent::WindowStateChange: {
 		if (object == this) {
-			auto state = (windowState() & Qt::WindowMinimized) ? Qt::WindowMinimized :
-				((windowState() & Qt::WindowMaximized) ? Qt::WindowMaximized :
-				((windowState() & Qt::WindowFullScreen) ? Qt::WindowFullScreen : Qt::WindowNoState));
+			auto state = (windowState() & Qt::WindowMinimized) ?
+			                 Qt::WindowMinimized :
+			                 ((windowState() & Qt::WindowMaximized) ?
+			                      Qt::WindowMaximized :
+			                      ((windowState() & Qt::WindowFullScreen) ? Qt::WindowFullScreen : Qt::WindowNoState));
 			handleStateChanged(state);
 		}
 	} break;
@@ -603,7 +623,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *e) {
 }
 
 void MainWindow::updateTrayMenu(bool force) {
-    if (!trayIconMenu || (cPlatform() == dbipWindows && !force)) return;
+	if (!trayIconMenu || (cPlatform() == dbipWindows && !force)) return;
 
 	auto iconMenu = trayIconMenu;
 	auto actions = iconMenu->actions();
@@ -627,18 +647,17 @@ void MainWindow::updateTrayMenu(bool force) {
 		}
 	}
 	auto notificationAction = actions.at(isLinux ? 2 : 1);
-	auto notificationActionText = lang(Global::DesktopNotify()
-		? lng_disable_notifications_from_tray
-		: lng_enable_notifications_from_tray);
+	auto notificationActionText =
+	    lang(Global::DesktopNotify() ? lng_disable_notifications_from_tray : lng_enable_notifications_from_tray);
 	notificationAction->setText(notificationActionText);
 
 #ifndef Q_OS_WIN
-    if (trayIcon && trayIcon->contextMenu() != iconMenu) {
+	if (trayIcon && trayIcon->contextMenu() != iconMenu) {
 		trayIcon->setContextMenu(iconMenu);
-    }
+	}
 #endif // !Q_OS_WIN
 
-    psTrayMenuUpdated();
+	psTrayMenuUpdated();
 }
 
 void MainWindow::onShowAddContact() {
@@ -666,9 +685,8 @@ void MainWindow::onShowNewChannel() {
 void MainWindow::onLogout() {
 	if (isHidden()) showFromTray();
 
-	Ui::show(Box<ConfirmBox>(lang(lng_sure_logout), lang(lng_settings_logout), st::attentionBoxButton, [] {
-		App::logOut();
-	}));
+	Ui::show(Box<ConfirmBox>(lang(lng_sure_logout), lang(lng_settings_logout), st::attentionBoxButton,
+	                         [] { App::logOut(); }));
 }
 
 void MainWindow::quitFromTray() {
@@ -728,7 +746,7 @@ void MainWindow::showFromTray(QSystemTrayIcon::ActivationReason reason) {
 			updateTrayMenu();
 			updateGlobalMenu();
 		});
-        activate();
+		activate();
 		Notify::unreadCounterUpdated();
 	}
 }
@@ -818,7 +836,8 @@ MainWindow::TempDirState MainWindow::localStorageState() {
 	if (_clearManager && _clearManager->hasTask(Local::ClearManagerStorage)) {
 		return TempDirRemoving;
 	}
-	return (Local::hasImages() || Local::hasStickers() || Local::hasWebFiles() || Local::hasAudios()) ? TempDirExists : TempDirEmpty;
+	return (Local::hasImages() || Local::hasStickers() || Local::hasWebFiles() || Local::hasAudios()) ? TempDirExists :
+	                                                                                                    TempDirEmpty;
 }
 
 void MainWindow::tempDirDelete(int task) {
@@ -832,8 +851,8 @@ void MainWindow::tempDirDelete(int task) {
 	}
 	_clearManager = new Local::ClearManager();
 	_clearManager->addTask(task);
-	connect(_clearManager, SIGNAL(succeed(int,void*)), this, SLOT(onClearFinished(int,void*)));
-	connect(_clearManager, SIGNAL(failed(int,void*)), this, SLOT(onClearFailed(int,void*)));
+	connect(_clearManager, SIGNAL(succeed(int, void *)), this, SLOT(onClearFinished(int, void *)));
+	connect(_clearManager, SIGNAL(failed(int, void *)), this, SLOT(onClearFailed(int, void *)));
 	_clearManager->start();
 }
 
@@ -857,7 +876,8 @@ void MainWindow::app_activateClickHandler(ClickHandlerPtr handler, Qt::MouseButt
 	handler->onClick(button);
 }
 
-void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift, style::color color) {
+void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift,
+                                   style::color color) {
 	QPainter p(&img);
 
 	QString cnt = (count < 100) ? QString("%1").arg(count) : QString("..%1").arg(count % 10, 1, 10, QChar('0'));
@@ -874,7 +894,7 @@ void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::colo
 	} else {
 		fontSize = (cntSize < 2) ? 22 : 22;
 	}
-	style::font f = { fontSize, 0, 0 };
+	style::font f = {fontSize, 0, 0};
 	qint32 w = f->width(cnt), d, r;
 	if (size == 16) {
 		d = (cntSize < 2) ? 2 : 1;
@@ -892,7 +912,6 @@ void MainWindow::placeSmallCounter(QImage &img, int size, int count, style::colo
 	p.setPen(color->p);
 
 	p.drawText(shift.x() + size - w - d, shift.y() + size - f->height + f->ascent, cnt);
-
 }
 
 QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::color fg, bool smallIcon) {
@@ -923,7 +942,7 @@ QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::
 			} else {
 				fontSize = (cntSize < 2) ? 22 : ((cntSize < 3) ? 20 : 16);
 			}
-			style::font f = { fontSize, 0, 0 };
+			style::font f = {fontSize, 0, 0};
 			qint32 w = f->width(cnt), d, r;
 			if (size == 16) {
 				d = (cntSize < 2) ? 5 : ((cntSize < 3) ? 2 : 1);
@@ -950,7 +969,8 @@ QImage MainWindow::iconWithCounter(int size, int count, style::color bg, style::
 		if (size != 16 && size != 32) size = 64;
 	}
 
-	QImage img(smallIcon ? ((size == 16) ? iconbig16 : (size == 32 ? iconbig32 : iconbig64)) : ((size == 16) ? icon16 : (size == 32 ? icon32 : icon64)));
+	QImage img(smallIcon ? ((size == 16) ? iconbig16 : (size == 32 ? iconbig32 : iconbig64)) :
+	                       ((size == 16) ? icon16 : (size == 32 ? icon32 : icon64)));
 	if (!count) return img;
 
 	if (smallIcon) {
@@ -1006,7 +1026,14 @@ PreLaunchWindow::PreLaunchWindow(QString title) {
 	int paddingVertical = (_size / 2);
 	int paddingHorizontal = _size;
 	int borderRadius = (_size / 5);
-	setStyleSheet(qsl("QPushButton { padding: %1px %2px; background-color: #ffffff; border-radius: %3px; }\nQPushButton#confirm:hover, QPushButton#cancel:hover { background-color: #e3f1fa; color: #2f9fea; }\nQPushButton#confirm { color: #2f9fea; }\nQPushButton#cancel { color: #aeaeae; }\nQLineEdit { border: 1px solid #e0e0e0; padding: 5px; }\nQLineEdit:focus { border: 2px solid #37a1de; padding: 4px; }").arg(paddingVertical).arg(paddingHorizontal).arg(borderRadius));
+	setStyleSheet(
+	    qsl("QPushButton { padding: %1px %2px; background-color: #ffffff; border-radius: %3px; "
+	        "}\nQPushButton#confirm:hover, QPushButton#cancel:hover { background-color: #e3f1fa; color: #2f9fea; "
+	        "}\nQPushButton#confirm { color: #2f9fea; }\nQPushButton#cancel { color: #aeaeae; }\nQLineEdit { border: "
+	        "1px solid #e0e0e0; padding: 5px; }\nQLineEdit:focus { border: 2px solid #37a1de; padding: 4px; }")
+	        .arg(paddingVertical)
+	        .arg(paddingHorizontal)
+	        .arg(borderRadius));
 	if (!PreLaunchWindowInstance) {
 		PreLaunchWindowInstance = this;
 	}
@@ -1029,10 +1056,11 @@ PreLaunchWindow::~PreLaunchWindow() {
 	}
 }
 
-PreLaunchLabel::PreLaunchLabel(QWidget *parent) : QLabel(parent) {
+PreLaunchLabel::PreLaunchLabel(QWidget *parent)
+    : QLabel(parent) {
 	QFont labelFont(font());
 	labelFont.setFamily(Fonts::GetOverride(qsl("Open Sans Semibold")));
-	labelFont.setPixelSize(static_cast<PreLaunchWindow*>(parent)->basicSize());
+	labelFont.setPixelSize(static_cast<PreLaunchWindow *>(parent)->basicSize());
 	setFont(labelFont);
 
 	QPalette p(palette());
@@ -1047,10 +1075,11 @@ void PreLaunchLabel::setText(const QString &text) {
 	resize(sizeHint());
 }
 
-PreLaunchInput::PreLaunchInput(QWidget *parent, bool password) : QLineEdit(parent) {
+PreLaunchInput::PreLaunchInput(QWidget *parent, bool password)
+    : QLineEdit(parent) {
 	QFont logFont(font());
 	logFont.setFamily(Fonts::GetOverride(qsl("Open Sans")));
-	logFont.setPixelSize(static_cast<PreLaunchWindow*>(parent)->basicSize());
+	logFont.setPixelSize(static_cast<PreLaunchWindow *>(parent)->basicSize());
 	setFont(logFont);
 
 	QPalette p(palette());
@@ -1065,10 +1094,11 @@ PreLaunchInput::PreLaunchInput(QWidget *parent, bool password) : QLineEdit(paren
 	show();
 };
 
-PreLaunchLog::PreLaunchLog(QWidget *parent) : QTextEdit(parent) {
+PreLaunchLog::PreLaunchLog(QWidget *parent)
+    : QTextEdit(parent) {
 	QFont logFont(font());
 	logFont.setFamily(Fonts::GetOverride(qsl("Open Sans")));
-	logFont.setPixelSize(static_cast<PreLaunchWindow*>(parent)->basicSize());
+	logFont.setPixelSize(static_cast<PreLaunchWindow *>(parent)->basicSize());
 	setFont(logFont);
 
 	QPalette p(palette());
@@ -1083,14 +1113,15 @@ PreLaunchLog::PreLaunchLog(QWidget *parent) : QTextEdit(parent) {
 	show();
 };
 
-PreLaunchButton::PreLaunchButton(QWidget *parent, bool confirm) : QPushButton(parent) {
+PreLaunchButton::PreLaunchButton(QWidget *parent, bool confirm)
+    : QPushButton(parent) {
 	setFlat(true);
 
 	setObjectName(confirm ? "confirm" : "cancel");
 
 	QFont closeFont(font());
 	closeFont.setFamily(Fonts::GetOverride(qsl("Open Sans Semibold")));
-	closeFont.setPixelSize(static_cast<PreLaunchWindow*>(parent)->basicSize());
+	closeFont.setPixelSize(static_cast<PreLaunchWindow *>(parent)->basicSize());
 	setFont(closeFont);
 
 	setCursor(Qt::PointingHandCursor);
@@ -1103,13 +1134,14 @@ void PreLaunchButton::setText(const QString &text) {
 	resize(sizeHint());
 }
 
-PreLaunchCheckbox::PreLaunchCheckbox(QWidget *parent) : QCheckBox(parent) {
+PreLaunchCheckbox::PreLaunchCheckbox(QWidget *parent)
+    : QCheckBox(parent) {
 	setTristate(false);
 	setCheckState(Qt::Checked);
 
 	QFont closeFont(font());
 	closeFont.setFamily(Fonts::GetOverride(qsl("Open Sans Semibold")));
-	closeFont.setPixelSize(static_cast<PreLaunchWindow*>(parent)->basicSize());
+	closeFont.setPixelSize(static_cast<PreLaunchWindow *>(parent)->basicSize());
 	setFont(closeFont);
 
 	setCursor(Qt::PointingHandCursor);
@@ -1123,9 +1155,9 @@ void PreLaunchCheckbox::setText(const QString &text) {
 }
 
 NotStartedWindow::NotStartedWindow()
-: _label(this)
-, _log(this)
-, _close(this) {
+    : _label(this)
+    , _log(this)
+    , _close(this) {
 	_label.setText(qsl("Could not start %1!\nYou can see complete log below:").arg(str_const_toString(AppName)));
 
 	_log.setPlainText(Logs::full());
@@ -1160,35 +1192,36 @@ void NotStartedWindow::closeEvent(QCloseEvent *e) {
 void NotStartedWindow::resizeEvent(QResizeEvent *e) {
 	int padding = _size;
 	_label.setGeometry(padding, padding, width() - 2 * padding, _label.sizeHint().height());
-	_log.setGeometry(padding, padding * 2 + _label.sizeHint().height(), width() - 2 * padding, height() - 4 * padding - _label.height() - _close.height());
-	_close.setGeometry(width() - padding - _close.width(), height() - padding - _close.height(), _close.width(), _close.height());
+	_log.setGeometry(padding, padding * 2 + _label.sizeHint().height(), width() - 2 * padding,
+	                 height() - 4 * padding - _label.height() - _close.height());
+	_close.setGeometry(width() - padding - _close.width(), height() - padding - _close.height(), _close.width(),
+	                   _close.height());
 }
 
 LastCrashedWindow::LastCrashedWindow()
-: _port(80)
-, _label(this)
-, _pleaseSendReport(this)
-, _yourReportName(this)
-, _minidump(this)
-, _report(this)
-, _send(this)
-, _sendSkip(this, false)
-, _networkSettings(this)
-, _continue(this)
-, _showReport(this)
-, _saveReport(this)
-, _getApp(this)
-, _includeUsername(this)
-, _reportText(QString::fromUtf8(Sandbox::LastCrashDump()))
-, _reportShown(false)
-, _reportSaved(false)
-, _sendingState(Sandbox::LastCrashDump().isEmpty() ? SendingNoReport : SendingUpdateCheck)
-, _updating(this)
-, _sendingProgress(0)
-, _sendingTotal(0)
-, _checkReply(0)
-, _sendReply(0)
-{
+    : _port(80)
+    , _label(this)
+    , _pleaseSendReport(this)
+    , _yourReportName(this)
+    , _minidump(this)
+    , _report(this)
+    , _send(this)
+    , _sendSkip(this, false)
+    , _networkSettings(this)
+    , _continue(this)
+    , _showReport(this)
+    , _saveReport(this)
+    , _getApp(this)
+    , _includeUsername(this)
+    , _reportText(QString::fromUtf8(Sandbox::LastCrashDump()))
+    , _reportShown(false)
+    , _reportSaved(false)
+    , _sendingState(Sandbox::LastCrashDump().isEmpty() ? SendingNoReport : SendingUpdateCheck)
+    , _updating(this)
+    , _sendingProgress(0)
+    , _sendingTotal(0)
+    , _checkReply(0)
+    , _sendReply(0) {
 	excludeReportUsername();
 
 	if (!cAlphaVersion() && !cBetaVersion()) { // currently accept crash reports only from testers
@@ -1217,25 +1250,26 @@ LastCrashedWindow::LastCrashedWindow()
 		}
 		if (_minidumpFull.isEmpty()) {
 			QString maxDump, maxDumpFull;
-            QDateTime maxDumpModified, workingModified = QFileInfo(cWorkingDir() + qsl("tdata/working")).lastModified();
+			QDateTime maxDumpModified, workingModified = QFileInfo(cWorkingDir() + qsl("tdata/working")).lastModified();
 			QFileInfoList list = QDir(dumpspath).entryInfoList();
-            for (qint32 i = 0, l = list.size(); i < l; ++i) {
-                QString name = list.at(i).fileName();
-                if (name.endsWith(qstr(".dmp"))) {
-                    QDateTime modified = list.at(i).lastModified();
-                    if (maxDump.isEmpty() || qAbs(workingModified.secsTo(modified)) < qAbs(workingModified.secsTo(maxDumpModified))) {
-                        maxDump = name;
-                        maxDumpModified = modified;
-                        maxDumpFull = list.at(i).absoluteFilePath();
-                        dumpsize = list.at(i).size();
-                    }
-                }
-            }
-            if (!maxDump.isEmpty() && qAbs(workingModified.secsTo(maxDumpModified)) < 10) {
-                _minidumpName = maxDump;
-                _minidumpFull = maxDumpFull;
-            }
-        }
+			for (qint32 i = 0, l = list.size(); i < l; ++i) {
+				QString name = list.at(i).fileName();
+				if (name.endsWith(qstr(".dmp"))) {
+					QDateTime modified = list.at(i).lastModified();
+					if (maxDump.isEmpty() ||
+					    qAbs(workingModified.secsTo(modified)) < qAbs(workingModified.secsTo(maxDumpModified))) {
+						maxDump = name;
+						maxDumpModified = modified;
+						maxDumpFull = list.at(i).absoluteFilePath();
+						dumpsize = list.at(i).size();
+					}
+				}
+			}
+			if (!maxDump.isEmpty() && qAbs(workingModified.secsTo(maxDumpModified)) < 10) {
+				_minidumpName = maxDump;
+				_minidumpFull = maxDumpFull;
+			}
+		}
 		if (_minidumpName.isEmpty()) { // currently don't accept crash reports without dumps from google libraries
 			_sendingState = SendingNoReport;
 		} else {
@@ -1265,7 +1299,9 @@ LastCrashedWindow::LastCrashedWindow()
 	}
 
 	_pleaseSendReport.setText(qsl("Please send us a crash report."));
-	_yourReportName.setText(qsl("Your Report Tag: %1\nYour User Tag: %2").arg(QString(_minidumpName).replace(".dmp", "")).arg(Sandbox::UserTag(), 0, 16));
+	_yourReportName.setText(qsl("Your Report Tag: %1\nYour User Tag: %2")
+	                            .arg(QString(_minidumpName).replace(".dmp", ""))
+	                            .arg(Sandbox::UserTag(), 0, 16));
 	_yourReportName.setCursor(style::cur_text);
 	_yourReportName.setTextInteractionFlags(Qt::TextSelectableByMouse);
 
@@ -1300,7 +1336,10 @@ void LastCrashedWindow::onViewReport() {
 }
 
 void LastCrashedWindow::onSaveReport() {
-	QString to = QFileDialog::getSaveFileName(0, qsl("%1 Crash Report").arg(str_const_toString(AppName)), QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + qsl("/report.telegramcrash"), qsl("%1 crash report (*.telegramcrash)").arg(str_const_toString(AppName)));
+	QString to = QFileDialog::getSaveFileName(
+	    0, qsl("%1 Crash Report").arg(str_const_toString(AppName)),
+	    QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + qsl("/report.telegramcrash"),
+	    qsl("%1 crash report (*.telegramcrash)").arg(str_const_toString(AppName)));
 	if (!to.isEmpty()) {
 		QFile file(to);
 		if (file.open(QIODevice::WriteOnly)) {
@@ -1356,11 +1395,13 @@ QString LastCrashedWindow::getReportField(const QLatin1String &name, const QLati
 	return QString();
 }
 
-void LastCrashedWindow::addReportFieldPart(const QLatin1String &name, const QLatin1String &prefix, QHttpMultiPart *multipart) {
+void LastCrashedWindow::addReportFieldPart(const QLatin1String &name, const QLatin1String &prefix,
+                                           QHttpMultiPart *multipart) {
 	QString data = getReportField(name, prefix);
 	if (!data.isEmpty()) {
 		QHttpPart reportPart;
-		reportPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(qsl("form-data; name=\"%1\"").arg(name)));
+		reportPart.setHeader(QNetworkRequest::ContentDispositionHeader,
+		                     QVariant(qsl("form-data; name=\"%1\"").arg(name)));
 		reportPart.setBody(data.toUtf8());
 		multipart->append(reportPart);
 	}
@@ -1377,10 +1418,17 @@ void LastCrashedWindow::onSendReport() {
 	}
 	App::setProxySettings(_sendManager);
 
-	QString apiid = getReportField(qstr("apiid"), qstr("ApiId:")), version = getReportField(qstr("version"), qstr("Version:"));
-	_checkReply = _sendManager.get(QNetworkRequest(qsl("https://tdesktop.com/crash.php?act=query_report&apiid=%1&version=%2&dmp=%3&platform=%4").arg(apiid).arg(version).arg(minidumpFileName().isEmpty() ? 0 : 1).arg(cPlatformString())));
+	QString apiid = getReportField(qstr("apiid"), qstr("ApiId:")),
+	        version = getReportField(qstr("version"), qstr("Version:"));
+	_checkReply = _sendManager.get(
+	    QNetworkRequest(qsl("https://tdesktop.com/crash.php?act=query_report&apiid=%1&version=%2&dmp=%3&platform=%4")
+	                        .arg(apiid)
+	                        .arg(version)
+	                        .arg(minidumpFileName().isEmpty() ? 0 : 1)
+	                        .arg(cPlatformString())));
 
-	connect(_checkReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onSendingError(QNetworkReply::NetworkError)));
+	connect(_checkReply, SIGNAL(error(QNetworkReply::NetworkError)), this,
+	        SLOT(onSendingError(QNetworkReply::NetworkError)));
 	connect(_checkReply, SIGNAL(finished()), this, SLOT(onCheckingFinished()));
 
 	_pleaseSendReport.setText(qsl("Sending crash report..."));
@@ -1392,7 +1440,7 @@ void LastCrashedWindow::onSendReport() {
 QString LastCrashedWindow::minidumpFileName() {
 	QFileInfo dmpFile(_minidumpFull);
 	if (dmpFile.exists() && dmpFile.size() > 0 && dmpFile.size() < 20 * 1024 * 1024 &&
-		QRegularExpression(qsl("^[a-zA-Z0-9\\-]{1,64}\\.dmp$")).match(dmpFile.fileName()).hasMatch()) {
+	    QRegularExpression(qsl("^[a-zA-Z0-9\\-]{1,64}\\.dmp$")).match(dmpFile.fileName()).hasMatch()) {
 		return dmpFile.fileName();
 	}
 	return QString();
@@ -1433,7 +1481,8 @@ void LastCrashedWindow::onCheckingFinished() {
 
 	QHttpPart reportPart;
 	reportPart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
-	reportPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"report\"; filename=\"report.telegramcrash\""));
+	reportPart.setHeader(QNetworkRequest::ContentDispositionHeader,
+	                     QVariant("form-data; name=\"report\"; filename=\"report.telegramcrash\""));
 	reportPart.setBody(getCrashReportRaw());
 	multipart->append(reportPart);
 
@@ -1448,9 +1497,10 @@ void LastCrashedWindow::onCheckingFinished() {
 
 			zlib::FileToWrite minidumpZip;
 
-			zip_fileinfo zfi = { { 0, 0, 0, 0, 0, 0 }, 0, 0, 0 };
+			zip_fileinfo zfi = {{0, 0, 0, 0, 0, 0}, 0, 0, 0};
 			QByteArray dmpNameUtf = dmpName.toUtf8();
-			minidumpZip.openNewFile(dmpNameUtf.constData(), &zfi, nullptr, 0, nullptr, 0, nullptr, Z_DEFLATED, Z_DEFAULT_COMPRESSION);
+			minidumpZip.openNewFile(dmpNameUtf.constData(), &zfi, nullptr, 0, nullptr, 0, nullptr, Z_DEFLATED,
+			                        Z_DEFAULT_COMPRESSION);
 			minidumpZip.writeInFile(minidump.constData(), minidump.size());
 			minidumpZip.closeFile();
 			minidumpZip.close();
@@ -1458,7 +1508,8 @@ void LastCrashedWindow::onCheckingFinished() {
 			if (minidumpZip.error() == ZIP_OK) {
 				QHttpPart dumpPart;
 				dumpPart.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/octet-stream"));
-				dumpPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant(qsl("form-data; name=\"dump\"; filename=\"%1\"").arg(zipName)));
+				dumpPart.setHeader(QNetworkRequest::ContentDispositionHeader,
+				                   QVariant(qsl("form-data; name=\"dump\"; filename=\"%1\"").arg(zipName)));
 				dumpPart.setBody(minidumpZip.result());
 				multipart->append(dumpPart);
 
@@ -1470,9 +1521,10 @@ void LastCrashedWindow::onCheckingFinished() {
 	_sendReply = _sendManager.post(QNetworkRequest(qsl("https://tdesktop.com/crash.php?act=report")), multipart);
 	multipart->setParent(_sendReply);
 
-	connect(_sendReply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onSendingError(QNetworkReply::NetworkError)));
+	connect(_sendReply, SIGNAL(error(QNetworkReply::NetworkError)), this,
+	        SLOT(onSendingError(QNetworkReply::NetworkError)));
 	connect(_sendReply, SIGNAL(finished()), this, SLOT(onSendingFinished()));
-	connect(_sendReply, SIGNAL(uploadProgress(qint64,qint64)), this, SLOT(onSendingProgress(qint64,qint64)));
+	connect(_sendReply, SIGNAL(uploadProgress(qint64, qint64)), this, SLOT(onSendingProgress(qint64, qint64)));
 
 	updateControls();
 }
@@ -1506,7 +1558,8 @@ void LastCrashedWindow::updateControls() {
 			_includeUsername.show();
 		}
 		if (_reportShown) {
-			h += (_pleaseSendReport.height() * 12.5) + padding + (_minidumpName.isEmpty() ? 0 : (_minidump.height() + padding));
+			h += (_pleaseSendReport.height() * 12.5) + padding +
+			     (_minidumpName.isEmpty() ? 0 : (_minidump.height() + padding));
 			_report.show();
 			if (_minidumpName.isEmpty()) {
 				_minidump.hide();
@@ -1514,7 +1567,8 @@ void LastCrashedWindow::updateControls() {
 				_minidump.show();
 			}
 			_showReport.hide();
-			if (_reportSaved || _sendingState == SendingFail || _sendingState == SendingProgress || _sendingState == SendingUploading) {
+			if (_reportSaved || _sendingState == SendingFail || _sendingState == SendingProgress ||
+			    _sendingState == SendingUploading) {
 				_saveReport.hide();
 			} else {
 				_saveReport.show();
@@ -1554,7 +1608,11 @@ void LastCrashedWindow::updateControls() {
 	h += _networkSettings.height() + padding;
 
 	QRect scr(QApplication::primaryScreen()->availableGeometry());
-	QSize s(2 * padding + QFontMetrics(_label.font()).width(qsl("Last time %1 was not closed properly.").arg(str_const_toString(AppName))) + padding + _networkSettings.width(), h);
+	QSize s(2 * padding +
+	            QFontMetrics(_label.font())
+	                .width(qsl("Last time %1 was not closed properly.").arg(str_const_toString(AppName))) +
+	            padding + _networkSettings.width(),
+	        h);
 	if (s == size()) {
 		resizeEvent(0);
 	} else {
@@ -1565,7 +1623,8 @@ void LastCrashedWindow::updateControls() {
 void LastCrashedWindow::onNetworkSettings() {
 	auto &p = Sandbox::PreLaunchProxy();
 	NetworkSettingsWindow *box = new NetworkSettingsWindow(this, p.host, p.port ? p.port : 80, p.user, p.password);
-	connect(box, SIGNAL(saved(QString, quint32, QString, QString)), this, SLOT(onNetworkSettingsSaved(QString, quint32, QString, QString)));
+	connect(box, SIGNAL(saved(QString, quint32, QString, QString)), this,
+	        SLOT(onNetworkSettingsSaved(QString, quint32, QString, QString)));
 	box->show();
 }
 
@@ -1644,24 +1703,34 @@ void LastCrashedWindow::resizeEvent(QResizeEvent *e) {
 	if (_sendingState == SendingProgress || _sendingState == SendingUploading) {
 		_sendSkip.move(width() - padding - _sendSkip.width(), height() - padding - _sendSkip.height());
 	} else {
-		_sendSkip.move(width() - padding - _send.width() - padding - _sendSkip.width(), height() - padding - _sendSkip.height());
+		_sendSkip.move(width() - padding - _send.width() - padding - _sendSkip.width(),
+		               height() - padding - _sendSkip.height());
 	}
 
-	_updating.move(padding, padding * 2 + _networkSettings.height() + (_networkSettings.height() - _updating.height()) / 2);
+	_updating.move(padding,
+	               padding * 2 + _networkSettings.height() + (_networkSettings.height() - _updating.height()) / 2);
 
 	_getApp.move((width() - _getApp.width()) / 2, _updating.y() + _updating.height() + padding);
 
-	_pleaseSendReport.move(padding, padding * 2 + _networkSettings.height() + _networkSettings.height() + padding + _getApp.height() + padding + (_showReport.height() - _pleaseSendReport.height()) / 2);
-	_showReport.move(padding * 2 + _pleaseSendReport.width(), padding * 2 + _networkSettings.height() + _networkSettings.height() + padding + _getApp.height() + padding);
+	_pleaseSendReport.move(padding, padding * 2 + _networkSettings.height() + _networkSettings.height() + padding +
+	                                    _getApp.height() + padding +
+	                                    (_showReport.height() - _pleaseSendReport.height()) / 2);
+	_showReport.move(padding * 2 + _pleaseSendReport.width(), padding * 2 + _networkSettings.height() +
+	                                                              _networkSettings.height() + padding +
+	                                                              _getApp.height() + padding);
 	_yourReportName.move(padding, _showReport.y() + _showReport.height() + padding);
 	_includeUsername.move(padding, _yourReportName.y() + _yourReportName.height() + padding);
 
-	_networkSettings.move(padding * 2 + _pleaseSendReport.width(), padding * 2 + _networkSettings.height() + _networkSettings.height() + padding + _getApp.height() + padding);
+	_networkSettings.move(padding * 2 + _pleaseSendReport.width(), padding * 2 + _networkSettings.height() +
+	                                                                   _networkSettings.height() + padding +
+	                                                                   _getApp.height() + padding);
 
 	if (_reportUsername.isEmpty()) {
-		_report.setGeometry(padding, _yourReportName.y() + _yourReportName.height() + padding, width() - 2 * padding, _pleaseSendReport.height() * 12.5);
+		_report.setGeometry(padding, _yourReportName.y() + _yourReportName.height() + padding, width() - 2 * padding,
+		                    _pleaseSendReport.height() * 12.5);
 	} else {
-		_report.setGeometry(padding, _includeUsername.y() + _includeUsername.height() + padding, width() - 2 * padding, _pleaseSendReport.height() * 12.5);
+		_report.setGeometry(padding, _includeUsername.y() + _includeUsername.height() + padding, width() - 2 * padding,
+		                    _pleaseSendReport.height() * 12.5);
 	}
 	_minidump.move(padding, _report.y() + _report.height() + padding);
 	_saveReport.move(_showReport.x(), _showReport.y());
@@ -1669,19 +1738,20 @@ void LastCrashedWindow::resizeEvent(QResizeEvent *e) {
 	_continue.move(width() - padding - _continue.width(), height() - padding - _continue.height());
 }
 
-NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, QString host, quint32 port, QString username, QString password)
-: PreLaunchWindow(qsl("HTTP Proxy Settings"))
-, _hostLabel(this)
-, _portLabel(this)
-, _usernameLabel(this)
-, _passwordLabel(this)
-, _hostInput(this)
-, _portInput(this)
-, _usernameInput(this)
-, _passwordInput(this, true)
-, _save(this)
-, _cancel(this, false)
-, _parent(parent) {
+NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, QString host, quint32 port, QString username,
+                                             QString password)
+    : PreLaunchWindow(qsl("HTTP Proxy Settings"))
+    , _hostLabel(this)
+    , _portLabel(this)
+    , _usernameLabel(this)
+    , _passwordLabel(this)
+    , _hostInput(this)
+    , _portInput(this)
+    , _usernameInput(this)
+    , _passwordInput(this, true)
+    , _save(this)
+    , _cancel(this, false)
+    , _parent(parent) {
 	setWindowModality(Qt::ApplicationModal);
 
 	_hostLabel.setText(qsl("Hostname"));
@@ -1711,20 +1781,25 @@ NetworkSettingsWindow::NetworkSettingsWindow(QWidget *parent, QString host, quin
 void NetworkSettingsWindow::resizeEvent(QResizeEvent *e) {
 	int padding = _size;
 	_hostLabel.move(padding, padding);
-	_hostInput.setGeometry(_hostLabel.x(), _hostLabel.y() + _hostLabel.height(), 2 * _hostLabel.width(), _hostInput.height());
+	_hostInput.setGeometry(_hostLabel.x(), _hostLabel.y() + _hostLabel.height(), 2 * _hostLabel.width(),
+	                       _hostInput.height());
 	_portLabel.move(padding + _hostInput.width() + padding, padding);
-	_portInput.setGeometry(_portLabel.x(), _portLabel.y() + _portLabel.height(), width() - padding - _portLabel.x(), _portInput.height());
+	_portInput.setGeometry(_portLabel.x(), _portLabel.y() + _portLabel.height(), width() - padding - _portLabel.x(),
+	                       _portInput.height());
 	_usernameLabel.move(padding, _hostInput.y() + _hostInput.height() + padding);
-	_usernameInput.setGeometry(_usernameLabel.x(), _usernameLabel.y() + _usernameLabel.height(), (width() - 3 * padding) / 2, _usernameInput.height());
+	_usernameInput.setGeometry(_usernameLabel.x(), _usernameLabel.y() + _usernameLabel.height(),
+	                           (width() - 3 * padding) / 2, _usernameInput.height());
 	_passwordLabel.move(padding + _usernameInput.width() + padding, _usernameLabel.y());
-	_passwordInput.setGeometry(_passwordLabel.x(), _passwordLabel.y() + _passwordLabel.height(), width() - padding - _passwordLabel.x(), _passwordInput.height());
+	_passwordInput.setGeometry(_passwordLabel.x(), _passwordLabel.y() + _passwordLabel.height(),
+	                           width() - padding - _passwordLabel.x(), _passwordInput.height());
 
 	_save.move(width() - padding - _save.width(), height() - padding - _save.height());
 	_cancel.move(_save.x() - padding - _cancel.width(), _save.y());
 }
 
 void NetworkSettingsWindow::onSave() {
-	QString host = _hostInput.text().trimmed(), port = _portInput.text().trimmed(), username = _usernameInput.text().trimmed(), password = _passwordInput.text().trimmed();
+	QString host = _hostInput.text().trimmed(), port = _portInput.text().trimmed(),
+	        username = _usernameInput.text().trimmed(), password = _passwordInput.text().trimmed();
 	if (!port.isEmpty() && !port.toUInt()) {
 		_portInput.setFocus();
 		return;
@@ -1736,8 +1811,7 @@ void NetworkSettingsWindow::onSave() {
 	close();
 }
 
-void NetworkSettingsWindow::closeEvent(QCloseEvent *e) {
-}
+void NetworkSettingsWindow::closeEvent(QCloseEvent *e) {}
 
 void NetworkSettingsWindow::updateControls() {
 	_hostInput.updateGeometry();
@@ -1751,7 +1825,8 @@ void NetworkSettingsWindow::updateControls() {
 
 	int padding = _size;
 	int w = 2 * padding + _hostLabel.width() * 2 + padding + _portLabel.width() * 2 + padding;
-	int h = padding + _hostLabel.height() + _hostInput.height() + padding + _usernameLabel.height() + _usernameInput.height() + padding + _save.height() + padding;
+	int h = padding + _hostLabel.height() + _hostInput.height() + padding + _usernameLabel.height() +
+	        _usernameInput.height() + padding + _save.height() + padding;
 	if (w == width() && h == height()) {
 		resizeEvent(0);
 	} else {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ui/effects/widget_slide_wrap.h"
 #include "media/player/media_player_widget.h"
+#include "ui/effects/widget_slide_wrap.h"
 
 namespace Ui {
 class PlainShadow;
@@ -33,7 +33,6 @@ protected:
 
 private:
 	void updateShadowGeometry();
-
 };
 
 } // namespace Window

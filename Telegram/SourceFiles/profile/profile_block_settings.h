@@ -62,12 +62,11 @@ private:
 	void refreshInviteLinkButton();
 
 	object_ptr<Ui::Checkbox> _enableNotifications;
-	object_ptr<Ui::LeftOutlineButton> _manageAdmins = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _recentActions = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _manageBannedUsers = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _manageRestrictedUsers = { nullptr };
-	object_ptr<Ui::LeftOutlineButton> _inviteLink = { nullptr };
-
+	object_ptr<Ui::LeftOutlineButton> _manageAdmins = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _recentActions = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _manageBannedUsers = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _manageRestrictedUsers = {nullptr};
+	object_ptr<Ui::LeftOutlineButton> _inviteLink = {nullptr};
 };
 
 } // namespace Profile

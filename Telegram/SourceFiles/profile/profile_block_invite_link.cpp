@@ -20,13 +20,13 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "profile/profile_block_invite_link.h"
 
-#include "styles/style_profile.h"
-#include "ui/widgets/labels.h"
-#include "ui/toast/toast.h"
 #include "boxes/confirm_box.h"
-#include "observer_peer.h"
-#include "mainwindow.h"
 #include "lang/lang_keys.h"
+#include "mainwindow.h"
+#include "observer_peer.h"
+#include "styles/style_profile.h"
+#include "ui/toast/toast.h"
+#include "ui/widgets/labels.h"
 
 #include <QApplication>
 #include <QClipboard>
@@ -35,11 +35,12 @@ namespace Profile {
 
 using UpdateFlag = Notify::PeerUpdate::Flag;
 
-InviteLinkWidget::InviteLinkWidget(QWidget *parent, PeerData *peer) : BlockWidget(parent, peer, lang(lng_profile_invite_link_section)) {
+InviteLinkWidget::InviteLinkWidget(QWidget *parent, PeerData *peer)
+    : BlockWidget(parent, peer, lang(lng_profile_invite_link_section)) {
 	auto observeEvents = UpdateFlag::InviteLinkChanged | UpdateFlag::UsernameChanged;
-	subscribe(Notify::PeerUpdated(), Notify::PeerUpdatedHandler(observeEvents, [this](const Notify::PeerUpdate &update) {
-		notifyPeerUpdated(update);
-	}));
+	subscribe(Notify::PeerUpdated(),
+	          Notify::PeerUpdatedHandler(observeEvents,
+	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	refreshLink();
 	refreshVisibility();
@@ -94,7 +95,7 @@ QString InviteLinkWidget::getInviteLink() const {
 
 void InviteLinkWidget::refreshLink() {
 	_link.destroy();
-	TextWithEntities linkData = { getInviteLink(), EntitiesInText() };
+	TextWithEntities linkData = {getInviteLink(), EntitiesInText()};
 	if (linkData.text.isEmpty()) {
 		_link.destroy();
 	} else {

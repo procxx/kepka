@@ -22,10 +22,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include "base/openssl_help.h"
 #include "mtproto/core_types.h"
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
 #include <openssl/bio.h>
 #include <openssl/err.h>
+#include <openssl/pem.h>
+#include <openssl/rsa.h>
 
 using std::string;
 
@@ -67,20 +67,20 @@ void RSA_get0_key(const RSA *r, const BIGNUM **n, const BIGNUM **e, const BIGNUM
 }
 
 #endif
-}
+} // namespace
 
 namespace internal {
 
 class RSAPublicKey::Private {
 public:
 	Private(base::const_byte_span key)
-	: _rsa(PEM_read_bio_RSAPublicKey(BIO_new_mem_buf(const_cast<gsl::byte*>(key.data()), key.size()), 0, 0, 0)) {
+	    : _rsa(PEM_read_bio_RSAPublicKey(BIO_new_mem_buf(const_cast<gsl::byte *>(key.data()), key.size()), 0, 0, 0)) {
 		if (_rsa) {
 			computeFingerprint();
 		}
 	}
 	Private(base::const_byte_span nBytes, base::const_byte_span eBytes)
-	: _rsa(RSA_new()) {
+	    : _rsa(RSA_new()) {
 		if (_rsa) {
 			auto n = openssl::BigNum(nBytes).takeRaw();
 			auto e = openssl::BigNum(eBytes).takeRaw();
@@ -116,16 +116,20 @@ public:
 		Expects(isValid());
 
 		constexpr auto kEncryptSize = 256;
-		auto result = base::byte_vector(kEncryptSize, gsl::byte {});
-		auto res = RSA_public_encrypt(kEncryptSize, reinterpret_cast<const unsigned char*>(data.data()), reinterpret_cast<unsigned char*>(result.data()), _rsa, RSA_NO_PADDING);
+		auto result = base::byte_vector(kEncryptSize, gsl::byte{});
+		auto res = RSA_public_encrypt(kEncryptSize, reinterpret_cast<const unsigned char *>(data.data()),
+		                              reinterpret_cast<unsigned char *>(result.data()), _rsa, RSA_NO_PADDING);
 		if (res < 0 || res > kEncryptSize) {
 			ERR_load_crypto_strings();
-			LOG(("RSA Error: RSA_public_encrypt failed, key fp: %1, result: %2, error: %3").arg(getFingerPrint()).arg(res).arg(ERR_error_string(ERR_get_error(), 0)));
+			LOG(("RSA Error: RSA_public_encrypt failed, key fp: %1, result: %2, error: %3")
+			        .arg(getFingerPrint())
+			        .arg(res)
+			        .arg(ERR_error_string(ERR_get_error(), 0)));
 			return base::byte_vector();
 		} else if (auto zeroBytes = kEncryptSize - res) {
 			auto resultBytes = gsl::make_span(result);
 			base::move_bytes(resultBytes.subspan(zeroBytes, res), resultBytes.subspan(0, res));
-			base::set_bytes(resultBytes.subspan(0, zeroBytes), gsl::byte {});
+			base::set_bytes(resultBytes.subspan(0, zeroBytes), gsl::byte{});
 		}
 		return result;
 	}
@@ -133,16 +137,20 @@ public:
 		Expects(isValid());
 
 		constexpr auto kDecryptSize = 256;
-		auto result = base::byte_vector(kDecryptSize, gsl::byte {});
-		auto res = RSA_public_decrypt(kDecryptSize, reinterpret_cast<const unsigned char*>(data.data()), reinterpret_cast<unsigned char*>(result.data()), _rsa, RSA_NO_PADDING);
+		auto result = base::byte_vector(kDecryptSize, gsl::byte{});
+		auto res = RSA_public_decrypt(kDecryptSize, reinterpret_cast<const unsigned char *>(data.data()),
+		                              reinterpret_cast<unsigned char *>(result.data()), _rsa, RSA_NO_PADDING);
 		if (res < 0 || res > kDecryptSize) {
 			ERR_load_crypto_strings();
-			LOG(("RSA Error: RSA_public_encrypt failed, key fp: %1, result: %2, error: %3").arg(getFingerPrint()).arg(res).arg(ERR_error_string(ERR_get_error(), 0)));
+			LOG(("RSA Error: RSA_public_encrypt failed, key fp: %1, result: %2, error: %3")
+			        .arg(getFingerPrint())
+			        .arg(res)
+			        .arg(ERR_error_string(ERR_get_error(), 0)));
 			return base::byte_vector();
 		} else if (auto zeroBytes = kDecryptSize - res) {
 			auto resultBytes = gsl::make_span(result);
 			base::move_bytes(resultBytes.subspan(zeroBytes - res, res), resultBytes.subspan(0, res));
-			base::set_bytes(resultBytes.subspan(0, zeroBytes - res), gsl::byte {});
+			base::set_bytes(resultBytes.subspan(0, zeroBytes - res), gsl::byte{});
 		}
 		return result;
 	}
@@ -161,25 +169,24 @@ private:
 		MTP_bytes(toBytes(e)).write(string);
 
 		uchar sha1Buffer[20];
-		_fingerprint = *(quint64*)(hashSha1(&string[0], string.size() * sizeof(mtpPrime), sha1Buffer) + 3);
+		_fingerprint = *(quint64 *)(hashSha1(&string[0], string.size() * sizeof(mtpPrime), sha1Buffer) + 3);
 	}
 	static base::byte_vector toBytes(const BIGNUM *number) {
 		auto size = BN_num_bytes(number);
-		auto result = base::byte_vector(size, gsl::byte {});
-		BN_bn2bin(number, reinterpret_cast<unsigned char*>(result.data()));
+		auto result = base::byte_vector(size, gsl::byte{});
+		BN_bn2bin(number, reinterpret_cast<unsigned char *>(result.data()));
 		return result;
 	}
 
 	RSA *_rsa = nullptr;
 	quint64 _fingerprint = 0;
-
 };
 
-RSAPublicKey::RSAPublicKey(base::const_byte_span key) : _private(std::make_shared<Private>(key)) {
-}
+RSAPublicKey::RSAPublicKey(base::const_byte_span key)
+    : _private(std::make_shared<Private>(key)) {}
 
-RSAPublicKey::RSAPublicKey(base::const_byte_span nBytes, base::const_byte_span eBytes) : _private(std::make_shared<Private>(nBytes, eBytes)) {
-}
+RSAPublicKey::RSAPublicKey(base::const_byte_span nBytes, base::const_byte_span eBytes)
+    : _private(std::make_shared<Private>(nBytes, eBytes)) {}
 
 bool RSAPublicKey::isValid() const {
 	return _private && _private->isValid();

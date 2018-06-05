@@ -17,16 +17,17 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <QPaintEvent>
 #include "styles/style_widgets.h"
 #include "ui/twidget.h"
+#include <QPaintEvent>
 
 namespace Ui {
 
 class PlainShadow : public TWidget {
 public:
-	PlainShadow(QWidget *parent, style::color color) : TWidget(parent), _color(color) {
-	}
+	PlainShadow(QWidget *parent, style::color color)
+	    : TWidget(parent)
+	    , _color(color) {}
 
 protected:
 	void paintEvent(QPaintEvent *e) override {
@@ -35,19 +36,21 @@ protected:
 
 private:
 	style::color _color;
-
 };
 
 class Shadow : public TWidget {
 public:
-	Shadow(QWidget *parent, const style::Shadow &st, RectParts sides = RectPart::Left | RectPart::Top | RectPart::Right | RectPart::Bottom) : TWidget(parent)
-	, _st(st)
-	, _sides(sides) {
-	}
+	Shadow(QWidget *parent, const style::Shadow &st,
+	       RectParts sides = RectPart::Left | RectPart::Top | RectPart::Right | RectPart::Bottom)
+	    : TWidget(parent)
+	    , _st(st)
+	    , _sides(sides) {}
 
-	static void paint(Painter &p, const QRect &box, int outerWidth, const style::Shadow &st, RectParts sides = RectPart::Left | RectPart::Top | RectPart::Right | RectPart::Bottom);
+	static void paint(Painter &p, const QRect &box, int outerWidth, const style::Shadow &st,
+	                  RectParts sides = RectPart::Left | RectPart::Top | RectPart::Right | RectPart::Bottom);
 
-	static QPixmap grab(TWidget *target, const style::Shadow &shadow, RectParts sides = RectPart::Left | RectPart::Top | RectPart::Right | RectPart::Bottom);
+	static QPixmap grab(TWidget *target, const style::Shadow &shadow,
+	                    RectParts sides = RectPart::Left | RectPart::Top | RectPart::Right | RectPart::Bottom);
 
 protected:
 	void paintEvent(QPaintEvent *e) override {
@@ -58,7 +61,6 @@ protected:
 private:
 	const style::Shadow &_st;
 	RectParts _sides;
-
 };
 
 } // namespace Ui

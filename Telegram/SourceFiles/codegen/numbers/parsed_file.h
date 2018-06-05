@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <memory>
-#include <string>
 #include "codegen/common/basic_tokenized_file.h"
 #include "codegen/numbers/options.h"
+#include <memory>
+#include <string>
 
 namespace codegen {
 namespace numbers {
@@ -47,7 +47,6 @@ public:
 	}
 
 private:
-
 	bool failed() const {
 		return failed_ || file_.failed();
 	}
@@ -67,7 +66,6 @@ private:
 	Options options_;
 	bool failed_ = false;
 	Rules result_;
-
 };
 
 } // namespace numbers

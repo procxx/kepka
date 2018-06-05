@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "ui/twidget.h"
 #include "styles/style_widgets.h"
-#include "ui/effects/panel_animation.h"
 #include "ui/animation.h"
+#include "ui/effects/panel_animation.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 
@@ -35,16 +35,17 @@ class InnerDropdown : public TWidget {
 public:
 	InnerDropdown(QWidget *parent, const style::InnerDropdown &st = st::defaultInnerDropdown);
 
-	template <typename Widget>
-	QPointer<Widget> setOwnedWidget(object_ptr<Widget> widget) {
+	template <typename Widget> QPointer<Widget> setOwnedWidget(object_ptr<Widget> widget) {
 		auto result = doSetOwnedWidget(std::move(widget));
-		return QPointer<Widget>(static_cast<Widget*>(result.data()));
+		return QPointer<Widget>(static_cast<Widget *>(result.data()));
 	}
 
 	bool overlaps(const QRect &globalRect) {
 		if (isHidden() || _a_show.animating() || _a_opacity.animating()) return false;
 
-		return rect().marginsRemoved(_st.padding).contains(QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size()));
+		return rect()
+		    .marginsRemoved(_st.padding)
+		    .contains(QRect(mapFromGlobal(globalRect.topLeft()), globalRect.size()));
 	}
 
 	void setAutoHiding(bool autoHiding) {
@@ -137,7 +138,6 @@ private:
 	object_ptr<Ui::ScrollArea> _scroll;
 
 	int _maxHeight = 0;
-
 };
 
 class InnerDropdown::Container : public TWidget {
@@ -153,7 +153,6 @@ protected:
 private:
 	object_ptr<TWidget> _child;
 	const style::InnerDropdown &_st;
-
 };
 
 } // namespace Ui

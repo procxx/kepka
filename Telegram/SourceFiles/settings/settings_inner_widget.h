@@ -58,8 +58,8 @@ private:
 	// Returns the new height value.
 	int refreshBlocksPositions(int newWidth);
 
-	object_ptr<CoverWidget> _cover = { nullptr };
-	QList<BlockWidget*> _blocks;
+	object_ptr<CoverWidget> _cover = {nullptr};
+	QList<BlockWidget *> _blocks;
 
 	UserData *_self = nullptr;
 
@@ -68,7 +68,6 @@ private:
 
 	int _visibleTop = 0;
 	int _visibleBottom = 0;
-
 };
 
 } // namespace Settings

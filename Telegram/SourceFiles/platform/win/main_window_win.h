@@ -20,10 +20,10 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
+#include "base/flags.h"
+#include "platform/platform_main_window.h"
 #include <QSystemTrayIcon>
 #include <QTimer>
-#include "platform/platform_main_window.h"
-#include "base/flags.h"
 #include <windows.h>
 
 namespace Ui {
@@ -57,14 +57,16 @@ public:
 
 	// Custom shadows.
 	enum class ShadowsChange {
-		Moved    = (1 << 0),
-		Resized  = (1 << 1),
-		Shown    = (1 << 2),
-		Hidden   = (1 << 3),
+		Moved = (1 << 0),
+		Resized = (1 << 1),
+		Shown = (1 << 2),
+		Hidden = (1 << 3),
 		Activate = (1 << 4),
 	};
 	using ShadowsChanges = base::flags<ShadowsChange>;
-	friend inline constexpr auto is_flag_type(ShadowsChange) { return true; };
+	friend inline constexpr auto is_flag_type(ShadowsChange) {
+		return true;
+	};
 
 	bool shadowsWorking() const {
 		return _shadowsWorking;
@@ -101,7 +103,8 @@ protected:
 
 	void psTrayMenuUpdated();
 	void psSetupTrayIcon();
-	virtual void placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift, style::color color) = 0;
+	virtual void placeSmallCounter(QImage &img, int size, int count, style::color bg, const QPoint &shift,
+	                               style::color color) = 0;
 
 	void showTrayTooltip() override;
 
@@ -128,7 +131,6 @@ private:
 
 	int _deltaLeft = 0;
 	int _deltaTop = 0;
-
 };
 
 } // namespace Platform

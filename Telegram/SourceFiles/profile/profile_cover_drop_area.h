@@ -33,7 +33,7 @@ public:
 
 	void showAnimated();
 
-	using HideFinishCallback = base::lambda<void(CoverDropArea*)>;
+	using HideFinishCallback = base::lambda<void(CoverDropArea *)>;
 	void hideAnimated(HideFinishCallback &&callback);
 
 	bool hiding() const {
@@ -53,7 +53,6 @@ private:
 	Animation _a_appearance;
 	bool _hiding = false;
 	HideFinishCallback _hideFinishCallback;
-
 };
 
 } // namespace Profile

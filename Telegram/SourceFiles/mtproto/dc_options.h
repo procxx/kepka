@@ -23,9 +23,9 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/observer.h"
 #include "mtproto/rsa_public_key.h"
 #include "scheme.h"
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 namespace MTP {
 
@@ -84,8 +84,11 @@ public:
 
 private:
 	struct Option {
-		Option(DcId id, MTPDdcOption::Flags flags, const std::string &ip, int port) : id(id), flags(flags), ip(ip), port(port) {
-		}
+		Option(DcId id, MTPDdcOption::Flags flags, const std::string &ip, int port)
+		    : id(id)
+		    , flags(flags)
+		    , ip(ip)
+		    , port(port) {}
 
 		DcId id;
 		MTPDdcOption::Flags flags;
@@ -115,7 +118,6 @@ private:
 
 	// True when we have overriden options from a .tdesktop-endpoints file.
 	bool _immutable = false;
-
 };
 
 } // namespace MTP

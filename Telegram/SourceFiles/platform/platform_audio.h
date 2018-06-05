@@ -36,11 +36,9 @@ void DeInit();
 namespace Platform {
 namespace Audio {
 
-inline void Init() {
-}
+inline void Init() {}
 
-inline void DeInit() {
-}
+inline void DeInit() {}
 
 } // namespace Audio
 } // namespace Platform

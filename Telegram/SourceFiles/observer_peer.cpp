@@ -28,7 +28,7 @@ namespace {
 
 using SmallUpdatesList = QVector<PeerUpdate>;
 NeverFreedPointer<SmallUpdatesList> SmallUpdates;
-using AllUpdatesList = QMap<PeerData*, PeerUpdate>;
+using AllUpdatesList = QMap<PeerData *, PeerUpdate>;
 NeverFreedPointer<AllUpdatesList> AllUpdates;
 
 void StartCallback() {

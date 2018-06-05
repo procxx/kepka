@@ -21,8 +21,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include <openssl/bn.h>
-#include <openssl/sha.h>
 #include <openssl/rand.h>
+#include <openssl/sha.h>
 
 #include "base/assertion.h"
 #include "core/utils.h"
@@ -30,11 +30,11 @@ namespace openssl {
 
 class Context {
 public:
-	Context() : _data(BN_CTX_new()) {
-	}
+	Context()
+	    : _data(BN_CTX_new()) {}
 	Context(const Context &other) = delete;
-	Context(Context &&other) : _data(base::take(other._data)) {
-	}
+	Context(Context &&other)
+	    : _data(base::take(other._data)) {}
 	Context &operator=(const Context &other) = delete;
 	Context &operator=(Context &&other) {
 		_data = base::take(other._data);
@@ -52,14 +52,14 @@ public:
 
 private:
 	BN_CTX *_data = nullptr;
-
 };
 
 class BigNum {
 public:
-	BigNum() : _data(BN_new()) {
-	}
-	BigNum(const BigNum &other) : BigNum() {
+	BigNum()
+	    : _data(BN_new()) {}
+	BigNum(const BigNum &other)
+	    : BigNum() {
 		*this = other;
 	}
 	BigNum &operator=(const BigNum &other) {
@@ -72,10 +72,12 @@ public:
 		BN_clear_free(raw());
 	}
 
-	explicit BigNum(unsigned int word) : BigNum() {
+	explicit BigNum(unsigned int word)
+	    : BigNum() {
 		setWord(word);
 	}
-	explicit BigNum(base::const_byte_span bytes) : BigNum() {
+	explicit BigNum(base::const_byte_span bytes)
+	    : BigNum() {
 		setBytes(bytes);
 	}
 
@@ -85,18 +87,11 @@ public:
 		}
 	}
 	void setBytes(base::const_byte_span bytes) {
-		if (!BN_bin2bn(
-				reinterpret_cast<const unsigned char*>(bytes.data()),
-				bytes.size(),
-				raw())) {
+		if (!BN_bin2bn(reinterpret_cast<const unsigned char *>(bytes.data()), bytes.size(), raw())) {
 			_failed = true;
 		}
 	}
-	void setModExp(
-			const BigNum &a,
-			const BigNum &p,
-			const BigNum &m,
-			const Context &context = Context()) {
+	void setModExp(const BigNum &a, const BigNum &p, const BigNum &m, const Context &context = Context()) {
 		if (a.failed() || p.failed() || m.failed()) {
 			_failed = true;
 		} else if (a.isNegative() || p.isNegative() || m.isNegative()) {
@@ -143,11 +138,7 @@ public:
 			return false;
 		}
 		constexpr auto kMillerRabinIterationCount = 30;
-		auto result = BN_is_prime_ex(
-			raw(),
-			kMillerRabinIterationCount,
-			context.raw(),
-			NULL);
+		auto result = BN_is_prime_ex(raw(), kMillerRabinIterationCount, context.raw(), NULL);
 		if (result == 1) {
 			return true;
 		} else if (result != 0) {
@@ -182,9 +173,7 @@ public:
 		}
 		auto length = BN_num_bytes(raw());
 		auto result = base::byte_vector(length, gsl::byte());
-		auto resultSize = BN_bn2bin(
-			raw(),
-			reinterpret_cast<unsigned char*>(result.data()));
+		auto resultSize = BN_bn2bin(raw(), reinterpret_cast<unsigned char *>(result.data()));
 		Assert(resultSize == length);
 		return result;
 	}
@@ -212,7 +201,6 @@ public:
 private:
 	BIGNUM *_data = nullptr;
 	mutable bool _failed = false;
-
 };
 
 inline BigNum operator-(const BigNum &a, const BigNum &b) {
@@ -223,18 +211,20 @@ inline BigNum operator-(const BigNum &a, const BigNum &b) {
 
 inline base::byte_array<SHA256_DIGEST_LENGTH> Sha256(base::const_byte_span bytes) {
 	auto result = base::byte_array<SHA256_DIGEST_LENGTH>();
-	SHA256(reinterpret_cast<const unsigned char*>(bytes.data()), bytes.size(), reinterpret_cast<unsigned char*>(result.data()));
+	SHA256(reinterpret_cast<const unsigned char *>(bytes.data()), bytes.size(),
+	       reinterpret_cast<unsigned char *>(result.data()));
 	return result;
 }
 
 inline base::byte_array<SHA_DIGEST_LENGTH> Sha1(base::const_byte_span bytes) {
 	auto result = base::byte_array<SHA_DIGEST_LENGTH>();
-	SHA1(reinterpret_cast<const unsigned char*>(bytes.data()), bytes.size(), reinterpret_cast<unsigned char*>(result.data()));
+	SHA1(reinterpret_cast<const unsigned char *>(bytes.data()), bytes.size(),
+	     reinterpret_cast<unsigned char *>(result.data()));
 	return result;
 }
 
 inline int FillRandom(base::byte_span bytes) {
-	return RAND_bytes(reinterpret_cast<unsigned char*>(bytes.data()), bytes.size());
+	return RAND_bytes(reinterpret_cast<unsigned char *>(bytes.data()), bytes.size());
 }
 
 } // namespace openssl

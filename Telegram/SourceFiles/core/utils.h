@@ -20,18 +20,18 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include <set>
 #include <QByteArray>
 #include <QDateTime>
-#include <QReadWriteLock> 
-#include <QRegularExpression>
-#include <QMimeType>
-#include <QStringList>
 #include <QFileInfo>
+#include <QMimeType>
+#include <QReadWriteLock>
+#include <QRegularExpression>
+#include <QStringList>
+#include <set>
 
 #include "base/assertion.h"
-#include "core/basic_types.h"
 #include "base/flags.h"
+#include "core/basic_types.h"
 #include "logs.h"
 
 // Define specializations for QByteArray for Qt 5.3.2, because
@@ -39,13 +39,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #ifdef OS_MAC_OLD
 namespace gsl {
 
-template <>
-inline span<char> make_span<QByteArray>(QByteArray &cont) {
+template <> inline span<char> make_span<QByteArray>(QByteArray &cont) {
 	return span<char>(cont.data(), cont.size());
 }
 
-template <>
-inline span<const char> make_span(const QByteArray &cont) {
+template <> inline span<const char> make_span(const QByteArray &cont) {
 	return span<const char>(cont.constData(), cont.size());
 }
 
@@ -54,47 +52,41 @@ inline span<const char> make_span(const QByteArray &cont) {
 
 namespace base {
 
-template <typename T, size_t N>
-inline constexpr size_t array_size(const T(&)[N]) {
+template <typename T, size_t N> inline constexpr size_t array_size(const T (&)[N]) {
 	return N;
 }
 
-template <typename T>
-inline T take(T &source) {
+template <typename T> inline T take(T &source) {
 	return std::exchange(source, T());
 }
 
 namespace internal {
 
-template <typename D, typename T>
-inline constexpr D up_cast_helper(std::true_type, T object) {
+template <typename D, typename T> inline constexpr D up_cast_helper(std::true_type, T object) {
 	return object;
 }
 
-template <typename D, typename T>
-inline constexpr D up_cast_helper(std::false_type, T object) {
+template <typename D, typename T> inline constexpr D up_cast_helper(std::false_type, T object) {
 	return nullptr;
 }
 
 } // namespace internal
 
-template <typename D, typename T>
-inline constexpr D up_cast(T object) {
+template <typename D, typename T> inline constexpr D up_cast(T object) {
 	using DV = std::decay_t<decltype(*D())>;
 	using TV = std::decay_t<decltype(*T())>;
-	return internal::up_cast_helper<D>(std::integral_constant<bool, std::is_base_of<DV, TV>::value || std::is_same<DV, TV>::value>(), object);
+	return internal::up_cast_helper<D>(std::integral_constant < bool,
+	                                   std::is_base_of<DV, TV>::value || std::is_same<DV, TV>::value > (), object);
 }
 
-template <typename Container, typename T>
-inline bool contains(const Container &container, const T &value) {
+template <typename Container, typename T> inline bool contains(const Container &container, const T &value) {
 	auto end = std::end(container);
 	return std::find(std::begin(container), end, value) != end;
 }
 
 // We need a custom comparator for std::set<std::unique_ptr<T>>::find to work with pointers.
 // thanks to http://stackoverflow.com/questions/18939882/raw-pointer-lookup-for-sets-of-unique-ptrs
-template <typename T>
-struct pointer_comparator {
+template <typename T> struct pointer_comparator {
 	using is_transparent = std::true_type;
 
 	// helper does some magic in order to reduce the number of
@@ -105,16 +97,16 @@ struct pointer_comparator {
 		T *ptr = nullptr;
 		helper() = default;
 		helper(const helper &other) = default;
-		helper(T *p) : ptr(p) {
-		}
-		template <typename ...Ts>
-		helper(const std::shared_ptr<Ts...> &other) : ptr(other.get()) {
-		}
-		template <typename ...Ts>
-		helper(const std::unique_ptr<Ts...> &other) : ptr(other.get()) {
-		}
+		helper(T *p)
+		    : ptr(p) {}
+		template <typename... Ts>
+		helper(const std::shared_ptr<Ts...> &other)
+		    : ptr(other.get()) {}
+		template <typename... Ts>
+		helper(const std::unique_ptr<Ts...> &other)
+		    : ptr(other.get()) {}
 		bool operator<(helper other) const {
-			return std::less<T*>()(ptr, other.ptr);
+			return std::less<T *>()(ptr, other.ptr);
 		}
 	};
 
@@ -126,20 +118,16 @@ struct pointer_comparator {
 	bool operator()(const helper &&lhs, const helper &&rhs) const {
 		return lhs < rhs;
 	}
-
 };
 
-template <typename T>
-using set_of_unique_ptr = std::set<std::unique_ptr<T>, base::pointer_comparator<T>>;
+template <typename T> using set_of_unique_ptr = std::set<std::unique_ptr<T>, base::pointer_comparator<T>>;
 
-template <typename T>
-using set_of_shared_ptr = std::set<std::shared_ptr<T>, base::pointer_comparator<T>>;
+template <typename T> using set_of_shared_ptr = std::set<std::shared_ptr<T>, base::pointer_comparator<T>>;
 
 using byte_span = gsl::span<gsl::byte>;
 using const_byte_span = gsl::span<const gsl::byte>;
 using byte_vector = std::vector<gsl::byte>;
-template <size_t N>
-using byte_array = std::array<gsl::byte, N>;
+template <size_t N> using byte_array = std::array<gsl::byte, N>;
 
 inline void copy_bytes(byte_span destination, const_byte_span source) {
 	Expects(destination.size() >= source.size());
@@ -162,24 +150,18 @@ inline int compare_bytes(const_byte_span a, const_byte_span b) {
 
 // Thanks https://stackoverflow.com/a/28139075
 
-template <typename Container>
-struct reversion_wrapper {
-	Container &container;
-};
+template <typename Container> struct reversion_wrapper { Container &container; };
 
-template <typename Container>
-auto begin(reversion_wrapper<Container> wrapper) {
+template <typename Container> auto begin(reversion_wrapper<Container> wrapper) {
 	return std::rbegin(wrapper.container);
 }
 
-template <typename Container>
-auto end(reversion_wrapper<Container> wrapper) {
+template <typename Container> auto end(reversion_wrapper<Container> wrapper) {
 	return std::rend(wrapper.container);
 }
 
-template <typename Container>
-reversion_wrapper<Container> reversed(Container &&container) {
-	return { container };
+template <typename Container> reversion_wrapper<Container> reversed(Container &&container) {
+	return {container};
 }
 
 } // namespace base
@@ -190,8 +172,7 @@ reversion_wrapper<Container> reversed(Container &&container) {
 // while "for_const (T *p, v)" won't and "for_const (T *&p, v)" won't compile
 #define for_const(range_declaration, range_expression) for (range_declaration : std::as_const(range_expression))
 
-template <typename Lambda>
-inline void InvokeQueued(QObject *context, Lambda &&lambda) {
+template <typename Lambda> inline void InvokeQueued(QObject *context, Lambda &&lambda) {
 	QObject proxy;
 	QObject::connect(&proxy, &QObject::destroyed, context, std::forward<Lambda>(lambda), Qt::QueuedConnection);
 }
@@ -199,33 +180,36 @@ inline void InvokeQueued(QObject *context, Lambda &&lambda) {
 static const qint32 ScrollMax = INT_MAX;
 
 extern quint64 _SharedMemoryLocation[];
-template <typename T, unsigned int N>
-T *SharedMemoryLocation() {
+template <typename T, unsigned int N> T *SharedMemoryLocation() {
 	static_assert(N < 4, "Only 4 shared memory locations!");
-	return reinterpret_cast<T*>(_SharedMemoryLocation + N);
+	return reinterpret_cast<T *>(_SharedMemoryLocation + N);
 }
 
 // see https://github.com/boostcon/cppnow_presentations_2012/blob/master/wed/schurr_cpp11_tools_for_class_authors.pdf
 class str_const { // constexpr string
 public:
-	template<std::size_t N>
-	constexpr str_const(const char(&a)[N]) : _str(a), _size(N - 1) {
-	}
+	template <std::size_t N>
+	constexpr str_const(const char (&a)[N])
+	    : _str(a)
+	    , _size(N - 1) {}
 	constexpr char operator[](std::size_t n) const {
 		return (n < _size) ? _str[n] :
 #ifndef OS_MAC_OLD
-			throw std::out_of_range("");
+		                     throw std::out_of_range("");
 #else // OS_MAC_OLD
-			throw std::exception();
+		                     throw std::exception();
 #endif // OS_MAC_OLD
 	}
-	constexpr std::size_t size() const { return _size; }
-	const char *c_str() const { return _str; }
+	constexpr std::size_t size() const {
+		return _size;
+	}
+	const char *c_str() const {
+		return _str;
+	}
 
 private:
-	const char* const _str;
+	const char *const _str;
 	const std::size_t _size;
-
 };
 
 inline QString str_const_toString(const str_const &str) {
@@ -236,15 +220,19 @@ inline QByteArray str_const_toByteArray(const str_const &str) {
 	return QByteArray::fromRawData(str.c_str(), static_cast<int>(str.size()));
 }
 
-template <typename T>
-inline void accumulate_max(T &a, const T &b) { if (a < b) a = b; }
+template <typename T> inline void accumulate_max(T &a, const T &b) {
+	if (a < b) a = b;
+}
 
-template <typename T>
-inline void accumulate_min(T &a, const T &b) { if (a > b) a = b; }
+template <typename T> inline void accumulate_min(T &a, const T &b) {
+	if (a > b) a = b;
+}
 
 class Exception : public std::exception {
 public:
-	Exception(const QString &msg, bool isFatal = true) : _fatal(isFatal), _msg(msg.toUtf8()) {
+	Exception(const QString &msg, bool isFatal = true)
+	    : _fatal(isFatal)
+	    , _msg(msg.toUtf8()) {
 		LOG(("Exception: %1").arg(msg));
 	}
 	bool fatal() const {
@@ -254,13 +242,11 @@ public:
 	virtual const char *what() const throw() {
 		return _msg.constData();
 	}
-	virtual ~Exception() throw() {
-	}
+	virtual ~Exception() throw() {}
 
 private:
 	bool _fatal;
 	QByteArray _msg;
-
 };
 
 class MTPint;
@@ -290,7 +276,7 @@ inline QDateTime date(const MTPint &time) {
 
 QDateTime dateFromServerTime(TimeId time);
 
-inline void mylocaltime(struct tm * _Tm, const time_t * _Time) {
+inline void mylocaltime(struct tm *_Tm, const time_t *_Time) {
 #ifdef Q_OS_WIN
 	localtime_s(_Tm, _Time);
 #else
@@ -303,7 +289,7 @@ namespace ThirdParty {
 void start();
 void finish();
 
-}
+} // namespace ThirdParty
 
 using TimeMs = qint64; // @todo use std::chrono::milliseconds
 bool checkms(); // returns true if time has changed
@@ -312,13 +298,11 @@ TimeMs getms(bool checked = false);
 const static quint32 _md5_block_size = 64;
 class HashMd5 {
 public:
-
 	HashMd5(const void *input = 0, quint32 length = 0);
 	void feed(const void *input, quint32 length);
 	qint32 *result();
 
 private:
-
 	void init();
 	void finalize();
 	void transform(const uchar *block);
@@ -328,7 +312,6 @@ private:
 	quint32 _count[2];
 	quint32 _state[4];
 	uchar _digest[16];
-
 };
 
 qint32 hashCrc32(const void *data, quint32 len);
@@ -366,32 +349,32 @@ inline std::array<char, 32> hashMd5Hex(const void *data, int size) {
 
 // good random (using openssl implementation)
 void memset_rand(void *data, quint32 len);
-template <typename T>
-T rand_value() {
+template <typename T> T rand_value() {
 	T result;
 	memset_rand(&result, sizeof(result));
 	return result;
 }
 
 inline void memset_rand_bad(void *data, quint32 len) {
-	for (uchar *i = reinterpret_cast<uchar*>(data), *e = i + len; i != e; ++i) {
+	for (uchar *i = reinterpret_cast<uchar *>(data), *e = i + len; i != e; ++i) {
 		*i = uchar(rand() & 0xFF);
 	}
 }
 
-template <typename T>
-inline void memsetrnd_bad(T &value) {
+template <typename T> inline void memsetrnd_bad(T &value) {
 	memset_rand_bad(&value, sizeof(value));
 }
 
 class ReadLockerAttempt {
 public:
-	ReadLockerAttempt(not_null<QReadWriteLock*> lock) : _lock(lock), _locked(_lock->tryLockForRead()) {
-	}
+	ReadLockerAttempt(not_null<QReadWriteLock *> lock)
+	    : _lock(lock)
+	    , _locked(_lock->tryLockForRead()) {}
 	ReadLockerAttempt(const ReadLockerAttempt &other) = delete;
 	ReadLockerAttempt &operator=(const ReadLockerAttempt &other) = delete;
-	ReadLockerAttempt(ReadLockerAttempt &&other) : _lock(other._lock), _locked(base::take(other._locked)) {
-	}
+	ReadLockerAttempt(ReadLockerAttempt &&other)
+	    : _lock(other._lock)
+	    , _locked(base::take(other._locked)) {}
 	ReadLockerAttempt &operator=(ReadLockerAttempt &&other) {
 		_lock = other._lock;
 		_locked = base::take(other._locked);
@@ -408,9 +391,8 @@ public:
 	}
 
 private:
-	not_null<QReadWriteLock*> _lock;
+	not_null<QReadWriteLock *> _lock;
 	bool _locked = false;
-
 };
 
 inline QString fromUtf8Safe(const char *str, qint32 size = -1) {
@@ -426,19 +408,18 @@ inline QString fromUtf8Safe(const QByteArray &str) {
 	return fromUtf8Safe(str.constData(), str.size());
 }
 
-static const QRegularExpression::PatternOptions reMultiline(QRegularExpression::DotMatchesEverythingOption | QRegularExpression::MultilineOption);
+static const QRegularExpression::PatternOptions reMultiline(QRegularExpression::DotMatchesEverythingOption |
+                                                            QRegularExpression::MultilineOption);
 
-template <typename T>
-inline T snap(const T &v, const T &_min, const T &_max) { // @todo std::clamp()
+template <typename T> inline T snap(const T &v, const T &_min, const T &_max) { // @todo std::clamp()
 	return (v < _min) ? _min : ((v > _max) ? _max : v);
 }
 
-template <typename T>
-class ManagedPtr {
+template <typename T> class ManagedPtr {
 public:
 	ManagedPtr() = default;
-	ManagedPtr(T *p) : _data(p) {
-	}
+	ManagedPtr(T *p)
+	    : _data(p) {}
 	T *operator->() const {
 		return _data;
 	}
@@ -453,7 +434,6 @@ public:
 protected:
 	using Parent = ManagedPtr<T>;
 	T *_data = nullptr;
-
 };
 
 QString translitRusEng(const QString &rus);
@@ -518,8 +498,7 @@ enum DBIPeerReportSpamStatus {
 	dbiprsRequesting = 5, // requesting the cloud setting right now
 };
 
-template <int Size>
-inline QString strMakeFromLetters(const quint32 (&letters)[Size]) {
+template <int Size> inline QString strMakeFromLetters(const quint32 (&letters)[Size]) {
 	QString result;
 	result.reserve(Size);
 	for (qint32 i = 0; i < Size; ++i) {
@@ -537,10 +516,10 @@ public:
 		WebP,
 	};
 
-	MimeType(const QMimeType &type) : _typeStruct(type) {
-	}
-	MimeType(Known type) : _type(type) {
-	}
+	MimeType(const QMimeType &type)
+	    : _typeStruct(type) {}
+	MimeType(Known type)
+	    : _type(type) {}
 	QStringList globPatterns() const;
 	QString filterString() const;
 	QString name() const;
@@ -548,7 +527,6 @@ public:
 private:
 	QMimeType _typeStruct;
 	Known _type = Known::Unknown;
-
 };
 
 MimeType mimeTypeForName(const QString &mime);
@@ -581,37 +559,36 @@ enum ForwardWhatMessages {
 };
 
 enum ShowLayerOption {
-	CloseOtherLayers     = (1 << 0),
-	KeepOtherLayers      = (1 << 1),
+	CloseOtherLayers = (1 << 0),
+	KeepOtherLayers = (1 << 1),
 	ShowAfterOtherLayers = (1 << 2),
 
-	AnimatedShowLayer    = (1 << 3),
-	ForceFastShowLayer   = (1 << 4),
+	AnimatedShowLayer = (1 << 3),
+	ForceFastShowLayer = (1 << 4),
 };
 using ShowLayerOptions = base::flags<ShowLayerOption>;
-inline constexpr auto is_flag_type(ShowLayerOption) { return true; };
+inline constexpr auto is_flag_type(ShowLayerOption) {
+	return true;
+};
 
 static qint32 FullArcLength = 360 * 16;
 static qint32 QuarterArcLength = (FullArcLength / 4);
 static qint32 MinArcLength = (FullArcLength / 360);
 static qint32 AlmostFullArcLength = (FullArcLength - MinArcLength);
 
-template <typename T, typename... Args>
-inline QSharedPointer<T> MakeShared(Args&&... args) {
+template <typename T, typename... Args> inline QSharedPointer<T> MakeShared(Args &&... args) {
 	return QSharedPointer<T>(new T(std::forward<Args>(args)...));
 }
 
 // This pointer is used for global non-POD variables that are allocated
 // on demand by createIfNull(lambda) and are never automatically freed.
-template <typename T>
-class NeverFreedPointer {
+template <typename T> class NeverFreedPointer {
 public:
 	NeverFreedPointer() = default;
 	NeverFreedPointer(const NeverFreedPointer<T> &other) = delete;
 	NeverFreedPointer &operator=(const NeverFreedPointer<T> &other) = delete;
 
-	template <typename... Args>
-	void createIfNull(Args&&... args) {
+	template <typename... Args> void createIfNull(Args &&... args) {
 		if (isNull()) {
 			reset(new T(std::forward<Args>(args)...));
 		}
@@ -647,16 +624,14 @@ public:
 
 private:
 	T *_p;
-
 };
 
 // This pointer is used for static non-POD variables that are allocated
 // on first use by constructor and are never automatically freed.
-template <typename T>
-class StaticNeverFreedPointer {
+template <typename T> class StaticNeverFreedPointer {
 public:
-	explicit StaticNeverFreedPointer(T *p) : _p(p) {
-	}
+	explicit StaticNeverFreedPointer(T *p)
+	    : _p(p) {}
 	StaticNeverFreedPointer(const StaticNeverFreedPointer<T> &other) = delete;
 	StaticNeverFreedPointer &operator=(const StaticNeverFreedPointer<T> &other) = delete;
 
@@ -690,5 +665,4 @@ public:
 
 private:
 	T *_p = nullptr;
-
 };

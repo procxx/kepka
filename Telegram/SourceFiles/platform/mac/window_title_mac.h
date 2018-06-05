@@ -42,7 +42,6 @@ protected:
 private:
 	object_ptr<Ui::PlainShadow> _shadow;
 	QFont _font;
-
 };
 
 object_ptr<Window::TitleWidget> CreateTitleWidget(QWidget *parent);

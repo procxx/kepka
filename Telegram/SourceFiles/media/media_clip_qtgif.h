@@ -29,7 +29,6 @@ namespace internal {
 
 class QtGifReaderImplementation : public ReaderImplementation {
 public:
-
 	QtGifReaderImplementation(FileLocation *location, QByteArray *data);
 
 	ReadResult readFramesTill(TimeMs frameMs, TimeMs systemMs) override;
@@ -60,7 +59,6 @@ private:
 	TimeMs _frameTime = 0;
 	int _frameDelay = 0;
 	QImage _frame;
-
 };
 
 } // namespace internal

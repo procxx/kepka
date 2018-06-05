@@ -55,8 +55,7 @@ inline void UnsafeLaunch(const QString &filepath) {
 	return ::File::internal::UnsafeLaunchDefault(filepath);
 }
 
-inline void PostprocessDownloaded(const QString &filepath) {
-}
+inline void PostprocessDownloaded(const QString &filepath) {}
 
 } // namespace File
 
