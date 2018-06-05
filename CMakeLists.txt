@@ -73,3 +73,6 @@ if (CCACHE)
 endif()
 
 add_subdirectory(Telegram)
+
+# clang-format
+include(modules/clang-cxx-dev-tools.cmake)
