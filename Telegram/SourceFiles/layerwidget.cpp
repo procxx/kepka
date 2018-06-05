@@ -752,8 +752,12 @@ void MediaPreviewWidget::paintEvent(QPaintEvent *e) {
 		}
 	} else {
 		p.setOpacity(shown);
-//		w = std::max(std::round(w * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(w % 2), 1);
-//		h = std::max(std::round(h * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(h % 2), 1);
+		// w = std::max(
+		//     std::round(w * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(w % 2),
+		//     1);
+		// h = std::max(
+		//    std::round(h * (st::stickerPreviewMin + ((1. - st::stickerPreviewMin) * shown)) / 2.) * 2 + int(h % 2),
+		//    1);
 	}
 	p.fillRect(r, st::stickerPreviewBg);
 	p.drawPixmap((width() - w) / 2, (height() - h) / 2, image);

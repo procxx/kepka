@@ -979,18 +979,20 @@ bool Instance::Private::onErrorDefault(mtpRequestId requestId, const RPCError &e
 				// migrate not supported at this moment
 				// this was not tested even once
 				//
-				//DEBUG_LOG(("MTP Info: importing auth to dc %1").arg(newdcWithShift));
-				//auto &waiters(_authWaiters[newdcWithShift]);
-				//if (waiters.empty()) {
-				//	auto exportRequestId = _instance->send(MTPauth_ExportAuthorization(MTP_int(newdcWithShift)), rpcDone([this](const MTPauth_ExportedAuthorization &result, mtpRequestId requestId) {
-				//		exportDone(result, requestId);
-				//	}), rpcFail([this](const RPCError &error, mtpRequestId requestId) {
-				//		return exportFail(error, requestId);
-				//	}));
-				//	_authExportRequests.emplace(exportRequestId, newdcWithShift);
-				//}
-				//waiters.push_back(requestId);
-				//return true;
+				// DEBUG_LOG(("MTP Info: importing auth to dc %1").arg(newdcWithShift));
+				// auto &waiters(_authWaiters[newdcWithShift]);
+				// if (waiters.empty()) {
+				// 	auto exportRequestId =
+				// 	    _instance->send(MTPauth_ExportAuthorization(MTP_int(newdcWithShift)),
+				// 	                    rpcDone([this](const MTPauth_ExportedAuthorization &result,
+				// 	                                   mtpRequestId requestId) { exportDone(result, requestId); }),
+				// 	                    rpcFail([this](const RPCError &error, mtpRequestId requestId) {
+				// 		                    return exportFail(error, requestId);
+				// 	                    }));
+				// 	_authExportRequests.emplace(exportRequestId, newdcWithShift);
+				// }
+				// waiters.push_back(requestId);
+				// return true;
 			} else {
 				_instance->setMainDcId(newdcWithShift);
 			}

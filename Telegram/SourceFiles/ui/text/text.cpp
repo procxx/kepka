@@ -2546,30 +2546,33 @@ void Text::setMarkedText(const style::TextStyle &st, const TextWithEntities &tex
 	clear();
 	{
 		// utf codes of the text display for emoji extraction
-//		auto text = textWithEntities.text;
-//		auto newText = QString();
-//		newText.reserve(8 * text.size());
-//		newText.append("\t{ ");
-//		for (const QChar *ch = text.constData(), *e = ch + text.size(); ch != e; ++ch) {
-//			if (*ch == TextCommand) {
-//				break;
-//			} else if (chIsNewline(*ch)) {
-//				newText.append("},").append(*ch).append("\t{ ");
-//			} else {
-//				if (ch->isHighSurrogate() || ch->isLowSurrogate()) {
-//					if (ch->isHighSurrogate() && (ch + 1 != e) && ((ch + 1)->isLowSurrogate())) {
-//						newText.append("0x").append(QString::number((quint32(ch->unicode()) << 16) | quint32((ch + 1)->unicode()), 16).toUpper()).append("U, ");
-//						++ch;
-//					} else {
-//						newText.append("BADx").append(QString::number(ch->unicode(), 16).toUpper()).append("U, ");
-//					}
-//				} else {
-//					newText.append("0x").append(QString::number(ch->unicode(), 16).toUpper()).append("U, ");
-//				}
-//			}
-//		}
-//		newText.append("},\n\n").append(text);
-//		TextParser parser(this, { newText, EntitiesInText() }, options);
+		// auto text = textWithEntities.text;
+		// auto newText = QString();
+		// newText.reserve(8 * text.size());
+		// newText.append("\t{ ");
+		// for (const QChar *ch = text.constData(), *e = ch + text.size(); ch != e; ++ch) {
+		// 	if (*ch == TextCommand) {
+		// 		break;
+		// 	} else if (chIsNewline(*ch)) {
+		// 		newText.append("},").append(*ch).append("\t{ ");
+		// 	} else {
+		// 		if (ch->isHighSurrogate() || ch->isLowSurrogate()) {
+		// 			if (ch->isHighSurrogate() && (ch + 1 != e) && ((ch + 1)->isLowSurrogate())) {
+		// 				newText.append("0x")
+		// 				    .append(QString::number((quint32(ch->unicode()) << 16) | quint32((ch + 1)->unicode()), 16)
+		// 				                .toUpper())
+		// 				    .append("U, ");
+		// 				++ch;
+		// 			} else {
+		// 				newText.append("BADx").append(QString::number(ch->unicode(), 16).toUpper()).append("U, ");
+		// 			}
+		// 		} else {
+		// 			newText.append("0x").append(QString::number(ch->unicode(), 16).toUpper()).append("U, ");
+		// 		}
+		// 	}
+		// }
+		// newText.append("},\n\n").append(text);
+		// TextParser parser(this, {newText, EntitiesInText()}, options);
 
 		TextParser parser(this, textWithEntities, options);
 	}

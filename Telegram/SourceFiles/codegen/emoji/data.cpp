@@ -40,7 +40,7 @@ struct Replace {
 	InputId code;
 	const char *replace;
 };
-
+// clang-format off
 Replace Replaces[] = {
 	{ { 0xD83DDE0AU }, ":-)" },
 	{ { 0xD83DDE0DU }, "8-)" },
@@ -1696,7 +1696,7 @@ InputCategory Category7 = {
  { 0xD83CDDFFU, 0xD83CDDF2U, },
  { 0xD83CDDFFU, 0xD83CDDFCU, },
 };
-
+// clang-format on
 constexpr auto kErrorBadData = 401;
 
 void append(Id &id, quint32 code) {

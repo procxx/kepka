@@ -256,21 +256,22 @@ void ShareBox::onSelectedChanged() {
 
 void ShareBox::onMustScrollTo(int top, int bottom) {
 	onScrollToY(top, bottom);
-	//auto scrollTop = scrollArea()->scrollTop(), scrollBottom = scrollTop + scrollArea()->height();
-	//auto from = scrollTop, to = scrollTop;
-	//if (scrollTop > top) {
-	//	to = top;
-	//} else if (scrollBottom < bottom) {
-	//	to = bottom - (scrollBottom - scrollTop);
-	//}
-	//if (from != to) {
-	//	_scrollAnimation.start([this]() { scrollAnimationCallback(); }, from, to, st::shareScrollDuration, anim::sineInOut);
-	//}
+	//	auto scrollTop = scrollArea()->scrollTop(), scrollBottom = scrollTop + scrollArea()->height();
+	//	auto from = scrollTop, to = scrollTop;
+	//	if (scrollTop > top) {
+	//		to = top;
+	//	} else if (scrollBottom < bottom) {
+	//		to = bottom - (scrollBottom - scrollTop);
+	//	}
+	//	if (from != to) {
+	//		_scrollAnimation.start([this]() { scrollAnimationCallback(); }, from, to, st::shareScrollDuration,
+	//		                       anim::sineInOut);
+	//	}
 }
 
 void ShareBox::scrollAnimationCallback() {
-	//auto scrollTop = std::round(_scrollAnimation.current(scrollArea()->scrollTop()));
-	//scrollArea()->scrollToY(scrollTop);
+	// auto scrollTop = std::round(_scrollAnimation.current(scrollArea()->scrollTop()));
+	// scrollArea()->scrollToY(scrollTop);
 }
 
 ShareBox::Inner::Inner(QWidget *parent, ShareBox::FilterCallback &&filterCallback) : TWidget(parent)
