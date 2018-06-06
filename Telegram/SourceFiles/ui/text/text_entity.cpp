@@ -2065,7 +2065,7 @@ QString ApplyEntities(const TextWithEntities &text) {
 
 	QString result;
 	qint32 size = text.text.size();
-	const QChar *b = text.text.constData(), *already = b;//, *e = b + size;
+	const QChar *b = text.text.constData(), *already = b; //, *e = b + size;
 	auto entity = text.entities.cbegin(), end = text.entities.cend();
 	auto skipTillRelevantAndGetTag = [&entity, &end, size, &tags] {
 		while (entity != end) {

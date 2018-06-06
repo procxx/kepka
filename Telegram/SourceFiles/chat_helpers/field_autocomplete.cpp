@@ -927,8 +927,12 @@ void FieldAutocompleteInner::onUpdateSelected(bool force) {
 
 	qint32 sel = -1, maxSel = 0;
 	if (!_srows->isEmpty()) {
-		qint32 row = (mouse.y() >= st::stickerPanPadding) ? ((mouse.y() - st::stickerPanPadding) / st::stickerPanSize.height()) : -1;
-		qint32 col = (mouse.x() >= st::stickerPanPadding) ? ((mouse.x() - st::stickerPanPadding) / st::stickerPanSize.width()) : -1;
+		qint32 row = (mouse.y() >= st::stickerPanPadding) ?
+		                 ((mouse.y() - st::stickerPanPadding) / st::stickerPanSize.height()) :
+		                 -1;
+		qint32 col = (mouse.x() >= st::stickerPanPadding) ?
+		                 ((mouse.x() - st::stickerPanPadding) / st::stickerPanSize.width()) :
+		                 -1;
 		if (row >= 0 && col >= 0) {
 			sel = row * _stickersPerRow + col;
 		}

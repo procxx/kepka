@@ -1771,7 +1771,9 @@ void DocumentData::performActionOnLoad() {
 	auto showImage = !isVideo() && (size < App::kImageSizeLimit);
 	auto playVoice = voice() && (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen);
 	auto playMusic = tryPlaySong() && (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen);
-	auto playAnimation = isAnimation() && (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen) && showImage && item && item->getMedia();
+	auto playAnimation = isAnimation() &&
+	                     (_actionOnLoad == ActionOnLoadPlayInline || _actionOnLoad == ActionOnLoadOpen) && showImage &&
+	                     item && item->getMedia();
 	if (isTheme()) {
 		if (!loc.isEmpty() && loc.accessEnable()) {
 			Messenger::Instance().showDocument(this, item);

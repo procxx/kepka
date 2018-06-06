@@ -687,7 +687,7 @@ bool Generator::writeIncludesInSource() {
 	}
 
 	auto includes = QStringList();
-	std::function<bool(const Module&)> collector = [&collector, &includes](const Module &module) {
+	std::function<bool(const Module &)> collector = [&collector, &includes](const Module &module) {
 		module.enumIncludes(collector);
 		auto base = moduleBaseName(module);
 		if (!includes.contains(base)) {

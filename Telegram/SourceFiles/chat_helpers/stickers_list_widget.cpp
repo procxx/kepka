@@ -1690,14 +1690,17 @@ void StickersListWidget::installSet(quint64 setId) {
 	auto &sets = Global::StickerSets();
 	auto it = sets.constFind(setId);
 	if (it != sets.cend()) {
-		request(MTPmessages_InstallStickerSet(Stickers::inputSetId(*it), MTP_bool(false))).done([](const MTPmessages_StickerSetInstallResult &result) {
-			if (result.type() == mtpc_messages_stickerSetInstallResultArchive) {
-				Stickers::ApplyArchivedResult(result.c_messages_stickerSetInstallResultArchive());
-			}
-		}).fail([this, setId](const RPCError &error) {
-			notInstalledLocally(setId);
-			Stickers::UndoInstallLocally(setId);
-		}).send();
+		request(MTPmessages_InstallStickerSet(Stickers::inputSetId(*it), MTP_bool(false)))
+		    .done([](const MTPmessages_StickerSetInstallResult &result) {
+			    if (result.type() == mtpc_messages_stickerSetInstallResultArchive) {
+				    Stickers::ApplyArchivedResult(result.c_messages_stickerSetInstallResultArchive());
+			    }
+		    })
+		    .fail([this, setId](const RPCError &error) {
+			    notInstalledLocally(setId);
+			    Stickers::UndoInstallLocally(setId);
+		    })
+		    .send();
 
 		installedLocally(setId);
 		Stickers::InstallLocally(setId);

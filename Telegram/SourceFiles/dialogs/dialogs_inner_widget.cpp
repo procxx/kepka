@@ -2035,7 +2035,10 @@ void DialogsInner::loadPeerPhotos() {
 		       _filterResults.size();
 		if (from < 0) from = 0;
 		if (from < _peerSearchResults.size()) {
-			qint32 to = (yTo > filteredOffset() + st::searchedBarHeight ? ((yTo - filteredOffset() - st::searchedBarHeight) / qint32(st::dialogsRowHeight)) : 0) - _filterResults.size() + 1;
+			qint32 to = (yTo > filteredOffset() + st::searchedBarHeight ?
+			                 ((yTo - filteredOffset() - st::searchedBarHeight) / qint32(st::dialogsRowHeight)) :
+			                 0) -
+			            _filterResults.size() + 1;
 			if (to > _peerSearchResults.size()) to = _peerSearchResults.size();
 
 			for (; from < to; ++from) {

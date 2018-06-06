@@ -1009,8 +1009,9 @@ void OverviewInner::onUpdateSelected() {
 		}
 		if (_dragAction == Selecting) {
 			bool canSelectMany = (_peer != 0);
-			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() && _selected.cbegin().value() != FullSelection) {
-				_selected[_dragItem] = { 0, 0 };
+			if (_mousedItem == _dragItem && lnk && !_selected.isEmpty() &&
+			    _selected.cbegin().value() != FullSelection) {
+				_selected[_dragItem] = {0, 0};
 				updateDragSelection(0, -1, 0, -1, false);
 			} else if (canSelectMany) {
 				bool selectingDown =
