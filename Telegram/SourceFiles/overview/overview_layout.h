@@ -320,7 +320,7 @@ private:
 
 	bool withThumb() const {
 		return !_data->song() && !_data->thumb->isNull() && _data->thumb->width() && _data->thumb->height() &&
-		       !documentIsExecutableName(_data->name);
+		       !documentIsExecutableName(_data->filename());
 	}
 	bool updateStatusText();
 };
