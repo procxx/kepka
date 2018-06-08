@@ -28,13 +28,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <QWindow>
 
-namespace {
-
-constexpr double kFadeHeight = 1. / 3;
-constexpr int kFadeAlphaMax = 160;
-
-} // namespace
-
 namespace Ui {
 
 InnerDropdown::InnerDropdown(QWidget *parent, const style::InnerDropdown &st)

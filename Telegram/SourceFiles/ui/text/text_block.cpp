@@ -341,7 +341,7 @@ EmojiBlock::EmojiBlock(const style::font &font, const QString &str, quint16 from
     : ITextBlock(font, str, from, length, flags, lnkIndex)
     , emoji(emoji) {
 	_flags |= ((TextBlockTEmoji & 0x0F) << 8);
-	_width = int(st::emojiSize + 2 * st::emojiPadding);
+	_width = st::emojiSize + 2 * st::emojiPadding;
 
 	_rpadding = 0;
 	for (auto i = length; i != 0;) {

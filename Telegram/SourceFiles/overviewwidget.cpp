@@ -828,8 +828,6 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 		selto = _dragSelFromIndex;
 	}
 
-	SelectedItems::const_iterator selEnd = _selected.cend();
-
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		qint32 count = _items.size(), rowsCount = count / _photosInRow + ((count % _photosInRow) ? 1 : 0);
 		qint32 rowFrom =
@@ -1682,7 +1680,6 @@ void OverviewInner::mediaOverviewUpdated() {
 		auto &o = _history->overview(_type);
 		auto migratedOverview = _migrated ? &_migrated->overview(_type) : nullptr;
 		auto migrateCount = migratedIndexSkip();
-		auto wasCount = _items.size();
 		auto fullCount = (migrateCount + o.size());
 		auto tocheck = std::min(fullCount, _itemsToBeLoaded);
 		_items.reserve(tocheck);
@@ -1914,7 +1911,6 @@ int OverviewInner::countHeight() {
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		auto count = _items.size();
 		auto migratedFullCount = _migrated ? _migrated->overviewCount(_type) : 0;
-		auto fullCount = migratedFullCount + _history->overviewCount(_type);
 		auto rows = (count / _photosInRow) + ((count % _photosInRow) ? 1 : 0);
 		return (_rowWidth + st::overviewPhotoSkip) * rows + st::overviewPhotoSkip;
 	}

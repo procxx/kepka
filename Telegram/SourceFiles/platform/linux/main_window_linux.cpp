@@ -36,7 +36,6 @@ namespace Platform {
 namespace {
 
 bool noQtTrayIcon = false, tryAppIndicator = false;
-bool useGtkBase = false, useAppIndicator = false, useStatusIcon = false, trayIconChecked = false, useUnityCount = false;
 
 
 qint32 _trayIconSize = 22;
@@ -208,9 +207,6 @@ void MainWindow::unreadCounterChangedHook() {
 
 void MainWindow::updateIconCounters() {
 	updateWindowIcon();
-
-	auto counter = App::histories().unreadBadge();
-
 
 	if (noQtTrayIcon) {
 	} else if (trayIcon) {

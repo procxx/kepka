@@ -113,11 +113,10 @@ void CachedUserpics::onClear() {
 
 CachedUserpics::~CachedUserpics() {
 	if (_someSavedFlag) {
-		TimeMs result = 0;
 		for_const (auto &item, _images) { QFile(item.path).remove(); }
 
 		// This works about 1200ms on Windows for a folder with one image O_o
-		//		psDeleteDir(cWorkingDir() + qsl("tdata/temp"));
+		// psDeleteDir(cWorkingDir() + qsl("tdata/temp"));
 	}
 }
 

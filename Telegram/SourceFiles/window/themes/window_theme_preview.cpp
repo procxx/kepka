@@ -651,7 +651,6 @@ void Generator::paintRow(const Row &row) {
 	auto availableWidth = namewidth;
 	if (row.unreadCounter) {
 		auto counter = QString::number(row.unreadCounter);
-		auto mutedCounter = row.muted;
 		auto unreadRight = x + fullWidth - st::dialogsPadding.x();
 		auto unreadTop = texttop + st::dialogsTextFont->ascent - st::dialogsUnreadFont->ascent -
 		                 (st::dialogsUnreadHeight - st::dialogsUnreadFont->height) / 2;
@@ -815,10 +814,8 @@ void Generator::paintBubble(const Bubble &bubble) {
 		bubble.text.draw(*_p, trect.x(), trect.y(), trect.width());
 	} else if (!bubble.waveform.isEmpty()) {
 		auto nameleft = x + st::msgFilePadding.left() + st::msgFileSize + st::msgFilePadding.right();
-		auto nametop = y + st::msgFileNameTop;
 		auto nameright = st::msgFilePadding.left();
 		auto statustop = y + st::msgFileStatusTop;
-		auto bottom = y + st::msgFilePadding.top() + st::msgFileSize + st::msgFilePadding.bottom();
 
 		auto inner = rtlrect(x + st::msgFilePadding.left(), y + st::msgFilePadding.top(), st::msgFileSize,
 		                     st::msgFileSize, _rect.width());
@@ -835,7 +832,7 @@ void Generator::paintBubble(const Bubble &bubble) {
 		// rescale waveform by going in waveform.size * bar_count 1D grid
 		auto active = bubble.outbg ? st::msgWaveformOutActive[_palette] : st::msgWaveformInActive[_palette];
 		auto inactive = bubble.outbg ? st::msgWaveformOutInactive[_palette] : st::msgWaveformInInactive[_palette];
-		qint32 wf_size = bubble.waveform.size(), availw = namewidth + st::msgWaveformSkip;
+		qint32 wf_size = bubble.waveform.size();
 		qint32 bar_count = wf_size;
 		qint32 max_delta = st::msgWaveformMax - st::msgWaveformMin;
 		auto wave_bottom = y + st::msgFilePadding.top() + st::msgWaveformMax;
