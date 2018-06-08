@@ -20,9 +20,11 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #include "platform/linux/linux_libs.h"
 
+#include "logs.h"
 #include "platform/linux/linux_desktop_environment.h"
 #include "platform/linux/linux_gdk_helper.h"
 #include "platform/linux/linux_libnotify.h"
+#include "settings.h"
 
 namespace Platform {
 namespace Libs {

@@ -24,6 +24,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <cstdint>
 
 #include "core/utils.h"
+#include "logs.h"
 #include <QDir>
 void InitFromCommandLine(int argc, char *argv[]);
 
