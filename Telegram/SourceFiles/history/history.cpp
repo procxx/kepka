@@ -30,6 +30,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "history_media_types.h"
 #include "history_message.h"
 #include "history_service.h"
+#include "lang/lang_keys.h"
 #include "lang_auto.h"
 #include "layout.h"
 #include "mainwidget.h"
