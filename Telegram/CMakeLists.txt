@@ -708,6 +708,32 @@ endif()
 target_link_libraries(Kepka Threads::Threads)
 
 ##================================================
+## Installlation
+##================================================
+
+include(GNUInstallDirs)
+
+set_target_properties(Kepka PROPERTIES OUTPUT_NAME "kepka")
+install(TARGETS Kepka RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/kepka.desktop"
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
+)
+install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/tg.protocol"
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/kservices5/tg.protocol
+)
+install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/kepka.appdata.xml"
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo
+)
+
+foreach(icon_size 16 32 48 64 128 256 512)
+    install(FILES "${CMAKE_SOURCE_DIR}/Telegram/Resources/art/icon${icon_size}.png"
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/${icon_size}x${icon_size}/apps
+        RENAME kepka.png
+    )
+endforeach(icon_size)
+
+##================================================
 ## Tests
 ##================================================
 
