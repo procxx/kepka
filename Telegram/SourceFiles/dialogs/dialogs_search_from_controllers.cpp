@@ -79,9 +79,6 @@ void ChatSearchFromController::rowClicked(not_null<PeerListRow *> row) {
 }
 
 void ChatSearchFromController::rebuildRows() {
-	auto ms = getms();
-	auto wasEmpty = !delegate()->peerListFullRowsCount();
-
 	auto now = unixtime();
 	QMultiMap<qint32, UserData *> ordered;
 	if (_chat->noParticipantInfo()) {

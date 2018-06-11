@@ -41,7 +41,6 @@ namespace {
 
 constexpr auto kReloadChannelMembersTimeout = 1000; // 1 second wait before reload members in channel after adding
 constexpr auto kSaveCloudDraftTimeout = 1000; // save draft to the cloud with 1 sec extra delay
-constexpr auto kSaveDraftBeforeQuitTimeout = 1500; // give the app 1.5 secs to save drafts to cloud when quitting
 constexpr auto kSmallDelayMs = 5;
 constexpr auto kStickersUpdateTimeout = 3600000; // update not more than once in an hour
 constexpr auto kUnreadMentionsPreloadIfLess = 5;

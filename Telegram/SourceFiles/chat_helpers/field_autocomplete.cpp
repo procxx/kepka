@@ -548,7 +548,6 @@ void FieldAutocompleteInner::paintEvent(QPaintEvent *e) {
 	QRect r(e->rect());
 	if (r != rect()) p.setClipRect(r);
 
-	qint32 atwidth = st::mentionFont->width('@'), hashwidth = st::mentionFont->width('#');
 	qint32 mentionleft = 2 * st::mentionPadding.left() + st::mentionPhotoSize;
 	qint32 mentionwidth = width() - mentionleft - 2 * st::mentionPadding.right();
 	qint32 htagleft = st::historyAttach.width + st::historyComposeField.textMrg.left() - st::lineWidth,
@@ -928,7 +927,6 @@ void FieldAutocompleteInner::onUpdateSelected(bool force) {
 
 	qint32 sel = -1, maxSel = 0;
 	if (!_srows->isEmpty()) {
-		qint32 rows = rowscount(_srows->size(), _stickersPerRow);
 		qint32 row = (mouse.y() >= st::stickerPanPadding) ?
 		                 ((mouse.y() - st::stickerPanPadding) / st::stickerPanSize.height()) :
 		                 -1;

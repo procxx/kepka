@@ -769,7 +769,6 @@ Manager::ResultHandleState Manager::handleResult(ReaderPrivate *reader, ProcessR
 			auto it = constUnsafeFindReaderPointer(reader);
 			if (it != _readerPointers.cend()) {
 				qint32 index = 0;
-				Reader *r = it.key();
 				Reader::Frame *frame = it.key()->frameToWrite(&index);
 				if (frame) {
 					frame->clear();

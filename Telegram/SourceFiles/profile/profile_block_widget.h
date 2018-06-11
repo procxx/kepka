@@ -55,7 +55,6 @@ protected:
 	int resizeGetHeight(int newWidth) override = 0;
 
 	void contentSizeUpdated() {
-		auto oldHeight = height();
 		resizeToWidth(width());
 		emit heightUpdated();
 	}

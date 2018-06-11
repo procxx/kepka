@@ -2141,7 +2141,7 @@ void MediaView::paintThemePreview(Painter &p, QRect clip) {
 	if (titleRect.x() < 0) {
 		titleRect = QRect(0, _themePreviewRect.y(), width(), st::themePreviewMargin.top());
 	}
-	if (auto fillTitleRect = (titleRect.y() < 0)) {
+	if (titleRect.y() < 0) {
 		titleRect.moveTop(0);
 		fillOverlay(titleRect);
 	}
@@ -2157,7 +2157,7 @@ void MediaView::paintThemePreview(Painter &p, QRect clip) {
 	auto buttonsRect = QRect(_themePreviewRect.x(),
 	                         _themePreviewRect.y() + _themePreviewRect.height() - st::themePreviewMargin.bottom(),
 	                         _themePreviewRect.width(), st::themePreviewMargin.bottom());
-	if (auto fillButtonsRect = (buttonsRect.y() + buttonsRect.height() > height())) {
+	if (buttonsRect.y() + buttonsRect.height() > height()) {
 		buttonsRect.moveTop(height() - buttonsRect.height());
 		fillOverlay(buttonsRect);
 	}

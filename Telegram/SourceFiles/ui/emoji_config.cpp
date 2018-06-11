@@ -30,8 +30,6 @@ namespace Ui {
 namespace Emoji {
 namespace {
 
-constexpr auto kSaveRecentEmojiTimeout = 3000;
-
 auto WorkingIndex = -1;
 
 void AppendPartToResult(TextWithEntities &result, const QChar *start, const QChar *from, const QChar *to) {

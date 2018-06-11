@@ -142,8 +142,6 @@ void TabbedSelector::SlideAnimation::paintFrame(QPainter &p, double dt, double o
 
 	_frameAlpha = anim::interpolate(1, 256, opacity);
 
-	auto frameInts = _frameInts + _innerLeft + _innerTop * _frameIntsPerLine;
-
 	auto leftToRight = (_direction == Direction::LeftToRight);
 
 	auto easeOut = anim::easeOutCirc(1., dt);

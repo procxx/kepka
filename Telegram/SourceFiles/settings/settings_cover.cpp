@@ -134,7 +134,6 @@ int CoverWidget::resizeGetHeight(int newWidth) {
 
 void CoverWidget::refreshButtonsGeometry(int newWidth) {
 	int buttonLeft = _userpicButton->x() + _userpicButton->width() + st::settingsButtonLeft;
-	int buttonsRight = newWidth - st::settingsButtonSkip;
 	_setPhoto->moveToLeft(buttonLeft, _userpicButton->y() + st::settingsButtonTop, newWidth);
 	buttonLeft += _setPhoto->width() + st::settingsButtonSkip;
 	_editName->moveToLeft(buttonLeft, _setPhoto->y(), newWidth);

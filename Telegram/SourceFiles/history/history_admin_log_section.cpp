@@ -379,7 +379,7 @@ void Widget::paintEvent(QPaintEvent *e) {
 
 	Painter p(this);
 	auto clip = e->rect();
-	auto ms = getms();
+	// auto ms = getms();
 	//_historyDownShown.step(ms);
 
 	auto fill = QRect(0, 0, width(), App::main()->height());

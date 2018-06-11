@@ -104,7 +104,7 @@ DialogsInner::DialogsInner(QWidget *parent, not_null<Window::Controller *> contr
 		                          UpdateRowSection::Default | UpdateRowSection::Filtered);
 	          });
 
-	subscribe(Window::Theme::Background(), [this](const Window::Theme::BackgroundUpdate &data) {
+	subscribe(Window::Theme::Background(), [](const Window::Theme::BackgroundUpdate &data) {
 		if (data.paletteChanged()) {
 			Dialogs::Layout::clearUnreadBadgesCache();
 		}
@@ -2021,7 +2021,7 @@ void DialogsInner::loadPeerPhotos() {
 		qint32 from = (yFrom - filteredOffset()) / st::dialogsRowHeight;
 		if (from < 0) from = 0;
 		if (from < _filterResults.size()) {
-			qint32 to = (yTo / qint32(st::dialogsRowHeight)) + 1, w = width();
+			qint32 to = (yTo / qint32(st::dialogsRowHeight)) + 1;
 			if (to > _filterResults.size()) to = _filterResults.size();
 
 			for (; from < to; ++from) {
@@ -2038,8 +2038,7 @@ void DialogsInner::loadPeerPhotos() {
 			qint32 to = (yTo > filteredOffset() + st::searchedBarHeight ?
 			                 ((yTo - filteredOffset() - st::searchedBarHeight) / qint32(st::dialogsRowHeight)) :
 			                 0) -
-			            _filterResults.size() + 1,
-			       w = width();
+			            _filterResults.size() + 1;
 			if (to > _peerSearchResults.size()) to = _peerSearchResults.size();
 
 			for (; from < to; ++from) {

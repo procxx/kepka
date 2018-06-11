@@ -366,7 +366,6 @@ void adjustColorsUsingBackground(const QImage &img) {
 	Assert(img.format() == QImage::Format_ARGB32_Premultiplied);
 
 	quint64 components[3] = {0};
-	quint64 componentsScroll[3] = {0};
 	auto w = img.width();
 	auto h = img.height();
 	auto size = w * h;

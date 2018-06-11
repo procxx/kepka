@@ -219,7 +219,7 @@ enum class PrepareTextOption {
 	CheckLinks,
 };
 inline QString PrepareForSending(const QString &text, PrepareTextOption option = PrepareTextOption::IgnoreLinks) {
-	auto result = TextWithEntities{text};
+	auto result = TextWithEntities{text}; // , {}}
 	auto prepareFlags = (option == PrepareTextOption::CheckLinks) ?
 	                        (TextParseLinks | TextParseMentions | TextParseHashtags | TextParseBotCommands) :
 	                        0;

@@ -369,7 +369,6 @@ void StickerSetBox::Inner::paintEvent(QPaintEvent *e) {
 	if (_pack.isEmpty()) return;
 
 	auto ms = getms();
-	qint32 rows = _pack.size() / kStickersPanelPerRow + ((_pack.size() % kStickersPanelPerRow) ? 1 : 0);
 	qint32 from = std::floor(e->rect().top() / st::stickersSize.height()),
 	       to = std::floor(e->rect().bottom() / st::stickersSize.height()) + 1;
 

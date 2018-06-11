@@ -128,7 +128,6 @@ StickersListWidget::Footer::Footer(not_null<StickersListWidget *> parent)
 
 template <typename Callback> void StickersListWidget::Footer::enumerateVisibleIcons(Callback callback) {
 	int iconsX = std::round(_iconsX.current());
-	auto index = iconsX / st::emojiCategory.width;
 	auto x = _iconsLeft - (iconsX % st::emojiCategory.width);
 	for (auto index = std::min<int>(_icons.size(), iconsX / st::emojiCategory.width),
 	          last = std::min(_icons.size(), index + kVisibleIconsCount);
@@ -139,7 +138,7 @@ template <typename Callback> void StickersListWidget::Footer::enumerateVisibleIc
 }
 
 void StickersListWidget::Footer::preloadImages() {
-	enumerateVisibleIcons([this](const StickerIcon &icon, int x) {
+	enumerateVisibleIcons([](const StickerIcon &icon, int x) {
 		if (auto sticker = icon.sticker) {
 			sticker->thumb->load();
 		}
@@ -1547,7 +1546,7 @@ void StickersListWidget::setSelected(OverState newSelected) {
 		setCursor(newSelected ? style::cur_pointer : style::cur_default);
 
 		auto &sets = shownSets();
-		auto updateSelected = [this, &sets]() {
+		auto updateSelected = [this]() {
 			if (auto sticker = base::get_if<OverSticker>(&_selected)) {
 				rtlupdate(stickerRect(sticker->section, sticker->index));
 			} else if (auto button = base::get_if<OverButton>(&_selected)) {
@@ -1692,7 +1691,7 @@ void StickersListWidget::installSet(quint64 setId) {
 	auto it = sets.constFind(setId);
 	if (it != sets.cend()) {
 		request(MTPmessages_InstallStickerSet(Stickers::inputSetId(*it), MTP_bool(false)))
-		    .done([this](const MTPmessages_StickerSetInstallResult &result) {
+		    .done([](const MTPmessages_StickerSetInstallResult &result) {
 			    if (result.type() == mtpc_messages_stickerSetInstallResultArchive) {
 				    Stickers::ApplyArchivedResult(result.c_messages_stickerSetInstallResultArchive());
 			    }

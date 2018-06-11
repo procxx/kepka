@@ -431,11 +431,10 @@ void Widget::handleSongUpdate(const TrackState &state) {
 
 void Widget::updateTimeText(const TrackState &state) {
 	QString time;
-	qint64 position = 0, length = 0, display = 0;
+	qint64 display = 0;
 	auto frequency = state.frequency;
 	if (!IsStoppedOrStopping(state.state)) {
-		display = position = state.position;
-		length = state.length;
+		display = state.position;
 	} else if (state.length) {
 		display = state.length;
 	} else if (state.id.audio()->song()) {

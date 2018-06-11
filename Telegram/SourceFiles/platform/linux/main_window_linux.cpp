@@ -36,7 +36,6 @@ namespace Platform {
 namespace {
 
 bool noQtTrayIcon = false, tryAppIndicator = false;
-bool useGtkBase = false, useAppIndicator = false, useStatusIcon = false, trayIconChecked = false, useUnityCount = false;
 
 
 qint32 _trayIconSize = 22;
@@ -209,9 +208,6 @@ void MainWindow::unreadCounterChangedHook() {
 void MainWindow::updateIconCounters() {
 	updateWindowIcon();
 
-	auto counter = App::histories().unreadBadge();
-
-
 	if (noQtTrayIcon) {
 	} else if (trayIcon) {
 		QIcon icon;
@@ -251,13 +247,10 @@ void MainWindow::psCreateTrayIcon() {
 void MainWindow::psFirstShow() {
 	psCreateTrayIcon();
 
-
 	psUpdateMargins();
 
-	bool showShadows = true;
-
 	show();
-	//_private.enableShadow(winId());
+
 	if (cWindowPos().maximized) {
 		DEBUG_LOG(("Window Pos: First show, setting maximized."));
 		setWindowState(Qt::WindowMaximized);
@@ -270,7 +263,6 @@ void MainWindow::psFirstShow() {
 		} else {
 			show();
 		}
-		showShadows = false;
 	} else {
 		show();
 	}

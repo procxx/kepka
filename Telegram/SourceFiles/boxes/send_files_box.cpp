@@ -716,7 +716,6 @@ void EditCaptionBox::paintEvent(QPaintEvent *e) {
 		}
 	} else if (_doc) {
 		qint32 w = width() - st::boxPhotoPadding.left() - st::boxPhotoPadding.right();
-		qint32 h = _thumbw ? (0 + st::msgFileThumbSize + 0) : (0 + st::msgFileSize + 0);
 		qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0;
 		if (_thumbw) {
 			nameleft = 0 + st::msgFileThumbSize + st::msgFileThumbPadding.right();

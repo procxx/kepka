@@ -363,7 +363,7 @@ void RowPainter::paint(Painter &p, const Row *row, int fullWidth, bool active, b
 			                       history->lastItemTextCache);
 		    }
 	    },
-	    [&p, fullWidth, active, selected, ms, history, unreadCount] {
+	    [&p, active, history, unreadCount] {
 		    if (unreadCount) {
 			    auto counter = QString::number(unreadCount);
 			    if (counter.size() > 4) {

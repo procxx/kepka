@@ -742,7 +742,6 @@ void EditColorBox::updateHSVFields() {
 	auto hue = std::round((1. - _hueSlider->value()) * 360);
 	auto saturation = std::round(_picker->valueX() * 255);
 	auto brightness = std::round((1. - _picker->valueY()) * 255);
-	auto alpha = std::round(_opacitySlider->value() * 255);
 	_hueField->setTextWithFocus(QString::number(hue));
 	_saturationField->setTextWithFocus(QString::number(percentFromByte(saturation)));
 	_brightnessField->setTextWithFocus(QString::number(percentFromByte(brightness)));

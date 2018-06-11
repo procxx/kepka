@@ -359,7 +359,7 @@ void FileLoadTask::process() {
 		filemime = _information->filemime;
 		if (auto image = base::get_if<FileLoadTask::Image>(&_information->media)) {
 			fullimage = base::take(image->data);
-			if (auto opaque = (filemime != stickerMime)) {
+			if (filemime != stickerMime) {
 				fullimage = Images::prepareOpaque(std::move(fullimage));
 			}
 			isAnimation = image->animated;

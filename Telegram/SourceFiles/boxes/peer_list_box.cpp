@@ -973,7 +973,6 @@ void PeerListBox::Inner::paintRow(Painter &p, TimeMs ms, RowIndex index) {
 			p.drawTextLeft(namex, st::contactsPadding.top() + st::contactsStatusTop, width(), highlightedPart);
 		} else {
 			grayedPart = st::contactsStatusFont->elided(grayedPart, availableWidth - highlightedWidth);
-			auto grayedWidth = st::contactsStatusFont->width(grayedPart);
 			p.setPen(st::contactsStatusFgOnline);
 			p.drawTextLeft(namex, st::contactsPadding.top() + st::contactsStatusTop, width(), highlightedPart);
 			p.setPen(selected ? st::contactsStatusFgOver : st::contactsStatusFg);
