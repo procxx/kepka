@@ -93,7 +93,7 @@ private:
 		margin.setBottom(margin.bottom() - padding.bottom());
 	}
 	void createChildRow(object_ptr<Ui::Checkbox> &child, style::margins &margin, const QString &text,
-	                    base::lambda<void(bool checked)> callback, bool checked);
+	                    Fn<void(bool checked)> callback, bool checked);
 	void createChildRow(object_ptr<Ui::LinkButton> &child, style::margins &margin, const QString &text,
 	                    const char *slot, const style::LinkButton &st = st::boxLinkButton);
 

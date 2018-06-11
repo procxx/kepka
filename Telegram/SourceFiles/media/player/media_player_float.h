@@ -35,8 +35,8 @@ namespace Player {
 
 class Float : public TWidget, private base::Subscriber {
 public:
-	Float(QWidget *parent, HistoryItem *item, base::lambda<void(bool visible)> toggleCallback,
-	      base::lambda<void(bool closed)> draggedCallback);
+	Float(QWidget *parent, HistoryItem *item, Fn<void(bool visible)> toggleCallback,
+	      Fn<void(bool closed)> draggedCallback);
 
 	HistoryItem *item() const {
 		return _item;
@@ -91,7 +91,7 @@ private:
 	void finishDrag(bool closed);
 
 	HistoryItem *_item = nullptr;
-	base::lambda<void(bool visible)> _toggleCallback;
+	Fn<void(bool visible)> _toggleCallback;
 
 	double _opacity = 1.;
 
@@ -102,7 +102,7 @@ private:
 
 	bool _drag = false;
 	QPoint _dragLocalPoint;
-	base::lambda<void(bool closed)> _draggedCallback;
+	Fn<void(bool closed)> _draggedCallback;
 
 	std::unique_ptr<Clip::Playback> _roundPlayback;
 };

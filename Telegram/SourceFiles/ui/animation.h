@@ -30,7 +30,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include <cmath>
 #include <cstdint>
 
-#include "base/lambda.h"
 #include "core/basic_types.h"
 #include "core/utils.h"
 #include "mtproto/facade.h"
@@ -103,7 +102,7 @@ enum Notification {
 
 namespace anim {
 
-using transition = base::lambda<double(double delta, double dt)>;
+using transition = Fn<double(double delta, double dt)>;
 
 extern transition linear;
 extern transition sineInOut;
@@ -687,7 +686,7 @@ private:
 
 		anim::value value;
 		BasicAnimation a_animation;
-		base::lambda<void()> updateCallback;
+		Fn<void()> updateCallback;
 		double duration = 0.;
 		anim::transition transition = anim::linear;
 		MTP::PauseHolder pause;

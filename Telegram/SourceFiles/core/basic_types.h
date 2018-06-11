@@ -21,16 +21,25 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/build_config.h"
+#include "base/functors.h"
+#include "base/unique_function.h"
 #include <QLatin1String>
 #include <QString>
 #include <cstdint>
 #include <ctime>
 #include <exception>
+#include <functional>
 #include <gsl/gsl>
 #include <memory>
 #include <string>
 
-template <typename Type> using not_null = gsl::not_null<Type>;
+namespace func = base::functors;
+
+using gsl::not_null;
+
+template <typename Signature> using Fn = std::function<Signature>;
+
+template <typename Signature> using FnMut = base::unique_function<Signature>;
 
 #define qsl(s) QStringLiteral(s)
-#define qstr(s) QLatin1String(s, static_cast<int>(sizeof(s) - 1))
+#define qstr(s) QLatin1String((s), static_cast<int>(sizeof(s) - 1))

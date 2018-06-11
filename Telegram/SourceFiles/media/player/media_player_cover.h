@@ -46,7 +46,7 @@ class CoverWidget : public TWidget, private base::Subscriber {
 public:
 	CoverWidget(QWidget *parent);
 
-	using ButtonCallback = base::lambda<void()>;
+	using ButtonCallback = Fn<void()>;
 	void setPinCallback(ButtonCallback &&callback);
 	void setCloseCallback(ButtonCallback &&callback);
 

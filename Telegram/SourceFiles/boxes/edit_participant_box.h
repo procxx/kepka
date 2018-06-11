@@ -70,7 +70,7 @@ public:
 	EditAdminBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user,
 	             const MTPChannelAdminRights &rights);
 
-	void setSaveCallback(base::lambda<void(MTPChannelAdminRights, MTPChannelAdminRights)> callback) {
+	void setSaveCallback(Fn<void(MTPChannelAdminRights, MTPChannelAdminRights)> callback) {
 		_saveCallback = std::move(callback);
 	}
 
@@ -91,7 +91,7 @@ private:
 
 	const MTPChannelAdminRights _oldRights;
 	std::vector<std::pair<Flag, Flag>> _dependencies;
-	base::lambda<void(MTPChannelAdminRights, MTPChannelAdminRights)> _saveCallback;
+	Fn<void(MTPChannelAdminRights, MTPChannelAdminRights)> _saveCallback;
 
 	std::map<Flags, QPointer<Ui::Checkbox>> _checkboxes;
 	QPointer<Ui::FlatLabel> _aboutAddAdmins;
@@ -105,7 +105,7 @@ public:
 	EditRestrictedBox(QWidget *, not_null<ChannelData *> channel, not_null<UserData *> user, bool hasAdminRights,
 	                  const MTPChannelBannedRights &rights);
 
-	void setSaveCallback(base::lambda<void(MTPChannelBannedRights, MTPChannelBannedRights)> callback) {
+	void setSaveCallback(Fn<void(MTPChannelBannedRights, MTPChannelBannedRights)> callback) {
 		_saveCallback = std::move(callback);
 	}
 
@@ -135,7 +135,7 @@ private:
 	const MTPChannelBannedRights _oldRights;
 	TimeId _until = 0;
 	std::vector<std::pair<Flag, Flag>> _dependencies;
-	base::lambda<void(MTPChannelBannedRights, MTPChannelBannedRights)> _saveCallback;
+	Fn<void(MTPChannelBannedRights, MTPChannelBannedRights)> _saveCallback;
 
 	std::map<Flags, QPointer<Ui::Checkbox>> _checkboxes;
 

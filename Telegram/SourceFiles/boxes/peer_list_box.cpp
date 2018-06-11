@@ -36,7 +36,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "window/themes/window_theme.h"
 
 PeerListBox::PeerListBox(QWidget *, std::unique_ptr<PeerListController> controller,
-                         base::lambda<void(not_null<PeerListBox *>)> init)
+                         Fn<void(not_null<PeerListBox *>)> init)
     : _controller(std::move(controller))
     , _init(std::move(init)) {
 	Expects(_controller != nullptr);
@@ -247,13 +247,13 @@ void PeerListBox::peerListSetSearchMode(PeerListSearchMode mode) {
 	}
 }
 
-void PeerListBox::peerListSortRows(base::lambda<bool(PeerListRow &a, PeerListRow &b)> compare) {
+void PeerListBox::peerListSortRows(Fn<bool(PeerListRow &a, PeerListRow &b)> compare) {
 	_inner->reorderRows([compare = std::move(compare)](auto &&begin, auto &&end) {
 		std::sort(begin, end, [compare](auto &&a, auto &&b) { return compare(*a, *b); });
 	});
 }
 
-void PeerListBox::peerListPartitionRows(base::lambda<bool(PeerListRow &a)> border) {
+void PeerListBox::peerListPartitionRows(Fn<bool(PeerListRow &a)> border) {
 	_inner->reorderRows([border = std::move(border)](auto &&begin, auto &&end) {
 		std::stable_partition(begin, end, [border](auto &&current) { return border(*current); });
 	});
@@ -507,7 +507,7 @@ void PeerListRow::lazyInitialize() {
 	refreshStatus();
 }
 
-void PeerListRow::createCheckbox(base::lambda<void()> updateCallback) {
+void PeerListRow::createCheckbox(Fn<void()> updateCallback) {
 	_checkbox = std::make_unique<Ui::RoundImageCheckbox>(st::contactsPhotoCheckbox, std::move(updateCallback),
 	                                                     PaintUserpicCallback(_peer));
 }

@@ -157,7 +157,7 @@ void TopBarWidget::showMenu() {
 				}));
 				_menuToggle->installEventFilter(_menu);
 				App::main()->fillPeerMenu(peer,
-				                          [this](const QString &text, base::lambda<void()> callback) {
+				                          [this](const QString &text, Fn<void()> callback) {
 					                          return _menu->addAction(text, std::move(callback));
 				                          },
 				                          false);

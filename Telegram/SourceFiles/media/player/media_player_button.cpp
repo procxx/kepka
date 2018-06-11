@@ -25,7 +25,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Media {
 namespace Player {
 
-PlayButtonLayout::PlayButtonLayout(const style::MediaPlayerButton &st, base::lambda<void()> callback)
+PlayButtonLayout::PlayButtonLayout(const style::MediaPlayerButton &st, Fn<void()> callback)
     : _st(st)
     , _callback(std::move(callback)) {}
 

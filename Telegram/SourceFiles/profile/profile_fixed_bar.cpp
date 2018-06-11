@@ -130,7 +130,7 @@ void FixedBar::setChannelActions() {
 	}
 }
 
-void FixedBar::addRightAction(RightActionType type, base::lambda<QString()> textFactory, const char *slot) {
+void FixedBar::addRightAction(RightActionType type, Fn<QString()> textFactory, const char *slot) {
 	if (_rightActions.size() > _currentAction) {
 		if (_rightActions.at(_currentAction).type == type) {
 			++_currentAction;

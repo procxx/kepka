@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "base/object_ptr.h"
 #include "styles/style_widgets.h"
 #include "ui/twidget.h"
@@ -41,29 +40,28 @@ class ScrollArea;
 
 class MultiSelect : public TWidget {
 public:
-	MultiSelect(QWidget *parent, const style::MultiSelect &st,
-	            base::lambda<QString()> placeholderFactory = base::lambda<QString()>());
+	MultiSelect(QWidget *parent, const style::MultiSelect &st, Fn<QString()> placeholderFactory = Fn<QString()>());
 
 	QString getQuery() const;
 	void setInnerFocus();
 	void clearQuery();
 
-	void setQueryChangedCallback(base::lambda<void(const QString &query)> callback);
-	void setSubmittedCallback(base::lambda<void(bool ctrlShiftEnter)> callback);
-	void setResizedCallback(base::lambda<void()> callback);
+	void setQueryChangedCallback(Fn<void(const QString &query)> callback);
+	void setSubmittedCallback(Fn<void(bool ctrlShiftEnter)> callback);
+	void setResizedCallback(Fn<void()> callback);
 
 	enum class AddItemWay {
 		Default,
 		SkipAnimation,
 	};
-	using PaintRoundImage = base::lambda<void(Painter &p, int x, int y, int outerWidth, int size)>;
+	using PaintRoundImage = Fn<void(Painter &p, int x, int y, int outerWidth, int size)>;
 	void addItem(quint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage,
 	             AddItemWay way = AddItemWay::Default);
 	void addItemInBunch(quint64 itemId, const QString &text, style::color color, PaintRoundImage paintRoundImage);
 	void finishItemsBunch();
 	void setItemText(quint64 itemId, const QString &text);
 
-	void setItemRemovedCallback(base::lambda<void(quint64 itemId)> callback);
+	void setItemRemovedCallback(Fn<void(quint64 itemId)> callback);
 	void removeItem(quint64 itemId);
 
 	int getItemsCount() const;
@@ -86,8 +84,8 @@ private:
 	class Inner;
 	QPointer<Inner> _inner;
 
-	base::lambda<void()> _resizedCallback;
-	base::lambda<void(const QString &query)> _queryChangedCallback;
+	Fn<void()> _resizedCallback;
+	Fn<void(const QString &query)> _queryChangedCallback;
 };
 
 // This class is hold in header because it requires Qt preprocessing.
@@ -95,29 +93,28 @@ class MultiSelect::Inner : public TWidget {
 	Q_OBJECT
 
 public:
-	using ScrollCallback = base::lambda<void(int activeTop, int activeBottom)>;
-	Inner(QWidget *parent, const style::MultiSelect &st, base::lambda<QString()> placeholderFactory,
-	      ScrollCallback callback);
+	using ScrollCallback = Fn<void(int activeTop, int activeBottom)>;
+	Inner(QWidget *parent, const style::MultiSelect &st, Fn<QString()> placeholderFactory, ScrollCallback callback);
 
 	QString getQuery() const;
 	bool setInnerFocus();
 	void clearQuery();
 
-	void setQueryChangedCallback(base::lambda<void(const QString &query)> callback);
-	void setSubmittedCallback(base::lambda<void(bool ctrlShiftEnter)> callback);
+	void setQueryChangedCallback(Fn<void(const QString &query)> callback);
+	void setSubmittedCallback(Fn<void(bool ctrlShiftEnter)> callback);
 
 	void addItemInBunch(std::unique_ptr<Item> item);
 	void finishItemsBunch(AddItemWay way);
 	void setItemText(quint64 itemId, const QString &text);
 
-	void setItemRemovedCallback(base::lambda<void(quint64 itemId)> callback);
+	void setItemRemovedCallback(Fn<void(quint64 itemId)> callback);
 	void removeItem(quint64 itemId);
 
 	int getItemsCount() const;
 	QVector<quint64> getItems() const;
 	bool hasItem(quint64 itemId) const;
 
-	void setResizedCallback(base::lambda<void(int heightDelta)> callback);
+	void setResizedCallback(Fn<void(int heightDelta)> callback);
 
 	~Inner();
 
@@ -183,10 +180,10 @@ private:
 	int _newHeight = 0;
 	Animation _height;
 
-	base::lambda<void(const QString &query)> _queryChangedCallback;
-	base::lambda<void(bool ctrlShiftEnter)> _submittedCallback;
-	base::lambda<void(quint64 itemId)> _itemRemovedCallback;
-	base::lambda<void(int heightDelta)> _resizedCallback;
+	Fn<void(const QString &query)> _queryChangedCallback;
+	Fn<void(bool ctrlShiftEnter)> _submittedCallback;
+	Fn<void(quint64 itemId)> _itemRemovedCallback;
+	Fn<void(int heightDelta)> _resizedCallback;
 };
 
 
@@ -213,7 +210,7 @@ public:
 	void setPosition(int x, int y, int outerWidth, int maxVisiblePadding);
 	QRect paintArea(int outerWidth) const;
 
-	void setUpdateCallback(base::lambda<void()> updateCallback) {
+	void setUpdateCallback(Fn<void()> updateCallback) {
 		_updateCallback = updateCallback;
 	}
 	void setText(const QString &text);
@@ -245,7 +242,7 @@ private:
 
 	quint64 _id;
 	struct SlideAnimation {
-		SlideAnimation(base::lambda<void()> updateCallback, int fromX, int toX, int y, double duration)
+		SlideAnimation(Fn<void()> updateCallback, int fromX, int toX, int y, double duration)
 		    : fromX(fromX)
 		    , toX(toX)
 		    , y(y) {
@@ -268,7 +265,7 @@ private:
 	bool _overDelete = false;
 	bool _active = false;
 	PaintRoundImage _paintRoundImage;
-	base::lambda<void()> _updateCallback;
+	Fn<void()> _updateCallback;
 	bool _hiding = false;
 };
 

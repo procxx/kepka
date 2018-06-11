@@ -38,13 +38,13 @@ public:
 	SendFilesBox(QWidget *, const QStringList &files, CompressConfirm compressed);
 	SendFilesBox(QWidget *, const QString &phone, const QString &firstname, const QString &lastname);
 
-	void setConfirmedCallback(base::lambda<void(const QStringList &files, const QImage &image,
-	                                            std::unique_ptr<FileLoadTask::MediaInformation> information,
-	                                            bool compressed, const QString &caption, bool ctrlShiftEnter)>
+	void setConfirmedCallback(Fn<void(const QStringList &files, const QImage &image,
+	                                  std::unique_ptr<FileLoadTask::MediaInformation> information, bool compressed,
+	                                  const QString &caption, bool ctrlShiftEnter)>
 	                              callback) {
 		_confirmedCallback = std::move(callback);
 	}
-	void setCancelledCallback(base::lambda<void()> callback) {
+	void setCancelledCallback(Fn<void()> callback) {
 		_cancelledCallback = std::move(callback);
 	}
 
@@ -74,7 +74,7 @@ private:
 	void updateTitleText();
 	void updateBoxSize();
 	void updateControlsGeometry();
-	base::lambda<QString()> getSendButtonText() const;
+	Fn<QString()> getSendButtonText() const;
 
 	QString _titleText;
 	QStringList _files;
@@ -102,11 +102,10 @@ private:
 	QString _contactLastName;
 	EmptyUserpic _contactPhotoEmpty;
 
-	base::lambda<void(const QStringList &files, const QImage &image,
-	                  std::unique_ptr<FileLoadTask::MediaInformation> information, bool compressed,
-	                  const QString &caption, bool ctrlShiftEnter)>
+	Fn<void(const QStringList &files, const QImage &image, std::unique_ptr<FileLoadTask::MediaInformation> information,
+	        bool compressed, const QString &caption, bool ctrlShiftEnter)>
 	    _confirmedCallback;
-	base::lambda<void()> _cancelledCallback;
+	Fn<void()> _cancelledCallback;
 	bool _confirmed = false;
 
 	object_ptr<Ui::InputArea> _caption = {nullptr};

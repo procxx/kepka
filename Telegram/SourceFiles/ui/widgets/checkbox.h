@@ -28,12 +28,12 @@ namespace Ui {
 
 class AbstractCheckView {
 public:
-	AbstractCheckView(int duration, bool checked, base::lambda<void()> updateCallback);
+	AbstractCheckView(int duration, bool checked, Fn<void()> updateCallback);
 
 	void setCheckedFast(bool checked);
 	void setCheckedAnimated(bool checked);
 	void finishAnimation();
-	void setUpdateCallback(base::lambda<void()> updateCallback);
+	void setUpdateCallback(Fn<void()> updateCallback);
 	bool checked() const {
 		return _checked;
 	}
@@ -57,13 +57,13 @@ public:
 private:
 	int _duration = 0;
 	bool _checked = false;
-	base::lambda<void()> _updateCallback;
+	Fn<void()> _updateCallback;
 	Animation _toggleAnimation;
 };
 
 class CheckView : public AbstractCheckView {
 public:
-	CheckView(const style::Check &st, bool checked, base::lambda<void()> updateCallback);
+	CheckView(const style::Check &st, bool checked, Fn<void()> updateCallback);
 
 	void setStyle(const style::Check &st);
 
@@ -80,7 +80,7 @@ private:
 
 class RadioView : public AbstractCheckView {
 public:
-	RadioView(const style::Radio &st, bool checked, base::lambda<void()> updateCallback);
+	RadioView(const style::Radio &st, bool checked, Fn<void()> updateCallback);
 
 	void setStyle(const style::Radio &st);
 
@@ -97,7 +97,7 @@ private:
 
 class ToggleView : public AbstractCheckView {
 public:
-	ToggleView(const style::Toggle &st, bool checked, base::lambda<void()> updateCallback);
+	ToggleView(const style::Toggle &st, bool checked, Fn<void()> updateCallback);
 
 	void setStyle(const style::Toggle &st);
 
@@ -174,7 +174,7 @@ public:
 	    : _value(value)
 	    , _hasValue(true) {}
 
-	void setChangedCallback(base::lambda<void(int value)> callback) {
+	void setChangedCallback(Fn<void(int value)> callback) {
 		_changedCallback = std::move(callback);
 	}
 
@@ -199,7 +199,7 @@ private:
 
 	int _value = 0;
 	bool _hasValue = false;
-	base::lambda<void(int value)> _changedCallback;
+	Fn<void(int value)> _changedCallback;
 	std::vector<Radiobutton *> _buttons;
 };
 

@@ -473,15 +473,13 @@ void CoverWidget::clearButtons() {
 	}
 }
 
-void CoverWidget::addButton(base::lambda<QString()> textFactory, const char *slot,
-                            const style::RoundButton *replacementStyle) {
+void CoverWidget::addButton(Fn<QString()> textFactory, const char *slot, const style::RoundButton *replacementStyle) {
 	auto &buttonStyle = _buttons.isEmpty() ? st::profilePrimaryButton : st::profileSecondaryButton;
 	auto button = new Ui::RoundButton(this, std::move(textFactory), buttonStyle);
 	connect(button, SIGNAL(clicked()), this, slot);
 	button->show();
 
-	auto replacement =
-	    replacementStyle ? new Ui::RoundButton(this, base::lambda<QString()>(), *replacementStyle) : nullptr;
+	auto replacement = replacementStyle ? new Ui::RoundButton(this, Fn<QString()>(), *replacementStyle) : nullptr;
 	if (replacement) {
 		connect(replacement, SIGNAL(clicked()), this, slot);
 		replacement->hide();

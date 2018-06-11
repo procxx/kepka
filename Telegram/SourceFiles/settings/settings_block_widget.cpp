@@ -86,7 +86,7 @@ void BlockWidget::rowHeightUpdated() {
 }
 
 void BlockWidget::createChildRow(object_ptr<Ui::Checkbox> &child, style::margins &margin, const QString &text,
-                                 base::lambda<void(bool checked)> callback, bool checked) {
+                                 Fn<void(bool checked)> callback, bool checked) {
 	child.create(this, text, checked, st::defaultBoxCheckbox);
 	subscribe(child->checkedChanged, std::move(callback));
 }

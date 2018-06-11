@@ -375,7 +375,7 @@ void InnerWidget::requestAdmins() {
 	    .send();
 }
 
-void InnerWidget::showFilter(base::lambda<void(FilterValue &&filter)> callback) {
+void InnerWidget::showFilter(Fn<void(FilterValue &&filter)> callback) {
 	if (_admins.empty()) {
 		_showFilterCallback = std::move(callback);
 	} else {

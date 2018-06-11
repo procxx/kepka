@@ -44,9 +44,9 @@ class ShareBox : public BoxContent, public RPCSender {
 	Q_OBJECT
 
 public:
-	using CopyCallback = base::lambda<void()>;
-	using SubmitCallback = base::lambda<void(const QVector<PeerData *> &)>;
-	using FilterCallback = base::lambda<bool(PeerData *)>;
+	using CopyCallback = Fn<void()>;
+	using SubmitCallback = Fn<void(const QVector<PeerData *> &)>;
+	using FilterCallback = Fn<bool(PeerData *)>;
 	ShareBox(QWidget *, CopyCallback &&copyCallback, SubmitCallback &&submitCallback, FilterCallback &&filterCallback);
 
 protected:
@@ -113,7 +113,7 @@ class ShareBox::Inner : public TWidget, public RPCSender, private base::Subscrib
 public:
 	Inner(QWidget *parent, ShareBox::FilterCallback &&filterCallback);
 
-	void setPeerSelectedChangedCallback(base::lambda<void(PeerData *peer, bool selected)> callback);
+	void setPeerSelectedChangedCallback(Fn<void(PeerData *peer, bool selected)> callback);
 	void peerUnselected(PeerData *peer);
 
 	QVector<PeerData *> selected() const;
@@ -152,7 +152,7 @@ private:
 	int displayedChatsCount() const;
 
 	struct Chat {
-		Chat(PeerData *peer, base::lambda<void()> updateCallback);
+		Chat(PeerData *peer, Fn<void()> updateCallback);
 
 		PeerData *peer;
 		Ui::RoundImageCheckbox checkbox;
@@ -202,7 +202,7 @@ private:
 	using SelectedChats = std::set<PeerData *>;
 	SelectedChats _selected;
 
-	base::lambda<void(PeerData *peer, bool selected)> _peerSelectedChangedCallback;
+	Fn<void(PeerData *peer, bool selected)> _peerSelectedChangedCallback;
 
 	ChatData *data(Dialogs::Row *row);
 

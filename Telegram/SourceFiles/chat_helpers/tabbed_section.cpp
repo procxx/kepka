@@ -44,8 +44,8 @@ TabbedSection::TabbedSection(QWidget *parent, not_null<Window::Controller *> con
 			_cancelledCallback();
 		}
 	});
-	_selector->setAfterShownCallback(base::lambda<void(SelectorTab)>());
-	_selector->setBeforeHidingCallback(base::lambda<void(SelectorTab)>());
+	_selector->setAfterShownCallback(Fn<void(SelectorTab)>());
+	_selector->setBeforeHidingCallback(Fn<void(SelectorTab)>());
 
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
 }

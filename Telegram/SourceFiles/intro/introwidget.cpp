@@ -59,7 +59,7 @@ Widget::Widget(QWidget *parent)
     , _back(this, object_ptr<Ui::IconButton>(this, st::introBackButton), st::introSlideDuration)
     , _settings(this, object_ptr<Ui::RoundButton>(this, langFactory(lng_menu_settings), st::defaultBoxButton),
                 st::introCoverDuration)
-    , _next(this, base::lambda<QString()>(), st::introNextButton) {
+    , _next(this, Fn<QString()>(), st::introNextButton) {
 	auto country = Platform::SystemCountry();
 	if (country.isEmpty()) {
 		country = str_const_toString(kDefaultCountry);
@@ -484,7 +484,7 @@ void Widget::Step::updateLabelsPosition() {
 	}
 }
 
-void Widget::Step::setTitleText(base::lambda<QString()> richTitleTextFactory) {
+void Widget::Step::setTitleText(Fn<QString()> richTitleTextFactory) {
 	_titleTextFactory = std::move(richTitleTextFactory);
 	refreshTitle();
 	updateLabelsPosition();
@@ -494,7 +494,7 @@ void Widget::Step::refreshTitle() {
 	_title->setRichText(_titleTextFactory());
 }
 
-void Widget::Step::setDescriptionText(base::lambda<QString()> richDescriptionTextFactory) {
+void Widget::Step::setDescriptionText(Fn<QString()> richDescriptionTextFactory) {
 	_descriptionTextFactory = std::move(richDescriptionTextFactory);
 	refreshDescription();
 	updateLabelsPosition();
@@ -689,7 +689,7 @@ void Widget::Step::setErrorBelowLink(bool below) {
 	}
 }
 
-void Widget::Step::showError(base::lambda<QString()> textFactory) {
+void Widget::Step::showError(Fn<QString()> textFactory) {
 	_errorTextFactory = std::move(textFactory);
 	refreshError();
 	updateLabelsPosition();
@@ -778,11 +778,11 @@ void Widget::Step::showAnimated(Direction direction) {
 	}
 }
 
-void Widget::Step::setGoCallback(base::lambda<void(Step *step, Direction direction)> callback) {
+void Widget::Step::setGoCallback(Fn<void(Step *step, Direction direction)> callback) {
 	_goCallback = std::move(callback);
 }
 
-void Widget::Step::setShowResetCallback(base::lambda<void()> callback) {
+void Widget::Step::setShowResetCallback(Fn<void()> callback) {
 	_showResetCallback = std::move(callback);
 }
 

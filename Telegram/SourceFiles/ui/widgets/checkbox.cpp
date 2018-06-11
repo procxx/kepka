@@ -39,7 +39,7 @@ TextParseOptions _checkboxOptions = {
 
 } // namespace
 
-AbstractCheckView::AbstractCheckView(int duration, bool checked, base::lambda<void()> updateCallback)
+AbstractCheckView::AbstractCheckView(int duration, bool checked, Fn<void()> updateCallback)
     : _duration(duration)
     , _checked(checked)
     , _updateCallback(std::move(updateCallback)) {}
@@ -52,7 +52,7 @@ void AbstractCheckView::setCheckedFast(bool checked) {
 	}
 }
 
-void AbstractCheckView::setUpdateCallback(base::lambda<void()> updateCallback) {
+void AbstractCheckView::setUpdateCallback(Fn<void()> updateCallback) {
 	_updateCallback = std::move(updateCallback);
 	if (_toggleAnimation.animating()) {
 		_toggleAnimation.setUpdateCallback(_updateCallback);
@@ -74,7 +74,7 @@ double AbstractCheckView::currentAnimationValue(TimeMs ms) {
 	return ms ? _toggleAnimation.current(ms, _checked ? 1. : 0.) : _toggleAnimation.current(_checked ? 1. : 0.);
 }
 
-ToggleView::ToggleView(const style::Toggle &st, bool checked, base::lambda<void()> updateCallback)
+ToggleView::ToggleView(const style::Toggle &st, bool checked, Fn<void()> updateCallback)
     : AbstractCheckView(st.duration, checked, std::move(updateCallback))
     , _st(&st) {}
 
@@ -210,7 +210,7 @@ bool ToggleView::checkRippleStartPosition(QPoint position) const {
 	return QRect(QPoint(0, 0), rippleSize()).contains(position);
 }
 
-CheckView::CheckView(const style::Check &st, bool checked, base::lambda<void()> updateCallback)
+CheckView::CheckView(const style::Check &st, bool checked, Fn<void()> updateCallback)
     : AbstractCheckView(st.duration, checked, std::move(updateCallback))
     , _st(&st) {}
 
@@ -255,7 +255,7 @@ bool CheckView::checkRippleStartPosition(QPoint position) const {
 	return QRect(QPoint(0, 0), rippleSize()).contains(position);
 }
 
-RadioView::RadioView(const style::Radio &st, bool checked, base::lambda<void()> updateCallback)
+RadioView::RadioView(const style::Radio &st, bool checked, Fn<void()> updateCallback)
     : AbstractCheckView(st.duration, checked, std::move(updateCallback))
     , _st(&st) {}
 

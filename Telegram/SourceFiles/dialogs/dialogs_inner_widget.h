@@ -105,7 +105,7 @@ public:
 
 	PeerData *updateFromParentDrag(QPoint globalPos);
 
-	void setLoadMoreCallback(base::lambda<void()> callback) {
+	void setLoadMoreCallback(Fn<void()> callback) {
 		_loadMoreCallback = std::move(callback);
 	}
 	void setVisibleTopBottom(int visibleTop, int visibleBottom) override;
@@ -301,5 +301,5 @@ private:
 
 	Ui::PopupMenu *_menu = nullptr;
 
-	base::lambda<void()> _loadMoreCallback;
+	Fn<void()> _loadMoreCallback;
 };

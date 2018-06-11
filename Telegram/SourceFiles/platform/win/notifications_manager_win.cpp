@@ -219,7 +219,7 @@ public:
 	    , _weak(guarded) {}
 	~ToastEventHandler() = default;
 
-	void performOnMainQueue(base::lambda_once<void(Manager *manager)> task) {
+	void performOnMainQueue(FnMut<void(Manager *manager)> task) {
 		base::TaskQueue::Main().Put([weak = _weak, task = std::move(task)]() mutable {
 			if (auto strong = weak.lock()) {
 				task(*strong);

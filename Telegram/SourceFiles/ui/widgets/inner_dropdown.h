@@ -57,13 +57,13 @@ public:
 	void otherEnter();
 	void otherLeave();
 
-	void setShowStartCallback(base::lambda<void()> callback) {
+	void setShowStartCallback(Fn<void()> callback) {
 		_showStartCallback = std::move(callback);
 	}
-	void setHideStartCallback(base::lambda<void()> callback) {
+	void setHideStartCallback(Fn<void()> callback) {
 		_hideStartCallback = std::move(callback);
 	}
-	void setHiddenCallback(base::lambda<void()> callback) {
+	void setHiddenCallback(Fn<void()> callback) {
 		_hiddenCallback = std::move(callback);
 	}
 
@@ -131,9 +131,9 @@ private:
 
 	QTimer _hideTimer;
 	bool _ignoreShowEvents = false;
-	base::lambda<void()> _showStartCallback;
-	base::lambda<void()> _hideStartCallback;
-	base::lambda<void()> _hiddenCallback;
+	Fn<void()> _showStartCallback;
+	Fn<void()> _hideStartCallback;
+	Fn<void()> _hiddenCallback;
 
 	object_ptr<Ui::ScrollArea> _scroll;
 

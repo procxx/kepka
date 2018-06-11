@@ -35,7 +35,7 @@ public:
 	void setSingleShot(bool); // is not available
 	void start(); // is not available
 
-	void setTimeoutHandler(base::lambda<void()> handler);
+	void setTimeoutHandler(Fn<void()> handler);
 
 public slots:
 	void start(int msec);
@@ -47,5 +47,5 @@ private slots:
 
 private:
 	TimeMs _finishing = 0;
-	base::lambda<void()> _handler;
+	Fn<void()> _handler;
 };

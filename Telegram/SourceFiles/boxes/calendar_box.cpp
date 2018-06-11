@@ -204,7 +204,7 @@ public:
 		return st::calendarPadding.top() + innerHeight + st::calendarPadding.bottom();
 	}
 
-	void setDateChosenCallback(base::lambda<void(QDate)> callback) {
+	void setDateChosenCallback(Fn<void(QDate)> callback) {
 		_dateChosenCallback = std::move(callback);
 	}
 
@@ -230,7 +230,7 @@ private:
 
 	std::map<int, std::unique_ptr<Ui::RippleAnimation>> _ripples;
 
-	base::lambda<void(QDate)> _dateChosenCallback;
+	Fn<void(QDate)> _dateChosenCallback;
 
 	static constexpr auto kEmptySelection = -kDaysInWeek;
 	int _selected = kEmptySelection;
@@ -438,7 +438,7 @@ void CalendarBox::Title::paintEvent(QPaintEvent *e) {
 	               _textWidth);
 }
 
-CalendarBox::CalendarBox(QWidget *, QDate month, QDate highlighted, base::lambda<void(QDate date)> callback)
+CalendarBox::CalendarBox(QWidget *, QDate month, QDate highlighted, Fn<void(QDate date)> callback)
     : _context(std::make_unique<Context>(month, highlighted))
     , _inner(this, _context.get())
     , _title(this, _context.get())

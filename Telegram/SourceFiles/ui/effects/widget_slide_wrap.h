@@ -31,7 +31,7 @@ template <typename Widget> class WidgetSlideWrap;
 template <> class WidgetSlideWrap<TWidget> : public TWidget {
 public:
 	WidgetSlideWrap(QWidget *parent, object_ptr<TWidget> entity, style::margins entityPadding,
-	                base::lambda<void()> updateCallback, int duration = st::widgetSlideDuration);
+	                Fn<void()> updateCallback, int duration = st::widgetSlideDuration);
 
 	void showAnimated();
 	void hideAnimated();
@@ -85,7 +85,7 @@ private:
 	bool _inResizeToWidth = false;
 	style::margins _padding;
 	int _duration;
-	base::lambda<void()> _updateCallback;
+	Fn<void()> _updateCallback;
 
 	style::size _realSize;
 	int _forceHeight = -1;
@@ -95,8 +95,8 @@ private:
 
 template <typename Widget> class WidgetSlideWrap : public WidgetSlideWrap<TWidget> {
 public:
-	WidgetSlideWrap(QWidget *parent, object_ptr<Widget> entity, style::margins entityPadding,
-	                base::lambda<void()> updateCallback, int duration = st::widgetSlideDuration)
+	WidgetSlideWrap(QWidget *parent, object_ptr<Widget> entity, style::margins entityPadding, Fn<void()> updateCallback,
+	                int duration = st::widgetSlideDuration)
 	    : WidgetSlideWrap<TWidget>(parent, std::move(entity), entityPadding, std::move(updateCallback), duration) {}
 	Widget *entity() {
 		return static_cast<Widget *>(WidgetSlideWrap<TWidget>::entity());

@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "ui/animation.h"
 #include "ui/twidget.h"
 #include <QPixmap>
@@ -40,10 +39,10 @@ public:
 	void setPixmaps(const QPixmap &oldContentCache, const QPixmap &newContentCache);
 	void setTopBarShadow(bool enabled);
 
-	using RepaintCallback = base::lambda<void()>;
+	using RepaintCallback = Fn<void()>;
 	void setRepaintCallback(RepaintCallback &&callback);
 
-	using FinishedCallback = base::lambda<void()>;
+	using FinishedCallback = Fn<void()>;
 	void setFinishedCallback(FinishedCallback &&callback);
 
 	void start();

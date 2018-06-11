@@ -33,7 +33,7 @@ public:
 
 	void beforeHiding();
 	void afterShown();
-	void setCancelledCallback(base::lambda<void()> callback) {
+	void setCancelledCallback(Fn<void()> callback) {
 		_cancelledCallback = std::move(callback);
 	}
 
@@ -51,7 +51,7 @@ protected:
 
 private:
 	object_ptr<TabbedSelector> _selector;
-	base::lambda<void()> _cancelledCallback;
+	Fn<void()> _cancelledCallback;
 };
 
 } // namespace ChatHelpers

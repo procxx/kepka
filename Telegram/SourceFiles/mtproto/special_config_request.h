@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 
 #include "mtproto/mtp_instance.h"
 #include <QNetworkAccessManager>
@@ -30,7 +29,7 @@ namespace MTP {
 
 class SpecialConfigRequest : public QObject {
 public:
-	SpecialConfigRequest(base::lambda<void(DcId dcId, const std::string &ip, int port)> callback);
+	SpecialConfigRequest(Fn<void(DcId dcId, const std::string &ip, int port)> callback);
 
 	~SpecialConfigRequest();
 
@@ -42,7 +41,7 @@ private:
 	void handleResponse(const QByteArray &bytes);
 	bool decryptSimpleConfig(const QByteArray &bytes);
 
-	base::lambda<void(DcId dcId, const std::string &ip, int port)> _callback;
+	Fn<void(DcId dcId, const std::string &ip, int port)> _callback;
 	MTPhelp_ConfigSimple _simpleConfig;
 
 	QNetworkAccessManager _manager;

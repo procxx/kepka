@@ -33,7 +33,7 @@ class BackgroundBox::Inner : public TWidget, public RPCSender, private base::Sub
 public:
 	Inner(QWidget *parent);
 
-	void setBackgroundChosenCallback(base::lambda<void(int index)> callback) {
+	void setBackgroundChosenCallback(Fn<void(int index)> callback) {
 		_backgroundChosenCallback = std::move(callback);
 	}
 
@@ -49,7 +49,7 @@ private:
 	void gotWallpapers(const MTPVector<MTPWallPaper> &result);
 	void updateWallpapers();
 
-	base::lambda<void(int index)> _backgroundChosenCallback;
+	Fn<void(int index)> _backgroundChosenCallback;
 
 	int _bgCount = 0;
 	int _rows = 0;

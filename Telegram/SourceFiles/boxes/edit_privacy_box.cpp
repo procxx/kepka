@@ -36,8 +36,7 @@ namespace {
 
 class PrivacyExceptionsBoxController : public ChatsListBoxController {
 public:
-	PrivacyExceptionsBoxController(base::lambda<QString()> titleFactory,
-	                               const std::vector<not_null<UserData *>> &selected);
+	PrivacyExceptionsBoxController(Fn<QString()> titleFactory, const std::vector<not_null<UserData *>> &selected);
 	void rowClicked(not_null<PeerListRow *> row) override;
 
 	std::vector<not_null<UserData *>> getResult() const;
@@ -47,11 +46,11 @@ protected:
 	std::unique_ptr<Row> createRow(not_null<History *> history) override;
 
 private:
-	base::lambda<QString()> _titleFactory;
+	Fn<QString()> _titleFactory;
 	std::vector<not_null<UserData *>> _selected;
 };
 
-PrivacyExceptionsBoxController::PrivacyExceptionsBoxController(base::lambda<QString()> titleFactory,
+PrivacyExceptionsBoxController::PrivacyExceptionsBoxController(Fn<QString()> titleFactory,
                                                                const std::vector<not_null<UserData *>> &selected)
     : _titleFactory(std::move(titleFactory))
     , _selected(selected) {}

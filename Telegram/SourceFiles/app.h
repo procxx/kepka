@@ -142,7 +142,7 @@ inline ChatData *chatLoaded(ChatId chatId) {
 inline ChannelData *channelLoaded(ChannelId channelId) {
 	return channel(channelId, PeerData::FullLoaded);
 }
-void enumerateUsers(base::lambda<void(UserData *)> action);
+void enumerateUsers(Fn<void(UserData *)> action);
 
 UserData *self();
 PeerData *peerByName(const QString &username);

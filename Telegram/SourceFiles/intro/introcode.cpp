@@ -31,7 +31,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Intro {
 
-CodeInput::CodeInput(QWidget *parent, const style::InputField &st, base::lambda<QString()> placeholderFactory)
+CodeInput::CodeInput(QWidget *parent, const style::InputField &st, Fn<QString()> placeholderFactory)
     : Ui::MaskedInputField(parent, st, std::move(placeholderFactory)) {}
 
 void CodeInput::setDigitsCountMax(int digitsCount) {
@@ -163,7 +163,7 @@ void CodeWidget::updateControlsGeometry() {
 	_callLabel->moveToLeft(contentLeft() + st::buttonRadius, linkTop);
 }
 
-void CodeWidget::showCodeError(base::lambda<QString()> textFactory) {
+void CodeWidget::showCodeError(Fn<QString()> textFactory) {
 	if (textFactory) _code->showError();
 	showError(std::move(textFactory));
 }

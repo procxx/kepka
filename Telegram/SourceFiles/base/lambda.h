@@ -30,10 +30,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace base {
 
-template <typename Function> using lambda = std::function<Function>;
-
-template <typename Function> using lambda_once = unique_function<Function>;
-
 namespace lambda_internal {
 
 template <typename Lambda> struct lambda_call_type { using type = decltype(&Lambda::operator()); };

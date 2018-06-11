@@ -120,8 +120,7 @@ private:
 	void setChannelButtons();
 
 	void clearButtons();
-	void addButton(base::lambda<QString()> textFactory, const char *slot,
-	               const style::RoundButton *replacementStyle = nullptr);
+	void addButton(Fn<QString()> textFactory, const char *slot, const style::RoundButton *replacementStyle = nullptr);
 
 	void paintDivider(Painter &p);
 

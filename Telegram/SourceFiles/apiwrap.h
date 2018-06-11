@@ -54,7 +54,7 @@ public:
 	void start();
 	void applyUpdates(const MTPUpdates &updates, quint64 sentMessageRandomId = 0);
 
-	using RequestMessageDataCallback = base::lambda<void(ChannelData *, MsgId)>;
+	using RequestMessageDataCallback = Fn<void(ChannelData *, MsgId)>;
 	void requestMessageData(ChannelData *channel, MsgId msgId, RequestMessageDataCallback callback);
 
 	void requestFullPeer(PeerData *peer);

@@ -31,7 +31,7 @@ QObject *TimersAdjuster() {
 
 } // namespace
 
-Timer::Timer(base::lambda<void()> callback)
+Timer::Timer(Fn<void()> callback)
     : QObject(nullptr)
     , _callback(std::move(callback))
     , _type(Qt::PreciseTimer)
@@ -108,7 +108,7 @@ void Timer::timerEvent(QTimerEvent *e) {
 	}
 }
 
-int DelayedCallTimer::call(TimeMs timeout, lambda_once<void()> callback, Qt::TimerType type) {
+int DelayedCallTimer::call(TimeMs timeout, FnMut<void()> callback, Qt::TimerType type) {
 	Expects(timeout >= 0);
 	if (!callback) {
 		return 0;

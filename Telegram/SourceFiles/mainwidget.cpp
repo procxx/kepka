@@ -2265,8 +2265,7 @@ void MainWidget::scheduleViewIncrement(HistoryItem *item) {
 	j.value().insert(item->id, true);
 }
 
-void MainWidget::fillPeerMenu(PeerData *peer,
-                              base::lambda<QAction *(const QString &text, base::lambda<void()> handler)> callback,
+void MainWidget::fillPeerMenu(PeerData *peer, Fn<QAction *(const QString &text, Fn<void()> handler)> callback,
                               bool pinToggle) {
 	if (pinToggle) {
 		auto isPinned = false;

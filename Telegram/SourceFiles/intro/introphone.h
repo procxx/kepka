@@ -70,7 +70,7 @@ private:
 	QString fullNumber() const;
 	void stopCheck();
 
-	void showPhoneError(base::lambda<QString()> textFactory);
+	void showPhoneError(Fn<QString()> textFactory);
 	void hidePhoneError();
 	void showSignup();
 
