@@ -269,7 +269,7 @@ void SendFilesBox::prepare() {
 	updateBoxSize();
 }
 
-base::lambda<QString()> SendFilesBox::getSendButtonText() const {
+Fn<QString()> SendFilesBox::getSendButtonText() const {
 	if (!_contactPhone.isEmpty()) {
 		return langFactory(lng_send_button);
 	} else if (_compressed && _compressed->checked()) {

@@ -195,9 +195,9 @@ void FlatButton::paintEvent(QPaintEvent *e) {
 
 class RoundButton::Numbers {
 public:
-	Numbers(const style::RoundButton &st, base::lambda<void()> animationCallback);
+	Numbers(const style::RoundButton &st, Fn<void()> animationCallback);
 
-	void setWidthChangedCallback(base::lambda<void()> callback) {
+	void setWidthChangedCallback(Fn<void()> callback) {
 		_widthChangedCallback = std::move(callback);
 	}
 	void setText(const QString &text, int value);
@@ -233,11 +233,11 @@ private:
 	int _value = 0;
 	bool _growing = false;
 
-	base::lambda<void()> _animationCallback;
-	base::lambda<void()> _widthChangedCallback;
+	Fn<void()> _animationCallback;
+	Fn<void()> _widthChangedCallback;
 };
 
-RoundButton::Numbers::Numbers(const style::RoundButton &st, base::lambda<void()> animationCallback)
+RoundButton::Numbers::Numbers(const style::RoundButton &st, Fn<void()> animationCallback)
     : _st(st)
     , _animationCallback(std::move(animationCallback)) {
 	for (auto ch = '0'; ch != '9'; ++ch) {
@@ -354,7 +354,7 @@ void RoundButton::Numbers::paint(Painter &p, int x, int y, int outerWidth) {
 	p.setOpacity(1.);
 }
 
-RoundButton::RoundButton(QWidget *parent, base::lambda<QString()> textFactory, const style::RoundButton &st)
+RoundButton::RoundButton(QWidget *parent, Fn<QString()> textFactory, const style::RoundButton &st)
     : RippleButton(parent, st.ripple)
     , _textFactory(std::move(textFactory))
     , _st(st) {
@@ -367,7 +367,7 @@ void RoundButton::setTextTransform(TextTransform transform) {
 	refreshText();
 }
 
-void RoundButton::setText(base::lambda<QString()> textFactory) {
+void RoundButton::setText(Fn<QString()> textFactory) {
 	_textFactory = std::move(textFactory);
 	refreshText();
 }
@@ -384,7 +384,7 @@ void RoundButton::setNumbersText(const QString &numbersText, int numbers) {
 	refreshText();
 }
 
-void RoundButton::setWidthChangedCallback(base::lambda<void()> callback) {
+void RoundButton::setWidthChangedCallback(Fn<void()> callback) {
 	if (!_numbers) {
 		_numbers = std::make_unique<Numbers>(_st, [this] { numbersAnimationCallback(); });
 	}

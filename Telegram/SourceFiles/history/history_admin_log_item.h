@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "core/basic_types.h"
 #include "core/utils.h"
 #include "history/history_item.h"
@@ -33,7 +32,7 @@ class HistoryItemOwned;
 class LocalIdManager;
 
 void GenerateItems(not_null<History *> history, LocalIdManager &idManager, const MTPDchannelAdminLogEvent &event,
-                   base::lambda<void(HistoryItemOwned item)> callback);
+                   Fn<void(HistoryItemOwned item)> callback);
 
 // Smart pointer wrapper for HistoryItem* that destroys the owned item.
 class HistoryItemOwned {

@@ -85,7 +85,7 @@ public:
 	virtual QMargins actionMargins() const {
 		return QMargins();
 	}
-	virtual void addActionRipple(QPoint point, base::lambda<void()> updateCallback) {}
+	virtual void addActionRipple(QPoint point, Fn<void()> updateCallback) {}
 	virtual void stopLastActionRipple() {}
 	virtual void paintAction(Painter &p, TimeMs ms, int x, int y, int outerWidth, bool actionSelected) {}
 
@@ -151,7 +151,7 @@ protected:
 	}
 
 private:
-	void createCheckbox(base::lambda<void()> updateCallback);
+	void createCheckbox(Fn<void()> updateCallback);
 	void setCheckedInternal(bool checked, SetStyle style);
 	void paintDisabledCheckUserpic(Painter &p, int x, int y, int outerWidth) const;
 	void setStatusText(const QString &text);
@@ -177,8 +177,8 @@ enum class PeerListSearchMode {
 
 class PeerListDelegate {
 public:
-	virtual void peerListSetTitle(base::lambda<QString()> title) = 0;
-	virtual void peerListSetAdditionalTitle(base::lambda<QString()> title) = 0;
+	virtual void peerListSetTitle(Fn<QString()> title) = 0;
+	virtual void peerListSetAdditionalTitle(Fn<QString()> title) = 0;
 	virtual void peerListSetDescription(object_ptr<Ui::FlatLabel> description) = 0;
 	virtual void peerListSetSearchLoading(object_ptr<Ui::FlatLabel> loading) = 0;
 	virtual void peerListSetSearchNoResults(object_ptr<Ui::FlatLabel> noResults) = 0;
@@ -199,8 +199,8 @@ public:
 	virtual void peerListScrollToTop() = 0;
 	virtual int peerListFullRowsCount() = 0;
 	virtual PeerListRow *peerListFindRow(PeerListRowId id) = 0;
-	virtual void peerListSortRows(base::lambda<bool(PeerListRow &a, PeerListRow &b)> compare) = 0;
-	virtual void peerListPartitionRows(base::lambda<bool(PeerListRow &a)> border) = 0;
+	virtual void peerListSortRows(Fn<bool(PeerListRow &a, PeerListRow &b)> compare) = 0;
+	virtual void peerListPartitionRows(Fn<bool(PeerListRow &a)> border) = 0;
 
 	template <typename PeerDataRange> void peerListAddSelectedRows(PeerDataRange &&range) {
 		for (auto peer : range) {
@@ -310,13 +310,12 @@ private:
 
 class PeerListBox : public BoxContent, public PeerListDelegate {
 public:
-	PeerListBox(QWidget *, std::unique_ptr<PeerListController> controller,
-	            base::lambda<void(not_null<PeerListBox *>)> init);
+	PeerListBox(QWidget *, std::unique_ptr<PeerListController> controller, Fn<void(not_null<PeerListBox *>)> init);
 
-	void peerListSetTitle(base::lambda<QString()> title) override {
+	void peerListSetTitle(Fn<QString()> title) override {
 		setTitle(std::move(title));
 	}
-	void peerListSetAdditionalTitle(base::lambda<QString()> title) override {
+	void peerListSetAdditionalTitle(Fn<QString()> title) override {
 		setAdditionalTitle(std::move(title));
 	}
 	void peerListSetDescription(object_ptr<Ui::FlatLabel> description) override;
@@ -341,8 +340,8 @@ public:
 	void peerListScrollToTop() override;
 	int peerListFullRowsCount() override;
 	PeerListRow *peerListFindRow(PeerListRowId id) override;
-	void peerListSortRows(base::lambda<bool(PeerListRow &a, PeerListRow &b)> compare) override;
-	void peerListPartitionRows(base::lambda<bool(PeerListRow &a)> border) override;
+	void peerListSortRows(Fn<bool(PeerListRow &a, PeerListRow &b)> compare) override;
+	void peerListPartitionRows(Fn<bool(PeerListRow &a)> border) override;
 
 protected:
 	void prepare() override;
@@ -370,7 +369,7 @@ private:
 	QPointer<Inner> _inner;
 
 	std::unique_ptr<PeerListController> _controller;
-	base::lambda<void(PeerListBox *)> _init;
+	Fn<void(PeerListBox *)> _init;
 	bool _scrollBottomFixed = true;
 };
 

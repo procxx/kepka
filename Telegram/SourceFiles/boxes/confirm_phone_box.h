@@ -30,18 +30,17 @@ class FlatLabel;
 
 class SentCodeField : public Ui::InputField {
 public:
-	SentCodeField(QWidget *parent, const style::InputField &st,
-	              base::lambda<QString()> placeholderFactory = base::lambda<QString()>(),
+	SentCodeField(QWidget *parent, const style::InputField &st, Fn<QString()> placeholderFactory = Fn<QString()>(),
 	              const QString &val = QString())
 	    : Ui::InputField(parent, st, std::move(placeholderFactory), val) {
 		connect(this, &Ui::InputField::changed, [this] { fix(); });
 	}
 
-	void setAutoSubmit(int length, base::lambda<void()> submitCallback) {
+	void setAutoSubmit(int length, Fn<void()> submitCallback) {
 		_autoSubmitLength = length;
 		_submitCallback = std::move(submitCallback);
 	}
-	void setChangedCallback(base::lambda<void()> changedCallback) {
+	void setChangedCallback(Fn<void()> changedCallback) {
 		_changedCallback = std::move(changedCallback);
 	}
 
@@ -52,13 +51,13 @@ private:
 	bool _fixing = false;
 
 	int _autoSubmitLength = 0;
-	base::lambda<void()> _submitCallback;
-	base::lambda<void()> _changedCallback;
+	Fn<void()> _submitCallback;
+	Fn<void()> _changedCallback;
 };
 
 class SentCodeCall {
 public:
-	SentCodeCall(QObject *parent, base::lambda_once<void()> callCallback, base::lambda<void()> updateCallback);
+	SentCodeCall(QObject *parent, FnMut<void()> callCallback, Fn<void()> updateCallback);
 
 	enum class State {
 		Waiting,
@@ -91,8 +90,8 @@ public:
 private:
 	Status _status;
 	object_ptr<QTimer> _timer;
-	base::lambda_once<void()> _call;
-	base::lambda<void()> _update;
+	FnMut<void()> _call;
+	Fn<void()> _update;
 };
 
 class ConfirmPhoneBox : public BoxContent, public RPCSender {

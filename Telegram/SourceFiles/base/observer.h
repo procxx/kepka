@@ -21,7 +21,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/assertion.h"
-#include "base/lambda.h"
 #include "base/type_traits.h"
 #include "core/utils.h"
 #include <QSharedPointer>
@@ -31,16 +30,14 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace base {
 namespace internal {
 
-using ObservableCallHandlers = base::lambda<void()>;
+using ObservableCallHandlers = Fn<void()>;
 void RegisterPendingObservable(ObservableCallHandlers *handlers);
 void UnregisterActiveObservable(ObservableCallHandlers *handlers);
 void UnregisterObservable(ObservableCallHandlers *handlers);
 
-template <typename EventType> struct SubscriptionHandlerHelper {
-	using type = base::lambda<void(parameter_type<EventType>)>;
-};
+template <typename EventType> struct SubscriptionHandlerHelper { using type = Fn<void(parameter_type<EventType>)>; };
 
-template <> struct SubscriptionHandlerHelper<void> { using type = base::lambda<void()>; };
+template <> struct SubscriptionHandlerHelper<void> { using type = Fn<void()>; };
 
 template <typename EventType> using SubscriptionHandler = typename SubscriptionHandlerHelper<EventType>::type;
 

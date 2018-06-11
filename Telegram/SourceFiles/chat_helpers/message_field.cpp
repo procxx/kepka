@@ -114,7 +114,7 @@ std::unique_ptr<QMimeData> MimeDataFromTextWithEntities(const TextWithEntities &
 }
 
 MessageField::MessageField(QWidget *parent, not_null<Window::Controller *> controller, const style::FlatTextarea &st,
-                           base::lambda<QString()> placeholderFactory, const QString &val)
+                           Fn<QString()> placeholderFactory, const QString &val)
     : Ui::FlatTextarea(parent, st, std::move(placeholderFactory), val)
     , _controller(controller) {
 	setMinHeight(st::historySendSize.height() - 2 * st::historySendPadding);

@@ -21,7 +21,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/flags.h"
-#include "base/lambda.h"
 #include "base/object_ptr.h"
 #include "styles/palette.h"
 #include "styles/style_basic.h"
@@ -395,7 +394,7 @@ QImage myGrabImage(TWidget *target, QRect rect = QRect(), QColor bg = QColor(255
 
 class SingleQueuedInvokation : public QObject {
 public:
-	SingleQueuedInvokation(base::lambda<void()> callback)
+	SingleQueuedInvokation(Fn<void()> callback)
 	    : _callback(callback) {}
 	void call() {
 		if (_pending.testAndSetAcquire(0, 1)) {
@@ -408,7 +407,7 @@ public:
 	}
 
 private:
-	base::lambda<void()> _callback;
+	Fn<void()> _callback;
 	QAtomicInt _pending = {0};
 };
 

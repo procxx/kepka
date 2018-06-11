@@ -77,7 +77,7 @@ public:
 	}
 
 	void paintStatusText(Painter &p, int x, int y, int availableWidth, int outerWidth, bool selected) override;
-	void addActionRipple(QPoint point, base::lambda<void()> updateCallback) override;
+	void addActionRipple(QPoint point, Fn<void()> updateCallback) override;
 	void stopLastActionRipple() override;
 
 	bool needsVerifiedIcon() const override {
@@ -172,7 +172,7 @@ BoxController::Row::Type BoxController::Row::ComputeType(HistoryItem *item) {
 	return Type::In;
 }
 
-void BoxController::Row::addActionRipple(QPoint point, base::lambda<void()> updateCallback) {
+void BoxController::Row::addActionRipple(QPoint point, Fn<void()> updateCallback) {
 	if (!_actionRipple) {
 		auto mask =
 		    Ui::RippleAnimation::ellipseMask(QSize(st::callReDial.rippleAreaSize, st::callReDial.rippleAreaSize));

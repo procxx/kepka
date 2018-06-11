@@ -180,7 +180,7 @@ void Widget::updateVolumeToggleIcon() {
 	_volumeToggle->setIconOverride(icon());
 }
 
-void Widget::setCloseCallback(base::lambda<void()> callback) {
+void Widget::setCloseCallback(Fn<void()> callback) {
 	_closeCallback = std::move(callback);
 	_close->setClickedCallback([this] { stopAndClose(); });
 }

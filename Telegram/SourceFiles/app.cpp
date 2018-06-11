@@ -1582,7 +1582,7 @@ PeerData *peer(const PeerId &id, PeerData::LoadedStatus restriction) {
 	return i.value();
 }
 
-void enumerateUsers(base::lambda<void(UserData *)> action) {
+void enumerateUsers(Fn<void(UserData *)> action) {
 	for_const (auto peer, peersData) {
 		if (auto user = peer->asUser()) {
 			action(user);

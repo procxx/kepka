@@ -65,7 +65,7 @@ void prepareCheckCaches(const style::RoundCheckbox *st, bool displayInactive, QP
 
 } // namespace
 
-RoundCheckbox::RoundCheckbox(const style::RoundCheckbox &st, base::lambda<void()> updateCallback)
+RoundCheckbox::RoundCheckbox(const style::RoundCheckbox &st, Fn<void()> updateCallback)
     : _st(st)
     , _updateCallback(updateCallback) {}
 
@@ -245,7 +245,7 @@ void RoundCheckbox::prepareInactiveCache() {
 	_inactiveCacheFg = App::pixmapFromImageInPlace(std::move(cacheFg));
 }
 
-RoundImageCheckbox::RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback,
+RoundImageCheckbox::RoundImageCheckbox(const style::RoundImageCheckbox &st, Fn<void()> updateCallback,
                                        PaintRoundImage &&paintRoundImage)
     : _st(st)
     , _updateCallback(updateCallback)

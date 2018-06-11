@@ -21,7 +21,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 
-#include "base/lambda.h"
 #include "base/object_ptr.h"
 #include "styles/style_widgets.h"
 #include "ui/animation.h"
@@ -42,10 +41,10 @@ public:
 	bool paint(Painter &p);
 	void refreshCache();
 
-	using FinishedCallback = base::lambda<void()>;
+	using FinishedCallback = Fn<void()>;
 	void setFinishedCallback(FinishedCallback &&callback);
 
-	using UpdatedCallback = base::lambda<void(double)>;
+	using UpdatedCallback = Fn<void(double)>;
 	void setUpdatedCallback(UpdatedCallback &&callback);
 
 	void show();
@@ -89,7 +88,7 @@ template <typename Widget> class WidgetFadeWrap;
 template <> class WidgetFadeWrap<TWidget> : public TWidget {
 public:
 	WidgetFadeWrap(QWidget *parent, object_ptr<TWidget> entity, int duration = st::widgetFadeDuration,
-	               base::lambda<void()> updateCallback = base::lambda<void()>(), bool scaled = false);
+	               Fn<void()> updateCallback = Fn<void()>(), bool scaled = false);
 
 	void showAnimated() {
 		toggleAnimated(true);
@@ -146,7 +145,7 @@ public:
 	bool animating() const {
 		return _animation.animating();
 	}
-	void setUpdateCallback(base::lambda<void()> callback) {
+	void setUpdateCallback(Fn<void()> callback) {
 		_updateCallback = std::move(callback);
 		installCallbacks();
 	}
@@ -160,7 +159,7 @@ private:
 
 	object_ptr<TWidget> _entity;
 	int _duration;
-	base::lambda<void()> _updateCallback;
+	Fn<void()> _updateCallback;
 
 	FadeAnimation _animation;
 };
@@ -168,7 +167,7 @@ private:
 template <typename Widget> class WidgetFadeWrap : public WidgetFadeWrap<TWidget> {
 public:
 	WidgetFadeWrap(QWidget *parent, object_ptr<Widget> entity, int duration = st::widgetFadeDuration,
-	               base::lambda<void()> updateCallback = base::lambda<void()>(), bool scaled = false)
+	               Fn<void()> updateCallback = Fn<void()>(), bool scaled = false)
 	    : WidgetFadeWrap<TWidget>(parent, std::move(entity), duration, std::move(updateCallback), scaled) {}
 	Widget *entity() {
 		return static_cast<Widget *>(WidgetFadeWrap<TWidget>::entity());
@@ -181,7 +180,7 @@ public:
 template <typename Widget> class WidgetScaledFadeWrap : public WidgetFadeWrap<Widget> {
 public:
 	WidgetScaledFadeWrap(QWidget *parent, object_ptr<Widget> entity, int duration = st::widgetFadeDuration,
-	                     base::lambda<void()> updateCallback = base::lambda<void()>())
+	                     Fn<void()> updateCallback = Fn<void()>())
 	    : WidgetFadeWrap<Widget>(parent, std::move(entity), duration, std::move(updateCallback), true) {}
 };
 

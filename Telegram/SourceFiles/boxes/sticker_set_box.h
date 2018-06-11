@@ -69,7 +69,7 @@ public:
 	bool loaded() const;
 	qint32 notInstalled() const;
 	bool official() const;
-	base::lambda<TextWithEntities()> title() const;
+	Fn<TextWithEntities()> title() const;
 	QString shortName() const;
 
 	void setVisibleTopBottom(int visibleTop, int visibleBottom) override;

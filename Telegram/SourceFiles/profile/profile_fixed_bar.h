@@ -94,7 +94,7 @@ private:
 		ShareContact,
 	};
 
-	void addRightAction(RightActionType type, base::lambda<QString()> textFactory, const char *slot);
+	void addRightAction(RightActionType type, Fn<QString()> textFactory, const char *slot);
 	void applyHideShareContactButton();
 
 	PeerData *_peer;

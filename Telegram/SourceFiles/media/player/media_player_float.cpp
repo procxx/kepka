@@ -33,8 +33,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 namespace Media {
 namespace Player {
 
-Float::Float(QWidget *parent, HistoryItem *item, base::lambda<void(bool visible)> toggleCallback,
-             base::lambda<void(bool closed)> draggedCallback)
+Float::Float(QWidget *parent, HistoryItem *item, Fn<void(bool visible)> toggleCallback,
+             Fn<void(bool closed)> draggedCallback)
     : TWidget(parent)
     , _item(item)
     , _toggleCallback(std::move(toggleCallback))

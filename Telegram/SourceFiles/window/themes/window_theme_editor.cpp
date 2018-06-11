@@ -213,19 +213,19 @@ class Editor::Inner : public TWidget, private base::Subscriber {
 public:
 	Inner(QWidget *parent, const QString &path);
 
-	void setErrorCallback(base::lambda<void()> callback) {
+	void setErrorCallback(Fn<void()> callback) {
 		_errorCallback = std::move(callback);
 	}
-	void setFocusCallback(base::lambda<void()> callback) {
+	void setFocusCallback(Fn<void()> callback) {
 		_focusCallback = std::move(callback);
 	}
-	void setScrollCallback(base::lambda<void(int top, int bottom)> callback) {
+	void setScrollCallback(Fn<void(int top, int bottom)> callback) {
 		_scrollCallback = std::move(callback);
 	}
 
 	void prepare();
 
-	base::lambda<void()> exportCallback();
+	Fn<void()> exportCallback();
 
 	void filterRows(const QString &query);
 	void chooseRow();
@@ -257,9 +257,9 @@ private:
 
 	QString _path;
 	QByteArray _paletteContent;
-	base::lambda<void()> _errorCallback;
-	base::lambda<void()> _focusCallback;
-	base::lambda<void(int top, int bottom)> _scrollCallback;
+	Fn<void()> _errorCallback;
+	Fn<void()> _focusCallback;
+	Fn<void(int top, int bottom)> _scrollCallback;
 
 	object_ptr<EditorBlock> _existingRows;
 	object_ptr<EditorBlock> _newRows;
@@ -334,7 +334,7 @@ void Editor::Inner::prepare() {
 	}
 }
 
-base::lambda<void()> Editor::Inner::exportCallback() {
+Fn<void()> Editor::Inner::exportCallback() {
 	return App::LambdaDelayed(st::defaultRippleAnimation.hideDuration, this, [this] {
 		auto background = Background()->pixmap().toImage();
 		auto backgroundContent = QByteArray();

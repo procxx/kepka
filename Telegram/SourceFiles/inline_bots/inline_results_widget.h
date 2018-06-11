@@ -83,7 +83,7 @@ public:
 
 	int countHeight();
 
-	void setResultSelectedCallback(base::lambda<void(Result *result, UserData *bot)> callback) {
+	void setResultSelectedCallback(Fn<void(Result *result, UserData *bot)> callback) {
 		_resultSelectedCallback = std::move(callback);
 	}
 
@@ -160,7 +160,7 @@ private:
 	QTimer _previewTimer;
 	bool _previewShown = false;
 
-	base::lambda<void(Result *result, UserData *bot)> _resultSelectedCallback;
+	Fn<void(Result *result, UserData *bot)> _resultSelectedCallback;
 };
 
 } // namespace internal
@@ -186,7 +186,7 @@ public:
 	void showAnimated();
 	void hideAnimated();
 
-	void setResultSelectedCallback(base::lambda<void(Result *result, UserData *bot)> callback) {
+	void setResultSelectedCallback(Fn<void(Result *result, UserData *bot)> callback) {
 		_inner->setResultSelectedCallback(std::move(callback));
 	}
 

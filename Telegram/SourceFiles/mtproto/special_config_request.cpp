@@ -48,7 +48,7 @@ Y1hZCxdv6cs5UnW9+PWvS+WIbkh+GaWYxwIDAQAB\n\
 
 } // namespace
 
-SpecialConfigRequest::SpecialConfigRequest(base::lambda<void(DcId dcId, const std::string &ip, int port)> callback)
+SpecialConfigRequest::SpecialConfigRequest(Fn<void(DcId dcId, const std::string &ip, int port)> callback)
     : _callback(std::move(callback)) {
 	App::setProxySettings(_manager);
 

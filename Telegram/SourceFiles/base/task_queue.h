@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "base/timer.h"
 #include <QMutex>
 #include <deque>
@@ -28,7 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace base {
 
-using Task = lambda_once<void()>;
+using Task = FnMut<void()>;
 
 // An attempt to create/use a TaskQueue or one of the default queues
 // after the main() has returned leads to an undefined behaviour.

@@ -68,7 +68,7 @@ QString PeerFloodErrorText(PeerFloodType type) {
 
 class RevokePublicLinkBox::Inner : public TWidget, private MTP::Sender {
 public:
-	Inner(QWidget *parent, base::lambda<void()> revokeCallback);
+	Inner(QWidget *parent, Fn<void()> revokeCallback);
 
 protected:
 	void mouseMoveEvent(QMouseEvent *e) override;
@@ -96,7 +96,7 @@ private:
 	int _rowHeight = 0;
 	int _revokeWidth = 0;
 
-	base::lambda<void()> _revokeCallback;
+	Fn<void()> _revokeCallback;
 	mtpRequestId _revokeRequestId = 0;
 	QPointer<ConfirmBox> _weakRevokeConfirmBox;
 };
@@ -600,7 +600,7 @@ SetupChannelBox::SetupChannelBox(QWidget *, ChannelData *channel, bool existing)
     , _aboutPrivate(st::defaultTextStyle,
                     lang(channel->isMegagroup() ? lng_create_private_group_about : lng_create_private_channel_about),
                     _defaultOptions, _aboutPublicWidth)
-    , _link(this, st::setupChannelLink, base::lambda<QString()>(), channel->username, true) {}
+    , _link(this, st::setupChannelLink, Fn<QString()>(), channel->username, true) {}
 
 void SetupChannelBox::prepare() {
 	_aboutPublicHeight = _aboutPublic.countHeight(_aboutPublicWidth);
@@ -1479,7 +1479,7 @@ void EditChannelBox::onSaveInvitesDone(const MTPUpdates &result) {
 	closeBox();
 }
 
-RevokePublicLinkBox::Inner::Inner(QWidget *parent, base::lambda<void()> revokeCallback)
+RevokePublicLinkBox::Inner::Inner(QWidget *parent, Fn<void()> revokeCallback)
     : TWidget(parent)
     , _rowHeight(st::contactsPadding.top() + st::contactsPhotoSize + st::contactsPadding.bottom())
     , _revokeWidth(st::normalFont->width(lang(lng_channels_too_much_public_revoke)))
@@ -1513,7 +1513,7 @@ RevokePublicLinkBox::Inner::Inner(QWidget *parent, base::lambda<void()> revokeCa
 	    .send();
 }
 
-RevokePublicLinkBox::RevokePublicLinkBox(QWidget *, base::lambda<void()> revokeCallback)
+RevokePublicLinkBox::RevokePublicLinkBox(QWidget *, Fn<void()> revokeCallback)
     : _aboutRevoke(this, lang(lng_channels_too_much_public_about), Ui::FlatLabel::InitType::Simple,
                    st::aboutRevokePublicLabel)
     , _revokeCallback(std::move(revokeCallback)) {}

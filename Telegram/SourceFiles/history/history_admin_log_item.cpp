@@ -271,7 +271,7 @@ TextWithEntities GenerateParticipantChangeText(not_null<ChannelData *> channel,
 } // namespace
 
 void GenerateItems(not_null<History *> history, LocalIdManager &idManager, const MTPDchannelAdminLogEvent &event,
-                   base::lambda<void(HistoryItemOwned item)> callback) {
+                   Fn<void(HistoryItemOwned item)> callback) {
 	Expects(history->peer->isChannel());
 
 	auto id = event.vid.v;

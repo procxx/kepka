@@ -54,7 +54,7 @@ public:
 
 	void setAcceptBoth(bool acceptBoth = true);
 
-	void setClickedCallback(base::lambda<void()> callback) {
+	void setClickedCallback(Fn<void()> callback) {
 		_clickedCallback = std::move(callback);
 	}
 
@@ -107,7 +107,7 @@ private:
 	Qt::KeyboardModifiers _modifiers;
 	bool _enablePointerCursor = true;
 
-	base::lambda<void()> _clickedCallback;
+	Fn<void()> _clickedCallback;
 };
 
 } // namespace Ui

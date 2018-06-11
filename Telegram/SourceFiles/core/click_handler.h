@@ -22,7 +22,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <QSharedPointer>
 
-#include "base/lambda.h"
 #include "core/utils.h"
 #include "ui/text/text_entity.h"
 
@@ -180,7 +179,7 @@ protected:
 
 class LambdaClickHandler : public ClickHandler {
 public:
-	LambdaClickHandler(base::lambda<void()> handler)
+	LambdaClickHandler(Fn<void()> handler)
 	    : _handler(std::move(handler)) {}
 	void onClick(Qt::MouseButton button) const override final {
 		if (button == Qt::LeftButton && _handler) {
@@ -189,5 +188,5 @@ public:
 	}
 
 private:
-	base::lambda<void()> _handler;
+	Fn<void()> _handler;
 };

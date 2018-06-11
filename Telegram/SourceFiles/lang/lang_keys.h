@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "lang/lang_instance.h"
 #include <QDate>
 
@@ -28,7 +27,7 @@ inline QString lang(LangKey key) {
 	return Lang::Current().getValue(key);
 }
 
-inline base::lambda<QString()> langFactory(LangKey key) {
+inline Fn<QString()> langFactory(LangKey key) {
 	return [key] { return Lang::Current().getValue(key); };
 }
 

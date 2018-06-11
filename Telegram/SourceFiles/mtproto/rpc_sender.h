@@ -854,7 +854,7 @@ using MTPSessionResetHandler = void (*)(qint32 dcId);
 
 template <typename Base, typename FunctionType> class RPCHandlerImplementation : public Base {
 protected:
-	using Lambda = base::lambda_once<FunctionType>;
+	using Lambda = FnMut<FunctionType>;
 	using Parent = RPCHandlerImplementation<Base, FunctionType>;
 
 public:

@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "ui/animation.h"
 #include "ui/widgets/continuous_sliders.h"
 
@@ -35,10 +34,10 @@ class Playback {
 public:
 	Playback();
 
-	void setValueChangedCallback(base::lambda<void(double)> callback) {
+	void setValueChangedCallback(Fn<void(double)> callback) {
 		_valueChanged = std::move(callback);
 	}
-	void setInLoadingStateChangedCallback(base::lambda<void(bool)> callback) {
+	void setInLoadingStateChangedCallback(Fn<void(bool)> callback) {
 		_inLoadingStateChanged = std::move(callback);
 	}
 	void setValue(double value, bool animated);
@@ -55,10 +54,10 @@ private:
 	// so it should be a BasicAnimation, not an Animation.
 	anim::value a_value;
 	BasicAnimation _a_value;
-	base::lambda<void(double)> _valueChanged;
+	Fn<void(double)> _valueChanged;
 
 	bool _inLoadingState = false;
-	base::lambda<void(bool)> _inLoadingStateChanged;
+	Fn<void(bool)> _inLoadingStateChanged;
 
 	qint64 _position = 0;
 	qint64 _length = 0;

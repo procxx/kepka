@@ -34,7 +34,7 @@ public:
 		Pause,
 		Cancel,
 	};
-	PlayButtonLayout(const style::MediaPlayerButton &st, base::lambda<void()> callback);
+	PlayButtonLayout(const style::MediaPlayerButton &st, Fn<void()> callback);
 
 	void setState(State state);
 	void finishTransform();
@@ -57,7 +57,7 @@ private:
 	Animation _transformProgress;
 	bool _transformBackward = false;
 
-	base::lambda<void()> _callback;
+	Fn<void()> _callback;
 };
 
 } // namespace Player

@@ -95,8 +95,8 @@ public:
 			setFocus();
 		}
 
-		void setGoCallback(base::lambda<void(Step *step, Direction direction)> callback);
-		void setShowResetCallback(base::lambda<void()> callback);
+		void setGoCallback(Fn<void(Step *step, Direction direction)> callback);
+		void setShowResetCallback(Fn<void()> callback);
 
 		void prepareShowAnimated(Step *after);
 		void showAnimated(Direction direction);
@@ -117,9 +117,9 @@ public:
 
 		void setErrorCentered(bool centered);
 		void setErrorBelowLink(bool below);
-		void showError(base::lambda<QString()> textFactory);
+		void showError(Fn<QString()> textFactory);
 		void hideError() {
-			showError(base::lambda<QString()>());
+			showError(Fn<QString()>());
 		}
 
 		~Step();
@@ -128,8 +128,8 @@ public:
 		void paintEvent(QPaintEvent *e) override;
 		void resizeEvent(QResizeEvent *e) override;
 
-		void setTitleText(base::lambda<QString()> richTitleTextFactory);
-		void setDescriptionText(base::lambda<QString()> richDescriptionTextFactory);
+		void setTitleText(Fn<QString()> richTitleTextFactory);
+		void setDescriptionText(Fn<QString()> richDescriptionTextFactory);
 		bool paintAnimated(Painter &p, QRect clip);
 
 		void fillSentCodeData(const MTPauth_SentCodeType &type);
@@ -186,17 +186,17 @@ public:
 
 		Data *_data = nullptr;
 		bool _hasCover = false;
-		base::lambda<void(Step *step, Direction direction)> _goCallback;
-		base::lambda<void()> _showResetCallback;
+		Fn<void(Step *step, Direction direction)> _goCallback;
+		Fn<void()> _showResetCallback;
 
 		object_ptr<Ui::FlatLabel> _title;
-		base::lambda<QString()> _titleTextFactory;
+		Fn<QString()> _titleTextFactory;
 		object_ptr<Ui::WidgetFadeWrap<Ui::FlatLabel>> _description;
-		base::lambda<QString()> _descriptionTextFactory;
+		Fn<QString()> _descriptionTextFactory;
 
 		bool _errorCentered = false;
 		bool _errorBelowLink = false;
-		base::lambda<QString()> _errorTextFactory;
+		Fn<QString()> _errorTextFactory;
 		object_ptr<Ui::WidgetFadeWrap<Ui::FlatLabel>> _error = {nullptr};
 
 		Animation _a_show;

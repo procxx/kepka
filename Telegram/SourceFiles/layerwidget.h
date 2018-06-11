@@ -22,7 +22,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <QMouseEvent>
 
-#include "base/lambda.h"
 #include "structs.h"
 #include "ui/animation.h"
 #include "ui/twidget.h"
@@ -54,10 +53,10 @@ public:
 
 	bool overlaps(const QRect &globalRect);
 
-	void setClosedCallback(base::lambda<void()> callback) {
+	void setClosedCallback(Fn<void()> callback) {
 		_closedCallback = std::move(callback);
 	}
-	void setResizedCallback(base::lambda<void()> callback) {
+	void setResizedCallback(Fn<void()> callback) {
 		_resizedCallback = std::move(callback);
 	}
 
@@ -82,8 +81,8 @@ protected:
 
 private:
 	bool _closing = false;
-	base::lambda<void()> _closedCallback;
-	base::lambda<void()> _resizedCallback;
+	Fn<void()> _closedCallback;
+	Fn<void()> _resizedCallback;
 };
 
 class LayerStackWidget : public TWidget {

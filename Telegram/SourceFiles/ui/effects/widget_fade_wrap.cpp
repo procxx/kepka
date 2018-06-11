@@ -159,7 +159,7 @@ void FadeAnimation::updateCallback() {
 }
 
 WidgetFadeWrap<TWidget>::WidgetFadeWrap(QWidget *parent, object_ptr<TWidget> entity, int duration,
-                                        base::lambda<void()> updateCallback, bool scaled)
+                                        Fn<void()> updateCallback, bool scaled)
     : TWidget(parent)
     , _entity(std::move(entity))
     , _duration(duration)
@@ -178,8 +178,8 @@ void WidgetFadeWrap<TWidget>::installCallbacks() {
 		_animation.setFinishedCallback([this] { _updateCallback(); });
 		_animation.setUpdatedCallback([this](double opacity) { _updateCallback(); });
 	} else {
-		_animation.setFinishedCallback(base::lambda<void()>());
-		_animation.setUpdatedCallback(base::lambda<void(double)>());
+		_animation.setFinishedCallback(Fn<void()>());
+		_animation.setUpdatedCallback(Fn<void(double)>());
 	}
 }
 

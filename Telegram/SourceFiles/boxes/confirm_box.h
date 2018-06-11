@@ -31,21 +31,17 @@ class FlatLabel;
 class InformBox;
 class ConfirmBox : public BoxContent, public ClickHandlerHost {
 public:
-	ConfirmBox(QWidget *, const QString &text,
-	           base::lambda_once<void()> confirmedCallback = base::lambda_once<void()>(),
-	           base::lambda_once<void()> cancelledCallback = base::lambda_once<void()>());
+	ConfirmBox(QWidget *, const QString &text, FnMut<void()> confirmedCallback = FnMut<void()>(),
+	           FnMut<void()> cancelledCallback = FnMut<void()>());
 	ConfirmBox(QWidget *, const QString &text, const QString &confirmText,
-	           base::lambda_once<void()> confirmedCallback = base::lambda_once<void()>(),
-	           base::lambda_once<void()> cancelledCallback = base::lambda_once<void()>());
+	           FnMut<void()> confirmedCallback = FnMut<void()>(), FnMut<void()> cancelledCallback = FnMut<void()>());
 	ConfirmBox(QWidget *, const QString &text, const QString &confirmText, const style::RoundButton &confirmStyle,
-	           base::lambda_once<void()> confirmedCallback = base::lambda_once<void()>(),
-	           base::lambda_once<void()> cancelledCallback = base::lambda_once<void()>());
+	           FnMut<void()> confirmedCallback = FnMut<void()>(), FnMut<void()> cancelledCallback = FnMut<void()>());
 	ConfirmBox(QWidget *, const QString &text, const QString &confirmText, const QString &cancelText,
-	           base::lambda_once<void()> confirmedCallback = base::lambda_once<void()>(),
-	           base::lambda_once<void()> cancelledCallback = base::lambda_once<void()>());
+	           FnMut<void()> confirmedCallback = FnMut<void()>(), FnMut<void()> cancelledCallback = FnMut<void()>());
 	ConfirmBox(QWidget *, const QString &text, const QString &confirmText, const style::RoundButton &confirmStyle,
-	           const QString &cancelText, base::lambda_once<void()> confirmedCallback = base::lambda_once<void()>(),
-	           base::lambda_once<void()> cancelledCallback = base::lambda_once<void()>());
+	           const QString &cancelText, FnMut<void()> confirmedCallback = FnMut<void()>(),
+	           FnMut<void()> cancelledCallback = FnMut<void()>());
 
 	void updateLink();
 
@@ -70,8 +66,8 @@ protected:
 
 private:
 	struct InformBoxTag {};
-	ConfirmBox(const InformBoxTag &, const QString &text, const QString &doneText, base::lambda<void()> closedCallback);
-	base::lambda_once<void()> generateInformCallback(base::lambda<void()> closedCallback);
+	ConfirmBox(const InformBoxTag &, const QString &text, const QString &doneText, Fn<void()> closedCallback);
+	FnMut<void()> generateInformCallback(Fn<void()> closedCallback);
 	friend class InformBox;
 
 	void confirmed();
@@ -94,15 +90,14 @@ private:
 	bool _confirmed = false;
 	bool _cancelled = false;
 	bool _strictCancel = false;
-	base::lambda_once<void()> _confirmedCallback;
-	base::lambda_once<void()> _cancelledCallback;
+	FnMut<void()> _confirmedCallback;
+	FnMut<void()> _cancelledCallback;
 };
 
 class InformBox : public ConfirmBox {
 public:
-	InformBox(QWidget *, const QString &text, base::lambda<void()> closedCallback = base::lambda<void()>());
-	InformBox(QWidget *, const QString &text, const QString &doneText,
-	          base::lambda<void()> closedCallback = base::lambda<void()>());
+	InformBox(QWidget *, const QString &text, Fn<void()> closedCallback = Fn<void()>());
+	InformBox(QWidget *, const QString &text, const QString &doneText, Fn<void()> closedCallback = Fn<void()>());
 };
 
 class MaxInviteBox : public BoxContent {

@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "base/observer.h"
 #include "layerwidget.h"
 #include "ui/text/text_entity.h"
@@ -46,14 +45,13 @@ public:
 	virtual Window::Controller *controller() const = 0;
 
 	virtual void setLayerType(bool layerType) = 0;
-	virtual void setTitle(base::lambda<TextWithEntities()> titleFactory) = 0;
-	virtual void setAdditionalTitle(base::lambda<QString()> additionalFactory) = 0;
+	virtual void setTitle(Fn<TextWithEntities()> titleFactory) = 0;
+	virtual void setAdditionalTitle(Fn<QString()> additionalFactory) = 0;
 
 	virtual void clearButtons() = 0;
-	virtual QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	virtual QPointer<Ui::RoundButton> addButton(Fn<QString()> textFactory, Fn<void()> clickCallback,
 	                                            const style::RoundButton &st) = 0;
-	virtual QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory,
-	                                                base::lambda<void()> clickCallback,
+	virtual QPointer<Ui::RoundButton> addLeftButton(Fn<QString()> textFactory, Fn<void()> clickCallback,
 	                                                const style::RoundButton &st) = 0;
 	virtual void updateButtonsPositions() = 0;
 
@@ -78,26 +76,26 @@ public:
 		getDelegate()->closeBox();
 	}
 
-	void setTitle(base::lambda<QString()> titleFactory) {
+	void setTitle(Fn<QString()> titleFactory) {
 		if (titleFactory) {
 			getDelegate()->setTitle([titleFactory] { return TextWithEntities{titleFactory(), EntitiesInText()}; });
 		} else {
-			getDelegate()->setTitle(base::lambda<TextWithEntities()>());
+			getDelegate()->setTitle(Fn<TextWithEntities()>());
 		}
 	}
-	void setTitle(base::lambda<TextWithEntities()> titleFactory) {
+	void setTitle(Fn<TextWithEntities()> titleFactory) {
 		getDelegate()->setTitle(std::move(titleFactory));
 	}
-	void setAdditionalTitle(base::lambda<QString()> additional) {
+	void setAdditionalTitle(Fn<QString()> additional) {
 		getDelegate()->setAdditionalTitle(std::move(additional));
 	}
 
 	void clearButtons() {
 		getDelegate()->clearButtons();
 	}
-	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback);
-	QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback);
-	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	QPointer<Ui::RoundButton> addButton(Fn<QString()> textFactory, Fn<void()> clickCallback);
+	QPointer<Ui::RoundButton> addLeftButton(Fn<QString()> textFactory, Fn<void()> clickCallback);
+	QPointer<Ui::RoundButton> addButton(Fn<QString()> textFactory, Fn<void()> clickCallback,
 	                                    const style::RoundButton &st) {
 		return getDelegate()->addButton(std::move(textFactory), std::move(clickCallback), st);
 	}
@@ -214,13 +212,13 @@ public:
 	void parentResized() override;
 
 	void setLayerType(bool layerType) override;
-	void setTitle(base::lambda<TextWithEntities()> titleFactory) override;
-	void setAdditionalTitle(base::lambda<QString()> additionalFactory) override;
+	void setTitle(Fn<TextWithEntities()> titleFactory) override;
+	void setAdditionalTitle(Fn<QString()> additionalFactory) override;
 
 	void clearButtons() override;
-	QPointer<Ui::RoundButton> addButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	QPointer<Ui::RoundButton> addButton(Fn<QString()> textFactory, Fn<void()> clickCallback,
 	                                    const style::RoundButton &st) override;
-	QPointer<Ui::RoundButton> addLeftButton(base::lambda<QString()> textFactory, base::lambda<void()> clickCallback,
+	QPointer<Ui::RoundButton> addLeftButton(Fn<QString()> textFactory, Fn<void()> clickCallback,
 	                                        const style::RoundButton &st) override;
 	void updateButtonsPositions() override;
 
@@ -276,9 +274,9 @@ private:
 	object_ptr<BoxContent> _content;
 
 	object_ptr<Ui::FlatLabel> _title = {nullptr};
-	base::lambda<TextWithEntities()> _titleFactory;
+	Fn<TextWithEntities()> _titleFactory;
 	QString _additionalTitle;
-	base::lambda<QString()> _additionalTitleFactory;
+	Fn<QString()> _additionalTitleFactory;
 	int _titleLeft = 0;
 	int _titleTop = 0;
 	bool _layerType = false;

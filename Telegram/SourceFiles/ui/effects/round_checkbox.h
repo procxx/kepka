@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "styles/style_widgets.h"
 #include "ui/animation.h"
 
@@ -32,7 +31,7 @@ namespace Ui {
 
 class RoundCheckbox {
 public:
-	RoundCheckbox(const style::RoundCheckbox &st, base::lambda<void()> updateCallback);
+	RoundCheckbox(const style::RoundCheckbox &st, Fn<void()> updateCallback);
 
 	void paint(Painter &p, TimeMs ms, int x, int y, int outerWidth, double masterScale = 1.);
 
@@ -60,7 +59,7 @@ private:
 	QRect cacheDestRect(int x, int y, double scale) const;
 
 	const style::RoundCheckbox &_st;
-	base::lambda<void()> _updateCallback;
+	Fn<void()> _updateCallback;
 
 	bool _checked = false;
 	std::vector<Icon> _icons;
@@ -74,8 +73,8 @@ private:
 
 class RoundImageCheckbox {
 public:
-	using PaintRoundImage = base::lambda<void(Painter &p, int x, int y, int outerWidth, int size)>;
-	RoundImageCheckbox(const style::RoundImageCheckbox &st, base::lambda<void()> updateCallback,
+	using PaintRoundImage = Fn<void(Painter &p, int x, int y, int outerWidth, int size)>;
+	RoundImageCheckbox(const style::RoundImageCheckbox &st, Fn<void()> updateCallback,
 	                   PaintRoundImage &&paintRoundImage);
 
 	void paint(Painter &p, TimeMs ms, int x, int y, int outerWidth);
@@ -95,7 +94,7 @@ private:
 	void prepareWideCache();
 
 	const style::RoundImageCheckbox &_st;
-	base::lambda<void()> _updateCallback;
+	Fn<void()> _updateCallback;
 	PaintRoundImage _paintRoundImage;
 
 	QPixmap _wideCache;

@@ -28,8 +28,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 namespace Dialogs {
 
-void ShowSearchFromBox(PeerData *peer, base::lambda<void(not_null<UserData *>)> callback,
-                       base::lambda<void()> closedCallback) {
+void ShowSearchFromBox(PeerData *peer, Fn<void(not_null<UserData *>)> callback, Fn<void()> closedCallback) {
 	auto createController = [peer, callback = std::move(callback)]() -> std::unique_ptr<PeerListController> {
 		if (peer) {
 			if (auto chat = peer->asChat()) {
@@ -52,8 +51,7 @@ void ShowSearchFromBox(PeerData *peer, base::lambda<void(not_null<UserData *>)> 
 	}
 }
 
-ChatSearchFromController::ChatSearchFromController(not_null<ChatData *> chat,
-                                                   base::lambda<void(not_null<UserData *>)> callback)
+ChatSearchFromController::ChatSearchFromController(not_null<ChatData *> chat, Fn<void(not_null<UserData *>)> callback)
     : PeerListController()
     , _chat(chat)
     , _callback(std::move(callback)) {}
@@ -120,7 +118,7 @@ void ChatSearchFromController::appendRow(not_null<UserData *> user) {
 }
 
 ChannelSearchFromController::ChannelSearchFromController(not_null<ChannelData *> channel,
-                                                         base::lambda<void(not_null<UserData *>)> callback)
+                                                         Fn<void(not_null<UserData *>)> callback)
     : ParticipantsBoxController(channel, ParticipantsBoxController::Role::Members)
     , _callback(std::move(callback)) {}
 

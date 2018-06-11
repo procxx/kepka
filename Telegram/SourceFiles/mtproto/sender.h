@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "base/variant.h"
 #include "facades.h"
 #include "mtproto/rpc_sender.h"
@@ -38,21 +37,21 @@ class Sender {
 		RequestBuilder &operator=(RequestBuilder &&other) = delete;
 
 	protected:
-		using FailPlainHandler = base::lambda_once<void(const RPCError &error)>;
-		using FailRequestIdHandler = base::lambda_once<void(const RPCError &error, mtpRequestId requestId)>;
+		using FailPlainHandler = FnMut<void(const RPCError &error)>;
+		using FailRequestIdHandler = FnMut<void(const RPCError &error, mtpRequestId requestId)>;
 		enum class FailSkipPolicy {
 			Simple,
 			HandleFlood,
 			HandleAll,
 		};
 		template <typename Response> struct DonePlainPolicy {
-			using Callback = base::lambda_once<void(const Response &result)>;
+			using Callback = FnMut<void(const Response &result)>;
 			static void handle(Callback &&handler, mtpRequestId requestId, Response &&result) {
 				handler(result);
 			}
 		};
 		template <typename Response> struct DoneRequestIdPolicy {
-			using Callback = base::lambda_once<void(const Response &result, mtpRequestId requestId)>;
+			using Callback = FnMut<void(const Response &result, mtpRequestId requestId)>;
 			static void handle(Callback &&handler, mtpRequestId requestId, Response &&result) {
 				handler(result, requestId);
 			}
@@ -84,13 +83,13 @@ class Sender {
 		};
 
 		struct FailPlainPolicy {
-			using Callback = base::lambda_once<void(const RPCError &error)>;
+			using Callback = FnMut<void(const RPCError &error)>;
 			static void handle(Callback &&handler, mtpRequestId requestId, const RPCError &error) {
 				handler(error);
 			}
 		};
 		struct FailRequestIdPolicy {
-			using Callback = base::lambda_once<void(const RPCError &error, mtpRequestId requestId)>;
+			using Callback = FnMut<void(const RPCError &error, mtpRequestId requestId)>;
 			static void handle(Callback &&handler, mtpRequestId requestId, const RPCError &error) {
 				handler(error, requestId);
 			}
@@ -215,25 +214,24 @@ public:
 			return *this;
 		}
 		SpecificRequestBuilder &
-		done(base::lambda_once<void(const typename Request::ResponseType &result)> callback) WARN_UNUSED_RESULT {
+		done(FnMut<void(const typename Request::ResponseType &result)> callback) WARN_UNUSED_RESULT {
 			setDoneHandler(MakeShared<DoneHandler<typename Request::ResponseType, DonePlainPolicy>>(
 			    sender(), std::move(callback)));
 			return *this;
 		}
 		SpecificRequestBuilder &
-		done(base::lambda_once<void(const typename Request::ResponseType &result, mtpRequestId requestId)> callback)
+		done(FnMut<void(const typename Request::ResponseType &result, mtpRequestId requestId)> callback)
 		    WARN_UNUSED_RESULT {
 			setDoneHandler(MakeShared<DoneHandler<typename Request::ResponseType, DoneRequestIdPolicy>>(
 			    sender(), std::move(callback)));
 			return *this;
 		}
-		SpecificRequestBuilder &
-		fail(base::lambda_once<void(const RPCError &error)> callback) noexcept WARN_UNUSED_RESULT {
+		SpecificRequestBuilder &fail(FnMut<void(const RPCError &error)> callback) noexcept WARN_UNUSED_RESULT {
 			setFailHandler(std::move(callback));
 			return *this;
 		}
-		SpecificRequestBuilder &fail(base::lambda_once<void(const RPCError &error, mtpRequestId requestId)>
-		                                 callback) noexcept WARN_UNUSED_RESULT {
+		SpecificRequestBuilder &
+		fail(FnMut<void(const RPCError &error, mtpRequestId requestId)> callback) noexcept WARN_UNUSED_RESULT {
 			setFailHandler(std::move(callback));
 			return *this;
 		}

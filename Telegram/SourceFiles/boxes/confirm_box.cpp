@@ -42,8 +42,7 @@ TextParseOptions _confirmBoxTextOptions = {
     Qt::LayoutDirectionAuto, // dir
 };
 
-ConfirmBox::ConfirmBox(QWidget *, const QString &text, base::lambda_once<void()> confirmedCallback,
-                       base::lambda_once<void()> cancelledCallback)
+ConfirmBox::ConfirmBox(QWidget *, const QString &text, FnMut<void()> confirmedCallback, FnMut<void()> cancelledCallback)
     : _confirmText(lang(lng_box_ok))
     , _cancelText(lang(lng_cancel))
     , _confirmStyle(st::defaultBoxButton)
@@ -53,8 +52,8 @@ ConfirmBox::ConfirmBox(QWidget *, const QString &text, base::lambda_once<void()>
 	init(text);
 }
 
-ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmText,
-                       base::lambda_once<void()> confirmedCallback, base::lambda_once<void()> cancelledCallback)
+ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmText, FnMut<void()> confirmedCallback,
+                       FnMut<void()> cancelledCallback)
     : _confirmText(confirmText)
     , _cancelText(lang(lng_cancel))
     , _confirmStyle(st::defaultBoxButton)
@@ -65,8 +64,8 @@ ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmTex
 }
 
 ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmText,
-                       const style::RoundButton &confirmStyle, base::lambda_once<void()> confirmedCallback,
-                       base::lambda_once<void()> cancelledCallback)
+                       const style::RoundButton &confirmStyle, FnMut<void()> confirmedCallback,
+                       FnMut<void()> cancelledCallback)
     : _confirmText(confirmText)
     , _cancelText(lang(lng_cancel))
     , _confirmStyle(confirmStyle)
@@ -77,7 +76,7 @@ ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmTex
 }
 
 ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmText, const QString &cancelText,
-                       base::lambda_once<void()> confirmedCallback, base::lambda_once<void()> cancelledCallback)
+                       FnMut<void()> confirmedCallback, FnMut<void()> cancelledCallback)
     : _confirmText(confirmText)
     , _cancelText(cancelText)
     , _confirmStyle(st::defaultBoxButton)
@@ -89,7 +88,7 @@ ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmTex
 
 ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmText,
                        const style::RoundButton &confirmStyle, const QString &cancelText,
-                       base::lambda_once<void()> confirmedCallback, base::lambda_once<void()> cancelledCallback)
+                       FnMut<void()> confirmedCallback, FnMut<void()> cancelledCallback)
     : _confirmText(confirmText)
     , _cancelText(cancelText)
     , _confirmStyle(st::defaultBoxButton)
@@ -99,8 +98,7 @@ ConfirmBox::ConfirmBox(QWidget *, const QString &text, const QString &confirmTex
 	init(text);
 }
 
-ConfirmBox::ConfirmBox(const InformBoxTag &, const QString &text, const QString &doneText,
-                       base::lambda<void()> closedCallback)
+ConfirmBox::ConfirmBox(const InformBoxTag &, const QString &text, const QString &doneText, Fn<void()> closedCallback)
     : _confirmText(doneText)
     , _confirmStyle(st::defaultBoxButton)
     , _informative(true)
@@ -110,7 +108,7 @@ ConfirmBox::ConfirmBox(const InformBoxTag &, const QString &text, const QString 
 	init(text);
 }
 
-base::lambda_once<void()> ConfirmBox::generateInformCallback(base::lambda<void()> closedCallback) {
+FnMut<void()> ConfirmBox::generateInformCallback(Fn<void()> closedCallback) {
 	return base::lambda_guarded(this, [this, closedCallback] {
 		closeBox();
 		if (closedCallback) {
@@ -222,10 +220,10 @@ void ConfirmBox::paintEvent(QPaintEvent *e) {
 	_text.drawLeftElided(p, st::boxPadding.left(), st::boxPadding.top(), _textWidth, width(), 16, style::al_left);
 }
 
-InformBox::InformBox(QWidget *, const QString &text, base::lambda<void()> closedCallback)
+InformBox::InformBox(QWidget *, const QString &text, Fn<void()> closedCallback)
     : ConfirmBox(ConfirmBox::InformBoxTag(), text, lang(lng_box_ok), std::move(closedCallback)) {}
 
-InformBox::InformBox(QWidget *, const QString &text, const QString &doneText, base::lambda<void()> closedCallback)
+InformBox::InformBox(QWidget *, const QString &text, const QString &doneText, Fn<void()> closedCallback)
     : ConfirmBox(ConfirmBox::InformBoxTag(), text, doneText, std::move(closedCallback)) {}
 
 MaxInviteBox::MaxInviteBox(QWidget *, not_null<ChannelData *> channel)

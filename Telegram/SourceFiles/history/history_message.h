@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "core/basic_types.h"
 #include "history/history.h"
 #include "history/history_item.h"
@@ -28,7 +27,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "structs.h"
 
 void HistoryInitMessages();
-base::lambda<void(ChannelData *, MsgId)> HistoryDependentItemCallback(const FullMsgId &msgId);
+Fn<void(ChannelData *, MsgId)> HistoryDependentItemCallback(const FullMsgId &msgId);
 MTPDmessage::Flags NewMessageFlags(not_null<PeerData *> peer);
 QString GetErrorTextForForward(not_null<PeerData *> peer, const SelectedItemSet &items);
 void FastShareMessage(not_null<HistoryItem *> item);

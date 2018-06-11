@@ -78,7 +78,7 @@ void PhoneWidget::updateSignupGeometry() {
 	}
 }
 
-void PhoneWidget::showPhoneError(base::lambda<QString()> textFactory) {
+void PhoneWidget::showPhoneError(Fn<QString()> textFactory) {
 	_phone->showError();
 	showError(std::move(textFactory));
 }

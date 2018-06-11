@@ -135,8 +135,8 @@ void UnsafeLaunchDefault(const QString &filepath) {
 
 namespace FileDialog {
 
-void GetOpenPath(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback,
-                 base::lambda<void()> failed) {
+void GetOpenPath(const QString &caption, const QString &filter, Fn<void(const OpenResult &result)> callback,
+                 Fn<void()> failed) {
 	base::TaskQueue::Main().Put([caption, filter, callback = std::move(callback), failed = std::move(failed)] {
 		auto files = QStringList();
 		auto remoteContent = QByteArray();
@@ -156,8 +156,8 @@ void GetOpenPath(const QString &caption, const QString &filter, base::lambda<voi
 	});
 }
 
-void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<void(const OpenResult &result)> callback,
-                  base::lambda<void()> failed) {
+void GetOpenPaths(const QString &caption, const QString &filter, Fn<void(const OpenResult &result)> callback,
+                  Fn<void()> failed) {
 	base::TaskQueue::Main().Put([caption, filter, callback = std::move(callback), failed = std::move(failed)] {
 		auto files = QStringList();
 		auto remoteContent = QByteArray();
@@ -176,7 +176,7 @@ void GetOpenPaths(const QString &caption, const QString &filter, base::lambda<vo
 }
 
 void GetWritePath(const QString &caption, const QString &filter, const QString &initialPath,
-                  base::lambda<void(const QString &result)> callback, base::lambda<void()> failed) {
+                  Fn<void(const QString &result)> callback, Fn<void()> failed) {
 	base::TaskQueue::Main().Put(
 	    [caption, filter, initialPath, callback = std::move(callback), failed = std::move(failed)] {
 		    auto file = QString();
@@ -190,8 +190,8 @@ void GetWritePath(const QString &caption, const QString &filter, const QString &
 	    });
 }
 
-void GetFolder(const QString &caption, const QString &initialPath, base::lambda<void(const QString &result)> callback,
-               base::lambda<void()> failed) {
+void GetFolder(const QString &caption, const QString &initialPath, Fn<void(const QString &result)> callback,
+               Fn<void()> failed) {
 	base::TaskQueue::Main().Put([caption, initialPath, callback = std::move(callback), failed = std::move(failed)] {
 		auto files = QStringList();
 		auto remoteContent = QByteArray();

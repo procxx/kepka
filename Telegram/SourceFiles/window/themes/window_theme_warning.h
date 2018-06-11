@@ -20,7 +20,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 */
 #pragma once
 
-#include "base/lambda.h"
 #include "base/object_ptr.h"
 #include "core/single_timer.h"
 #include "ui/twidget.h"
@@ -39,7 +38,7 @@ class WarningWidget : public TWidget {
 public:
 	WarningWidget(QWidget *parent);
 
-	void setHiddenCallback(base::lambda<void()> callback) {
+	void setHiddenCallback(Fn<void()> callback) {
 		_hiddenCallback = std::move(callback);
 	}
 
@@ -72,7 +71,7 @@ private:
 	object_ptr<Ui::RoundButton> _keepChanges;
 	object_ptr<Ui::RoundButton> _revert;
 
-	base::lambda<void()> _hiddenCallback;
+	Fn<void()> _hiddenCallback;
 };
 
 } // namespace Theme

@@ -89,7 +89,7 @@ void SentCodeField::fix() {
 	}
 }
 
-SentCodeCall::SentCodeCall(QObject *parent, base::lambda_once<void()> callCallback, base::lambda<void()> updateCallback)
+SentCodeCall::SentCodeCall(QObject *parent, FnMut<void()> callCallback, Fn<void()> updateCallback)
     : _timer(parent)
     , _call(std::move(callCallback))
     , _update(std::move(updateCallback)) {

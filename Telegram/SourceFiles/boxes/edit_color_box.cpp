@@ -731,7 +731,7 @@ void EditColorBox::onFieldSubmitted() {
 }
 
 void EditColorBox::saveColor() {
-	_cancelCallback = base::lambda<void()>();
+	_cancelCallback = Fn<void()>();
 	if (_saveCallback) {
 		_saveCallback(_new.toRgb());
 	}
