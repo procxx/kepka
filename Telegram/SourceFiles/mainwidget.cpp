@@ -675,7 +675,7 @@ void MainWidget::gameUpdated(GameData *data) {
 
 void MainWidget::webPagesOrGamesUpdate() {
 	_webPageOrGameUpdater.stop();
-	if (!_webPagesUpdated.isEmpty()) {
+	if (!_webPagesUpdated.empty()) {
 		auto &items = App::webPageItems();
 		for_const (auto webPageId, _webPagesUpdated) {
 			auto j = items.constFind(App::webPage(webPageId));
@@ -685,7 +685,7 @@ void MainWidget::webPagesOrGamesUpdate() {
 		}
 		_webPagesUpdated.clear();
 	}
-	if (!_gamesUpdated.isEmpty()) {
+	if (!_gamesUpdated.empty()) {
 		auto &items = App::gameItems();
 		for_const (auto gameId, _gamesUpdated) {
 			auto j = items.constFind(App::game(gameId));

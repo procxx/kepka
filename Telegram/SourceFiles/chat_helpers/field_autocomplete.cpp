@@ -277,7 +277,7 @@ void FieldAutocomplete::updateFiltered(bool resetScroll) {
 			cnt = _user->botInfo->commands.size();
 			bots.insert(_user, true);
 		} else if (_channel && _channel->isMegagroup()) {
-			if (_channel->mgInfo->bots.isEmpty()) {
+			if (_channel->mgInfo->bots.empty()) {
 				if (!_channel->mgInfo->botStatus) {
 					Auth().api().requestBots(_channel);
 				}

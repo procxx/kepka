@@ -428,13 +428,12 @@ void MediaView::updateControls() {
 	if (_photo || (_history && _overview != OverviewCount)) {
 		_leftNavVisible =
 		    (_index > 0) ||
-		    (_index == 0 &&
-		     ((!_msgmigrated && _history &&
-		       _history->overview(_overview).size() < _history->overviewCount(_overview)) ||
-		      (_msgmigrated && _migrated &&
-		       _migrated->overview(_overview).size() < _migrated->overviewCount(_overview)) ||
-		      (!_msgmigrated && _history && _migrated &&
-		       (!_migrated->overview(_overview).isEmpty() || _migrated->overviewCount(_overview) > 0)))) ||
+		    (_index == 0 && ((!_msgmigrated && _history &&
+		                      _history->overview(_overview).size() < _history->overviewCount(_overview)) ||
+		                     (_msgmigrated && _migrated &&
+		                      _migrated->overview(_overview).size() < _migrated->overviewCount(_overview)) ||
+		                     (!_msgmigrated && _history && _migrated &&
+		                      (!_migrated->overview(_overview).empty() || _migrated->overviewCount(_overview) > 0)))) ||
 		    (_index < 0 && _photo == _additionalChatPhoto &&
 		     ((_history && _history->overviewCount(_overview) > 0) ||
 		      (_migrated && _history->overviewLoaded(_overview) && _migrated->overviewCount(_overview) > 0)));
@@ -443,7 +442,7 @@ void MediaView::updateControls() {
 		    ((!_msgmigrated && _history && _index + 1 < _history->overview(_overview).size()) ||
 		     (_msgmigrated && _migrated && _index + 1 < _migrated->overview(_overview).size()) ||
 		     (_msgmigrated && _migrated && _history &&
-		      (!_history->overview(_overview).isEmpty() || _history->overviewCount(_overview) > 0)) ||
+		      (!_history->overview(_overview).empty() || _history->overviewCount(_overview) > 0)) ||
 		     (!_msgmigrated && _history && _index + 1 == _history->overview(_overview).size() &&
 		      _additionalChatPhoto) ||
 		     (_msgmigrated && _migrated && _index + 1 == _migrated->overview(_overview).size() &&
@@ -2959,7 +2958,7 @@ void MediaView::loadBack() {
 			} else {
 				App::main()->loadMediaBack(_history->peer, _overview);
 				if (_migrated && _index == 0 &&
-				    (_migrated->overviewCount(_overview) < 0 || _migrated->overview(_overview).isEmpty()) &&
+				    (_migrated->overviewCount(_overview) < 0 || _migrated->overview(_overview).empty()) &&
 				    !_migrated->overviewLoaded(_overview)) {
 					App::main()->loadMediaBack(_migrated->peer, _overview);
 				}
@@ -2994,13 +2993,13 @@ MediaView::LastChatPhoto MediaView::computeLastOverviewChatPhoto() {
 
 	if (!_history) return emptyResult;
 	auto &list = _history->overview(OverviewChatPhotos);
-	if (!list.isEmpty()) {
+	if (!list.empty()) {
 		return lastPhotoInOverview(_history, list);
 	}
 
 	if (!_migrated || !_history->overviewLoaded(OverviewChatPhotos)) return emptyResult;
 	auto &migratedList = _migrated->overview(OverviewChatPhotos);
-	if (!migratedList.isEmpty()) {
+	if (!migratedList.empty()) {
 		return lastPhotoInOverview(_migrated, migratedList);
 	}
 	return emptyResult;
@@ -3058,8 +3057,8 @@ void MediaView::updateHeader() {
 	if (_history) {
 		if (_overview != OverviewCount) {
 			bool lastOverviewPhotoLoaded =
-			    (!_history->overview(_overview).isEmpty() ||
-			     (_migrated && _history->overviewCount(_overview) == 0 && !_migrated->overview(_overview).isEmpty()));
+			    (!_history->overview(_overview).empty() ||
+			     (_migrated && _history->overviewCount(_overview) == 0 && !_migrated->overview(_overview).empty()));
 			count = _history->overviewCount(_overview);
 			if (addcount >= 0 && count >= 0) {
 				count += addcount;

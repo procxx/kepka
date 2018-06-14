@@ -219,7 +219,7 @@ private:
 	ChannelData *_megagroupSet = nullptr;
 	Sets _mySets;
 	Sets _featuredSets;
-	OrderedSet<quint64> _installedLocallySets;
+	std::set<quint64> _installedLocallySets;
 	QList<bool> _custom;
 	base::flat_set<not_null<DocumentData *>> _favedStickersMap;
 

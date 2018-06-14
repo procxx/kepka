@@ -153,7 +153,7 @@ private:
 
 	QString _searchQuery;
 	QVector<int> _searchResults;
-	QMap<QChar, OrderedSet<int>> _searchIndex;
+	QMap<QChar, std::set<int>> _searchIndex;
 
 	int _selected = -1;
 	int _pressed = -1;

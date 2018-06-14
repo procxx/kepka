@@ -728,7 +728,7 @@ void HistoryItem::destroy() {
 			history()->setUnreadCount(history()->unreadCount() - 1);
 		}
 	}
-	Global::RefPendingRepaintItems().remove(this);
+	Global::RefPendingRepaintItems().erase(this);
 	delete this;
 }
 

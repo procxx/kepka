@@ -199,7 +199,7 @@ private:
 
 	using DataMap = QMap<PeerData *, Chat *>;
 	DataMap _dataMap;
-	using SelectedChats = OrderedSet<PeerData *>;
+	using SelectedChats = std::set<PeerData *>;
 	SelectedChats _selected;
 
 	base::lambda<void(PeerData *peer, bool selected)> _peerSelectedChangedCallback;

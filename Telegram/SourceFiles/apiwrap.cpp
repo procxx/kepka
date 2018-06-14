@@ -983,7 +983,7 @@ void ApiWrap::saveStickerSets(const Stickers::Order &localOrder, const Stickers:
 	if (writeFaved) Local::writeFavedStickers();
 	Auth().data().stickersUpdated().notify(true);
 
-	if (_stickerSetDisenableRequests.isEmpty()) {
+	if (_stickerSetDisenableRequests.empty()) {
 		stickersSaveOrder();
 	} else {
 		requestSendDelayed();
@@ -991,8 +991,8 @@ void ApiWrap::saveStickerSets(const Stickers::Order &localOrder, const Stickers:
 }
 
 void ApiWrap::stickerSetDisenabled(mtpRequestId requestId) {
-	_stickerSetDisenableRequests.remove(requestId);
-	if (_stickerSetDisenableRequests.isEmpty()) {
+	_stickerSetDisenableRequests.erase(requestId);
+	if (_stickerSetDisenableRequests.empty()) {
 		stickersSaveOrder();
 	}
 };
@@ -1396,7 +1396,7 @@ void ApiWrap::resolveWebPages() {
 		if (i.value() > 0) continue;
 		if (i.key()->pendingTill <= t) {
 			auto j = items.constFind(i.key());
-			if (j != items.cend() && !j.value().isEmpty()) {
+			if (j != items.cend() && !j.value().empty()) {
 				for_const (auto item, j.value()) {
 					if (item->id > 0) {
 						if (item->channelId() == NoChannel) {
@@ -2001,7 +2001,7 @@ void ApiWrap::sendSaveChatAdminsRequests(not_null<ChatData *> chat) {
 						                     chat->admins.insert(user);
 					                     }
 				                     } else {
-					                     chat->admins.remove(user);
+					                     chat->admins.erase(user);
 				                     }
 			                     }
 		                     })
@@ -2031,7 +2031,7 @@ void ApiWrap::sendSaveChatAdminsRequests(not_null<ChatData *> chat) {
 	if (!admins->empty()) {
 		toAppoint.reserve(admins->size());
 		for (auto user : *admins) {
-			if (!toRemove.remove(user) && user->id != peerFromUser(chat->creator)) {
+			if (!toRemove.erase(user) && user->id != peerFromUser(chat->creator)) {
 				toAppoint.push_back(user);
 			}
 		}

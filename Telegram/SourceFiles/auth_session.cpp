@@ -89,7 +89,7 @@ void AuthSessionData::constructFromSerialized(const QByteArray &serialized) {
 	qint32 floatPlayerColumn = static_cast<qint32>(Window::Column::Second);
 	qint32 floatPlayerCorner = static_cast<qint32>(RectPart::TopRight);
 	QMap<QString, QString> soundOverrides;
-	OrderedSet<PeerId> groupStickersSectionHidden;
+	std::set<PeerId> groupStickersSectionHidden;
 	stream >> selectorTab;
 	stream >> lastSeenWarningSeen;
 	if (!stream.atEnd()) {

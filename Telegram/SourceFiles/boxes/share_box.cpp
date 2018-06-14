@@ -661,7 +661,7 @@ void ShareBox::Inner::changePeerCheckState(Chat *chat, bool checked, ChangeState
 		_selected.insert(chat->peer);
 		setActive(chatIndex(chat->peer));
 	} else {
-		_selected.remove(chat->peer);
+		_selected.erase(chat->peer);
 	}
 	if (useCallback != ChangeStateWay::SkipCallback && _peerSelectedChangedCallback) {
 		_peerSelectedChangedCallback(chat->peer, checked);

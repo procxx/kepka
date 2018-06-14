@@ -1428,7 +1428,7 @@ void AddParticipantBoxSearchController::addChatsContacts() {
 	auto dialogsIndex = getSmallestIndex(App::main()->dialogsList());
 	auto contactsIndex = getSmallestIndex(App::main()->contactsNoDialogsList());
 
-	auto allWordsAreFound = [&wordList](const OrderedSet<QString> &names) {
+	auto allWordsAreFound = [&wordList](const std::set<QString> &names) {
 		auto hasNamePartStartingWith = [&names](const QString &word) {
 			for_const (auto &namePart, names) {
 				if (namePart.startsWith(word)) {

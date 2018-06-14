@@ -795,7 +795,7 @@ void ChannelData::applyEditAdmin(not_null<UserData *> user, const MTPChannelAdmi
 		if (!mgInfo->lastParticipants.contains(user)) { // If rights are empty - still add participant? TODO check
 			mgInfo->lastParticipants.push_front(user);
 			setMembersCount(membersCount() + 1);
-			if (user->botInfo && !mgInfo->bots.contains(user)) {
+			if (user->botInfo && mgInfo->bots.find(user) == mgInfo->bots.end()) {
 				mgInfo->bots.insert(user);
 				if (mgInfo->botStatus != 0 && mgInfo->botStatus < 2) {
 					mgInfo->botStatus = 2;
@@ -885,9 +885,9 @@ void ChannelData::applyEditBanned(not_null<UserData *> user, const MTPChannelBan
 					mgInfo->lastParticipantsCount = 0;
 				}
 				setKickedCount(kickedCount() + 1);
-				if (mgInfo->bots.contains(user)) {
-					mgInfo->bots.remove(user);
-					if (mgInfo->bots.isEmpty() && mgInfo->botStatus > 0) {
+				if (mgInfo->bots.find(user) != mgInfo->bots.end()) {
+					mgInfo->bots.erase(user);
+					if (mgInfo->bots.empty() && mgInfo->botStatus > 0) {
 						mgInfo->botStatus = -1;
 					}
 				}

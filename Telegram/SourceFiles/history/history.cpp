@@ -786,7 +786,7 @@ void Histories::setIsPinned(History *history, bool isPinned) {
 			minIndexHistory->setPinnedDialog(false);
 		}
 	} else {
-		_pinnedDialogs.remove(history);
+		_pinnedDialogs.erase(history);
 	}
 }
 
@@ -1054,8 +1054,8 @@ HistoryItem *History::createItem(const MTPMessage &msg, bool applyServiceAction,
 							}
 							Notify::peerUpdatedDelayed(peer, Notify::PeerUpdate::Flag::AdminsChanged);
 						}
-						megagroupInfo->bots.remove(user);
-						if (megagroupInfo->bots.isEmpty() && megagroupInfo->botStatus > 0) {
+						megagroupInfo->bots.erase(user);
+						if (megagroupInfo->bots.empty() && megagroupInfo->botStatus > 0) {
 							megagroupInfo->botStatus = -1;
 						}
 					}
@@ -1366,7 +1366,7 @@ HistoryItem *History::addNewItem(HistoryItem *adding, bool newMsg) {
 		if (adding->definesReplyKeyboard()) {
 			auto markupFlags = adding->replyKeyboardFlags();
 			if (!(markupFlags & MTPDreplyKeyboardMarkup::Flag::f_selective) || adding->mentionsMe()) {
-				auto getMarkupSenders = [this]() -> OrderedSet<not_null<PeerData *>> * {
+				auto getMarkupSenders = [this]() -> std::set<not_null<PeerData *>> * {
 					if (auto chat = peer->asChat()) {
 						return &chat->markupSenders;
 					} else if (auto channel = peer->asMegagroup()) {
@@ -1387,11 +1387,13 @@ HistoryItem *History::addNewItem(HistoryItem *adding, bool newMsg) {
 					if (peer->isChat()) {
 						botNotInChat = adding->from()->isUser() &&
 						               (!peer->canWrite() || !peer->asChat()->participants.isEmpty()) &&
-						               !peer->asChat()->participants.contains(adding->from()->asUser());
+						               (peer->asChat()->participants.find(adding->from()->asUser()) ==
+						                peer->asChat()->participants.end());
 					} else if (peer->isMegagroup()) {
 						botNotInChat = adding->from()->isUser() &&
 						               (!peer->canWrite() || peer->asChannel()->mgInfo->botStatus != 0) &&
-						               !peer->asChannel()->mgInfo->bots.contains(adding->from()->asUser());
+						               (peer->asChannel()->mgInfo->bots.find(adding->from()->asUser()) ==
+						                peer->asChannel()->mgInfo->bots.end());
 					}
 					if (botNotInChat) {
 						clearLastKeyboard();
@@ -1525,7 +1527,7 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 		bool channel = isChannel();
 		qint32 mask = 0;
 		QList<not_null<UserData *>> *lastAuthors = nullptr;
-		OrderedSet<not_null<PeerData *>> *markupSenders = nullptr;
+		std::set<not_null<PeerData *>> *markupSenders = nullptr;
 		if (peer->isChat()) {
 			lastAuthors = &peer->asChat()->lastAuthors;
 			markupSenders = &peer->asChat()->markupSenders;
@@ -1560,7 +1562,7 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 					if (!lastKeyboardInited && item->definesReplyKeyboard() && !item->out()) {
 						auto markupFlags = item->replyKeyboardFlags();
 						if (!(markupFlags & MTPDreplyKeyboardMarkup::Flag::f_selective) || item->mentionsMe()) {
-							bool wasKeyboardHide = markupSenders->contains(item->author());
+							bool wasKeyboardHide = markupSenders->find(item->author()) != markupSenders->end();
 							if (!wasKeyboardHide) {
 								markupSenders->insert(item->author());
 							}
@@ -1575,7 +1577,8 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 										botNotInChat =
 										    (!peer->canWrite() || peer->asChannel()->mgInfo->botStatus != 0) &&
 										    item->author()->isUser() &&
-										    !peer->asChannel()->mgInfo->bots.contains(item->author()->asUser());
+										    (peer->asChannel()->mgInfo->bots.find(item->author()->asUser()) ==
+										     peer->asChannel()->mgInfo->bots.end());
 									}
 									if (wasKeyboardHide || botNotInChat) {
 										clearLastKeyboard();
@@ -2232,7 +2235,7 @@ void History::clear(bool leaveItems) {
 	}
 	if (!leaveItems) {
 		for (auto i = 0; i != OverviewCount; ++i) {
-			if (!_overview[i].isEmpty()) {
+			if (!_overview[i].empty()) {
 				_overviewCountData[i] = -1; // not loaded yet
 				_overview[i].clear();
 				if (!App::quitting()) {

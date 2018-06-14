@@ -227,7 +227,7 @@ void unregDocumentItem(DocumentData *document, ItemBase *item) {
 	if (documentItemsMap) {
 		auto i = documentItemsMap->find(document);
 		if (i != documentItemsMap->cend()) {
-			if (i->remove(item) && i->isEmpty()) {
+			if (i->erase(item) && i->empty()) {
 				documentItemsMap->erase(i);
 			}
 		}

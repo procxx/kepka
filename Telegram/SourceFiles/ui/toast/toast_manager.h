@@ -58,7 +58,7 @@ private:
 	QMultiMap<TimeMs, Instance *> _toastByHideTime;
 	QMap<Widget *, Instance *> _toastByWidget;
 	QList<Instance *> _toasts;
-	OrderedSet<QPointer<QWidget>> _toastParents;
+	std::set<QPointer<QWidget>> _toastParents;
 };
 
 } // namespace internal

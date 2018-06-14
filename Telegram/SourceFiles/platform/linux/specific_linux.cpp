@@ -384,8 +384,8 @@ bool TranslucentWindowsSupported(QPoint globalPosition) {
 						return true;
 					}
 
-					static OrderedSet<int> WarnedAbout;
-					if (!WarnedAbout.contains(index)) {
+					static std::set<int> WarnedAbout;
+					if (WarnedAbout.find(index) == WarnedAbout.end()) {
 						WarnedAbout.insert(index);
 						LOG(("WARNING: Compositing is disabled for screen index %1 (for position %2,%3)")
 						        .arg(index)

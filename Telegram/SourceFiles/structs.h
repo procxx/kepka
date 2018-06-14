@@ -358,9 +358,9 @@ public:
 
 	QString name;
 	Text nameText;
-	using Names = OrderedSet<QString>;
+	using Names = std::set<QString>;
 	Names names; // for filtering
-	using NameFirstChars = OrderedSet<QChar>;
+	using NameFirstChars = std::set<QChar>;
 	NameFirstChars chars;
 
 	enum LoadedStatus {
@@ -651,10 +651,10 @@ public:
 		return flags & MTPDchat::Flag::f_migrated_to;
 	}
 	QMap<not_null<UserData *>, int> participants;
-	OrderedSet<not_null<UserData *>> invitedByMe;
-	OrderedSet<not_null<UserData *>> admins;
+	std::set<not_null<UserData *>> invitedByMe;
+	std::set<not_null<UserData *>> admins;
 	QList<not_null<UserData *>> lastAuthors;
-	OrderedSet<not_null<PeerData *>> markupSenders;
+	std::set<not_null<PeerData *>> markupSenders;
 	int botStatus = 0; // -1 - no bots, 0 - unknown, 1 - one bot, that sees all history, 2 - other
 	//	ImagePtr photoFull;
 
@@ -750,8 +750,8 @@ struct MegagroupInfo {
 	QList<not_null<UserData *>> lastParticipants;
 	QMap<not_null<UserData *>, Admin> lastAdmins;
 	QMap<not_null<UserData *>, Restricted> lastRestricted;
-	OrderedSet<not_null<PeerData *>> markupSenders;
-	OrderedSet<not_null<UserData *>> bots;
+	std::set<not_null<PeerData *>> markupSenders;
+	std::set<not_null<UserData *>> bots;
 
 	UserData *creator = nullptr; // nullptr means unknown
 	int botStatus = 0; // -1 - no bots, 0 - unknown, 1 - one bot, that sees all history, 2 - other

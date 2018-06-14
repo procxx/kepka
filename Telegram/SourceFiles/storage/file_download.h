@@ -377,7 +377,7 @@ private:
 	LoaderPointers _loaderPointers;
 	mutable QMutex _loaderPointersMutex;
 
-	typedef OrderedSet<webFileLoaderPrivate *> Loaders;
+	typedef std::set<webFileLoaderPrivate *> Loaders;
 	Loaders _loaders;
 
 	typedef QMap<QNetworkReply *, webFileLoaderPrivate *> Replies;

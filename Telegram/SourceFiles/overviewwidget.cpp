@@ -810,8 +810,8 @@ void OverviewInner::paintEvent(QPaintEvent *e) {
 	auto ms = getms();
 	Overview::Layout::PaintContext context(ms, _selMode);
 
-	if (_history->overview(_type).isEmpty() &&
-	    (!_migrated || !_history->overviewLoaded(_type) || _migrated->overview(_type).isEmpty())) {
+	if (_history->overview(_type).empty() &&
+	    (!_migrated || !_history->overviewLoaded(_type) || _migrated->overview(_type).empty())) {
 		HistoryLayout::paintEmpty(p, _width, height());
 		return;
 	} else if (_inSearch && _searchResults.isEmpty() && _searchFull && (!_migrated || _searchFullMigrated) &&
@@ -1681,7 +1681,7 @@ void OverviewInner::mediaOverviewUpdated() {
 		auto migratedOverview = _migrated ? &_migrated->overview(_type) : nullptr;
 		auto migrateCount = migratedIndexSkip();
 		auto fullCount = (migrateCount + o.size());
-		auto tocheck = std::min(fullCount, _itemsToBeLoaded);
+		auto tocheck = std::min((qint32)fullCount, _itemsToBeLoaded);
 		_items.reserve(tocheck);
 
 		auto index = 0;
@@ -1723,7 +1723,7 @@ void OverviewInner::mediaOverviewUpdated() {
 		auto migratedOverview = _migrated ? &_migrated->overview(_type) : nullptr;
 		auto migrateCount = migratedIndexSkip();
 		auto l = _inSearch ? _searchResults.size() : (migrateCount + o.size());
-		auto tocheck = std::min(l, _itemsToBeLoaded);
+		auto tocheck = std::min((qint32)l, _itemsToBeLoaded);
 		_items.reserve((withDates ? 2 : 1) * tocheck); // day items
 
 		auto migrateIt = migratedOverview ? migratedOverview->end() : o.end();
@@ -2311,9 +2311,9 @@ void OverviewWidget::mediaOverviewUpdated(const Notify::PeerUpdate &update) {
 	History *m = (update.peer && update.peer->migrateFrom()) ? App::historyLoaded(update.peer->migrateFrom()->id) : 0;
 	if (h) {
 		for (qint32 i = 0; i < OverviewCount; ++i) {
-			if (!h->overview(i).isEmpty() || h->overviewCount(i) > 0 || i == type()) {
+			if (!h->overview(i).empty() || h->overviewCount(i) > 0 || i == type()) {
 				mask |= (1 << i);
-			} else if (m && (!m->overview(i).isEmpty() || m->overviewCount(i) > 0)) {
+			} else if (m && (!m->overview(i).empty() || m->overviewCount(i) > 0)) {
 				mask |= (1 << i);
 			}
 		}

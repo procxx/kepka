@@ -69,7 +69,7 @@ public:
 		fillSearchIndex();
 	}
 
-	const OrderedSet<QString> &searchWords() const {
+	const std::set<QString> &searchWords() const {
 		return _searchWords;
 	}
 	bool searchWordsContain(const QString &needle) const {
@@ -81,7 +81,7 @@ public:
 		return false;
 	}
 
-	const OrderedSet<QChar> &searchStartChars() const {
+	const std::set<QChar> &searchStartChars() const {
 		return _searchStartChars;
 	}
 
@@ -120,8 +120,8 @@ private:
 	QString _valueString;
 	Text _description = {st::windowMinWidth / 2};
 
-	OrderedSet<QString> _searchWords;
-	OrderedSet<QChar> _searchStartChars;
+	std::set<QString> _searchWords;
+	std::set<QChar> _searchStartChars;
 
 	int _top = 0;
 	int _height = 0;
@@ -281,8 +281,8 @@ void EditorBlock::removeFromSearch(const Row &row) {
 	for_const (auto ch, row.searchStartChars()) {
 		auto it = _searchIndex.find(ch);
 		if (it != _searchIndex.cend()) {
-			it->remove(index);
-			if (it->isEmpty()) {
+			it->erase(index);
+			if (it->empty()) {
 				_searchIndex.erase(it);
 			}
 		}
@@ -356,19 +356,19 @@ void EditorBlock::searchByQuery(QString query) {
 		_searchQuery = query;
 		_searchResults.clear();
 
-		auto toFilter = OrderedSet<int>();
+		auto toFilter = std::set<int>();
 		for_const (auto &word, words) {
 			if (word.isEmpty()) continue;
 
 			auto testToFilter = _searchIndex.value(word[0]);
-			if (testToFilter.isEmpty()) {
+			if (testToFilter.empty()) {
 				toFilter.clear();
 				break;
-			} else if (toFilter.isEmpty() || testToFilter.size() < toFilter.size()) {
+			} else if (toFilter.empty() || testToFilter.size() < toFilter.size()) {
 				toFilter = testToFilter;
 			}
 		}
-		if (!toFilter.isEmpty()) {
+		if (!toFilter.empty()) {
 			auto allWordsFound = [&words](const Row &row) {
 				for_const (auto &word, words) {
 					if (!row.searchWordsContain(word)) {

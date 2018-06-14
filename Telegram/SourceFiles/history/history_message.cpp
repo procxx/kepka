@@ -164,7 +164,7 @@ void FastShareMessage(not_null<HistoryItem *> item) {
 		ShareData(const FullMsgId &msgId)
 		    : msgId(msgId) {}
 		FullMsgId msgId;
-		OrderedSet<mtpRequestId> requests;
+		std::set<mtpRequestId> requests;
 	};
 	auto data = MakeShared<ShareData>(item->fullId());
 	auto isGame = item->getMessageBot() && item->getMedia() && (item->getMedia()->type() == MediaTypeGame);
@@ -233,7 +233,7 @@ void FastShareMessage(not_null<HistoryItem *> item) {
 			if (auto main = App::main()) {
 				main->sentUpdatesReceived(updates);
 			}
-			data->requests.remove(requestId);
+			data->requests.erase(requestId);
 			if (data->requests.empty()) {
 				Ui::Toast::Show(lang(lng_share_done));
 				Ui::hideLayer();
