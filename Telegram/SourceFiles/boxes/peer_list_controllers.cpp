@@ -600,7 +600,7 @@ void EditChatAdminsBoxController::rebuildRows() {
 
 	for (auto i = _chat->participants.cbegin(), e = _chat->participants.cend(); i != e; ++i) {
 		if (i.key()->id == peerFromUser(_chat->creator)) continue;
-		if (_chat->admins.contains(i.key())) {
+		if (_chat->admins.find(i.key()) != _chat->admins.end()) {
 			admins.push_back(i.key());
 		} else {
 			others.push_back(i.key());

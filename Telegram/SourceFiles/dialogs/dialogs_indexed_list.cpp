@@ -139,7 +139,7 @@ void IndexedList::adjustByName(PeerData *peer, const PeerData::Names &oldNames,
 			list->del(peer->id, mainRow);
 		}
 	}
-	if (!toAdd.isEmpty()) {
+	if (!toAdd.empty()) {
 		for_const (auto ch, toAdd) {
 			auto j = _index.find(ch);
 			if (j == _index.cend()) {

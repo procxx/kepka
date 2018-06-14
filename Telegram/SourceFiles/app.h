@@ -34,7 +34,7 @@ class Messenger;
 class MainWindow;
 class MainWidget;
 
-using HistoryItemsMap = OrderedSet<HistoryItem *>;
+using HistoryItemsMap = std::set<HistoryItem *>;
 using PhotoItems = QHash<PhotoData *, HistoryItemsMap>;
 using DocumentItems = QHash<DocumentData *, HistoryItemsMap>;
 using WebPageItems = QHash<WebPageData *, HistoryItemsMap>;

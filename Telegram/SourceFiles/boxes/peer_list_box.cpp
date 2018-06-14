@@ -620,7 +620,7 @@ void PeerListBox::Inner::removeFromSearchIndex(not_null<PeerListRow *> row) {
 				}
 			}
 		}
-		row->setNameFirstChars(OrderedSet<QChar>());
+		row->setNameFirstChars(std::set<QChar>());
 	}
 }
 

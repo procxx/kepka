@@ -514,7 +514,7 @@ void SpecialSetReceived(quint64 setId, const QString &setTitle, const QVector<MT
 }
 
 void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVector<MTPlong> &unread, qint32 hash) {
-	OrderedSet<quint64> unreadMap;
+	std::set<quint64> unreadMap;
 	for_const (auto &unreadSetId, unread) { unreadMap.insert(unreadSetId.v); }
 
 	auto &setsOrder = Global::RefFeaturedStickerSetsOrder();
@@ -548,7 +548,7 @@ void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVect
 			auto title = GetSetTitle(*set);
 			if (it == sets.cend()) {
 				auto setClientFlags = MTPDstickerSet_ClientFlag::f_featured | MTPDstickerSet_ClientFlag::f_not_loaded;
-				if (unreadMap.contains(set->vid.v)) {
+				if (unreadMap.find(set->vid.v) != unreadMap.end()) {
 					setClientFlags |= MTPDstickerSet_ClientFlag::f_unread;
 				}
 				it = sets.insert(set->vid.v, Set(set->vid.v, set->vaccess_hash.v, title, qs(set->vshort_name),
@@ -562,7 +562,7 @@ void FeaturedSetsReceived(const QVector<MTPStickerSetCovered> &data, const QVect
 				                 MTPDstickerSet_ClientFlag::f_not_loaded | MTPDstickerSet_ClientFlag::f_special);
 				it->flags = set->vflags.v | clientFlags;
 				it->flags |= MTPDstickerSet_ClientFlag::f_featured;
-				if (unreadMap.contains(it->id)) {
+				if (unreadMap.find(it->id) != unreadMap.end()) {
 					it->flags |= MTPDstickerSet_ClientFlag::f_unread;
 				} else {
 					it->flags &= ~MTPDstickerSet_ClientFlag::f_unread;
@@ -859,7 +859,7 @@ FeaturedReader::FeaturedReader(QObject *parent)
 }
 
 void FeaturedReader::scheduleRead(quint64 setId) {
-	if (!_setIds.contains(setId)) {
+	if (_setIds.find(setId) == _setIds.end()) {
 		_setIds.insert(setId);
 		_timer->start(kReadFeaturedSetsTimeoutMs);
 	}

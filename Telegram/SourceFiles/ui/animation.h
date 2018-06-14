@@ -710,7 +710,7 @@ public slots:
 	void clipCallback(Media::Clip::Reader *reader, qint32 threadIndex, qint32 notification);
 
 private:
-	using AnimatingObjects = OrderedSet<BasicAnimation *>;
+	using AnimatingObjects = std::set<BasicAnimation *>;
 	AnimatingObjects _objects, _starting, _stopping;
 	QTimer _timer;
 	bool _iterating;

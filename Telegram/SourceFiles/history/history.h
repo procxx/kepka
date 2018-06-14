@@ -108,7 +108,7 @@ private:
 	int _unreadFull = 0;
 	int _unreadMuted = 0;
 	base::Observable<SendActionAnimationUpdate> _sendActionAnimationUpdated;
-	OrderedSet<History *> _pinnedDialogs;
+	std::set<History *> _pinnedDialogs;
 
 	base::Timer _selfDestructTimer;
 	std::vector<FullMsgId> _selfDestructItems;
@@ -491,7 +491,7 @@ public:
 		}
 		return result;
 	}
-	const OrderedSet<MsgId> &overview(qint32 overviewIndex) const {
+	const std::set<MsgId> &overview(qint32 overviewIndex) const {
 		return _overview[overviewIndex];
 	}
 	MsgId overviewMinId(qint32 overviewIndex) const {
@@ -499,7 +499,7 @@ public:
 	}
 	void overviewSliceDone(qint32 overviewIndex, const MTPmessages_Messages &result, bool onlyCounts = false);
 	bool overviewHasMsgId(qint32 overviewIndex, MsgId msgId) const {
-		return _overview[overviewIndex].contains(msgId);
+		return _overview[overviewIndex].find(msgId) != _overview[overviewIndex].end();
 	}
 
 	void changeMsgId(MsgId oldId, MsgId newId);
@@ -587,7 +587,7 @@ private:
 	}
 	quint64 _sortKeyInChatList = 0; // like ((unixtime) << 32) | (incremented counter)
 
-	OrderedSet<MsgId> _overview[OverviewCount];
+	std::set<MsgId> _overview[OverviewCount];
 	qint32 _overviewCountData[OverviewCount]; // -1 - not loaded, 0 - all loaded, > 0 - count, but not all loaded
 
 	// A pointer to the block that is currently being built.

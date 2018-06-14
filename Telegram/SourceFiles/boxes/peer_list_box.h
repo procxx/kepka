@@ -135,10 +135,10 @@ public:
 	void paintUserpic(Painter &p, TimeMs ms, int x, int y, int outerWidth);
 	double checkedRatio();
 
-	void setNameFirstChars(const OrderedSet<QChar> &nameFirstChars) {
+	void setNameFirstChars(const std::set<QChar> &nameFirstChars) {
 		_nameFirstChars = nameFirstChars;
 	}
-	const OrderedSet<QChar> &nameFirstChars() const {
+	const std::set<QChar> &nameFirstChars() const {
 		return _nameFirstChars;
 	}
 
@@ -163,7 +163,7 @@ private:
 	Text _name;
 	Text _status;
 	StatusType _statusType = StatusType::Online;
-	OrderedSet<QChar> _nameFirstChars;
+	std::set<QChar> _nameFirstChars;
 	int _absoluteIndex = -1;
 	State _disabledState = State::Active;
 	bool _initialized : 1;

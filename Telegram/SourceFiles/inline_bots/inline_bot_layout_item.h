@@ -129,7 +129,7 @@ private:
 	not_null<Context *> _context;
 };
 
-using DocumentItems = QMap<DocumentData *, OrderedSet<ItemBase *>>;
+using DocumentItems = QMap<DocumentData *, std::set<ItemBase *>>;
 const DocumentItems *documentItems();
 
 namespace internal {

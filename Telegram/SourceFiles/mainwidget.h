@@ -598,8 +598,8 @@ private:
 	not_null<Window::Controller *> _controller;
 	bool _started = false;
 
-	OrderedSet<WebPageId> _webPagesUpdated;
-	OrderedSet<GameId> _gamesUpdated;
+	std::set<WebPageId> _webPagesUpdated;
+	std::set<GameId> _gamesUpdated;
 	QTimer _webPageOrGameUpdater;
 
 	SingleTimer _updateMutedTimer;

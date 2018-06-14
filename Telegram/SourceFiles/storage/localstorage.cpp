@@ -625,7 +625,7 @@ WebFilesMap _webFilesMap;
 quint64 _storageWebFilesSize = 0;
 FileKey _locationsKey = 0, _reportSpamStatusesKey = 0, _trustedBotsKey = 0;
 
-using TrustedBots = OrderedSet<quint64>;
+using TrustedBots = std::set<quint64>;
 TrustedBots _trustedBots;
 bool _trustedBotsRead = false;
 
@@ -3451,12 +3451,12 @@ void _readStickerSets(FileKey &stickersKey, Stickers::Order *outOrder = nullptr,
 		}
 
 		Serialize::Document::StickerSetInfo info(setId, setAccess, setShortName);
-		OrderedSet<DocumentId> read;
+		std::set<DocumentId> read;
 		for (qint32 j = 0; j < scnt; ++j) {
 			auto document = Serialize::Document::readStickerFromStream(stickers.version, stickers.stream, info);
 			if (!document || !document->sticker()) continue;
 
-			if (read.contains(document->id)) continue;
+			if (read.find(document->id) != read.end()) continue;
 			read.insert(document->id);
 
 			if (fillStickers) {
@@ -3838,12 +3838,12 @@ void readSavedGifs() {
 	quint32 cnt;
 	gifs.stream >> cnt;
 	saved.reserve(cnt);
-	OrderedSet<DocumentId> read;
+	std::set<DocumentId> read;
 	for (quint32 i = 0; i < cnt; ++i) {
 		auto document = Serialize::Document::readFromStream(gifs.version, gifs.stream);
 		if (!document || !document->isGifv()) continue;
 
-		if (read.contains(document->id)) continue;
+		if (read.find(document->id) != read.end()) continue;
 		read.insert(document->id);
 
 		saved.push_back(document);
@@ -4462,7 +4462,7 @@ void writeReportSpamStatuses() {
 void writeTrustedBots() {
 	if (!_working()) return;
 
-	if (_trustedBots.isEmpty()) {
+	if (_trustedBots.empty()) {
 		if (_trustedBotsKey) {
 			clearKey(_trustedBotsKey);
 			_trustedBotsKey = 0;
@@ -4517,7 +4517,7 @@ bool isBotTrusted(UserData *bot) {
 		readTrustedBots();
 		_trustedBotsRead = true;
 	}
-	return _trustedBots.contains(bot->id);
+	return _trustedBots.find(bot->id) != _trustedBots.end();
 }
 
 bool encrypt(const void *src, void *dst, quint32 len, const void *key128) {

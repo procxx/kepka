@@ -192,7 +192,7 @@ private:
 	QMap<History *, mtpRequestId> _draftsSaveRequestIds;
 	base::Timer _draftsSaveTimer;
 
-	OrderedSet<mtpRequestId> _stickerSetDisenableRequests;
+	std::set<mtpRequestId> _stickerSetDisenableRequests;
 	Stickers::Order _stickersOrder;
 	mtpRequestId _stickersReorderRequestId = 0;
 	mtpRequestId _stickersClearRecentRequestId = 0;

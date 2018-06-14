@@ -321,10 +321,10 @@ void GroupMembersWidget::checkSelfAdmin(ChatData *chat) {
 	if (chat->participants.isEmpty()) return;
 
 	auto self = App::self();
-	if (chat->amAdmin() && !chat->admins.contains(self)) {
+	if (chat->amAdmin() && (chat->admins.find(self) == chat->admins.end())) {
 		chat->admins.insert(self);
-	} else if (!chat->amAdmin() && chat->admins.contains(self)) {
-		chat->admins.remove(self);
+	} else if (!chat->amAdmin() && (chat->admins.find(self) != chat->admins.end())) {
+		chat->admins.erase(self);
 	}
 }
 
@@ -392,14 +392,14 @@ void GroupMembersWidget::setItemFlags(Item *item, ChatData *chat) {
 	using AdminState = Item::AdminState;
 	auto user = getMember(item)->user();
 	auto isCreator = (peerFromUser(chat->creator) == item->peer->id);
-	auto isAdmin = chat->adminsEnabled() && chat->admins.contains(user);
+	auto isAdmin = chat->adminsEnabled() && chat->admins.find(user) != chat->admins.end();
 	auto adminState = isCreator ? AdminState::Creator : isAdmin ? AdminState::Admin : AdminState::None;
 	item->adminState = adminState;
 	if (item->peer->id == Auth().userPeerId()) {
 		item->hasRemoveLink = false;
 	} else if (chat->amCreator() || (chat->amAdmin() && (adminState == AdminState::None))) {
 		item->hasRemoveLink = true;
-	} else if (chat->invitedByMe.contains(user) && (adminState == AdminState::None)) {
+	} else if (chat->invitedByMe.find(user) != chat->invitedByMe.end() && (adminState == AdminState::None)) {
 		item->hasRemoveLink = true;
 	} else {
 		item->hasRemoveLink = false;

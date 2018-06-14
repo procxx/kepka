@@ -35,7 +35,7 @@ quint32 colorKey(QColor c) {
 
 using IconMasks = QMap<const IconMask *, QImage>;
 using IconPixmaps = QMap<QPair<const IconMask *, quint32>, QPixmap>;
-using IconDatas = OrderedSet<IconData *>;
+using IconDatas = std::set<IconData *>;
 NeverFreedPointer<IconMasks> iconMasks;
 NeverFreedPointer<IconPixmaps> iconPixmaps;
 NeverFreedPointer<IconDatas> iconData;

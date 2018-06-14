@@ -1212,7 +1212,7 @@ void WebLoadManager::onFailed(QNetworkReply *reply) {
 	        .arg(reply->errorString()));
 
 	if (!handleReplyResult(loader, WebReplyProcessError)) {
-		_loaders.remove(loader);
+		_loaders.erase(loader);
 		delete loader;
 	}
 }
@@ -1263,7 +1263,7 @@ void WebLoadManager::onProgress(qint64 already, qint64 size) {
 	}
 	if (!handleReplyResult(loader, result)) {
 		_replies.erase(j);
-		_loaders.remove(loader);
+		_loaders.erase(loader);
 		delete loader;
 
 		reply->abort();
@@ -1292,7 +1292,7 @@ void WebLoadManager::onMeta() {
 				                    m.captured(1).toLongLong());
 				if (!handleReplyResult(loader, WebReplyProcessProgress)) {
 					_replies.erase(j);
-					_loaders.remove(loader);
+					_loaders.erase(loader);
 					delete loader;
 
 					reply->abort();
@@ -1336,7 +1336,7 @@ void WebLoadManager::process() {
 		}
 	}
 	for_const (webFileLoaderPrivate *loader, newLoaders) {
-		if (_loaders.contains(loader)) {
+		if (_loaders.erase(loader)) {
 			sendRequest(loader);
 		}
 	}

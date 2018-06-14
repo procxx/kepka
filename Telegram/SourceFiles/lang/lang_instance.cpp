@@ -64,7 +64,7 @@ private:
 	const char *_end = nullptr;
 
 	QString _result;
-	OrderedSet<ushort> _tagsUsed;
+	std::set<ushort> _tagsUsed;
 };
 
 ValueParser::ValueParser(const QByteArray &key, LangKey keyIndex, const QByteArray &value)
@@ -118,7 +118,7 @@ bool ValueParser::readTag() {
 	if (!IsTagReplaced(_keyIndex, _currentTagIndex)) {
 		return logError("Unexpected tag");
 	}
-	if (_tagsUsed.contains(_currentTagIndex)) {
+	if (_tagsUsed.find(_currentTagIndex) != _tagsUsed.end()) {
 		return logError("Repeated tag");
 	}
 	_tagsUsed.insert(_currentTagIndex);

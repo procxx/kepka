@@ -158,7 +158,7 @@ bool isValidColorValue(QLatin1String value) {
 }
 
 QByteArray replaceValueInContent(const QByteArray &content, const QByteArray &name, const QByteArray &value) {
-	auto validNames = OrderedSet<QLatin1String>();
+	auto validNames = std::set<QLatin1String>();
 	auto start = content.constBegin(), data = start, end = data + content.size();
 	auto lastValidValueStart = end, lastValidValueEnd = end;
 	while (data != end) {
@@ -178,7 +178,7 @@ QByteArray replaceValueInContent(const QByteArray &content, const QByteArray &na
 		if (value.size() == 0) {
 			return "error";
 		}
-		auto validValue = validNames.contains(value) || isValidColorValue(value);
+		auto validValue = validNames.find(value) != validNames.end() || isValidColorValue(value);
 		if (validValue) {
 			validNames.insert(foundName);
 			if (foundName == name) {

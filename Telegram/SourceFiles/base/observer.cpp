@@ -31,7 +31,7 @@ struct ObservableListWrap {
 	~ObservableListWrap() {
 		CantUseObservables = true;
 	}
-	OrderedSet<ObservableCallHandlers *> list;
+	std::set<ObservableCallHandlers *> list;
 };
 
 ObservableListWrap &PendingObservables() {
@@ -54,13 +54,13 @@ void RegisterPendingObservable(ObservableCallHandlers *handlers) {
 
 void UnregisterActiveObservable(ObservableCallHandlers *handlers) {
 	if (CantUseObservables) return;
-	ActiveObservables().list.remove(handlers);
+	ActiveObservables().list.erase(handlers);
 }
 
 void UnregisterObservable(ObservableCallHandlers *handlers) {
 	if (CantUseObservables) return;
-	PendingObservables().list.remove(handlers);
-	ActiveObservables().list.remove(handlers);
+	PendingObservables().list.erase(handlers);
+	ActiveObservables().list.erase(handlers);
 }
 
 } // namespace internal

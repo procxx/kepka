@@ -21,7 +21,6 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #pragma once
 
 #include "base/build_config.h"
-#include "base/ordered_set.h"
 #include <QLatin1String>
 #include <QString>
 #include <cstdint>

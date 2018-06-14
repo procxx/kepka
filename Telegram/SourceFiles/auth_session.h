@@ -140,10 +140,10 @@ public:
 		_variables.groupStickersSectionHidden.insert(peerId);
 	}
 	bool isGroupStickersSectionHidden(PeerId peerId) const {
-		return _variables.groupStickersSectionHidden.contains(peerId);
+		return _variables.groupStickersSectionHidden.find(peerId) != _variables.groupStickersSectionHidden.end();
 	}
 	void removeGroupStickersSectionHidden(PeerId peerId) {
-		_variables.groupStickersSectionHidden.remove(peerId);
+		_variables.groupStickersSectionHidden.erase(peerId);
 	}
 
 private:
@@ -157,7 +157,7 @@ private:
 		QMap<QString, QString> soundOverrides;
 		Window::Column floatPlayerColumn;
 		RectPart floatPlayerCorner;
-		OrderedSet<PeerId> groupStickersSectionHidden;
+		std::set<PeerId> groupStickersSectionHidden;
 	};
 
 	base::Variable<bool> _contactsLoaded = {false};

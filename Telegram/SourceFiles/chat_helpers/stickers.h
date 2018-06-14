@@ -59,7 +59,7 @@ private:
 	void readSets();
 
 	object_ptr<SingleTimer> _timer;
-	OrderedSet<quint64> _setIds;
+	std::set<quint64> _setIds;
 };
 
 } // namespace internal

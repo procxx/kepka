@@ -85,7 +85,7 @@ GameItems gameItems;
 SharedContactItems sharedContactItems;
 GifItems gifItems;
 
-using DependentItemsSet = OrderedSet<HistoryItem *>;
+using DependentItemsSet = std::set<HistoryItem *>;
 using DependentItems = QMap<HistoryItem *, DependentItemsSet>;
 DependentItems dependentItems;
 
@@ -897,7 +897,7 @@ void feedParticipantAdd(const MTPDupdateChatParticipantAdd &d) {
 				if (d.vinviter_id.v == Auth().userId()) {
 					chat->invitedByMe.insert(user);
 				} else {
-					chat->invitedByMe.remove(user);
+					chat->invitedByMe.erase(user);
 				}
 				chat->count++;
 				if (user->botInfo) {
@@ -935,8 +935,8 @@ void feedParticipantDelete(const MTPDupdateChatParticipantDelete &d) {
 				if (i != chat->participants.end()) {
 					chat->participants.erase(i);
 					chat->count--;
-					chat->invitedByMe.remove(user);
-					chat->admins.remove(user);
+					chat->invitedByMe.erase(user);
+					chat->admins.erase(user);
 					if (user->isSelf()) {
 						chat->flags &= ~MTPDchat::Flag::f_admin;
 					}
@@ -1016,7 +1016,7 @@ void feedParticipantAdmin(const MTPDupdateChatParticipantAdmin &d) {
 				if (user->isSelf()) {
 					chat->flags &= ~MTPDchat::Flag::f_admin;
 				}
-				chat->admins.remove(user);
+				chat->admins.erase(user);
 			}
 		} else {
 			chat->invalidateParticipants();
@@ -2151,8 +2151,8 @@ void historyRegDependency(HistoryItem *dependent, HistoryItem *dependency) {
 void historyUnregDependency(HistoryItem *dependent, HistoryItem *dependency) {
 	auto i = ::dependentItems.find(dependency);
 	if (i != ::dependentItems.cend()) {
-		i.value().remove(dependent);
-		if (i.value().isEmpty()) {
+		i.value().erase(dependent);
+		if (i.value().empty()) {
 			::dependentItems.erase(i);
 		}
 	}
@@ -2578,7 +2578,7 @@ void regPhotoItem(PhotoData *data, HistoryItem *item) {
 }
 
 void unregPhotoItem(PhotoData *data, HistoryItem *item) {
-	::photoItems[data].remove(item);
+	::photoItems[data].erase(item);
 }
 
 const PhotoItems &photoItems() {
@@ -2594,7 +2594,7 @@ void regDocumentItem(DocumentData *data, HistoryItem *item) {
 }
 
 void unregDocumentItem(DocumentData *data, HistoryItem *item) {
-	::documentItems[data].remove(item);
+	::documentItems[data].erase(item);
 }
 
 const DocumentItems &documentItems() {
@@ -2610,7 +2610,7 @@ void regWebPageItem(WebPageData *data, HistoryItem *item) {
 }
 
 void unregWebPageItem(WebPageData *data, HistoryItem *item) {
-	::webPageItems[data].remove(item);
+	::webPageItems[data].erase(item);
 }
 
 const WebPageItems &webPageItems() {
@@ -2622,7 +2622,7 @@ void regGameItem(GameData *data, HistoryItem *item) {
 }
 
 void unregGameItem(GameData *data, HistoryItem *item) {
-	::gameItems[data].remove(item);
+	::gameItems[data].erase(item);
 }
 
 const GameItems &gameItems() {
@@ -2641,7 +2641,7 @@ void regSharedContactItem(qint32 userId, HistoryItem *item) {
 void unregSharedContactItem(qint32 userId, HistoryItem *item) {
 	auto user = App::userLoaded(userId);
 	auto canShareThisContact = user ? user->canShareThisContact() : false;
-	::sharedContactItems[userId].remove(item);
+	::sharedContactItems[userId].erase(item);
 	if (canShareThisContact != (user ? user->canShareThisContact() : false)) {
 		Notify::peerUpdatedDelayed(user, Notify::PeerUpdate::Flag::UserCanShareContact);
 	}
@@ -2674,7 +2674,7 @@ void stopGifItems() {
 
 QString phoneFromSharedContact(qint32 userId) {
 	auto i = ::sharedContactItems.constFind(userId);
-	if (i != ::sharedContactItems.cend() && !i->isEmpty()) {
+	if (i != ::sharedContactItems.cend() && !i->empty()) {
 		if (auto media = (*i->cbegin())->getMedia()) {
 			if (media->type() == MediaTypeContact) {
 				return static_cast<HistoryContact *>(media)->phone();

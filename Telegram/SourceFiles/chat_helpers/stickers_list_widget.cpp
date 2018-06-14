@@ -600,7 +600,7 @@ void StickersListWidget::installedLocally(quint64 setId) {
 }
 
 void StickersListWidget::notInstalledLocally(quint64 setId) {
-	_installedLocallySets.remove(setId);
+	_installedLocallySets.erase(setId);
 }
 
 void StickersListWidget::clearInstalledLocally() {
@@ -1249,7 +1249,7 @@ void StickersListWidget::appendSet(Sets &to, quint64 setId, AppendSkip skip) {
 	if ((skip == AppendSkip::Archived) && (it->flags & MTPDstickerSet::Flag::f_archived)) return;
 	if ((skip == AppendSkip::Installed) && (it->flags & MTPDstickerSet::Flag::f_installed) &&
 	    !(it->flags & MTPDstickerSet::Flag::f_archived)) {
-		if (!_installedLocallySets.contains(setId)) {
+		if (_installedLocallySets.find(setId) == _installedLocallySets.end()) {
 			return;
 		}
 	}

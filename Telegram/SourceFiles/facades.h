@@ -324,7 +324,7 @@ DeclareRefVar(base::Observable<void>, PhoneCallsEnabledChanged);
 typedef QMap<PeerId, MsgId> HiddenPinnedMessagesMap;
 DeclareVar(HiddenPinnedMessagesMap, HiddenPinnedMessages);
 
-typedef OrderedSet<HistoryItem *> PendingItemsMap;
+typedef std::set<HistoryItem *> PendingItemsMap;
 DeclareRefVar(PendingItemsMap, PendingRepaintItems);
 
 DeclareVar(Stickers::Sets, StickerSets);
