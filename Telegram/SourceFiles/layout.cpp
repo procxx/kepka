@@ -161,13 +161,13 @@ QString formatPlayedText(qint64 played, qint64 duration) {
 qint32 documentColorIndex(DocumentData *document, QString &ext) {
 	qint32 colorIndex = 0;
 
-	QString name =
-	    document ? (document->name.isEmpty() ? (document->sticker() ? lang(lng_in_dlg_sticker) : qsl("Unknown File")) :
-	                                           document->name) :
-	               lang(lng_message_empty);
+	QString name = document ? (document->filename().isEmpty() ?
+	                               (document->sticker() ? lang(lng_in_dlg_sticker) : qsl("Unknown File")) :
+	                               document->filename()) :
+	                          lang(lng_message_empty);
 	name = name.toLower();
 	qint32 lastDot = name.lastIndexOf('.');
-	QString mime = document ? document->mime.toLower() : QString();
+	QString mime = document ? document->mimeString().toLower() : QString();
 	if (name.endsWith(qstr(".doc")) || name.endsWith(qstr(".txt")) || name.endsWith(qstr(".psd")) ||
 	    mime.startsWith(qstr("text/"))) {
 		colorIndex = 0;

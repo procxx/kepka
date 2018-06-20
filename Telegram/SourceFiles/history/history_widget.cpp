@@ -187,7 +187,8 @@ ApiWrap::RequestMessageDataCallback replyEditMessageDataCallback() {
 }
 
 MTPVector<MTPDocumentAttribute> composeDocumentAttributes(DocumentData *document) {
-	QVector<MTPDocumentAttribute> attributes(1, MTP_documentAttributeFilename(MTP_string(document->name)));
+	auto filenameAttribute = MTP_documentAttributeFilename(MTP_string(document->filename()));
+	auto attributes = QVector<MTPDocumentAttribute>(1, filenameAttribute);
 	if (document->dimensions.width() > 0 && document->dimensions.height() > 0) {
 		qint32 duration = document->duration();
 		if (duration >= 0) {
@@ -4736,9 +4737,10 @@ void HistoryWidget::onDocumentUploaded(const FullMsgId &newId, bool silent, cons
 				sendFlags |= MTPmessages_SendMedia::Flag::f_silent;
 			}
 			auto caption = item->getMedia() ? item->getMedia()->getCaption() : TextWithEntities();
-			auto media = MTP_inputMediaUploadedDocument(MTP_flags(0), file, MTPInputFile(), MTP_string(document->mime),
-			                                            composeDocumentAttributes(document), MTP_string(caption.text),
-			                                            MTPVector<MTPInputDocument>(), MTP_int(0));
+			auto media =
+			    MTP_inputMediaUploadedDocument(MTP_flags(0), file, MTPInputFile(), MTP_string(document->mimeString()),
+			                                   composeDocumentAttributes(document), MTP_string(caption.text),
+			                                   MTPVector<MTPInputDocument>(), MTP_int(0));
 			hist->sendRequestId =
 			    MTP::send(MTPmessages_SendMedia(MTP_flags(sendFlags), item->history()->peer->input, MTP_int(replyTo),
 			                                    media, MTP_long(randomId), MTPnullMarkup),
@@ -4770,7 +4772,7 @@ void HistoryWidget::onThumbDocumentUploaded(const FullMsgId &newId, bool silent,
 			auto caption = media ? media->getCaption() : TextWithEntities();
 			auto media =
 			    MTP_inputMediaUploadedDocument(MTP_flags(MTPDinputMediaUploadedDocument::Flag::f_thumb), file, thumb,
-			                                   MTP_string(document->mime), composeDocumentAttributes(document),
+			                                   MTP_string(document->mimeString()), composeDocumentAttributes(document),
 			                                   MTP_string(caption.text), MTPVector<MTPInputDocument>(), MTP_int(0));
 			hist->sendRequestId =
 			    MTP::send(MTPmessages_SendMedia(MTP_flags(sendFlags), item->history()->peer->input, MTP_int(replyTo),
@@ -6272,14 +6274,14 @@ void HistoryWidget::updatePreview() {
 				if (_previewData->title.isEmpty()) {
 					if (_previewData->description.text.isEmpty()) {
 						title = _previewData->author;
-						desc = ((_previewData->document && !_previewData->document->name.isEmpty()) ?
-						            _previewData->document->name :
+						desc = ((_previewData->document && !_previewData->document->filename().isEmpty()) ?
+						            _previewData->document->filename() :
 						            _previewData->url);
 					} else {
 						title = _previewData->description.text;
 						desc = _previewData->author.isEmpty() ?
-						           ((_previewData->document && !_previewData->document->name.isEmpty()) ?
-						                _previewData->document->name :
+						           ((_previewData->document && !_previewData->document->filename().isEmpty()) ?
+						                _previewData->document->filename() :
 						                _previewData->url) :
 						           _previewData->author;
 					}
@@ -6287,8 +6289,8 @@ void HistoryWidget::updatePreview() {
 					title = _previewData->title;
 					desc = _previewData->description.text.isEmpty() ?
 					           (_previewData->author.isEmpty() ?
-					                ((_previewData->document && !_previewData->document->name.isEmpty()) ?
-					                     _previewData->document->name :
+					                ((_previewData->document && !_previewData->document->filename().isEmpty()) ?
+					                     _previewData->document->filename() :
 					                     _previewData->url) :
 					                _previewData->author) :
 					           _previewData->description.text;
@@ -6298,8 +6300,8 @@ void HistoryWidget::updatePreview() {
 				desc = _previewData->title.isEmpty() ?
 				           (_previewData->description.text.isEmpty() ?
 				                (_previewData->author.isEmpty() ?
-				                     ((_previewData->document && !_previewData->document->name.isEmpty()) ?
-				                          _previewData->document->name :
+				                     ((_previewData->document && !_previewData->document->filename().isEmpty()) ?
+				                          _previewData->document->filename() :
 				                          _previewData->url) :
 				                     _previewData->author) :
 				                _previewData->description.text) :

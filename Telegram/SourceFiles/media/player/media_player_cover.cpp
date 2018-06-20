@@ -324,9 +324,10 @@ void CoverWidget::handleSongChange() {
 
 	TextWithEntities textWithEntities;
 	if (song->performer.isEmpty()) {
-		textWithEntities.text = song->title.isEmpty() ?
-		                            (current.audio()->name.isEmpty() ? qsl("Unknown Track") : current.audio()->name) :
-		                            song->title;
+		textWithEntities.text =
+		    song->title.isEmpty() ?
+		        (current.audio()->filename().isEmpty() ? qsl("Unknown Track") : current.audio()->filename()) :
+		        song->title;
 	} else {
 		auto title = song->title.isEmpty() ? qsl("Unknown Track") : TextUtilities::Clean(song->title);
 		textWithEntities.text = song->performer + QString::fromUtf8(" \xe2\x80\x93 ") + title;

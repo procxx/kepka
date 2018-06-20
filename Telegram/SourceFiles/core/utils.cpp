@@ -318,9 +318,9 @@ void finish() {
 	// FIPS_mode_set(0);
 	ENGINE_cleanup();
 	CONF_modules_unload(1);
-	ERR_remove_state(0);
+	ERR_remove_state(0); // TODO(Randl): deprecated in 1.0.0
 	ERR_free_strings();
-	ERR_remove_thread_state(nullptr);
+	ERR_remove_thread_state(nullptr); // TODO(Randl): deprecated in 1.1.0
 	EVP_cleanup();
 
 	delete[] base::take(_sslLocks);
