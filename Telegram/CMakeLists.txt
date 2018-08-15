@@ -720,7 +720,7 @@ install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/kepka.desktop"
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 )
 install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/tg.protocol"
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/kservices5/tg.protocol
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/kservices5
 )
 install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/kepka.appdata.xml"
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo
