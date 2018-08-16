@@ -14,7 +14,7 @@ function Pack-Files($ext, $includeExe, $targetPath, $archiveName) {
 
     $itemsToPack = @("$targetPath\*.$ext", "$targetPath\platforms\*.$ext", "$targetPath\imageformats\*.$ext")
     if ($includeExe) {
-        $itemsToPack += @("$targetPath\Telegram.exe")
+        $itemsToPack += @("$targetPath\kepka.exe")
     }
 
     7z a -mmt $archiveName @itemsToPack
