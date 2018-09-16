@@ -5373,10 +5373,7 @@ void MainWidget::feedUpdate(const MTPUpdate &update) {
 		auto &d = update.c_updateChannelPinnedMessage();
 
 		if (auto channel = App::channelLoaded(d.vchannel_id.v)) {
-			if (channel->isMegagroup()) {
-				channel->mgInfo->pinnedMsgId = d.vid.v;
-				Auth().api().fullPeerUpdated().notify(channel);
-			}
+			channel->setPinnedMessageId(d.vid.v);
 		}
 	} break;
 
