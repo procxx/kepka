@@ -915,6 +915,13 @@ void ChannelData::setRestrictionReason(const QString &text) {
 	}
 }
 
+void ChannelData::setPinnedMessageId(MsgId messageId) {
+	if (_pinnedMessageId != messageId) {
+		_pinnedMessageId = messageId;
+		Notify::peerUpdatedDelayed(this, Notify::PeerUpdate::Flag::ChannelPinnedChanged);
+	}
+}
+
 bool ChannelData::canNotEditLastAdmin(not_null<UserData *> user) const {
 	if (mgInfo) {
 		auto i = mgInfo->lastAdmins.constFind(user);

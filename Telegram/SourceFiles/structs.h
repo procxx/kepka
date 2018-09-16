@@ -755,7 +755,6 @@ struct MegagroupInfo {
 
 	UserData *creator = nullptr; // nullptr means unknown
 	int botStatus = 0; // -1 - no bots, 0 - unknown, 1 - one bot, that sees all history, 2 - other
-	MsgId pinnedMsgId = 0;
 	bool joinedMessageFound = false;
 	MTPInputStickerSet stickerSet = MTP_inputStickerSetEmpty();
 
@@ -997,6 +996,14 @@ public:
 	}
 	void setRestrictionReason(const QString &reason);
 
+	MsgId pinnedMessageId() const {
+		return _pinnedMessageId;
+	}
+	void setPinnedMessageId(MsgId messageId);
+	void clearPinnedMessage() {
+		setPinnedMessageId(0);
+	}
+
 private:
 	bool canNotEditLastAdmin(not_null<UserData *> user) const;
 
@@ -1007,6 +1014,8 @@ private:
 	int _adminsCount = 1;
 	int _restrictedCount = 0;
 	int _kickedCount = 0;
+
+	MsgId _pinnedMessageId = 0;
 
 	MTPChannelAdminRights _adminRights = MTP_channelAdminRights(MTP_flags(0));
 	MTPChannelBannedRights _restrictedRights = MTP_channelBannedRights(MTP_flags(0), MTP_int(0));

@@ -5667,7 +5667,9 @@ void HistoryWidget::updatePinnedBar(bool force) {
 		update();
 	} else if (force) {
 		if (_peer && _peer->isMegagroup()) {
-			_peer->asChannel()->mgInfo->pinnedMsgId = 0;
+			if (auto channel = _peer->asChannel()) {
+				channel->clearPinnedMessage();
+			}
 		}
 		destroyPinnedBar();
 		updateControlsGeometry();
@@ -5676,8 +5678,9 @@ void HistoryWidget::updatePinnedBar(bool force) {
 
 bool HistoryWidget::pinnedMsgVisibilityUpdated() {
 	auto result = false;
-	auto pinnedMsgId = (_peer && _peer->isMegagroup()) ? _peer->asChannel()->mgInfo->pinnedMsgId : 0;
-	if (pinnedMsgId && !_peer->asChannel()->canPinMessages()) {
+	auto channel = _peer ? _peer->asChannel() : nullptr;
+	auto pinnedMsgId = channel ? channel->pinnedMessageId() : 0;
+	if (pinnedMsgId && !channel->canPinMessages()) {
 		auto it = Global::HiddenPinnedMessages().constFind(_peer->id);
 		if (it != Global::HiddenPinnedMessages().cend()) {
 			if (it.value() == pinnedMsgId) {
@@ -5999,9 +6002,9 @@ void HistoryWidget::onUnpinMessage() {
 	if (!_peer || !_peer->isMegagroup()) return;
 
 	Ui::show(Box<ConfirmBox>(lang(lng_pinned_unpin_sure), lang(lng_pinned_unpin), base::lambda_guarded(this, [this] {
-		                         if (!_peer || !_peer->isMegagroup()) return;
+		                         if (!_peer || !_peer->asChannel()) return;
 
-		                         _peer->asChannel()->mgInfo->pinnedMsgId = 0;
+		                         _peer->asChannel()->clearPinnedMessage();
 		                         if (pinnedMsgVisibilityUpdated()) {
 			                         updateControlsGeometry();
 			                         update();
@@ -6021,8 +6024,8 @@ void HistoryWidget::unpinDone(const MTPUpdates &updates) {
 }
 
 void HistoryWidget::onPinnedHide() {
-	if (!_peer || !_peer->isMegagroup()) return;
-	if (!_peer->asChannel()->mgInfo->pinnedMsgId) {
+	if (!_peer || !_peer->asChannel()) return;
+	if (!_peer->asChannel()->pinnedMessageId()) {
 		if (pinnedMsgVisibilityUpdated()) {
 			updateControlsGeometry();
 			update();
@@ -6033,7 +6036,7 @@ void HistoryWidget::onPinnedHide() {
 	if (_peer->asChannel()->canPinMessages()) {
 		onUnpinMessage();
 	} else {
-		Global::RefHiddenPinnedMessages().insert(_peer->id, _peer->asChannel()->mgInfo->pinnedMsgId);
+		Global::RefHiddenPinnedMessages().insert(_peer->id, _peer->asChannel()->pinnedMessageId());
 		Local::writeUserSettings();
 		if (pinnedMsgVisibilityUpdated()) {
 			updateControlsGeometry();

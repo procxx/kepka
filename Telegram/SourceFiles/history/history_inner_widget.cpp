@@ -1240,7 +1240,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(lang(lng_context_edit_msg), _widget, SLOT(onEditMessage()));
 			}
 			if (item->canPin()) {
-				bool ispinned = (item->history()->peer->asChannel()->mgInfo->pinnedMsgId == item->id);
+				bool ispinned = (item->history()->peer->asChannel()->pinnedMessageId() == item->id);
 				_menu->addAction(lang(ispinned ? lng_context_unpin_msg : lng_context_pin_msg), _widget,
 				                 ispinned ? SLOT(onUnpinMessage()) : SLOT(onPinMessage()));
 			}
@@ -1332,7 +1332,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(lang(lng_context_edit_msg), _widget, SLOT(onEditMessage()));
 				}
 				if (item->canPin()) {
-					bool ispinned = (item->history()->peer->asChannel()->mgInfo->pinnedMsgId == item->id);
+					bool ispinned = (item->history()->peer->asChannel()->pinnedMessageId() == item->id);
 					_menu->addAction(lang(ispinned ? lng_context_unpin_msg : lng_context_pin_msg), _widget,
 					                 ispinned ? SLOT(onUnpinMessage()) : SLOT(onPinMessage()));
 				}
@@ -1346,7 +1346,7 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 					_menu->addAction(lang(lng_context_edit_msg), _widget, SLOT(onEditMessage()));
 				}
 				if (item->canPin()) {
-					bool ispinned = (item->history()->peer->asChannel()->mgInfo->pinnedMsgId == item->id);
+					bool ispinned = (item->history()->peer->asChannel()->pinnedMessageId() == item->id);
 					_menu->addAction(lang(ispinned ? lng_context_unpin_msg : lng_context_pin_msg), _widget,
 					                 ispinned ? SLOT(onUnpinMessage()) : SLOT(onPinMessage()));
 				}

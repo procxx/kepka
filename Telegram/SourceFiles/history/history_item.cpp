@@ -647,8 +647,10 @@ void HistoryItem::finishEditionToEmpty() {
 
 	_history->removeNotification(this);
 	if (history()->isChannel()) {
-		if (history()->peer->isMegagroup() && history()->peer->asChannel()->mgInfo->pinnedMsgId == id) {
-			history()->peer->asChannel()->mgInfo->pinnedMsgId = 0;
+		if (auto channel = history()->peer->asChannel()) {
+			if (channel->pinnedMessageId() == id) {
+				channel->clearPinnedMessage();
+			}
 		}
 	}
 	if (history()->lastKeyboardId == id) {
@@ -714,8 +716,10 @@ void HistoryItem::destroy() {
 		_history->removeNotification(this);
 		detach();
 		if (history()->isChannel()) {
-			if (history()->peer->isMegagroup() && history()->peer->asChannel()->mgInfo->pinnedMsgId == id) {
-				history()->peer->asChannel()->mgInfo->pinnedMsgId = 0;
+			if (auto channel = history()->peer->asChannel()) {
+				if (channel->pinnedMessageId() == id) {
+					channel->clearPinnedMessage();
+				}
 			}
 		}
 		if (history()->lastMsg == this) {
