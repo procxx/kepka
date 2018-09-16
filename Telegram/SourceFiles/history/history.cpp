@@ -906,6 +906,13 @@ HistoryItem *History::createItem(const MTPMessage &msg, bool applyServiceAction,
 				default: badMedia = MediaCheckResult::Unsupported; break;
 				}
 				break;
+			case mtpc_messageMediaGeoLive:
+				switch (m.vmedia.c_messageMediaGeoLive().vgeo.type()) {
+				case mtpc_geoPoint: break;
+				case mtpc_geoPointEmpty: badMedia = MediaCheckResult::Empty; break;
+				default: badMedia = MediaCheckResult::Unsupported; break;
+				}
+				break;
 			case mtpc_messageMediaPhoto: {
 				auto &photo = m.vmedia.c_messageMediaPhoto();
 				if (photo.has_ttl_seconds()) {
