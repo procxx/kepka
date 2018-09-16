@@ -2605,7 +2605,7 @@ void HistoryWidget::firstLoadMessages() {
 
 	_firstLoadRequest =
 	    MTP::send(MTPmessages_GetHistory(from->input, MTP_int(offset_id), MTP_int(0), MTP_int(offset),
-	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0)),
+	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0), MTP_int(0)),
 	              rpcDone(&HistoryWidget::messagesReceived, from), rpcFail(&HistoryWidget::messagesFailed));
 }
 
@@ -2629,7 +2629,7 @@ void HistoryWidget::loadMessages() {
 
 	_preloadRequest =
 	    MTP::send(MTPmessages_GetHistory(from->peer->input, MTP_int(offset_id), MTP_int(0), MTP_int(offset),
-	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0)),
+	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0), MTP_int(0)),
 	              rpcDone(&HistoryWidget::messagesReceived, from->peer), rpcFail(&HistoryWidget::messagesFailed));
 }
 
@@ -2658,7 +2658,7 @@ void HistoryWidget::loadMessagesDown() {
 
 	_preloadDownRequest =
 	    MTP::send(MTPmessages_GetHistory(from->peer->input, MTP_int(offset_id + 1), MTP_int(0), MTP_int(offset),
-	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0)),
+	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0), MTP_int(0)),
 	              rpcDone(&HistoryWidget::messagesReceived, from->peer), rpcFail(&HistoryWidget::messagesFailed));
 }
 
@@ -2698,7 +2698,7 @@ void HistoryWidget::delayedShowAt(MsgId showAtMsgId) {
 
 	_delayedShowAtRequest =
 	    MTP::send(MTPmessages_GetHistory(from->input, MTP_int(offset_id), MTP_int(0), MTP_int(offset),
-	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0)),
+	                                     MTP_int(loadCount), MTP_int(0), MTP_int(0), MTP_int(0)),
 	              rpcDone(&HistoryWidget::messagesReceived, from), rpcFail(&HistoryWidget::messagesFailed));
 }
 
@@ -2864,7 +2864,7 @@ void HistoryWidget::saveEditMsg() {
 	}
 	_saveEditMsgRequestId = MTP::send(
 	    MTPmessages_EditMessage(MTP_flags(sendFlags), _history->peer->input, MTP_int(_editMsgId),
-	                            MTP_string(sending.text), MTPnullMarkup, sentEntities),
+	                            MTP_string(sending.text), MTPnullMarkup, sentEntities, MTP_inputGeoPointEmpty()),
 	    rpcDone(&HistoryWidget::saveEditMsgDone, _history), rpcFail(&HistoryWidget::saveEditMsgFail, _history));
 }
 

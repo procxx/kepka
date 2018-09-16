@@ -313,9 +313,10 @@ void MainWindow::sendServiceHistoryRequest() {
 		                MTPstring(), MTP_string("42777"), MTP_userProfilePhotoEmpty(), MTP_userStatusRecently(),
 		                MTPint(), MTPstring(), MTPstring(), MTPstring())));
 	}
-	_serviceHistoryRequest = MTP::send(
-	    MTPmessages_GetHistory(user->input, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(1), MTP_int(0), MTP_int(0)),
-	    _main->rpcDone(&MainWidget::serviceHistoryDone), _main->rpcFail(&MainWidget::serviceHistoryFail));
+	_serviceHistoryRequest =
+	    MTP::send(MTPmessages_GetHistory(user->input, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(1), MTP_int(0),
+	                                     MTP_int(0), MTP_int(0)),
+	              _main->rpcDone(&MainWidget::serviceHistoryDone), _main->rpcFail(&MainWidget::serviceHistoryFail));
 }
 
 void MainWindow::setupMain(const MTPUser *self) {

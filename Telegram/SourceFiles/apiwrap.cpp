@@ -584,7 +584,7 @@ void ApiWrap::requestLastParticipants(ChannelData *channel, bool fromStart) {
 	auto requestId =
 	    request(MTPchannels_GetParticipants(channel->inputChannel, MTP_channelParticipantsRecent(),
 	                                        MTP_int(fromStart ? 0 : channel->mgInfo->lastParticipants.size()),
-	                                        MTP_int(Global::ChatSizeMax())))
+	                                        MTP_int(Global::ChatSizeMax()), MTP_int(0)))
 	        .done([this, channel](const MTPchannels_ChannelParticipants &result, mtpRequestId requestId) {
 		        lastParticipantsDone(channel, result, requestId);
 	        })
@@ -605,7 +605,7 @@ void ApiWrap::requestBots(ChannelData *channel) {
 	}
 
 	auto requestId = request(MTPchannels_GetParticipants(channel->inputChannel, MTP_channelParticipantsBots(),
-	                                                     MTP_int(0), MTP_int(Global::ChatSizeMax())))
+	                                                     MTP_int(0), MTP_int(Global::ChatSizeMax()), MTP_int(0)))
 	                     .done([this, channel](const MTPchannels_ChannelParticipants &result, mtpRequestId requestId) {
 		                     lastParticipantsDone(channel, result, requestId);
 	                     })
@@ -1858,7 +1858,7 @@ void ApiWrap::jumpToDate(not_null<PeerData *> peer, const QDate &date) {
 	auto add_offset = -1;
 	auto limit = 1;
 	request(MTPmessages_GetHistory(peer->input, MTP_int(0), MTP_int(offset_date), MTP_int(add_offset), MTP_int(limit),
-	                               MTP_int(0), MTP_int(0)))
+	                               MTP_int(0), MTP_int(0), MTP_int(0)))
 	    .done([peer](const MTPmessages_Messages &result) {
 		    auto getMessagesList = [&result, peer]() -> const QVector<MTPMessage> * {
 			    auto handleMessages = [](auto &messages) {
