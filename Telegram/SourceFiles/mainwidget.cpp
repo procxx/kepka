@@ -1262,9 +1262,9 @@ bool MainWidget::kickParticipantFail(ChatData *chat, const RPCError &error) {
 }
 
 void MainWidget::checkPeerHistory(PeerData *peer) {
-	MTP::send(
-	    MTPmessages_GetHistory(peer->input, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(1), MTP_int(0), MTP_int(0)),
-	    rpcDone(&MainWidget::checkedHistory, peer));
+	MTP::send(MTPmessages_GetHistory(peer->input, MTP_int(0), MTP_int(0), MTP_int(0), MTP_int(1), MTP_int(0),
+	                                 MTP_int(0), MTP_int(0)),
+	          rpcDone(&MainWidget::checkedHistory, peer));
 }
 
 void MainWidget::checkedHistory(PeerData *peer, const MTPmessages_Messages &result) {

@@ -73,8 +73,9 @@ SendDataCommon::SentMTPMessageFields SendGeo::getSentMessageFields() const {
 
 SendDataCommon::SentMTPMessageFields SendVenue::getSentMessageFields() const {
 	SentMTPMessageFields result;
+	QString venueType;
 	result.media = MTP_messageMediaVenue(_location.toMTP(), MTP_string(_title), MTP_string(_address),
-	                                     MTP_string(_provider), MTP_string(_venueId));
+	                                     MTP_string(_provider), MTP_string(_venueId), MTP_string(venueType));
 	return result;
 }
 

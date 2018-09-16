@@ -241,7 +241,8 @@ void ParticipantsBoxController::loadMoreRows() {
 	// First query is small and fast, next loads a lot of rows.
 	auto perPage = (_offset > 0) ? kParticipantsPerPage : kParticipantsFirstPageCount;
 	_loadRequestId =
-	    request(MTPchannels_GetParticipants(_channel->inputChannel, filter(), MTP_int(_offset), MTP_int(perPage)))
+	    request(MTPchannels_GetParticipants(_channel->inputChannel, filter(), MTP_int(_offset), MTP_int(perPage),
+	                                        MTP_int(0)))
 	        .done([this](const MTPchannels_ChannelParticipants &result) {
 		        Expects(result.type() == mtpc_channels_channelParticipants);
 
@@ -649,19 +650,19 @@ bool ParticipantsBoxSearchController::loadMoreRows() {
 		// (because we've waited for search request by timer already,
 		// so we don't expect it to be fast, but we want to fill cache).
 		auto perPage = kParticipantsPerPage;
-		_requestId =
-		    request(MTPchannels_GetParticipants(_channel->inputChannel, filter(), MTP_int(_offset), MTP_int(perPage)))
-		        .done([this, perPage](const MTPchannels_ChannelParticipants &result, mtpRequestId requestId) {
-			        searchDone(requestId, result, perPage);
-		        })
-		        .fail([this](const RPCError &error, mtpRequestId requestId) {
-			        if (_requestId == requestId) {
-				        _requestId = 0;
-				        _allLoaded = true;
-				        delegate()->peerListSearchRefreshRows();
-			        }
-		        })
-		        .send();
+		_requestId = request(MTPchannels_GetParticipants(_channel->inputChannel, filter(), MTP_int(_offset),
+		                                                 MTP_int(perPage), MTP_int(0)))
+		                 .done([this, perPage](const MTPchannels_ChannelParticipants &result, mtpRequestId requestId) {
+			                 searchDone(requestId, result, perPage);
+		                 })
+		                 .fail([this](const RPCError &error, mtpRequestId requestId) {
+			                 if (_requestId == requestId) {
+				                 _requestId = 0;
+				                 _allLoaded = true;
+				                 delegate()->peerListSearchRefreshRows();
+			                 }
+		                 })
+		                 .send();
 
 		auto entry = Query();
 		entry.text = _query;
@@ -763,7 +764,7 @@ void AddParticipantBoxController::loadMoreRows() {
 	// First query is small and fast, next loads a lot of rows.
 	auto perPage = (_offset > 0) ? kParticipantsPerPage : kParticipantsFirstPageCount;
 	_loadRequestId = request(MTPchannels_GetParticipants(_channel->inputChannel, MTP_channelParticipantsRecent(),
-	                                                     MTP_int(_offset), MTP_int(perPage)))
+	                                                     MTP_int(_offset), MTP_int(perPage), MTP_int(0)))
 	                     .done([this](const MTPchannels_ChannelParticipants &result) {
 		                     Expects(result.type() == mtpc_channels_channelParticipants);
 
@@ -1278,7 +1279,7 @@ void AddParticipantBoxSearchController::requestParticipants() {
 	auto perPage = kParticipantsPerPage;
 	_requestId =
 	    request(MTPchannels_GetParticipants(_channel->inputChannel, MTP_channelParticipantsSearch(MTP_string(_query)),
-	                                        MTP_int(_offset), MTP_int(perPage)))
+	                                        MTP_int(_offset), MTP_int(perPage), MTP_int(0)))
 	        .done([this, perPage](const MTPchannels_ChannelParticipants &result, mtpRequestId requestId) {
 		        searchParticipantsDone(requestId, result, perPage);
 	        })

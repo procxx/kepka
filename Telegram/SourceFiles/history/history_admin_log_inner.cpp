@@ -339,8 +339,9 @@ void InnerWidget::applySearch(const QString &query) {
 }
 
 void InnerWidget::requestAdmins() {
+	auto participantsHash = 0;
 	request(MTPchannels_GetParticipants(_channel->inputChannel, MTP_channelParticipantsAdmins(), MTP_int(0),
-	                                    MTP_int(kMaxChannelAdmins)))
+	                                    MTP_int(kMaxChannelAdmins), MTP_int(participantsHash)))
 	    .done([this](const MTPchannels_ChannelParticipants &result) {
 		    Expects(result.type() == mtpc_channels_channelParticipants);
 		    auto &participants = result.c_channels_channelParticipants();

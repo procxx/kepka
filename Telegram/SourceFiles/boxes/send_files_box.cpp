@@ -804,7 +804,7 @@ void EditCaptionBox::onSave(bool ctrlShiftEnter) {
 	auto text = TextUtilities::PrepareForSending(_field->getLastText(), TextUtilities::PrepareTextOption::CheckLinks);
 	_saveRequestId =
 	    MTP::send(MTPmessages_EditMessage(MTP_flags(flags), item->history()->peer->input, MTP_int(item->id),
-	                                      MTP_string(text), MTPnullMarkup, sentEntities),
+	                                      MTP_string(text), MTPnullMarkup, sentEntities, MTP_inputGeoPointEmpty()),
 	              rpcDone(&EditCaptionBox::saveDone), rpcFail(&EditCaptionBox::saveFail));
 }
 
