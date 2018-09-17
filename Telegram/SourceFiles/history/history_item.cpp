@@ -823,10 +823,10 @@ void HistoryItem::setId(MsgId newId) {
 }
 
 bool HistoryItem::canPin() const {
-	if (id < 0 || !_history->peer->isMegagroup() || !toHistoryMessage()) {
+	if (id < 0 || !toHistoryMessage()) {
 		return false;
 	}
-	if (auto channel = _history->peer->asMegagroup()) {
+	if (auto channel = _history->peer->asChannel()) {
 		return channel->canPinMessages();
 	}
 	return false;
