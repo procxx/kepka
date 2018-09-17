@@ -5992,23 +5992,19 @@ void HistoryWidget::onEditMessage() {
 }
 
 void HistoryWidget::onPinMessage() {
-	HistoryItem *to = App::contextItem();
-	if (!to || !to->canPin() || !_peer || !_peer->isMegagroup()) return;
+	auto to = App::contextItem();
+	if (!to || !to->canPin()) return;
 
 	Ui::show(Box<PinMessageBox>(_peer->asChannel(), to->id));
 }
 
 void HistoryWidget::onUnpinMessage() {
-	if (!_peer || !_peer->isMegagroup()) return;
+	if (!_peer || !_peer->isChannel()) return;
 
 	Ui::show(Box<ConfirmBox>(lang(lng_pinned_unpin_sure), lang(lng_pinned_unpin), base::lambda_guarded(this, [this] {
-		                         if (!_peer || !_peer->asChannel()) return;
-
-		                         _peer->asChannel()->clearPinnedMessage();
-		                         if (pinnedMsgVisibilityUpdated()) {
-			                         updateControlsGeometry();
-			                         update();
-		                         }
+		                         auto channel = _peer ? _peer->asChannel() : nullptr;
+		                         if (!channel) return;
+		                         channel->clearPinnedMessage();
 
 		                         Ui::hideLayer();
 		                         MTP::send(MTPchannels_UpdatePinnedMessage(
@@ -6024,8 +6020,10 @@ void HistoryWidget::unpinDone(const MTPUpdates &updates) {
 }
 
 void HistoryWidget::onPinnedHide() {
-	if (!_peer || !_peer->asChannel()) return;
-	if (!_peer->asChannel()->pinnedMessageId()) {
+	auto channel = _peer ? _peer->asChannel() : nullptr;
+	if (!channel) return;
+	auto pinnedId = channel->pinnedMessageId();
+	if (!pinnedId) {
 		if (pinnedMsgVisibilityUpdated()) {
 			updateControlsGeometry();
 			update();
@@ -6033,10 +6031,10 @@ void HistoryWidget::onPinnedHide() {
 		return;
 	}
 
-	if (_peer->asChannel()->canPinMessages()) {
+	if (channel->canPinMessages()) {
 		onUnpinMessage();
 	} else {
-		Global::RefHiddenPinnedMessages().insert(_peer->id, _peer->asChannel()->pinnedMessageId());
+		Global::RefHiddenPinnedMessages().insert(_peer->id, pinnedId);
 		Local::writeUserSettings();
 		if (pinnedMsgVisibilityUpdated()) {
 			updateControlsGeometry();
