@@ -822,6 +822,13 @@ void HistoryItem::setId(MsgId newId) {
 	}
 }
 
+bool HistoryItem::isPinned() const {
+	if (auto channel = _history->peer->asChannel()) {
+		return (channel->pinnedMessageId() == id);
+	}
+	return false;
+}
+
 bool HistoryItem::canPin() const {
 	if (id < 0 || !toHistoryMessage()) {
 		return false;

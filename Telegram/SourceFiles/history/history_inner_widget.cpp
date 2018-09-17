@@ -1240,9 +1240,9 @@ void HistoryInner::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 				_menu->addAction(lang(lng_context_edit_msg), _widget, SLOT(onEditMessage()));
 			}
 			if (item->canPin()) {
-				bool ispinned = (item->history()->peer->asChannel()->pinnedMessageId() == item->id);
-				_menu->addAction(lang(ispinned ? lng_context_unpin_msg : lng_context_pin_msg), _widget,
-				                 ispinned ? SLOT(onUnpinMessage()) : SLOT(onPinMessage()));
+				bool isPinned = item->isPinned();
+				_menu->addAction(lang(isPinned ? lng_context_unpin_msg : lng_context_pin_msg), _widget,
+				                 isPinned ? SLOT(onUnpinMessage()) : SLOT(onPinMessage()));
 			}
 		}
 		if (lnkPhoto) {
