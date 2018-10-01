@@ -8,6 +8,23 @@
 
 This is the complete source code and the build instructions for the Kepka's alpha version based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
 
+## Key features and differences from upstream Telegram
+* CMake-only build (with a bit of Conan/vcpkg/your package manager. No GYP or patched libraries required);
+* Do not require GTK for dialogs and notifications. Kepka will use native from Qt;
+* Removed some Qt private stuff from dependencies;
+* Kepka can be built and dynamically linked against official Qt packages;
+* Added support of native system-wide font settings. Kepka will inherit DE's configuration;
+* Partial refactoring and code cleanup;
+ - reduced #includes coupling (increases compile times and improves program design);
+ - removed broken PCHs (they are only increases compile times and transform #includes into one big katamari);
+ - remove some Qt and custom types in favor of using C++ Standard Library types and classes;
+ - clang-format;
+ - fix almost all warnings;
+* Ability to toggle "typographical" replaces (like replace << to « and another);
+* Packages for Fedora and Arch Linux (packages for Debian and Ubuntu will be done soon);
+* UI based on 1.1.21 before UI "mobilization" which degrades UX (e.g. group settings will be accessible from 5 clicks);
+* More features soon (see our [milestones](https://github.com/procxx/kepka/projects))!
+
 ## Build instructions
 
 ### Linux, macOS
