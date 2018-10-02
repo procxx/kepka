@@ -48,10 +48,20 @@ void LocationClickHandler::onClick(Qt::MouseButton button) const {
 	}
 }
 
+// This option could be enabled in core CMakeLists.txt
+#ifdef KEPKA_USE_YANDEX_MAPS
+void LocationClickHandler::setup() {
+	// Yandex.Maps accepts ll string in "longitude,latitude" format
+	auto latlon = _coords.lonAsString() + "%2C" + _coords.latAsString();
+	_text = qsl("https://maps.yandex.ru/?ll=") + latlon + qsl("&z=16");
+}
+
+#else
 void LocationClickHandler::setup() {
 	auto latlon = _coords.latAsString() + ',' + _coords.lonAsString();
 	_text = qsl("https://maps.google.com/maps?q=") + latlon + qsl("&ll=") + latlon + qsl("&z=16");
 }
+#endif
 
 namespace {
 LocationManager *locationManager = nullptr;
@@ -133,14 +143,28 @@ void LocationManager::getData(LocationData *data) {
 		w = convertScale(w);
 		h = convertScale(h);
 	}
+#ifdef KEPKA_USE_YANDEX_MAPS
+	// see https://tech.yandex.ru/maps/doc/staticapi/1.x/dg/concepts/input_params-docpage/ for API parameters reference.
+	auto coords = data->coords.lonAsString() + ',' + data->coords.latAsString(); // Yandex.Maps accepts ll string in "longitude,latitude" format
+	const char *mapsApiUrl = "https://static-maps.yandex.ru/1.x/?ll=";
+	QString mapsApiParams = "&z=%1&size=%2,%3&l=map&scale=%4&pt=";
+	const char *mapsMarkerParams = ",pm2rdl"; // red large marker looking like "9"
+#else
 	auto coords = data->coords.latAsString() + ',' + data->coords.lonAsString();
-	QString url = qsl("https://maps.googleapis.com/maps/api/staticmap?center=") + coords +
-	              qsl("&zoom=%1&size=%2x%3&maptype=roadmap&scale=%4&markers=color:red|size:big|")
+	const char *mapsApiUrl = "https://maps.googleapis.com/maps/api/staticmap?center=";
+	QString mapsApiParams = "&zoom=%1&size=%2,%3&maptype=roadmap&scale=%4&markers=color:red|size:big|";
+	const char *mapsMarkerParams = "&sensor=false";
+#endif
+	QString url = // qsl("https://maps.googleapis.com/maps/api/staticmap?center=") + coords +
+	              // qsl("&zoom=%1&size=%2x%3&maptype=roadmap&scale=%4&markers=color:red|size:big|")
+		mapsApiUrl + coords + mapsApiParams
 	                  .arg(zoom)
 	                  .arg(w)
 	                  .arg(h)
 	                  .arg(scale) +
-	              coords + qsl("&sensor=false");
+	              coords
+		      + mapsMarkerParams;
+		      //+ qsl("&sensor=false");
 	QNetworkReply *reply = manager->get(QNetworkRequest(QUrl(url)));
 	imageLoadings[reply] = data;
 }
