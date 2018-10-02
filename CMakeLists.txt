@@ -13,6 +13,15 @@ if(PROJECT_VERSION_RC)
     set(PROJECT_VERSION "${PROJECT_VERSION}-rc${PROJECT_VERSION_RC}")
 endif()
 
+##================================================
+## Build customizations
+##================================================
+option(KEPKA_OPTION_USE_YANDEX_MAPS "Use Yandex.Maps static API for locations (instead Google Maps)" OFF)
+
+if(KEPKA_OPTION_USE_YANDEX_MAPS)
+	add_definitions("-DKEPKA_USE_YANDEX_MAPS")
+endif()
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules/")
 
 if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.10)
