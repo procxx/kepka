@@ -922,6 +922,15 @@ void ChannelData::setPinnedMessageId(MsgId messageId) {
 	}
 }
 
+bool ChannelData::canPinMessages() const {
+	if (isMegagroup()) {
+		return (adminRights().is_pin_messages()) || amCreator();
+	}
+	// yes, you could pin messages in a channel if you have
+	// "edit messages" permission.
+	return (adminRights().is_edit_messages()) || amCreator();
+}
+
 bool ChannelData::canNotEditLastAdmin(not_null<UserData *> user) const {
 	if (mgInfo) {
 		auto i = mgInfo->lastAdmins.constFind(user);
