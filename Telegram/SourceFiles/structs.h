@@ -909,9 +909,6 @@ public:
 	bool canAddAdmins() const {
 		return adminRights().is_add_admins() || amCreator();
 	}
-	bool canPinMessages() const {
-		return adminRights().is_pin_messages() || amCreator();
-	}
 	bool canPublish() const {
 		return adminRights().is_post_messages() || amCreator();
 	}
@@ -1003,6 +1000,8 @@ public:
 	void clearPinnedMessage() {
 		setPinnedMessageId(0);
 	}
+
+	bool canPinMessages() const;
 
 private:
 	bool canNotEditLastAdmin(not_null<UserData *> user) const;
