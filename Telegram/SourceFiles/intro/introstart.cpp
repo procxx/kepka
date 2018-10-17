@@ -35,7 +35,7 @@ StartWidget::StartWidget(QWidget *parent, Widget::Data *data)
     : Step(parent, data, true) {
 	setMouseTracking(true);
 	setTitleText([] { return str_const_toString(AppName); });
-	setDescriptionText(langFactory(lng_intro_about));
+	setDescriptionText([] { return lng_intro_about(lt_appname, lang(appname)); });
 	show();
 }
 
