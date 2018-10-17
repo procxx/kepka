@@ -856,7 +856,15 @@ bool HistoryItem::canForward() const {
 
 bool HistoryItem::canEdit(const QDateTime &cur) const {
 	auto messageToMyself = _history->peer->isSelf();
-	auto messageTooOld = messageToMyself ? false : (date.secsTo(cur) >= Global::EditTimeLimit());
+	auto canPinInMegagroup = [&] {
+		if (auto megagroup = _history->peer->asMegagroup()) {
+			return megagroup->canPinMessages();
+		}
+		return false;
+	}();
+
+	auto messageTooOld = (messageToMyself || canPinInMegagroup) ? false : (date.secsTo(cur) >= Global::EditTimeLimit());
+
 	if (id < 0 || messageTooOld) {
 		return false;
 	}
