@@ -510,15 +510,14 @@ QString SystemLanguage() {
 
 namespace {
 void _psLogError(const char *str, LSTATUS code) {
-	LPTSTR errorText = NULL, errorTextDefault = L"(Unknown error)";
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-	              code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&errorText, 0, 0);
-	if (!errorText) {
-		errorText = errorTextDefault;
-	}
-	LOG((str).arg(code).arg(QString::fromStdWString(errorText)));
-	if (errorText != errorTextDefault) {
+	LPWSTR errorText = NULL;
+
+	if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
+	                  code, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&errorText, 0, 0) > 0) {
+		LOG((str).arg(code).arg(QString::fromStdWString(errorText)));
 		LocalFree(errorText);
+	} else {
+		LOG((str).arg(code).arg("(Unknown error)"));
 	}
 }
 
