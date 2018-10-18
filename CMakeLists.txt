@@ -73,6 +73,19 @@ if (CCACHE)
 endif()
 
 
+option(BUILD_DOC "Build documentation" OFF)
+
+if(BUILD_DOC)
+    find_package(Doxygen)
+    if(DOXYGEN_FOUND)
+        add_custom_target( doc_doxygen ALL
+            COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_SOURCE_DIR}/Doxyfile
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+            COMMENT "Generating API documentation with Doxygen"
+            VERBATIM )
+    endif()
+endif()
+
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 add_subdirectory(Telegram)
 
