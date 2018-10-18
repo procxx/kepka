@@ -642,6 +642,10 @@ endif()
 
 target_compile_definitions(Kepka PRIVATE ${FFMPEG_DEFINITIONS})
 
+if(MSVC AND MSVC_VERSION GREATER_EQUAL 1912)
+    target_compile_options(Kepka PRIVATE /permissive-)
+endif()
+
 target_link_libraries(Kepka
     Qt5::Core
     Qt5::Widgets
