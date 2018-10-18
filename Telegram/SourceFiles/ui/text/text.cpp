@@ -663,7 +663,7 @@ private:
 	};
 
 	void computeLinkText(const QString &linkData, QString *outLinkText, LinkDisplayStatus *outDisplayStatus) {
-		QUrl url(linkData), good(url.isValid() ? url.toEncoded() : "");
+		QUrl url(linkData), good(url.isValid() ? url.toEncoded() : QString());
 		QString readable = good.isValid() ? good.toDisplayString() : linkData;
 		*outLinkText = _t->_st->font->elided(readable, st::linkCropLimit);
 		*outDisplayStatus = (*outLinkText == readable) ? LinkDisplayedFull : LinkDisplayedElided;
