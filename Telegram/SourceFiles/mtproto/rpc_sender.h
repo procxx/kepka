@@ -23,6 +23,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 #include "base/lambda_guard.h"
 #include "core/basic_types.h"
 #include "core/utils.h"
+#include "backports/is_invocable.h"
 #include "scheme.h"
 #include <QSet>
 #include <QString>
@@ -938,14 +939,15 @@ public:
 };
 
 template <typename Lambda>
-constexpr bool rpcDone_canCallBare_v = std::is_invocable_v<Lambda, const mtpPrime *, const mtpPrime *>;
+constexpr bool rpcDone_canCallBare_v = backports::is_invocable_v<Lambda, const mtpPrime *, const mtpPrime *>;
 
 template <typename Lambda>
-constexpr bool rpcDone_canCallBareReq_v = std::is_invocable_v<Lambda, const mtpPrime *, const mtpPrime *, mtpRequestId>;
+constexpr bool rpcDone_canCallBareReq_v =
+    backports::is_invocable_v<Lambda, const mtpPrime *, const mtpPrime *, mtpRequestId>;
 
-template <typename Lambda> constexpr bool rpcDone_canCallNo_v = std::is_invocable_v<Lambda>;
+template <typename Lambda> constexpr bool rpcDone_canCallNo_v = backports::is_invocable_v<Lambda>;
 
-template <typename Lambda> constexpr bool rpcDone_canCallNoReq_v = std::is_invocable_v<Lambda, mtpRequestId>;
+template <typename Lambda> constexpr bool rpcDone_canCallNoReq_v = backports::is_invocable_v<Lambda, mtpRequestId>;
 
 template <typename Function> struct rpcDone_canCallPlain : std::false_type {};
 
@@ -1044,14 +1046,14 @@ public:
 	}
 };
 
-template <typename Lambda> constexpr bool rpcFail_canCallNo_v = std::is_invocable_v<Lambda>;
+template <typename Lambda> constexpr bool rpcFail_canCallNo_v = backports::is_invocable_v<Lambda>;
 
-template <typename Lambda> constexpr bool rpcFail_canCallNoReq_v = std::is_invocable_v<Lambda, mtpRequestId>;
+template <typename Lambda> constexpr bool rpcFail_canCallNoReq_v = backports::is_invocable_v<Lambda, mtpRequestId>;
 
-template <typename Lambda> constexpr bool rpcFail_canCallPlain_v = std::is_invocable_v<Lambda, const RPCError &>;
+template <typename Lambda> constexpr bool rpcFail_canCallPlain_v = backports::is_invocable_v<Lambda, const RPCError &>;
 
 template <typename Lambda>
-constexpr bool rpcFail_canCallReq_v = std::is_invocable_v<Lambda, const RPCError &, mtpRequestId>;
+constexpr bool rpcFail_canCallReq_v = backports::is_invocable_v<Lambda, const RPCError &, mtpRequestId>;
 
 template <typename Lambda, typename Function = base::lambda_call_type_t<Lambda>>
 RPCFailHandlerPtr rpcFail(Lambda lambda) {

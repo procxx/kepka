@@ -714,7 +714,9 @@ target_link_libraries(Kepka Threads::Threads)
 include(GNUInstallDirs)
 
 set_target_properties(Kepka PROPERTIES OUTPUT_NAME "kepka")
-install(TARGETS Kepka RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS Kepka
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(FILES "${CMAKE_SOURCE_DIR}/lib/xdg/kepka.desktop"
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
