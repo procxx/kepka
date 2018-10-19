@@ -200,8 +200,20 @@ QString GetOriginalValue(LangKey key);\n\
 bool Generator::writeSource() {
 	source_ = std::make_unique<common::CppFile>(basePath_ + ".cpp", project_);
 
+	source_->include("map", true);
+	source_->include("string", true);
 	source_->include("lang/lang_keys.h").pushNamespace("Lang").pushNamespace().stream() << "\
-const char *KeyNames[kLangKeysCount] = {\n\
+const std::map<std::string, LangKey> KeyMap = {\n\
+\n";
+	for (auto &entry : langpack_.entries) {
+		source_->stream() << "{\"" << entry.key << "\"," << getFullKey(entry) << "},\n";
+	}
+	source_->stream() << "\
+\n\
+};\n\
+\n\
+const std::array<std::string, "
+	                  << langpack_.entries.size() << "> KeyNames = {\n\
 \n";
 	for (auto &entry : langpack_.entries) {
 		source_->stream() << "\"" << entry.key << "\",\n";
@@ -251,54 +263,34 @@ int Offsets[] = {";
 	}
 	writeOffset();
 	source_->stream() << " };\n";
+
+	source_->stream() << "\
+const std::map<std::string, ushort> TagMap = {\n\
+\n";
+
+	for (auto &tag : langpack_.tags) {
+		source_->stream() << "{\"" << tag.tag << "\","
+		                  << "lt_" << tag.tag << "},\n";
+	}
+	source_->stream() << "\
+\n\
+};\n";
 	source_->popNamespace().stream() << "\
 \n\
 const char *GetKeyName(LangKey key) {\n\
-	return (key < 0 || key >= kLangKeysCount) ? \"\" : KeyNames[key];\n\
+	return (key < 0 || key >= kLangKeysCount) ? \"\" : KeyNames[key].c_str();\n\
 }\n\
 \n\
 ushort GetTagIndex(QLatin1String tag) {\n\
-	auto size = tag.size();\n\
-	auto data = tag.data();\n";
-
-	auto tagsSet = std::set<QString, std::greater<QString>>();
-	for (auto &tag : langpack_.tags) {
-		tagsSet.insert(tag.tag);
-	}
-
-	writeSetSearch(tagsSet, [](const QString &tag) { return "lt_" + tag; }, "kTagsCount");
+	auto data = tag.data();\n\
+    return TagMap.find(data) != TagMap.end() ? TagMap.at(data) : kTagsCount;\n";
 
 	source_->stream() << "\
 }\n\
 \n\
 LangKey GetKeyIndex(QLatin1String key) {\n\
-	auto size = key.size();\n\
-	auto data = key.data();\n";
-
-	auto taggedKeys = std::map<QString, QString>();
-	auto keysSet = std::set<QString, std::greater<QString>>();
-	for (auto &entry : langpack_.entries) {
-		if (!entry.keyBase.isEmpty()) {
-			for (auto i = 0; i != kPluralPartCount; ++i) {
-				auto keyName = entry.keyBase + '#' + kPluralParts[i];
-				taggedKeys.emplace(keyName, ComputePluralKey(entry.keyBase, i));
-				keysSet.insert(keyName);
-			}
-		} else {
-			auto full = getFullKey(entry);
-			if (full != entry.key) {
-				taggedKeys.emplace(entry.key, full);
-			}
-			keysSet.insert(entry.key);
-		}
-	}
-
-	writeSetSearch(keysSet,
-	               [&taggedKeys](const QString &key) {
-		               auto it = taggedKeys.find(key);
-		               return (it != taggedKeys.end()) ? it->second : key;
-	               },
-	               "kLangKeysCount");
+	auto data = key.data();\n\
+    return KeyMap.find(data) != KeyMap.end() ? KeyMap.at(data) : kLangKeysCount;\n";
 
 	source_->stream() << "\
 }\n\
