@@ -56,8 +56,8 @@ public:
 
 	Instance(const Instance &other) = delete;
 	Instance &operator=(const Instance &other) = delete;
-	Instance(Instance &&other) = default;
-	Instance &operator=(Instance &&other) = default;
+	Instance(Instance &&other) = delete;
+	Instance &operator=(Instance &&other) = delete;
 
 	QString systemLangCode() const;
 	QString cloudLangCode() const;
