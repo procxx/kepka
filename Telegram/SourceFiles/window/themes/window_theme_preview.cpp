@@ -827,13 +827,10 @@ void Generator::paintBubble(const Bubble &bubble) {
 		auto icon = ([&bubble] { return &(bubble.outbg ? st::historyFileOutPlay : st::historyFileInPlay); })();
 		(*icon)[_palette].paintInCenter(*_p, inner);
 
-		auto namewidth = x + bubble.width - nameleft - nameright;
-
 		// rescale waveform by going in waveform.size * bar_count 1D grid
 		auto active = bubble.outbg ? st::msgWaveformOutActive[_palette] : st::msgWaveformInActive[_palette];
 		auto inactive = bubble.outbg ? st::msgWaveformOutInactive[_palette] : st::msgWaveformInInactive[_palette];
 		qint32 wf_size = bubble.waveform.size();
-		qint32 bar_count = wf_size;
 		qint32 max_delta = st::msgWaveformMax - st::msgWaveformMin;
 		auto wave_bottom = y + st::msgFilePadding.top() + st::msgWaveformMax;
 		_p->setPen(Qt::NoPen);

@@ -488,7 +488,6 @@ void Video::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint p
 }
 
 void Video::updateStatusText() {
-	bool showPause = false;
 	int statusSize = 0;
 	if (_data->status == FileDownloadFailed || _data->status == FileUploadFailed) {
 		statusSize = FileStatusSizeFailed;

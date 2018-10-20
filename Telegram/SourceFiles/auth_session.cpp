@@ -177,7 +177,7 @@ AuthSession::AuthSession(UserId userId)
     , _uploader(std::make_unique<Storage::Uploader>())
     , _notifications(std::make_unique<Window::Notifications::System>(this)) {
 	Expects(_userId != 0);
-	_saveDataTimer.setCallback([this] { Local::writeUserSettings(); });
+	_saveDataTimer.setCallback([] { Local::writeUserSettings(); });
 	subscribe(Messenger::Instance().passcodedChanged(), [this] {
 		_shouldLockAt = 0;
 		notifications().updateAll();

@@ -63,7 +63,6 @@ void FixedBar::onBack() {
 int FixedBar::resizeGetHeight(int newWidth) {
 	auto newHeight = 0;
 
-	auto buttonLeft = newWidth;
 	_backButton->resizeToWidth(newWidth);
 	_backButton->moveToLeft(0, 0);
 	newHeight += _backButton->height();
@@ -263,7 +262,6 @@ void InnerWidget::keyPressEvent(QKeyEvent *e) {
 
 void InnerWidget::updateSelected(QPoint localPos) {
 	auto selected = -1;
-	auto selectedKick = false;
 
 	if (rtl()) localPos.setX(width() - localPos.x());
 	if (localPos.x() >= _contentLeft && localPos.x() < _contentLeft + _contentWidth && localPos.y() >= _contentTop) {

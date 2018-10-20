@@ -304,7 +304,7 @@ void System::showNext() {
 				    notifyItem->Has<HistoryMessageForwarded>() ? notifyItem : nullptr; // forwarded notify grouping
 				auto forwardedCount = 1;
 
-				auto ms = getms(true);
+				auto ms = getms(true); // TODO(Randl): should it be asignment and not declaration?
 				auto history = notifyItem->history();
 				auto j = _whenMaps.find(history);
 				if (j == _whenMaps.cend()) {

@@ -921,7 +921,6 @@ void PeerListBox::Inner::paintRow(Painter &p, TimeMs ms, RowIndex index) {
 	row->lazyInitialize();
 
 	auto peer = row->peer();
-	auto user = peer->asUser();
 	auto active = (_pressed.index.value >= 0) ? _pressed : _selected;
 	auto selected = (active.index == index);
 	auto actionSelected = (selected && active.action);

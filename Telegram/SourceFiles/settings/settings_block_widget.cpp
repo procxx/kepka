@@ -43,7 +43,6 @@ int BlockWidget::resizeGetHeight(int newWidth) {
 	int x = contentLeft(), result = contentTop();
 	int availw = newWidth - x;
 	for_const (auto &row, _rows) {
-		auto childMargins = row.child->getMargins();
 		row.child->moveToLeft(x + row.margin.left(), result + row.margin.top(), newWidth);
 		auto availRowWidth = availw - row.margin.left() - row.margin.right() - x;
 		auto natural = row.child->naturalWidth();

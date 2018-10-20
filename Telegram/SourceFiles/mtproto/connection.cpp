@@ -2151,7 +2151,7 @@ ConnectionPrivate::HandleResult ConnectionPrivate::handleOneReceived(const mtpPr
 mtpBuffer ConnectionPrivate::ungzip(const mtpPrime *from, const mtpPrime *end) const {
 	MTPstring packed;
 	packed.read(from, end); // read packed string as serialized mtp string type
-	quint32 packedLen = packed.v.size(), unpackedChunk = packedLen, unpackedLen = 0;
+	quint32 packedLen = packed.v.size(), unpackedChunk = packedLen;
 
 	mtpBuffer result; // * 4 because of mtpPrime type
 	result.resize(0);

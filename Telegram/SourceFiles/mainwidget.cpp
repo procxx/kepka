@@ -420,7 +420,7 @@ void MainWidget::updateFloatPlayerColumnCorner(QPoint center) {
 		auto right = rect.x() + rect.width() - (size.width() / 2);
 		auto top = rect.y() + (size.height() / 2);
 		auto bottom = rect.y() + rect.height() - (size.height() / 2);
-		auto checkCorner = [this, playerColumn, &min, &column, &corner](int distance, RectPart checked) {
+		auto checkCorner = [playerColumn, &min, &column, &corner](int distance, RectPart checked) {
 			if (min > distance) {
 				min = distance;
 				column = playerColumn;
@@ -952,28 +952,28 @@ void MainWidget::cancelUploadLayer() {
 
 void MainWidget::deletePhotoLayer(PhotoData *photo) {
 	if (!photo) return;
-	Ui::show(
-	    Box<ConfirmBox>(lang(lng_delete_photo_sure), lang(lng_box_delete), base::lambda_guarded(this, [this, photo] {
-		                    Ui::hideLayer();
+	Ui::show(Box<ConfirmBox>(lang(lng_delete_photo_sure), lang(lng_box_delete), base::lambda_guarded(this, [photo] {
+		                         Ui::hideLayer();
 
-		                    auto me = App::self();
-		                    if (!me) return;
+		                         auto me = App::self();
+		                         if (!me) return;
 
-		                    if (me->photoId == photo->id) {
-			                    Messenger::Instance().peerClearPhoto(me->id);
-		                    } else if (photo->peer && !photo->peer->isUser() && photo->peer->photoId == photo->id) {
-			                    Messenger::Instance().peerClearPhoto(photo->peer->id);
-		                    } else {
-			                    for (int i = 0, l = me->photos.size(); i != l; ++i) {
-				                    if (me->photos.at(i) == photo) {
-					                    me->photos.removeAt(i);
-					                    MTP::send(MTPphotos_DeletePhotos(MTP_vector<MTPInputPhoto>(
-					                        1, MTP_inputPhoto(MTP_long(photo->id), MTP_long(photo->access)))));
-					                    break;
-				                    }
-			                    }
-		                    }
-	                    })));
+		                         if (me->photoId == photo->id) {
+			                         Messenger::Instance().peerClearPhoto(me->id);
+		                         } else if (photo->peer && !photo->peer->isUser() &&
+		                                    photo->peer->photoId == photo->id) {
+			                         Messenger::Instance().peerClearPhoto(photo->peer->id);
+		                         } else {
+			                         for (int i = 0, l = me->photos.size(); i != l; ++i) {
+				                         if (me->photos.at(i) == photo) {
+					                         me->photos.removeAt(i);
+					                         MTP::send(MTPphotos_DeletePhotos(MTP_vector<MTPInputPhoto>(
+					                             1, MTP_inputPhoto(MTP_long(photo->id), MTP_long(photo->access)))));
+					                         break;
+				                         }
+			                         }
+		                         }
+	                         })));
 }
 
 void MainWidget::shareContactLayer(UserData *contact) {
@@ -1357,7 +1357,6 @@ void MainWidget::onCacheBackground() {
 		result.setDevicePixelRatio(cRetinaFactor());
 		{
 			QPainter p(&result);
-			auto bottom = _willCacheFor.height();
 			auto w = bg.width() / cRetinaFactor();
 			auto h = bg.height() / cRetinaFactor();
 			auto sx = 0;
@@ -1652,7 +1651,6 @@ void MainWidget::itemEdited(HistoryItem *item) {
 bool MainWidget::overviewFailed(PeerData *peer, const RPCError &error, mtpRequestId req) {
 	if (MTP::isDefaultHandledError(error)) return false;
 
-	MediaOverviewType type = OverviewCount;
 	for (qint32 i = 0; i < OverviewCount; ++i) {
 		OverviewsPreload::iterator j = _overviewPreload[i].find(peer);
 		if (j != _overviewPreload[i].end() && j.value() == req) {
@@ -1985,14 +1983,14 @@ void MainWidget::documentLoadFailed(FileLoader *loader, bool started) {
 	auto document = App::document(documentId);
 	if (started) {
 		auto failedFileName = loader->fileName();
-		Ui::show(Box<ConfirmBox>(lang(lng_download_finish_failed),
-		                         base::lambda_guarded(this, [this, document, failedFileName] {
-			                         Ui::hideLayer();
-			                         if (document) document->save(failedFileName);
-		                         })));
+		Ui::show(
+		    Box<ConfirmBox>(lang(lng_download_finish_failed), base::lambda_guarded(this, [document, failedFileName] {
+			                    Ui::hideLayer();
+			                    if (document) document->save(failedFileName);
+		                    })));
 	} else {
 		Ui::show(Box<ConfirmBox>(lang(lng_download_path_failed), lang(lng_download_path_settings),
-		                         base::lambda_guarded(this, [this] {
+		                         base::lambda_guarded(this, [] {
 			                         Global::SetDownloadPath(QString());
 			                         Global::SetDownloadPathBookmark(QByteArray());
 			                         Ui::show(Box<DownloadPathBox>());

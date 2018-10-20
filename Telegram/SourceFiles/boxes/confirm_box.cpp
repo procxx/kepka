@@ -643,7 +643,7 @@ ConfirmInviteBox::ConfirmInviteBox(QWidget *, const QString &title, bool isChann
 }
 
 void ConfirmInviteBox::prepare() {
-	addButton(langFactory(lng_group_invite_join), [this] {
+	addButton(langFactory(lng_group_invite_join), [] {
 		if (auto main = App::main()) {
 			main->onInviteImport();
 		}
