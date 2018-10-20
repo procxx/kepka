@@ -49,7 +49,7 @@ GroupMembersWidget::GroupMembersWidget(QWidget *parent, PeerData *peer, TitleVis
 	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
 	setRemovedCallback([this, peer](PeerData *selectedPeer) { removePeer(selectedPeer); });
-	setSelectedCallback([this](PeerData *selectedPeer) { Ui::showPeerProfile(selectedPeer); });
+	setSelectedCallback([](PeerData *selectedPeer) { Ui::showPeerProfile(selectedPeer); });
 	setUpdateItemCallback([this](Item *item) { updateItemStatusText(item); });
 	setPreloadMoreCallback([this] { preloadMore(); });
 

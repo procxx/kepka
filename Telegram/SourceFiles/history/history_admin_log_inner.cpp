@@ -1431,12 +1431,12 @@ void InnerWidget::updateSelected() {
 			}
 		}
 	}
-
-	// if (_mouseAction == MouseAction::Selecting) {
-	//	_widget->checkSelectingScroll(mousePos);
-	//} else {
-	//	_widget->noSelectingScroll();
-	//} // TODO
+	/*
+	    if (_mouseAction == MouseAction::Selecting) {
+	        _widget->checkSelectingScroll(mousePos);
+	    } else {
+	        _widget->noSelectingScroll();
+	    } */ // TODO
 
 	if (_mouseAction == MouseAction::None && (lnkChanged || cursor != _cursor)) {
 		setCursor(_cursor = cursor);
@@ -1445,93 +1445,92 @@ void InnerWidget::updateSelected() {
 
 void InnerWidget::performDrag() {
 	if (_mouseAction != MouseAction::Dragging) return;
+	/*
+	    auto uponSelected = false;
+	    if (_mouseActionItem) {
+	        if (!_selected.isEmpty() && _selected.cbegin().value() == FullSelection) {
+	            uponSelected = _selected.contains(_mouseActionItem);
+	        } else {
+	            HistoryStateRequest request;
+	            request.flags |= Text::StateRequest::Flag::LookupSymbol;
+	            auto dragState = _mouseActionItem->getState(_dragStartPosition.x(), _dragStartPosition.y(), request);
+	            uponSelected = (dragState.cursor == HistoryInTextCursorState);
+	            if (uponSelected) {
+	                if (_selected.isEmpty() || _selected.cbegin().value() == FullSelection ||
+	                    _selected.cbegin().key() != _mouseActionItem) {
+	                    uponSelected = false;
+	                } else {
+	                    quint16 selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
+	                    if (dragState.symbol < selFrom || dragState.symbol >= selTo) {
+	                        uponSelected = false;
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    auto pressedHandler = ClickHandler::getPressed();
 
-	auto uponSelected = false;
-	// if (_mouseActionItem) {
-	//	if (!_selected.isEmpty() && _selected.cbegin().value() == FullSelection) {
-	//		uponSelected = _selected.contains(_mouseActionItem);
-	//	} else {
-	//		HistoryStateRequest request;
-	//		request.flags |= Text::StateRequest::Flag::LookupSymbol;
-	//		auto dragState = _mouseActionItem->getState(_dragStartPosition.x(), _dragStartPosition.y(), request);
-	//		uponSelected = (dragState.cursor == HistoryInTextCursorState);
-	//		if (uponSelected) {
-	//			if (_selected.isEmpty() ||
-	//				_selected.cbegin().value() == FullSelection ||
-	//				_selected.cbegin().key() != _mouseActionItem
-	//				) {
-	//				uponSelected = false;
-	//			} else {
-	//				quint16 selFrom = _selected.cbegin().value().from, selTo = _selected.cbegin().value().to;
-	//				if (dragState.symbol < selFrom || dragState.symbol >= selTo) {
-	//					uponSelected = false;
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	// auto pressedHandler = ClickHandler::getPressed();
+	    if (dynamic_cast<VoiceSeekClickHandler *>(pressedHandler.data())) {
+	        return;
+	    }
 
-	// if (dynamic_cast<VoiceSeekClickHandler*>(pressedHandler.data())) {
-	//	return;
-	//}
+	    TextWithEntities sel;
+	    QList<QUrl> urls;
+	    if (uponSelected) {
+	        sel = getSelectedText();
+	    } else if (pressedHandler) {
+	        sel = {pressedHandler->dragText(), EntitiesInText()};
+	        // if (!sel.isEmpty() && sel.at(0) != '/' && sel.at(0) != '@' && sel.at(0) != '#') {
+	        //	urls.push_back(QUrl::fromEncoded(sel.toUtf8())); // Google Chrome crashes in Mac OS X O_o
+	        //}
+	    }
+	    if (auto mimeData = mimeDataFromTextWithEntities(sel)) {
+	        updateDragSelection(0, 0, false);
+	        _widget->noSelectingScroll();
 
-	// TextWithEntities sel;
-	// QList<QUrl> urls;
-	// if (uponSelected) {
-	//	sel = getSelectedText();
-	//} else if (pressedHandler) {
-	//	sel = { pressedHandler->dragText(), EntitiesInText() };
-	//	//if (!sel.isEmpty() && sel.at(0) != '/' && sel.at(0) != '@' && sel.at(0) != '#') {
-	//	//	urls.push_back(QUrl::fromEncoded(sel.toUtf8())); // Google Chrome crashes in Mac OS X O_o
-	//	//}
-	//}
-	// if (auto mimeData = mimeDataFromTextWithEntities(sel)) {
-	//	updateDragSelection(0, 0, false);
-	//	_widget->noSelectingScroll();
+	        if (!urls.isEmpty()) mimeData->setUrls(urls);
+	        if (uponSelected && !Adaptive::OneColumn()) {
+	            auto selectedState = getSelectionState();
+	            if (selectedState.count > 0 && selectedState.count == selectedState.canForwardCount) {
+	                mimeData->setData(qsl("application/x-td-forward-selected"), "1");
+	            }
+	        }
+	        _controller->window()->launchDrag(std::move(mimeData));
+	        return;
+	    } else {
+	        auto forwardMimeType = QString();
+	        auto pressedMedia = static_cast<HistoryMedia *>(nullptr);
+	        if (auto pressedItem = App::pressedItem()) {
+	            pressedMedia = pressedItem->getMedia();
+	            if (_mouseCursorState == HistoryInDateCursorState || (pressedMedia && pressedMedia->dragItem())) {
+	                forwardMimeType = qsl("application/x-td-forward-pressed");
+	            }
+	        }
+	        if (auto pressedLnkItem = App::pressedLinkItem()) {
+	            if ((pressedMedia = pressedLnkItem->getMedia())) {
+	                if (forwardMimeType.isEmpty() && pressedMedia->dragItemByHandler(pressedHandler)) {
+	                    forwardMimeType = qsl("application/x-td-forward-pressed-link");
+	                }
+	            }
+	        }
+	        if (!forwardMimeType.isEmpty()) {
+	            auto mimeData = std::make_unique<QMimeData>();
+	            mimeData->setData(forwardMimeType, "1");
+	            if (auto document = (pressedMedia ? pressedMedia->getDocument() : nullptr)) {
+	                auto filepath = document->filepath(DocumentData::FilePathResolveChecked);
+	                if (!filepath.isEmpty()) {
+	                    QList<QUrl> urls;
+	                    urls.push_back(QUrl::fromLocalFile(filepath));
+	                    mimeData->setUrls(urls);
+	                }
+	            }
 
-	//	if (!urls.isEmpty()) mimeData->setUrls(urls);
-	//	if (uponSelected && !Adaptive::OneColumn()) {
-	//		auto selectedState = getSelectionState();
-	//		if (selectedState.count > 0 && selectedState.count == selectedState.canForwardCount) {
-	//			mimeData->setData(qsl("application/x-td-forward-selected"), "1");
-	//		}
-	//	}
-	//	_controller->window()->launchDrag(std::move(mimeData));
-	//	return;
-	//} else {
-	//	auto forwardMimeType = QString();
-	//	auto pressedMedia = static_cast<HistoryMedia*>(nullptr);
-	//	if (auto pressedItem = App::pressedItem()) {
-	//		pressedMedia = pressedItem->getMedia();
-	//		if (_mouseCursorState == HistoryInDateCursorState || (pressedMedia && pressedMedia->dragItem())) {
-	//			forwardMimeType = qsl("application/x-td-forward-pressed");
-	//		}
-	//	}
-	//	if (auto pressedLnkItem = App::pressedLinkItem()) {
-	//		if ((pressedMedia = pressedLnkItem->getMedia())) {
-	//			if (forwardMimeType.isEmpty() && pressedMedia->dragItemByHandler(pressedHandler)) {
-	//				forwardMimeType = qsl("application/x-td-forward-pressed-link");
-	//			}
-	//		}
-	//	}
-	//	if (!forwardMimeType.isEmpty()) {
-	//		auto mimeData = std::make_unique<QMimeData>();
-	//		mimeData->setData(forwardMimeType, "1");
-	//		if (auto document = (pressedMedia ? pressedMedia->getDocument() : nullptr)) {
-	//			auto filepath = document->filepath(DocumentData::FilePathResolveChecked);
-	//			if (!filepath.isEmpty()) {
-	//				QList<QUrl> urls;
-	//				urls.push_back(QUrl::fromLocalFile(filepath));
-	//				mimeData->setUrls(urls);
-	//			}
-	//		}
-
-	//		// This call enters event loop and can destroy any QObject.
-	//		_controller->window()->launchDrag(std::move(mimeData));
-	//		return;
-	//	}
-	//} // TODO
+	            // This call enters event loop and can destroy any QObject.
+	            _controller->window()->launchDrag(std::move(mimeData));
+	            return;
+	        }
+	    }*/
+	// TODO
 }
 
 int InnerWidget::itemTop(not_null<const HistoryItem *> item) const {

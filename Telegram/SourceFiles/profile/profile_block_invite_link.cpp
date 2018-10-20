@@ -68,7 +68,6 @@ int InviteLinkWidget::resizeGetHeight(int newWidth) {
 	if (_link) {
 		int textWidth = _link->naturalWidth();
 		int availableWidth = newWidth - left - st::profileBlockMarginRight;
-		int maxWidth = st::msgMaxWidth;
 		accumulate_min(textWidth, availableWidth);
 		accumulate_min(textWidth, st::msgMaxWidth);
 		_link->resizeToWidth(textWidth + marginLeft + marginRight);

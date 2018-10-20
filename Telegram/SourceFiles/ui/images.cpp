@@ -230,8 +230,7 @@ void prepareRound(QImage &image, QImage *cornerMasks, ImageRoundCorners corners)
 	auto intsTopRight = ints + imageWidth - cornerWidth;
 	auto intsBottomLeft = ints + (imageHeight - cornerHeight) * imageWidth;
 	auto intsBottomRight = ints + (imageHeight - cornerHeight + 1) * imageWidth - cornerWidth;
-	auto maskCorner = [imageWidth, imageHeight, imageIntsPerPixel, imageIntsPerLine](quint32 *imageInts,
-	                                                                                 const QImage &mask) {
+	auto maskCorner = [imageIntsPerPixel, imageIntsPerLine](quint32 *imageInts, const QImage &mask) {
 		auto maskWidth = mask.width();
 		auto maskHeight = mask.height();
 		auto maskBytesPerPixel = (mask.depth() >> 3);

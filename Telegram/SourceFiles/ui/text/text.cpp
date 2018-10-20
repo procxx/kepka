@@ -2500,7 +2500,7 @@ void Text::recountNaturalSize(bool initial, Qt::LayoutDirection optionsDir) {
 
 	_maxWidth = _minHeight = 0;
 	qint32 lineHeight = 0;
-	qint32 result = 0, lastNewlineStart = 0;
+	qint32 lastNewlineStart = 0;
 	QFixed _width = 0, last_rBearing = 0, last_rPadding = 0;
 	for (auto i = _blocks.cbegin(), e = _blocks.cend(); i != e; ++i) {
 		auto b = i->get();

@@ -120,7 +120,7 @@ void ChannelMembersWidget::refreshVisibility() {
 int ChannelMembersWidget::resizeGetHeight(int newWidth) {
 	int newHeight = contentTop();
 
-	auto resizeButton = [this, &newHeight, newWidth](object_ptr<Ui::LeftOutlineButton> &button) {
+	auto resizeButton = [&newHeight, newWidth](object_ptr<Ui::LeftOutlineButton> &button) {
 		if (!button) {
 			return;
 		}

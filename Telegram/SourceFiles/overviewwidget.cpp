@@ -1910,7 +1910,6 @@ void OverviewInner::repaintItem(const HistoryItem *msg) {
 int OverviewInner::countHeight() {
 	if (_type == OverviewPhotos || _type == OverviewVideos) {
 		auto count = _items.size();
-		auto migratedFullCount = _migrated ? _migrated->overviewCount(_type) : 0;
 		auto rows = (count / _photosInRow) + ((count % _photosInRow) ? 1 : 0);
 		return (_rowWidth + st::overviewPhotoSkip) * rows + st::overviewPhotoSkip;
 	}

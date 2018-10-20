@@ -1013,8 +1013,7 @@ void HistoryVideo::eraseFromOverview() {
 }
 
 void HistoryVideo::updateStatusText() const {
-	bool showPause = false;
-	qint32 statusSize = 0, realDuration = 0;
+	qint32 statusSize = 0;
 	if (_data->status == FileDownloadFailed || _data->status == FileUploadFailed) {
 		statusSize = FileStatusSizeFailed;
 	} else if (_data->status == FileUploading) {
@@ -1543,12 +1542,12 @@ HistoryTextState HistoryDocument::getState(QPoint point, HistoryStateRequest req
 
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return result;
 
-	bool out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
+	bool out = _parent->out(), isPost = _parent->isPost();
 	bool loaded = _data->loaded();
 
 	bool showPause = updateStatusText();
 
-	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, linktop = 0, bottom = 0;
+	qint32 nameleft = 0, nametop = 0, nameright = 0, linktop = 0, bottom = 0;
 	auto topMinus = isBubbleTop() ? 0 : st::msgFileTopMinus;
 	if (auto thumbed = Get<HistoryDocumentThumbed>()) {
 		nameleft = st::msgFileThumbPadding.left() + st::msgFileThumbSize + st::msgFileThumbPadding.right();
@@ -2603,8 +2602,7 @@ void HistoryGif::setStatusSize(qint32 newSize) const {
 }
 
 void HistoryGif::updateStatusText() const {
-	bool showPause = false;
-	qint32 statusSize = 0, realDuration = 0;
+	qint32 statusSize = 0;
 	if (_data->status == FileDownloadFailed || _data->status == FileUploadFailed) {
 		statusSize = FileStatusSizeFailed;
 	} else if (_data->status == FileUploading) {
@@ -3140,7 +3138,7 @@ void HistoryContact::initDimensions() {
 
 void HistoryContact::draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const {
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return;
-	qint32 skipx = 0, skipy = 0, width = _width, height = _height;
+	qint32 width = _width;
 
 	bool out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
 	bool selected = (selection == FullSelection);
@@ -3202,9 +3200,9 @@ void HistoryContact::draw(Painter &p, const QRect &r, TextSelection selection, T
 
 HistoryTextState HistoryContact::getState(QPoint point, HistoryStateRequest request) const {
 	HistoryTextState result;
-	bool out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
+	bool out = _parent->out(), isPost = _parent->isPost();
 
-	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, linktop = 0;
+	qint32 nameleft = 0, linktop = 0;
 	auto topMinus = isBubbleTop() ? 0 : st::msgFileTopMinus;
 	if (_userId) {
 		nameleft = st::msgFileThumbPadding.left() + st::msgFileThumbSize + st::msgFileThumbPadding.right();
@@ -3311,7 +3309,7 @@ void HistoryCall::initDimensions() {
 
 void HistoryCall::draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const {
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return;
-	auto skipx = 0, skipy = 0, width = _width, height = _height;
+	auto width = _width;
 
 	auto out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
 	auto selected = (selection == FullSelection);
@@ -3328,7 +3326,6 @@ void HistoryCall::draw(Painter &p, const QRect &r, TextSelection selection, Time
 	nameright = st::msgFilePadding.left();
 	statustop = st::historyCallStatusTop - topMinus;
 
-	auto namewidth = width - nameleft - nameright;
 
 	p.setFont(st::semiboldFont);
 	p.setPen(outbg ? (selected ? st::historyFileNameOutFgSelected : st::historyFileNameOutFg) :
@@ -3674,7 +3671,7 @@ int HistoryWebPage::resizeGetHeight(int width) {
 
 void HistoryWebPage::draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const {
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return;
-	qint32 skipx = 0, skipy = 0, width = _width, height = _height;
+	qint32 width = _width;
 
 	bool out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
 	bool selected = (selection == FullSelection);
@@ -3821,7 +3818,7 @@ HistoryTextState HistoryWebPage::getState(QPoint point, HistoryStateRequest requ
 	HistoryTextState result;
 
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return result;
-	qint32 skipx = 0, skipy = 0, width = _width, height = _height;
+	qint32 width = _width;
 
 	QMargins bubble(_attach ? _attach->bubbleMargins() : QMargins());
 	auto padding = inBubblePadding();
@@ -4678,7 +4675,7 @@ HistoryTextState HistoryInvoice::getState(QPoint point, HistoryStateRequest requ
 	HistoryTextState result;
 
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return result;
-	qint32 width = _width, height = _height;
+	qint32 width = _width;
 
 	QMargins bubble(_attach ? _attach->bubbleMargins() : QMargins());
 	auto padding = inBubblePadding();

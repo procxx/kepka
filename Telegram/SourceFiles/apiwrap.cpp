@@ -94,7 +94,7 @@ void ApiWrap::requestAppChangelogs() {
 
 void ApiWrap::addLocalChangelogs(int oldAppVersion) {
 	auto addedSome = false;
-	auto addLocalChangelog = [this, &addedSome](const QString &text) {
+	auto addLocalChangelog = [&addedSome](const QString &text) {
 		auto textWithEntities = TextWithEntities{text};
 		TextUtilities::ParseEntities(textWithEntities, TextParseLinks);
 		App::wnd()->serviceNotification(textWithEntities, MTP_messageMediaEmpty(), unixtime());
@@ -542,7 +542,7 @@ void ApiWrap::requestPeers(const QList<PeerData *> &peers) {
 			channels.push_back((*i)->asChannel()->inputChannel);
 		}
 	}
-	auto handleChats = [this](const MTPmessages_Chats &result) {
+	auto handleChats = [](const MTPmessages_Chats &result) {
 		if (auto chats = Api::getChatsFromMessagesChats(result)) {
 			App::feedChats(*chats);
 		}
@@ -555,7 +555,7 @@ void ApiWrap::requestPeers(const QList<PeerData *> &peers) {
 	}
 	if (!users.isEmpty()) {
 		request(MTPusers_GetUsers(MTP_vector<MTPInputUser>(users)))
-		    .done([this](const MTPVector<MTPUser> &result) { App::feedUsers(result); })
+		    .done([](const MTPVector<MTPUser> &result) { App::feedUsers(result); })
 		    .send();
 	}
 }
@@ -1192,7 +1192,7 @@ void ApiWrap::handlePrivacyChange(mtpTypeId keyTypeId, const MTPVector<MTPPrivac
 		}
 
 		auto now = unixtime();
-		App::enumerateUsers([&userRules, contactsRule, everyoneRule, now](UserData *user) {
+		App::enumerateUsers([now](UserData *user) {
 			if (user->isSelf() || user->loadedStatus != PeerData::FullLoaded) {
 				return;
 			}
@@ -1460,7 +1460,7 @@ void ApiWrap::resolveWebPages() {
 }
 
 void ApiWrap::requestParticipantsCountDelayed(ChannelData *channel) {
-	_participantsCountRequestTimer.call(kReloadChannelMembersTimeout, [this, channel] { channel->updateFullForced(); });
+	_participantsCountRequestTimer.call(kReloadChannelMembersTimeout, [channel] { channel->updateFullForced(); });
 }
 
 void ApiWrap::gotWebPages(ChannelData *channel, const MTPmessages_Messages &msgs, mtpRequestId req) {
@@ -1587,7 +1587,7 @@ void ApiWrap::requestStickers(TimeId now) {
 	};
 	_stickersUpdateRequest = request(MTPmessages_GetAllStickers(MTP_int(Local::countStickersHash(true))))
 	                             .done(onDone)
-	                             .fail([this, onDone](const RPCError &error) {
+	                             .fail([onDone](const RPCError &error) {
 		                             LOG(("App Fail: Failed to get stickers!"));
 		                             onDone(MTP_messages_allStickersNotModified());
 	                             })
@@ -1619,7 +1619,7 @@ void ApiWrap::requestRecentStickers(TimeId now) {
 	_recentStickersUpdateRequest =
 	    request(MTPmessages_GetRecentStickers(MTP_flags(0), MTP_int(Local::countRecentStickersHash())))
 	        .done(onDone)
-	        .fail([this, onDone](const RPCError &error) {
+	        .fail([onDone](const RPCError &error) {
 		        LOG(("App Fail: Failed to get recent stickers!"));
 		        onDone(MTP_messages_recentStickersNotModified());
 	        })
@@ -1650,7 +1650,7 @@ void ApiWrap::requestFavedStickers(TimeId now) {
 	};
 	_favedStickersUpdateRequest = request(MTPmessages_GetFavedStickers(MTP_int(Local::countFavedStickersHash())))
 	                                  .done(onDone)
-	                                  .fail([this, onDone](const RPCError &error) {
+	                                  .fail([onDone](const RPCError &error) {
 		                                  LOG(("App Fail: Failed to get faved stickers!"));
 		                                  onDone(MTP_messages_favedStickersNotModified());
 	                                  })
@@ -1682,7 +1682,7 @@ void ApiWrap::requestFeaturedStickers(TimeId now) {
 	_featuredStickersUpdateRequest =
 	    request(MTPmessages_GetFeaturedStickers(MTP_int(Local::countFeaturedStickersHash())))
 	        .done(onDone)
-	        .fail([this, onDone](const RPCError &error) {
+	        .fail([onDone](const RPCError &error) {
 		        LOG(("App Fail: Failed to get featured stickers!"));
 		        onDone(MTP_messages_featuredStickersNotModified());
 	        })
@@ -1712,7 +1712,7 @@ void ApiWrap::requestSavedGifs(TimeId now) {
 	};
 	_savedGifsUpdateRequest = request(MTPmessages_GetSavedGifs(MTP_int(Local::countSavedGifsHash())))
 	                              .done(onDone)
-	                              .fail([this, onDone](const RPCError &error) {
+	                              .fail([onDone](const RPCError &error) {
 		                              LOG(("App Fail: Failed to get saved gifs!"));
 		                              onDone(MTP_messages_savedGifsNotModified());
 	                              })

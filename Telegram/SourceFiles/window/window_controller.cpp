@@ -69,23 +69,15 @@ Controller::ColumnLayout Controller::computeColumnLayout() const {
 	accumulate_max(chatWidth, st::windowMinWidth);
 	dialogsWidth = bodyWidth - chatWidth;
 
-	auto useOneColumnLayout = [this, bodyWidth, dialogsWidth] {
+	auto useOneColumnLayout = [bodyWidth, dialogsWidth] {
 		auto someSectionShown = !App::main()->selectingPeer() && App::main()->isSectionShown();
-		if (dialogsWidth < st::dialogsPadding.x() && (Adaptive::OneColumn() || someSectionShown)) {
-			return true;
-		}
-		if (bodyWidth < st::windowMinWidth + st::dialogsWidthMin) {
-			return true;
-		}
-		return false;
+		return (dialogsWidth < st::dialogsPadding.x() && (Adaptive::OneColumn() || someSectionShown)) ||
+		       (bodyWidth < st::windowMinWidth + st::dialogsWidthMin);
 	};
 
-	auto useSmallColumnLayout = [this, dialogsWidth] {
+	auto useSmallColumnLayout = [dialogsWidth] {
 		// Used if useOneColumnLayout() == false.
-		if (dialogsWidth < st::dialogsWidthMin / 2) {
-			return true;
-		}
-		return false;
+		return dialogsWidth < st::dialogsWidthMin / 2;
 	};
 
 	if (useOneColumnLayout()) {
@@ -177,8 +169,7 @@ void Controller::showJumpToDate(not_null<PeerData *> peer, QDate requestedDate) 
 	};
 	auto highlighted = requestedDate.isNull() ? currentPeerDate() : requestedDate;
 	auto month = highlighted;
-	auto box =
-	    Box<CalendarBox>(month, highlighted, [this, peer](const QDate &date) { Auth().api().jumpToDate(peer, date); });
+	auto box = Box<CalendarBox>(month, highlighted, [peer](const QDate &date) { Auth().api().jumpToDate(peer, date); });
 	box->setMinDate(minPeerDate());
 	box->setMaxDate(maxPeerDate());
 	Ui::show(std::move(box));
