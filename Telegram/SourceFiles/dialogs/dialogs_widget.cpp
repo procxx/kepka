@@ -240,7 +240,6 @@ void DialogsWidget::showAnimated(Window::SlideDirection direction, const Window:
 	_chooseFromUser->hideFast();
 	_lockUnlock->hide();
 
-	int delta = st::slideShift;
 	if (_showDirection == Window::SlideDirection::FromLeft) {
 		std::swap(_cacheUnder, _cacheOver);
 	}

@@ -724,7 +724,6 @@ void InnerWidget::clearAfterFilterChange() {
 }
 
 void InnerWidget::paintEmpty(Painter &p) {
-	style::font font(st::msgServiceFont);
 	auto rectWidth = st::historyAdminLogEmptyWidth;
 	auto innerWidth = rectWidth - st::historyAdminLogEmptyPadding.left() - st::historyAdminLogEmptyPadding.right();
 	auto rectHeight = st::historyAdminLogEmptyPadding.top() + _emptyText.countHeight(innerWidth) +
@@ -877,8 +876,6 @@ void InnerWidget::showContextMenu(QContextMenuEvent *e, bool showFromTouch) {
 			suggestRestrictUser(user);
 		}
 	} else { // maybe cursor on some text history item?
-		bool canDelete = item && item->canDelete() && (item->id > 0 || !item->serviceMsg());
-		bool canForward = item && item->canForward();
 
 		auto msg = dynamic_cast<HistoryMessage *>(item);
 		if (isUponSelected > 0) {
@@ -966,7 +963,7 @@ void InnerWidget::savePhotoToFile(PhotoData *photo) {
 
 	auto filter = qsl("JPEG Image (*.jpg);;") + FileDialog::AllFilesFilter();
 	FileDialog::GetWritePath(lang(lng_save_photo), filter, filedialogDefaultName(qsl("photo"), qsl(".jpg")),
-	                         base::lambda_guarded(this, [this, photo](const QString &result) {
+	                         base::lambda_guarded(this, [photo](const QString &result) {
 		                         if (!result.isEmpty()) {
 			                         photo->full->pix().toImage().save(result, "JPG");
 		                         }
@@ -1090,7 +1087,7 @@ void InnerWidget::suggestRestrictUser(not_null<UserData *> user) {
 			editRestrictions(true, MTP_channelBannedRights(MTP_flags(0), MTP_int(0)));
 		} else {
 			request(MTPchannels_GetParticipant(_channel->inputChannel, user->inputUser))
-			    .done([this, editRestrictions](const MTPchannels_ChannelParticipant &result) {
+			    .done([editRestrictions](const MTPchannels_ChannelParticipant &result) {
 				    Expects(result.type() == mtpc_channels_channelParticipant);
 				    auto &participant = result.c_channels_channelParticipant();
 				    App::feedUsers(participant.vusers);
@@ -1103,7 +1100,7 @@ void InnerWidget::suggestRestrictUser(not_null<UserData *> user) {
 					    editRestrictions(hasAdminRights, MTP_channelBannedRights(MTP_flags(0), MTP_int(0)));
 				    }
 			    })
-			    .fail([this, editRestrictions](const RPCError &error) {
+			    .fail([editRestrictions](const RPCError &error) {
 				    editRestrictions(false, MTP_channelBannedRights(MTP_flags(0), MTP_int(0)));
 			    })
 			    .send();

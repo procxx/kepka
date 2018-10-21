@@ -448,7 +448,7 @@ int Inner::refreshInlineRows(PeerData *queryPeer, UserData *bot, const CacheEntr
 	_inlineBot = bot;
 	_inlineQueryPeer = queryPeer;
 	refreshSwitchPmButton(entry);
-	auto clearResults = [this, entry]() {
+	auto clearResults = [entry]() {
 		if (!entry) {
 			return true;
 		}
@@ -589,7 +589,6 @@ bool Inner::inlineItemVisible(const ItemBase *layout) {
 	int row = position / MatrixRowShift, col = position % MatrixRowShift;
 	Assert((row < _rows.size()) && (col < _rows[row].items.size()));
 
-	auto &inlineItems = _rows[row].items;
 	int top = st::stickerPanPadding;
 	for (qint32 i = 0; i < row; ++i) {
 		top += _rows.at(i).height;
@@ -603,7 +602,6 @@ void Inner::updateSelected() {
 		return;
 	}
 
-	auto newSelected = -1;
 	auto p = mapFromGlobal(_lastMousePos);
 
 	int sx = (rtl() ? width() - p.x() : p.x()) - (st::inlineResultsLeft - st::buttonRadius);

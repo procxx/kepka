@@ -1542,10 +1542,8 @@ HistoryTextState HistoryDocument::getState(QPoint point, HistoryStateRequest req
 
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return result;
 
-	bool out = _parent->out(), isPost = _parent->isPost();
 	bool loaded = _data->loaded();
 
-	bool showPause = updateStatusText();
 
 	qint32 nameleft = 0, nametop = 0, nameright = 0, linktop = 0, bottom = 0;
 	auto topMinus = isBubbleTop() ? 0 : st::msgFileTopMinus;
@@ -2842,7 +2840,6 @@ void HistorySticker::draw(Painter &p, const QRect &r, TextSelection selection, T
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return;
 
 	_data->checkSticker();
-	bool loaded = _data->loaded();
 	bool selected = (selection == FullSelection);
 
 	bool out = _parent->out(), isPost = _parent->isPost(), childmedia = (_parent->getMedia() != this);
@@ -3200,7 +3197,6 @@ void HistoryContact::draw(Painter &p, const QRect &r, TextSelection selection, T
 
 HistoryTextState HistoryContact::getState(QPoint point, HistoryStateRequest request) const {
 	HistoryTextState result;
-	bool out = _parent->out(), isPost = _parent->isPost();
 
 	qint32 nameleft = 0, linktop = 0;
 	auto topMinus = isBubbleTop() ? 0 : st::msgFileTopMinus;
@@ -3506,7 +3502,6 @@ void HistoryWebPage::initDimensions() {
 	}
 
 	// init dimensions
-	auto l = st::msgPadding.left() + st::webPageLeft, r = st::msgPadding.right();
 	auto skipBlockWidth = _parent->skipBlockWidth();
 	_maxw = skipBlockWidth;
 	_minh = 0;
@@ -3680,8 +3675,6 @@ void HistoryWebPage::draw(Painter &p, const QRect &r, TextSelection selection, T
 	                         (outbg ? st::msgOutReplyBarColor : st::msgInReplyBarColor);
 	auto &semibold = selected ? (outbg ? st::msgOutServiceFgSelected : st::msgInServiceFgSelected) :
 	                            (outbg ? st::msgOutServiceFg : st::msgInServiceFg);
-	auto &regular = selected ? (outbg ? st::msgOutDateFgSelected : st::msgInDateFgSelected) :
-	                           (outbg ? st::msgOutDateFg : st::msgInDateFg);
 
 	QMargins bubble(_attach ? _attach->bubbleMargins() : QMargins());
 	auto padding = inBubblePadding();
@@ -4044,7 +4037,6 @@ void HistoryGame::initDimensions() {
 	}
 
 	// init dimensions
-	qint32 l = st::msgPadding.left() + st::webPageLeft, r = st::msgPadding.right();
 	qint32 skipBlockWidth = _parent->skipBlockWidth();
 	_maxw = skipBlockWidth;
 	_minh = 0;
@@ -4143,7 +4135,7 @@ int HistoryGame::resizeGetHeight(int width) {
 
 void HistoryGame::draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const {
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return;
-	qint32 width = _width, height = _height;
+	qint32 width = _width;
 
 	bool out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
 	bool selected = (selection == FullSelection);
@@ -4152,8 +4144,6 @@ void HistoryGame::draw(Painter &p, const QRect &r, TextSelection selection, Time
 	                         (outbg ? st::msgOutReplyBarColor : st::msgInReplyBarColor);
 	auto &semibold = selected ? (outbg ? st::msgOutServiceFgSelected : st::msgInServiceFgSelected) :
 	                            (outbg ? st::msgOutServiceFg : st::msgInServiceFg);
-	auto &regular = selected ? (outbg ? st::msgOutDateFgSelected : st::msgInDateFgSelected) :
-	                           (outbg ? st::msgOutDateFg : st::msgInDateFg);
 
 	QMargins bubble(_attach ? _attach->bubbleMargins() : QMargins());
 	auto padding = inBubblePadding();
@@ -4226,7 +4216,7 @@ HistoryTextState HistoryGame::getState(QPoint point, HistoryStateRequest request
 	HistoryTextState result;
 
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return result;
-	qint32 width = _width, height = _height;
+	qint32 width = _width;
 
 	QMargins bubble(_attach ? _attach->bubbleMargins() : QMargins());
 	auto padding = inBubblePadding();
@@ -4501,7 +4491,6 @@ void HistoryInvoice::initDimensions() {
 	}
 
 	// init dimensions
-	qint32 l = st::msgPadding.left(), r = st::msgPadding.right();
 	qint32 skipBlockWidth = _parent->skipBlockWidth();
 	_maxw = skipBlockWidth;
 	_minh = 0;
@@ -4589,17 +4578,13 @@ int HistoryInvoice::resizeGetHeight(int width) {
 
 void HistoryInvoice::draw(Painter &p, const QRect &r, TextSelection selection, TimeMs ms) const {
 	if (_width < st::msgPadding.left() + st::msgPadding.right() + 1) return;
-	qint32 width = _width, height = _height;
+	qint32 width = _width;
 
 	bool out = _parent->out(), isPost = _parent->isPost(), outbg = out && !isPost;
 	bool selected = (selection == FullSelection);
 
-	auto &barfg = selected ? (outbg ? st::msgOutReplyBarSelColor : st::msgInReplyBarSelColor) :
-	                         (outbg ? st::msgOutReplyBarColor : st::msgInReplyBarColor);
 	auto &semibold = selected ? (outbg ? st::msgOutServiceFgSelected : st::msgInServiceFgSelected) :
 	                            (outbg ? st::msgOutServiceFg : st::msgInServiceFg);
-	auto &regular = selected ? (outbg ? st::msgOutDateFgSelected : st::msgInDateFgSelected) :
-	                           (outbg ? st::msgOutDateFg : st::msgInDateFg);
 
 	QMargins bubble(_attach ? _attach->bubbleMargins() : QMargins());
 	auto padding = inBubblePadding();
@@ -4647,7 +4632,6 @@ void HistoryInvoice::draw(Painter &p, const QRect &r, TextSelection selection, T
 		p.translate(attachLeft, attachTop);
 		_attach->draw(p, r.translated(-attachLeft, -attachTop), attachSelection, ms);
 		auto pixwidth = _attach->currentWidth();
-		auto pixheight = _attach->height();
 
 		auto available = _status.maxWidth();
 		auto statusW = available + 2 * st::msgDateImgPadding.x();

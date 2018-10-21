@@ -396,8 +396,6 @@ void Sticker::preload() const {
 }
 
 void Sticker::paint(Painter &p, const QRect &clip, const PaintContext *context) const {
-	bool loaded = getShownDocument()->loaded();
-
 	auto over = _a_over.current(context->ms, _active ? 1. : 0.);
 	if (over > 0) {
 		p.setOpacity(over);
@@ -591,7 +589,6 @@ void Video::initDimensions() {
 	bool withThumb = !content_thumb()->isNull();
 
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	qint32 textWidth = _maxw - (withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
 	TextParseOptions titleOpts = {0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto};
 	auto title = TextUtilities::SingleLine(_result->getLayoutTitle());
 	if (title.isEmpty()) {
@@ -609,7 +606,6 @@ void Video::initDimensions() {
 		description = _duration;
 	}
 	_description.setText(st::defaultTextStyle, description, descriptionOpts);
-	qint32 descriptionHeight = std::min(_description.countHeight(_maxw), descriptionLines * st::normalFont->height);
 
 	_minh = st::inlineThumbSize;
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
@@ -716,7 +712,6 @@ File::File(not_null<Context *> context, Result *result)
 
 void File::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	int textWidth = _maxw - (st::msgFileSize + st::inlineThumbSkip);
 
 	TextParseOptions titleOpts = {0, _maxw, st::semiboldFont->height, Qt::LayoutDirectionAuto};
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
@@ -732,7 +727,7 @@ void File::paint(Painter &p, const QRect &clip, const PaintContext *context) con
 	qint32 left = st::msgFileSize + st::inlineThumbSkip;
 
 	DocumentData *document = getShownDocument();
-	bool loaded = document->loaded(), displayLoading = document->displayLoading();
+	bool displayLoading = document->displayLoading();
 	if (displayLoading) {
 		ensureAnimation();
 		if (!_animation->radial.animating()) {
@@ -934,14 +929,11 @@ Contact::Contact(not_null<Context *> context, Result *result)
 
 void Contact::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	qint32 textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
 	TextParseOptions titleOpts = {0, _maxw, st::semiboldFont->height, Qt::LayoutDirectionAuto};
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
-	qint32 titleHeight = std::min(_title.countHeight(_maxw), st::semiboldFont->height);
 
 	TextParseOptions descriptionOpts = {TextParseMultiline, _maxw, st::normalFont->height, Qt::LayoutDirectionAuto};
 	_description.setText(st::defaultTextStyle, _result->getLayoutDescription(), descriptionOpts);
-	qint32 descriptionHeight = std::min(_description.countHeight(_maxw), st::normalFont->height);
 
 	_minh = st::msgFileSize;
 	_minh += st::inlineRowMargin * 2 + st::inlineRowBorder;
@@ -1036,7 +1028,6 @@ Article::Article(not_null<Context *> context, Result *result, bool withThumb)
 
 void Article::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	qint32 textWidth = _maxw - (_withThumb ? (st::inlineThumbSize + st::inlineThumbSkip) : 0);
 	TextParseOptions titleOpts = {0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto};
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
 	qint32 titleHeight = std::min(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
@@ -1213,7 +1204,6 @@ void Game::countFrameSize() {
 
 void Game::initDimensions() {
 	_maxw = st::emojiPanWidth - st::emojiScroll.width - st::inlineResultsLeft;
-	qint32 textWidth = _maxw - (st::inlineThumbSize + st::inlineThumbSkip);
 	TextParseOptions titleOpts = {0, _maxw, 2 * st::semiboldFont->height, Qt::LayoutDirectionAuto};
 	_title.setText(st::semiboldTextStyle, TextUtilities::SingleLine(_result->getLayoutTitle()), titleOpts);
 	qint32 titleHeight = std::min(_title.countHeight(_maxw), 2 * st::semiboldFont->height);
@@ -1250,7 +1240,7 @@ void Game::paint(Painter &p, const QRect &clip, const PaintContext *context) con
 	if (animatedThumb) {
 		document->automaticLoad(nullptr);
 
-		bool loaded = document->loaded(), loading = document->loading(), displayLoading = document->displayLoading();
+		bool loaded = document->loaded(), displayLoading = document->displayLoading();
 		if (loaded && !_gif && !_gif.isBad()) {
 			auto that = const_cast<Game *>(this);
 			that->_gif = Media::Clip::MakeReader(document, FullMsgId(), [that](Media::Clip::Notification notification) {

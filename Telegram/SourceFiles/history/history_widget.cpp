@@ -4785,9 +4785,6 @@ void HistoryWidget::onThumbDocumentUploaded(const FullMsgId &newId, bool silent,
 
 void HistoryWidget::onPhotoProgress(const FullMsgId &newId) {
 	if (auto item = App::histItemById(newId)) {
-		auto photo = (item->getMedia() && item->getMedia()->type() == MediaTypePhoto) ?
-		                 static_cast<HistoryPhoto *>(item->getMedia())->photo() :
-		                 nullptr;
 		if (!item->isPost()) {
 			updateSendAction(item->history(), SendAction::Type::UploadPhoto, 0);
 		}
@@ -5570,7 +5567,6 @@ void HistoryWidget::onInlineResultSend(InlineBots::Result *result, UserData *bot
 
 	bool lastKeyboardUsed = lastForceReplyReplied();
 
-	bool out = !_peer->isSelf(), unread = !_peer->isSelf();
 	auto flags = NewMessageFlags(_peer) | MTPDmessage::Flag::f_media; // unread, out
 	auto sendFlags = MTPmessages_SendInlineBotResult::Flag::f_clear_draft | 0;
 	if (replyToId()) {
@@ -5753,7 +5749,6 @@ bool HistoryWidget::sendExistingDocument(DocumentData *doc, const QString &capti
 
 	bool lastKeyboardUsed = lastForceReplyReplied();
 
-	bool out = !_peer->isSelf(), unread = !_peer->isSelf();
 	auto flags = NewMessageFlags(_peer) | MTPDmessage::Flag::f_media; // unread, out
 	auto sendFlags = MTPmessages_SendMedia::Flags(0);
 	if (replyToId()) {
@@ -5817,7 +5812,6 @@ void HistoryWidget::sendExistingPhoto(PhotoData *photo, const QString &caption) 
 
 	bool lastKeyboardUsed = lastForceReplyReplied();
 
-	bool out = !_peer->isSelf(), unread = !_peer->isSelf();
 	auto flags = NewMessageFlags(_peer) | MTPDmessage::Flag::f_media; // unread, out
 	auto sendFlags = MTPmessages_SendMedia::Flags(0);
 	if (replyToId()) {
@@ -6878,8 +6872,6 @@ void HistoryWidget::drawPinnedBar(Painter &p) {
 	Expects(_pinnedBar != nullptr);
 
 	auto top = _topBar->bottomNoMargins();
-	Text *from = 0, *text = 0;
-	bool serviceColor = false, hasForward = readyToForward();
 	ImagePtr preview;
 	p.fillRect(myrtlrect(0, top, _chatWidth, st::historyReplyHeight), st::historyPinnedBg);
 

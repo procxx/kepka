@@ -124,7 +124,7 @@ Widget::Widget(QWidget *parent)
 	_playPause->setClickedCallback([this] { instance()->playPauseCancelClicked(_type); });
 
 	updateVolumeToggleIcon();
-	_volumeToggle->setClickedCallback([this] {
+	_volumeToggle->setClickedCallback([] {
 		Global::SetSongVolume((Global::SongVolume() > 0) ? 0. : Global::RememberedSongVolume());
 		mixer()->setSongVolume(Global::SongVolume());
 		Global::RefSongVolumeChanged().notify();
@@ -132,7 +132,7 @@ Widget::Widget(QWidget *parent)
 	subscribe(Global::RefSongVolumeChanged(), [this] { updateVolumeToggleIcon(); });
 
 	updateRepeatTrackIcon();
-	_repeatTrack->setClickedCallback([this] { instance()->toggleRepeat(AudioMsgId::Type::Song); });
+	_repeatTrack->setClickedCallback([] { instance()->toggleRepeat(AudioMsgId::Type::Song); });
 
 	subscribe(instance()->repeatChangedNotifier(), [this](AudioMsgId::Type type) {
 		if (type == _type) {
@@ -242,7 +242,6 @@ void Widget::handleSeekProgress(double progress) {
 void Widget::handleSeekFinished(double progress) {
 	if (!_lastDurationMs) return;
 
-	auto positionMs = snap(static_cast<TimeMs>(progress * _lastDurationMs), Q_INT64_C(0), _lastDurationMs);
 	_seekPositionMs = -1;
 
 	auto state = mixer()->currentState(_type);
@@ -538,10 +537,10 @@ void Widget::createPrevNextButtons() {
 	if (!_previousTrack) {
 		_previousTrack.create(this, st::mediaPlayerPreviousButton);
 		_previousTrack->show();
-		_previousTrack->setClickedCallback([this]() { instance()->previous(); });
+		_previousTrack->setClickedCallback([]() { instance()->previous(); });
 		_nextTrack.create(this, st::mediaPlayerNextButton);
 		_nextTrack->show();
-		_nextTrack->setClickedCallback([this]() { instance()->next(); });
+		_nextTrack->setClickedCallback([]() { instance()->next(); });
 		updatePlayPrevNextPositions();
 	}
 }

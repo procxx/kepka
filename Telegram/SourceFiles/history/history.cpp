@@ -1532,7 +1532,6 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 		// If no items were added it means we've loaded everything old.
 		oldLoaded = true;
 	} else if (loadedAtBottom()) { // add photos to overview and authors to lastAuthors
-		bool channel = isChannel();
 		qint32 mask = 0;
 		QList<not_null<UserData *>> *lastAuthors = nullptr;
 		std::set<not_null<PeerData *>> *markupSenders = nullptr;
@@ -1540,12 +1539,10 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 			lastAuthors = &peer->asChat()->lastAuthors;
 			markupSenders = &peer->asChat()->markupSenders;
 		} else if (peer->isMegagroup()) {
-			// We don't add users to mgInfo->lastParticipants here.
-			// We're scrolling back and we see messages from users that
-			// could be gone from the megagroup already. It is fine for
-			// chat->lastAuthors, because they're used only for field
-			// autocomplete, but this is bad for megagroups, because its
-			// lastParticipants are displayed in Profile as members list.
+			// We don't add users to mgInfo->lastParticipants here. We're scrolling back and we see messages from users
+			// that could be gone from the megagroup already. It is fine for chat->lastAuthors, because they're used
+			// only for field autocomplete, but this is bad for megagroups, because its lastParticipants are displayed
+			// in Profile as members list.
 			markupSenders = &peer->asChannel()->mgInfo->markupSenders;
 		}
 		for (auto i = block->items.size(); i > 0; --i) {
@@ -1632,7 +1629,7 @@ void History::addOlderSlice(const QVector<MTPMessage> &slice) {
 }
 
 void History::addNewerSlice(const QVector<MTPMessage> &slice) {
-	bool wasEmpty = isEmpty(), wasLoadedAtBottom = loadedAtBottom();
+	bool wasLoadedAtBottom = loadedAtBottom();
 
 	if (slice.isEmpty()) {
 		newLoaded = true;
@@ -1981,7 +1978,6 @@ HistoryBlock *History::finishBuildingFrontBlock() {
 	auto block = _buildingFrontBlock->block;
 	if (block) {
 		if (blocks.size() > 1) {
-			auto last = block->items.back(); // ... item, item, item, last ], [ first, item, item ...
 			auto first = blocks[1]->items.front();
 
 			// we've added a new front block, so previous item for

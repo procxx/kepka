@@ -161,8 +161,6 @@ public:
 		int item = -1;
 		int newItem = eng->findItem(0);
 
-		style::align alignment = eng->option.alignment();
-
 		const QCharAttributes *attributes = eng->attributes();
 		if (!attributes) return;
 		int end = 0;

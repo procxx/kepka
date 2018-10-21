@@ -814,7 +814,6 @@ void Generator::paintBubble(const Bubble &bubble) {
 		bubble.text.draw(*_p, trect.x(), trect.y(), trect.width());
 	} else if (!bubble.waveform.isEmpty()) {
 		auto nameleft = x + st::msgFilePadding.left() + st::msgFileSize + st::msgFilePadding.right();
-		auto nameright = st::msgFilePadding.left();
 		auto statustop = y + st::msgFileStatusTop;
 
 		auto inner = rtlrect(x + st::msgFilePadding.left(), y + st::msgFilePadding.top(), st::msgFileSize,

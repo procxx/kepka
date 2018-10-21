@@ -743,7 +743,7 @@ void MultiSelect::Inner::removeItem(quint64 itemId) {
 
 			item->hideAnimated();
 			_idsMap.erase(item->id());
-			auto inserted = _removingItems.insert(std::move(item));
+			_removingItems.insert(std::move(item));
 			_items.erase(_items.begin() + i);
 
 			if (_active == i) {

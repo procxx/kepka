@@ -133,7 +133,6 @@ void ReplyKeyboard::updateMessageId() {
 void ReplyKeyboard::resize(int width, int height) {
 	_width = width;
 
-	auto markup = _item->Get<HistoryMessageReplyMarkup>();
 	double y = 0,
 	       buttonHeight = _rows.isEmpty() ? _st->buttonHeight() : (double(height + _st->buttonSkip()) / _rows.size());
 	for (auto &row : _rows) {
@@ -522,7 +521,6 @@ void HistoryMessageUnreadBar::paint(Painter &p, int y, int w) const {
 	p.setFont(st::historyUnreadBarFont);
 	p.setPen(st::historyUnreadBarFg);
 
-	int left = st::msgServiceMargin.left();
 	int maxwidth = w;
 	if (Adaptive::ChatWide()) {
 		maxwidth = std::min(maxwidth, qint32(st::msgMaxWidth + 2 * st::msgPhotoSkip + 2 * st::msgMargin.left()));
