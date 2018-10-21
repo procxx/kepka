@@ -48,7 +48,7 @@ GroupMembersWidget::GroupMembersWidget(QWidget *parent, PeerData *peer, TitleVis
 	          Notify::PeerUpdatedHandler(observeEvents,
 	                                     [this](const Notify::PeerUpdate &update) { notifyPeerUpdated(update); }));
 
-	setRemovedCallback([this, peer](PeerData *selectedPeer) { removePeer(selectedPeer); });
+	setRemovedCallback([this](PeerData *selectedPeer) { removePeer(selectedPeer); });
 	setSelectedCallback([](PeerData *selectedPeer) { Ui::showPeerProfile(selectedPeer); });
 	setUpdateItemCallback([this](Item *item) { updateItemStatusText(item); });
 	setPreloadMoreCallback([this] { preloadMore(); });
@@ -203,22 +203,9 @@ Ui::PopupMenu *GroupMembersWidget::fillPeerMenu(PeerData *selectedPeer) {
 	auto user = selectedPeer->asUser();
 	auto result = new Ui::PopupMenu(nullptr);
 	result->addAction(lang(lng_context_view_profile), [selectedPeer] { Ui::showPeerProfile(selectedPeer); });
-	auto chat = peer()->asChat();
 	auto channel = peer()->asMegagroup();
 	for_const (auto item, items()) {
 		if (item->peer == selectedPeer) {
-			auto canRemoveAdmin = [item, chat, channel] {
-				if ((item->adminState == Item::AdminState::Admin) && !item->peer->isSelf()) {
-					if (chat) {
-						// Adding of admins from context menu of chat participants
-						// is not supported, so the removing is also disabled.
-						return false; // chat->amCreator();
-					} else if (channel) {
-						return channel->amCreator();
-					}
-				}
-				return false;
-			};
 			if (channel) {
 				if (channel->canEditAdmin(user)) {
 					auto label = lang((item->adminState != Item::AdminState::None) ? lng_context_edit_permissions :

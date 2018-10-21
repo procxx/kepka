@@ -974,7 +974,7 @@ bool Instance::Private::onErrorDefault(mtpRequestId requestId, const RPCError &e
 	auto &err(error.type());
 	auto code = error.code();
 	if (!isFloodError(error) && err != qstr("AUTH_KEY_UNREGISTERED")) {
-		int breakpoint = 0;
+		// int breakpoint = 0;
 	}
 	auto badGuestDc = (code == 400) && (err == qsl("FILE_ID_INVALID"));
 	QRegularExpressionMatch m;

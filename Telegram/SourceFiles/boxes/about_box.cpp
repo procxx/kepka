@@ -43,7 +43,6 @@ AboutBox::AboutBox(QWidget *parent)
     , _text3(this, st::aboutLabel) {}
 
 void AboutBox::prepare() {
-	constexpr auto test = std::is_convertible<const char *, QString>::value;
 	setTitle([] { return str_const_toString(AppName); });
 
 	addButton(langFactory(lng_close), [this] { closeBox(); });

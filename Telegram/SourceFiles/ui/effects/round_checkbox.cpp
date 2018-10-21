@@ -90,7 +90,6 @@ void RoundCheckbox::paint(Painter &p, TimeMs ms, int x, int y, int outerWidth, d
 
 	auto cacheSize = kWideScale * _st.size * cIntRetinaFactor();
 	auto cacheFrom = QRect(0, 0, cacheSize, cacheSize);
-	auto displayInactive = !_inactiveCacheBg.isNull();
 	auto inactiveTo = cacheDestRect(x, y, masterScale);
 
 	PainterHighQualityEnabler hq(p);

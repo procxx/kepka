@@ -100,13 +100,13 @@ CoverWidget::CoverWidget(QWidget *parent)
 		_playback->setValue(value, false);
 		handleSeekFinished(value);
 	});
-	_playPause->setClickedCallback([this] { instance()->playPauseCancelClicked(AudioMsgId::Type::Song); });
+	_playPause->setClickedCallback([] { instance()->playPauseCancelClicked(AudioMsgId::Type::Song); });
 
 	updateRepeatTrackIcon();
-	_repeatTrack->setClickedCallback([this] { instance()->toggleRepeat(AudioMsgId::Type::Song); });
+	_repeatTrack->setClickedCallback([] { instance()->toggleRepeat(AudioMsgId::Type::Song); });
 
 	updateVolumeToggleIcon();
-	_volumeToggle->setClickedCallback([this]() {
+	_volumeToggle->setClickedCallback([]() {
 		Global::SetSongVolume((Global::SongVolume() > 0) ? 0. : Global::RememberedSongVolume());
 		mixer()->setSongVolume(Global::SongVolume());
 		Global::RefSongVolumeChanged().notify();
@@ -359,10 +359,10 @@ void CoverWidget::createPrevNextButtons() {
 	if (!_previousTrack) {
 		_previousTrack.create(this, st::mediaPlayerPanelPreviousButton);
 		_previousTrack->show();
-		_previousTrack->setClickedCallback([this]() { instance()->previous(); });
+		_previousTrack->setClickedCallback([]() { instance()->previous(); });
 		_nextTrack.create(this, st::mediaPlayerPanelNextButton);
 		_nextTrack->show();
-		_nextTrack->setClickedCallback([this]() { instance()->next(); });
+		_nextTrack->setClickedCallback([]() { instance()->next(); });
 		updatePlayPrevNextPositions();
 	}
 }

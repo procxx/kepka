@@ -2762,7 +2762,6 @@ FileLocation readFileLocation(MediaKey location, bool check) {
 		location = aliasIt.value();
 	}
 
-	FileLocations::iterator i = _fileLocations.find(location);
 	for (FileLocations::iterator i = _fileLocations.find(location);
 	     (i != _fileLocations.end()) && (i.key() == location);) {
 		if (check) {
@@ -2857,7 +2856,6 @@ public:
 
 		QByteArray imageData;
 		quint64 locFirst, locSecond;
-		quint32 legacyTypeField = 0;
 		readFromStream(image.stream, locFirst, locSecond, imageData);
 
 		// we're saving files now before we have actual location

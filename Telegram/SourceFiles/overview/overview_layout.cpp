@@ -555,7 +555,7 @@ void Voice::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 	}
 	bool radial = isRadialAnimation(context->ms);
 
-	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = -1;
+	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0;
 
 	nameleft = _st.songPadding.left() + _st.songThumbSize + _st.songPadding.right();
 	nameright = _st.songPadding.left();
@@ -639,7 +639,7 @@ void Voice::paint(Painter &p, const QRect &clip, TextSelection selection, const 
 void Voice::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoint point) const {
 	bool loaded = _data->loaded();
 
-	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = 0;
+	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0;
 
 	nameleft = _st.songPadding.left() + _st.songThumbSize + _st.songPadding.right();
 	nameright = _st.songPadding.left();
@@ -932,8 +932,6 @@ void Document::getState(ClickHandlerPtr &link, HistoryCursorState &cursor, QPoin
 	bool loaded = _data->loaded() || Local::willStickerImageLoad(_data->mediaKey());
 
 	qint32 nameleft = 0, nametop = 0, nameright = 0, statustop = 0, datetop = 0;
-	bool wthumb = withThumb();
-
 	if (_data->song()) {
 		nameleft = _st.songPadding.left() + _st.songThumbSize + _st.songPadding.right();
 		nameright = _st.songPadding.left();

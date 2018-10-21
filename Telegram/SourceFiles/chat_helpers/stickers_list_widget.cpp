@@ -489,7 +489,6 @@ object_ptr<TabbedSelector::InnerFooter> StickersListWidget::createFooter() {
 }
 
 void StickersListWidget::setVisibleTopBottom(int visibleTop, int visibleBottom) {
-	auto top = getVisibleTop();
 	Inner::setVisibleTopBottom(visibleTop, visibleBottom);
 	if (_section == Section::Featured) {
 		readVisibleSets();
@@ -1501,7 +1500,6 @@ void StickersListWidget::updateSelected() {
 					newSelected = OverGroupAdd{};
 				}
 			} else {
-				auto special = ((set.flags & MTPDstickerSet::Flag::f_official) != 0);
 				int rowIndex = std::floor(yOffset / st::stickerPanSize.height());
 				int columnIndex = std::floor(sx / st::stickerPanSize.width());
 				auto index = rowIndex * kStickersPanelPerRow + columnIndex;

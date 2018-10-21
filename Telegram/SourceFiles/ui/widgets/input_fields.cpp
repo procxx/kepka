@@ -302,7 +302,7 @@ void FlatTextarea::touchEvent(QTouchEvent *e) {
 	case QEvent::TouchEnd:
 		if (!_touchPress) return;
 		if (!_touchMove && window()) {
-			QPoint mapped(mapFromGlobal(_touchStart)), winMapped(window()->mapFromGlobal(_touchStart));
+			QPoint mapped(mapFromGlobal(_touchStart));
 
 			if (_touchRightButton) {
 				QContextMenuEvent contextEvent(QContextMenuEvent::Mouse, mapped, _touchStart);
@@ -1565,7 +1565,7 @@ void FlatInput::touchEvent(QTouchEvent *e) {
 	case QEvent::TouchEnd:
 		if (!_touchPress) return;
 		if (!_touchMove && window()) {
-			QPoint mapped(mapFromGlobal(_touchStart)), winMapped(window()->mapFromGlobal(_touchStart));
+			QPoint mapped(mapFromGlobal(_touchStart));
 
 			if (_touchRightButton) {
 				QContextMenuEvent contextEvent(QContextMenuEvent::Mouse, mapped, _touchStart);
@@ -1901,8 +1901,7 @@ void InputArea::touchEvent(QTouchEvent *e) {
 	case QEvent::TouchEnd:
 		if (!_touchPress) return;
 		if (!_touchMove && window()) {
-			Qt::MouseButton btn(_touchRightButton ? Qt::RightButton : Qt::LeftButton);
-			QPoint mapped(mapFromGlobal(_touchStart)), winMapped(window()->mapFromGlobal(_touchStart));
+			QPoint mapped(mapFromGlobal(_touchStart));
 
 			if (_touchRightButton) {
 				QContextMenuEvent contextEvent(QContextMenuEvent::Mouse, mapped, _touchStart);
@@ -2647,8 +2646,7 @@ void InputField::touchEvent(QTouchEvent *e) {
 	case QEvent::TouchEnd:
 		if (!_touchPress) return;
 		if (!_touchMove && window()) {
-			Qt::MouseButton btn(_touchRightButton ? Qt::RightButton : Qt::LeftButton);
-			QPoint mapped(mapFromGlobal(_touchStart)), winMapped(window()->mapFromGlobal(_touchStart));
+			QPoint mapped(mapFromGlobal(_touchStart));
 
 			if (_touchRightButton) {
 				QContextMenuEvent contextEvent(QContextMenuEvent::Mouse, mapped, _touchStart);
@@ -3437,8 +3435,7 @@ void MaskedInputField::touchEvent(QTouchEvent *e) {
 	case QEvent::TouchEnd:
 		if (!_touchPress) return;
 		if (!_touchMove && window()) {
-			Qt::MouseButton btn(_touchRightButton ? Qt::RightButton : Qt::LeftButton);
-			QPoint mapped(mapFromGlobal(_touchStart)), winMapped(window()->mapFromGlobal(_touchStart));
+			QPoint mapped(mapFromGlobal(_touchStart));
 
 			if (_touchRightButton) {
 				QContextMenuEvent contextEvent(QContextMenuEvent::Mouse, mapped, _touchStart);

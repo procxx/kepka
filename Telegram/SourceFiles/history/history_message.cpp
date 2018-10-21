@@ -711,7 +711,7 @@ HistoryMessage::HistoryMessage(not_null<History *> history, MsgId id, MTPDmessag
 
 	createComponents(config);
 
-	auto cloneMedia = [this, history, mediaType] {
+	auto cloneMedia = [history, mediaType] {
 		if (mediaType == MediaTypeWebPage) {
 			if (auto channel = history->peer->asChannel()) {
 				if (channel->restrictedRights().is_embed_links()) {
@@ -1840,7 +1840,7 @@ void HistoryMessage::paintFromName(Painter &p, QRect &trect, bool selected) cons
 
 void HistoryMessage::paintForwardedInfo(Painter &p, QRect &trect, bool selected) const {
 	if (displayForwardedFrom()) {
-		style::font serviceFont(st::msgServiceFont), serviceName(st::msgServiceNameFont);
+		style::font serviceFont(st::msgServiceFont);
 
 		auto outbg = hasOutLayout();
 		p.setPen(selected ? (outbg ? st::msgOutServiceFgSelected : st::msgInServiceFgSelected) :
@@ -2180,7 +2180,6 @@ void HistoryMessage::updatePressed(QPoint point) {
 
 	if (drawBubble()) {
 		auto mediaDisplayed = _media && _media->isDisplayed();
-		auto top = marginTop();
 		auto trect = g.marginsAdded(-st::msgPadding);
 		if (mediaDisplayed && _media->isBubbleTop()) {
 			trect.setY(trect.y() - st::msgPadding.top());
@@ -2205,7 +2204,6 @@ void HistoryMessage::updatePressed(QPoint point) {
 			trect.setHeight(trect.height() + st::msgPadding.bottom());
 		}
 
-		auto needDateCheck = true;
 		if (mediaDisplayed) {
 			auto mediaAboveText = _media->isAboveMessage();
 			auto mediaHeight = _media->height();

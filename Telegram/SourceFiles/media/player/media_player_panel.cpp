@@ -118,7 +118,6 @@ int Panel::bestPositionFor(int left) const {
 void Panel::scrollPlaylistToCurrentTrack() {
 	if (auto list = static_cast<ListWidget *>(_scroll->widget())) {
 		auto rect = list->getCurrentTrackGeometry();
-		auto top = _scroll->scrollTop(), bottom = top + _scroll->height();
 		_scroll->scrollToY(rect.y());
 	}
 }

@@ -113,7 +113,6 @@ void InnerWidget::paintEvent(QPaintEvent *e) {
 	p.fillRect(e->rect(), st::profileBg);
 
 	if (_mode == Mode::TwoColumn) {
-		int leftHeight = countBlocksHeight(RectPart::Left);
 		int rightHeight = countBlocksHeight(RectPart::Right);
 		int shadowHeight = rightHeight; // std::min(leftHeight, rightHeight);
 

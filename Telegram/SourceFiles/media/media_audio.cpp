@@ -1393,7 +1393,6 @@ public:
 			return false;
 		}
 
-		int res = 0;
 		char err[AV_ERROR_MAX_STRING_SIZE] = {0};
 
 		int videoStreamId = av_find_best_stream(fmtContext, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0);

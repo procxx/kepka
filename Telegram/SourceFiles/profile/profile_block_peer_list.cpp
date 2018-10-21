@@ -67,7 +67,6 @@ void PeerListWidget::paintContents(Painter &p) {
 	auto ms = getms();
 	auto left = getListLeft();
 	auto top = getListTop();
-	auto memberRowWidth = rowWidth();
 
 	auto from = floorclamp(_visibleTop - top, st::profileMemberHeight, 0, _items.size());
 	auto to = ceilclamp(_visibleBottom - top, st::profileMemberHeight, 0, _items.size());

@@ -441,7 +441,6 @@ bool FlatLabel::event(QEvent *e) {
 }
 
 void FlatLabel::touchEvent(QTouchEvent *e) {
-	const Qt::TouchPointStates &states(e->touchPointStates());
 	if (e->type() == QEvent::TouchCancel) { // cancel
 		if (!_touchInProgress) return;
 		_touchInProgress = false;
