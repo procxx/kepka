@@ -2026,40 +2026,24 @@ void DialogsInner::loadPeerPhotos() {
 				_filterResults[from]->history()->peer->loadUserpic();
 			}
 		}
-
-		from = (yFrom > filteredOffset() + st::searchedBarHeight ?
-		            ((yFrom - filteredOffset() - st::searchedBarHeight) / qint32(st::dialogsRowHeight)) :
-		            0) -
-		       _filterResults.size();
+		auto offset = filteredOffset() + st::searchedBarHeight;
+		from = (yFrom > offset ? ((yFrom - offset) / qint32(st::dialogsRowHeight)) : 0) - _filterResults.size();
 		if (from < 0) from = 0;
 		if (from < _peerSearchResults.size()) {
-			qint32 to = (yTo > filteredOffset() + st::searchedBarHeight ?
-			                 ((yTo - filteredOffset() - st::searchedBarHeight) / qint32(st::dialogsRowHeight)) :
-			                 0) -
-			            _filterResults.size() + 1;
+			qint32 to =
+			    (yTo > offset ? ((yTo - offset) / qint32(st::dialogsRowHeight)) : 0) - _filterResults.size() + 1;
 			if (to > _peerSearchResults.size()) to = _peerSearchResults.size();
 
 			for (; from < to; ++from) {
 				_peerSearchResults[from]->peer->loadUserpic();
 			}
 		}
-		from = (yFrom > filteredOffset() +
-		                    ((_peerSearchResults.empty() ? 0 : st::searchedBarHeight) + st::searchedBarHeight) ?
-		            ((yFrom - filteredOffset() - (_peerSearchResults.empty() ? 0 : st::searchedBarHeight) -
-		              st::searchedBarHeight) /
-		             qint32(st::dialogsRowHeight)) :
-		            0) -
-		       _filterResults.size() - _peerSearchResults.size();
+		auto offset2 = offset + (_peerSearchResults.empty() ? 0 : st::searchedBarHeight);
+		auto results_size = _filterResults.size() + _peerSearchResults.size();
+		from = (yFrom > offset2 ? ((yFrom - offset2) / qint32(st::dialogsRowHeight)) : 0) - results_size;
 		if (from < 0) from = 0;
 		if (from < _searchResults.size()) {
-			qint32 to = (yTo > filteredOffset() + (_peerSearchResults.empty() ? 0 : st::searchedBarHeight) +
-			                         st::searchedBarHeight ?
-			                 ((yTo - filteredOffset() - (_peerSearchResults.empty() ? 0 : st::searchedBarHeight) -
-			                   st::searchedBarHeight) /
-			                  qint32(st::dialogsRowHeight)) :
-			                 0) -
-			            _filterResults.size() - _peerSearchResults.size() + 1,
-			       w = width();
+			qint32 to = (yTo > offset2 ? ((yTo - offset2) / qint32(st::dialogsRowHeight)) : 0) - results_size + 1;
 			if (to > _searchResults.size()) to = _searchResults.size();
 
 			for (; from < to; ++from) {

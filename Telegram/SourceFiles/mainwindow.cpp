@@ -1609,11 +1609,9 @@ void LastCrashedWindow::updateControls() {
 	h += _networkSettings.height() + padding;
 
 	QRect scr(QApplication::primaryScreen()->availableGeometry());
-	QSize s(2 * padding +
-	            QFontMetrics(_label.font())
-	                .width(qsl("Last time %1 was not closed properly.").arg(str_const_toString(AppName))) +
-	            padding + _networkSettings.width(),
-	        h);
+	auto label_width = QFontMetrics(_label.font())
+	                       .width(qsl("Last time %1 was not closed properly.").arg(str_const_toString(AppName)));
+	QSize s(2 * padding + label_width + padding + _networkSettings.width(), h);
 	if (s == size()) {
 		resizeEvent(0);
 	} else {
