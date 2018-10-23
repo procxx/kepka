@@ -169,7 +169,7 @@ inline const char *cGUIDStr() {
 	return gGuidStr;
 }
 
-inline const char **cPublicRSAKeys(int &keysCount) {
+inline const char **cPublicRSAKeys(size_t &keysCount) {
 	static const char *(keys[]) = {"\
 -----BEGIN RSA PUBLIC KEY-----\n\
 MIIBCgKCAQEAwVACPi9w23mF3tBkdZz+zwrzKOaaQdr01vAbU4E1pvkfj4sqDsm6\n\

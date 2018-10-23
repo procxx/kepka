@@ -587,13 +587,13 @@ using MTPString = MTPBoxed<MTPstring>;
 using MTPBytes = MTPBoxed<MTPbytes>;
 
 inline MTPstring MTP_string(const std::string &v) {
-	return MTPstring(QByteArray(v.data(), v.size()));
+	return MTPstring(QByteArray(v.data(), static_cast<int>(v.size())));
 }
 inline MTPstring MTP_string(const QString &v) {
 	return MTPstring(v.toUtf8());
 }
 inline MTPstring MTP_string(const char *v) {
-	return MTPstring(QByteArray(v, strlen(v)));
+	return MTPstring(QByteArray(v, static_cast<int>(strlen(v))));
 }
 MTPstring MTP_string(const QByteArray &v) = delete;
 
@@ -604,7 +604,7 @@ inline MTPbytes MTP_bytes(QByteArray &&v) {
 	return MTPbytes(std::move(v));
 }
 inline MTPbytes MTP_bytes(base::const_byte_span bytes) {
-	return MTP_bytes(QByteArray(reinterpret_cast<const char *>(bytes.data()), bytes.size()));
+	return MTP_bytes(QByteArray(reinterpret_cast<const char *>(bytes.data()), static_cast<int>(bytes.size())));
 }
 inline MTPbytes MTP_bytes(const std::vector<gsl::byte> &bytes) {
 	return MTP_bytes(gsl::make_span(bytes));
@@ -714,7 +714,7 @@ struct MTPStringLogger {
 	}
 
 	MTPStringLogger &add(const char *data, qint32 len = -1) {
-		if (len < 0) len = strlen(data);
+		if (len < 0) len = static_cast<qint32>(strlen(data));
 		if (!len) return (*this);
 
 		ensureLength(len);
