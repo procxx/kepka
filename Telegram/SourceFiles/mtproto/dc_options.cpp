@@ -53,9 +53,9 @@ private:
 };
 
 void DcOptions::readBuiltInPublicKeys() {
-	auto keysCount = 0;
+	size_t keysCount = 0;
 	auto keys = cPublicRSAKeys(keysCount);
-	for (auto i = 0; i != keysCount; ++i) {
+	for (size_t i = 0; i != keysCount; ++i) {
 		auto keyBytes = gsl::as_bytes(gsl::make_span(keys[i], keys[i] + strlen(keys[i])));
 		auto key = internal::RSAPublicKey(keyBytes);
 		if (key.isValid()) {
