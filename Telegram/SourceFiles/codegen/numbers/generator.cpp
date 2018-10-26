@@ -50,12 +50,12 @@ bool Generator::writeSource() {
 	source_->stream() << R"code(const std::map<QString, QVector<int>> RulesMap = {
 )code";
 	for (auto rule = rules_.data.cbegin(), e = rules_.data.cend(); rule != e; ++rule) {
-		auto k =rule.key();
+		auto k = rule.key();
 		source_->stream() << "{\"" << k << "\",{";
-		for (auto &c: rule.key()) {
+		for (auto &c : rule.key()) {
 			source_->stream() << c.toLatin1() << ",";
 		}
-		source_->stream()<< "}},\n";
+		source_->stream() << "}},\n";
 	}
 	source_->stream() << "\
 };";

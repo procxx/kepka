@@ -238,13 +238,17 @@ bool Generator::writeSource() {
 		source_->pushNamespace().newline();
 		source_->stream() << R"code(bool inited = false;
 
-class Module_)code" << baseName_<< R"code( : public style::internal::ModuleBase {
+class Module_)code" << baseName_
+		                  << R"code( : public style::internal::ModuleBase {
 public:
-	Module_)code" << baseName_ << R"code(() { style::internal::registerModule(this); }
-	~Module_)code" << baseName_ << R"code(() { style::internal::unregisterModule(this); }
+	Module_)code" << baseName_
+		                  << R"code(() { style::internal::registerModule(this); }
+	~Module_)code" << baseName_
+		                  << R"code(() { style::internal::unregisterModule(this); }
 
 	void start() override {
-		style::internal::init_)code"  << baseName_ << R"code(();
+		style::internal::init_)code"
+		                  << baseName_ << R"code(();
 	}
 	void stop() override {
 	}
@@ -480,7 +484,8 @@ public:
 		    }
 
 		    auto index = (indexInPalette++);
-		    header_->stream() << "\tinline const color &get_" << name << "() const { return _colors[" << index    << "]; };\n";
+		    header_->stream() << "\tinline const color &get_" << name << "() const { return _colors[" << index
+		                      << "]; };\n";
 		    return true;
 	    }))
 		return false;
@@ -827,12 +832,12 @@ qint32 palette::Checksum() {
 
 	source_->newline().pushNamespace().newline();
 
-    source_->stream() << R"code(const std::map<std::string, int> PaletteMap = {
+	source_->stream() << R"code(const std::map<std::string, int> PaletteMap = {
 )code";
-    for (auto &ind : paletteIndices_) {
-        source_->stream() << "{\"" << ind.first << "\"," << ind.second << "},\n";
-    }
-    source_->stream() << "\
+	for (auto &ind : paletteIndices_) {
+		source_->stream() << "{\"" << ind.first << "\"," << ind.second << "},\n";
+	}
+	source_->stream() << "\
 \n\
 };";
 
@@ -931,7 +936,8 @@ int indexOfColor(color c) {
 
 QList<row> data() {
 	auto result = QList<row>();
-	result.reserve()code" << count //TODO(Randl)
+	result.reserve()code"
+	                  << count // TODO(Randl)
 	                  << R"code();
 
 )code" << dataRows << R"code(
