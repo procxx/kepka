@@ -236,8 +236,7 @@ bool Generator::writeSource() {
 
 	if (module_.hasVariables()) {
 		source_->pushNamespace().newline();
-		source_->stream() << R"code(
-bool inited = false;
+		source_->stream() << R"code(bool inited = false;
 
 class Module_)code" << baseName_<< R"code( : public style::internal::ModuleBase {
 public:
@@ -443,8 +442,7 @@ bool Generator::writeHeaderStyleNamespace() {
 }
 
 bool Generator::writePaletteDefinition() {
-	header_->stream() << R"code(
-class palette {
+	header_->stream() << R"code(class palette {
 public:
 	palette() = default;
 	palette(const palette &other) = delete;
@@ -489,7 +487,6 @@ public:
 
 	auto count = indexInPalette;
 	header_->stream() << R"code(
-
 	palette &operator=(const palette &other) {
 		auto wasReady = _ready;
 		for (int i = 0; i != kCount; ++i) {
@@ -574,8 +571,7 @@ private:
 	for (int i = 0; i != count; ++i) {
 		header_->stream() << "\t\tdata(" << i << "),\n";
 	}
-	header_->stream() << R"code(
-	};
+	header_->stream() << R"code(	};
 	Status _status[kCount] = { Status::Initial };
 	bool _ready = false;
 
@@ -592,14 +588,15 @@ void reset();
 int indexOfColor(color c);
 
 struct row {
-    QLatin1String name;
-    QLatin1String value;
-    QLatin1String fallback;
-    QLatin1String description;
+	QLatin1String name;
+	QLatin1String value;
+	QLatin1String fallback;
+	QLatin1String description;
 };
 QList<row> data();
 
-} // namespace main_palette)code";
+} // namespace main_palette
+)code";
 
 	return true;
 }
@@ -821,8 +818,7 @@ void palette::finalize() {
 	auto count = indexInPalette;
 	auto checksum = hashCrc32(checksumString.constData(), checksumString.size());
 
-	source_->stream() << R"code(
-}
+	source_->stream() << R"code(}
 
 qint32 palette::Checksum() {
 	return )code" << checksum
@@ -830,12 +826,11 @@ qint32 palette::Checksum() {
 }\n";
 
 	source_->newline().pushNamespace().newline();
-	source_->stream() << R"code(
-int getPaletteIndex(QLatin1String name) {
+	source_->stream() << R"code(int getPaletteIndex(QLatin1String name) {
 	auto size = name.size();
 	auto data = name.data();
 )code";
-
+	// TODO(Randl)
 	auto tabs = [](int size) { return QString(size, '\t'); };
 
 	enum class UsedCheckType {
@@ -969,20 +964,18 @@ int getPaletteIndex(QLatin1String name) {
 	finishChecksTillKey(QString());
 
 	source_->stream() << R"code(
-
 	return -1;
 }
 )code";
 
 	source_->newline().popNamespace().newline();
-	source_->stream() << R"code(
-QByteArray palette::save() const {
+	source_->stream() << R"code(QByteArray palette::save() const {
 	if (!_ready) const_cast<palette*>(this)->finalize();
 
-	auto result = QByteArray("
-	                  << (count * 4) << ", Qt::Uninitialized);
+	auto result = QByteArray()code"
+	                  << (count * 4) << R"code(, Qt::Uninitialized);
 	for (auto i = 0, index = 0; i != )code"
-	                  << count << R"code("; ++i) {
+	                  << count << R"code(; ++i) {
 		result[index++] = static_cast<uchar>(data(i)->c.red());
 		result[index++] = static_cast<uchar>(data(i)->c.green());
 		result[index++] = static_cast<uchar>(data(i)->c.blue());
@@ -1066,7 +1059,6 @@ QList<row> data() {
 	                  << R"code();
 
 )code" << dataRows << R"code(
-
 	return result;
 }
 
@@ -1161,11 +1153,11 @@ bool Generator::writePxValuesInit() {
 	for (auto i = pxValues_.cbegin(), e = pxValues_.cend(); i != e; ++i) {
 		source_->stream() << "int " << pxValueName(i.key()) << " = " << i.key() << ";\n";
 	}
-	source_->stream() << R"code(
-void initPxValues() {
+	source_->stream() << R"code(void initPxValues() {
 	if (cRetina()) return;
 
-	switch (cScale()) {)code";
+	switch (cScale()) {
+)code";
 	for (int i = 1, scalesCount = _scales.size(); i < scalesCount; ++i) {
 		source_->stream() << "\tcase " << _scaleNames.at(i) << ":\n";
 		for (auto it = pxValues_.cbegin(), e = pxValues_.cend(); it != e; ++it) {
