@@ -826,145 +826,21 @@ qint32 palette::Checksum() {
 }\n";
 
 	source_->newline().pushNamespace().newline();
-	source_->stream() << R"code(int getPaletteIndex(QLatin1String name) {
-	auto size = name.size();
-	auto data = name.data();
+
+    source_->stream() << R"code(const std::map<std::string, int> PaletteMap = {
 )code";
-	// TODO(Randl)
-	auto tabs = [](int size) { return QString(size, '\t'); };
-
-	enum class UsedCheckType {
-		Switch,
-		If,
-		UpcomingIf,
-	};
-	auto checkTypes = QVector<UsedCheckType>();
-	auto checkLengthHistory = QVector<int>(1, 0);
-	auto chars = QString();
-	auto tabsUsed = 1;
-
-	// Returns true if at least one check was finished.
-	auto finishChecksTillKey = [this, &chars, &checkTypes, &checkLengthHistory, &tabsUsed, tabs](const QString &key) {
-		auto result = false;
-		while (!chars.isEmpty() && key.midRef(0, chars.size()) != chars) {
-			result = true;
-
-			auto wasType = checkTypes.back();
-			chars.resize(chars.size() - 1);
-			checkTypes.pop_back();
-			checkLengthHistory.pop_back();
-			if (wasType == UsedCheckType::Switch || wasType == UsedCheckType::If) {
-				--tabsUsed;
-				if (wasType == UsedCheckType::Switch) {
-					source_->stream() << tabs(tabsUsed) << "break;\n";
-				}
-				if ((!chars.isEmpty() && key.midRef(0, chars.size()) != chars) || key == chars) {
-					source_->stream() << tabs(tabsUsed) << "}\n";
-				}
-			}
-		}
-		return result;
-	};
-
-	// Check if we can use "if" for a check on "charIndex" in "it" (otherwise only "switch")
-	auto canUseIfForCheck = [](auto it, auto end, int charIndex) {
-		auto key = it->first;
-		auto i = it;
-		auto keyStart = key.mid(0, charIndex);
-		for (++i; i != end; ++i) {
-			auto nextKey = i->first;
-			if (nextKey.mid(0, charIndex) != keyStart) {
-				return true;
-			} else if (nextKey.size() > charIndex && nextKey[charIndex] != key[charIndex]) {
-				return false;
-			}
-		}
-		return true;
-	};
-
-	auto countMinimalLength = [](auto it, auto end, int charIndex) {
-		auto key = it->first;
-		auto i = it;
-		auto keyStart = key.mid(0, charIndex);
-		auto result = key.size();
-		for (++i; i != end; ++i) {
-			auto nextKey = i->first;
-			if (nextKey.mid(0, charIndex) != keyStart) {
-				break;
-			} else if (nextKey.size() > charIndex && result > nextKey.size()) {
-				result = nextKey.size();
-			}
-		}
-		return result;
-	};
-
-	for (auto i = paletteIndices_.begin(), e = paletteIndices_.end(); i != e; ++i) {
-		auto name = i->first;
-		auto index = i->second;
-
-		auto weContinueOldSwitch = finishChecksTillKey(name);
-		while (chars.size() != name.size()) {
-			auto checking = chars.size();
-			auto partialKey = name.mid(0, checking);
-
-			auto keyChar = name[checking];
-			auto usedIfForCheckCount = 0;
-			auto minimalLengthCheck = countMinimalLength(i, e, checking);
-			for (; checking + usedIfForCheckCount != name.size(); ++usedIfForCheckCount) {
-				if (!canUseIfForCheck(i, e, checking + usedIfForCheckCount) ||
-				    countMinimalLength(i, e, checking + usedIfForCheckCount) != minimalLengthCheck) {
-					break;
-				}
-			}
-			auto usedIfForCheck = !weContinueOldSwitch && (usedIfForCheckCount > 0);
-			auto checkLengthCondition = QString();
-			if (weContinueOldSwitch) {
-				weContinueOldSwitch = false;
-			} else {
-				checkLengthCondition = (minimalLengthCheck > checkLengthHistory.back()) ?
-				                           ("size >= " + QString::number(minimalLengthCheck)) :
-				                           QString();
-				if (!usedIfForCheck) {
-					source_->stream() << tabs(tabsUsed)
-					                  << (checkLengthCondition.isEmpty() ? QString() :
-					                                                       ("if (" + checkLengthCondition + ") "))
-					                  << "switch (data[" << checking << "]) {\n";
-				}
-			}
-			if (usedIfForCheck) {
-				auto conditions = QStringList();
-				if (usedIfForCheckCount > 1) {
-					conditions.push_back("!memcmp(data + " + QString::number(checking) + ", \"" +
-					                     name.mid(checking, usedIfForCheckCount) + "\", " +
-					                     QString::number(usedIfForCheckCount) + ")");
-				} else {
-					conditions.push_back("data[" + QString::number(checking) + "] == '" + keyChar + "'");
-				}
-				if (!checkLengthCondition.isEmpty()) {
-					conditions.push_front(checkLengthCondition);
-				}
-				source_->stream() << tabs(tabsUsed) << "if (" << conditions.join(" && ") << ") {\n";
-				checkTypes.push_back(UsedCheckType::If);
-				for (auto i = 1; i != usedIfForCheckCount; ++i) {
-					checkTypes.push_back(UsedCheckType::UpcomingIf);
-					chars.push_back(keyChar);
-					checkLengthHistory.push_back(std::max(minimalLengthCheck, checkLengthHistory.back()));
-					keyChar = name[checking + i];
-				}
-			} else {
-				source_->stream() << tabs(tabsUsed) << "case '" << keyChar << "':\n";
-				checkTypes.push_back(UsedCheckType::Switch);
-			}
-			++tabsUsed;
-			chars.push_back(keyChar);
-			checkLengthHistory.push_back(std::max(minimalLengthCheck, checkLengthHistory.back()));
-		}
-		source_->stream() << tabs(tabsUsed) << "return (size == " << chars.size() << ") ? " << index << " : -1;\n";
-	}
-	finishChecksTillKey(QString());
+    for (auto &ind : paletteIndices_) {
+        source_->stream() << "{\"" << ind.first << "\"," << ind.second << "},\n";
+    }
+    source_->stream() << "\
+\n\
+};";
 
 	source_->stream() << R"code(
-	return -1;
+
+int getPaletteIndex(QLatin1String name) {
+	auto data = name.data();
+    return PaletteMap.find(data) != PaletteMap.end() ? PaletteMap.at(data) : -1;
 }
 )code";
 
@@ -1055,7 +931,7 @@ int indexOfColor(color c) {
 
 QList<row> data() {
 	auto result = QList<row>();
-	result.reserve()code" << count
+	result.reserve()code" << count //TODO(Randl)
 	                  << R"code();
 
 )code" << dataRows << R"code(
