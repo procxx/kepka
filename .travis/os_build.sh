@@ -3,7 +3,7 @@
 set -x
 
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
-    docker run --rm -v $PWD:/repo -v ~/.travis:/travis berkus/docker-cpp-ci /bin/sh -c "cd /repo/_build_; conan install .. --build missing; /repo/.travis/build.sh" || exit 1
+    docker run --rm -v $PWD:/repo -v ~/.travis:/travis procpp/docker-cpp-ci /bin/sh -c "cd /repo/_build_; conan install .. --build missing; /repo/.travis/build.sh" || exit 1
 fi
 
 if [ "$TRAVIS_OS_NAME" == "osx" ]; then
