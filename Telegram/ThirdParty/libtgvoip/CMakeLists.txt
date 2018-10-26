@@ -116,9 +116,6 @@ if (APPLE)
 endif()
 
 if (LINUX)
-    find_package(ALSA)
-    find_package(PulseAudio)
-
     if (ALSA_FOUND)
         target_sources(tgvoip PRIVATE
             os/linux/AudioInputALSA.cpp
