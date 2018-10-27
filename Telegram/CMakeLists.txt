@@ -103,7 +103,7 @@ add_custom_command(
         scheme.cpp
         scheme.h
     COMMAND
-        python ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/SourceFiles/codegen/scheme/codegen_scheme.py
         -o${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/Resources/scheme.tl
     WORKING_DIRECTORY .
     DEPENDS
