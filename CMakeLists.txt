@@ -68,6 +68,7 @@ find_package(ZLIB REQUIRED)
 find_package(FFmpeg REQUIRED)
 find_package(Opus REQUIRED)
 find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)
+find_package(Python3 REQUIRED)
 
 if (NOT SWSCALE_FOUND)
     message(FATAL_ERROR "FFmpeg swscale is required")
