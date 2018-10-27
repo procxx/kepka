@@ -482,6 +482,7 @@ if (APPLE)
 endif()
 
 if (WIN32)
+    configure_file(Resources/winrc/Kepka.rc.in Resources/winrc/Kepka.rc)
     target_sources(Kepka PRIVATE
         SourceFiles/platform/win/audio_win.cpp
         SourceFiles/platform/win/file_utilities_win.cpp
@@ -493,7 +494,7 @@ if (WIN32)
         SourceFiles/platform/win/windows_dlls.cpp
         SourceFiles/platform/win/windows_event_filter.cpp
 
-        Resources/winrc/Telegram.rc
+        ${CMAKE_CURRENT_BINARY_DIR}/Resources/winrc/Kepka.rc
     )
     set(tg_RESOURCES Resources/qrc/telegram_wnd.qrc)
 endif()
