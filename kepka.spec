@@ -34,6 +34,7 @@ BuildRequires: minizip-devel
 BuildRequires: opus-devel
 BuildRequires: zlib-devel
 BuildRequires: xz-devel
+BuildRequires: python3
 
 # Development packages for libtgvoip...
 BuildRequires: pulseaudio-libs-devel
