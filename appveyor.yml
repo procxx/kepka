@@ -31,7 +31,7 @@ before_build:
   - cmd: .appveyor\before_build.cmd
 
 build_script:
-  - cmd: .appveyor\build.cmd
+  - ps: .appveyor\build.ps1
 
 after_build:
   - ps: .appveyor\after_build.ps1
