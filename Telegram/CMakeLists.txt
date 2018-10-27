@@ -167,9 +167,6 @@ endforeach()
 ##================================================
 ## Branding
 ##================================================
-set(KEPKA_APPNAME "Kepka"
-    CACHE STRING "Application name")
-
 configure_file(SourceFiles/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 ##================================================
