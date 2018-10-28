@@ -126,7 +126,6 @@ The source code is published under GPLv3 with OpenSSL exception, the license is 
 ## Third-party
 
 * [CMake 3.10+][cmake-build]
-
 * Qt 5.9+ ([LGPL](http://doc.qt.io/qt-5/lgpl.html))
 * OpenSSL 1.0.1g ([OpenSSL License](https://www.openssl.org/source/license.html))
 * zlib 1.2.8 ([zlib License](http://www.zlib.net/zlib_license.html))
