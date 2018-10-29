@@ -98,11 +98,11 @@ template <typename Lambda> constexpr bool is_large = (sizeof(std::decay_t<Lambda
 	Unexpected("base::lambda bad_construct_copy() called!");
 }
 
-template <typename Return, typename... Args>
-[[noreturn]] Return bad_const_call(const void *lambda, Args...) { Unexpected("base::lambda bad_const_call() called!"); }
+template <typename Return, typename... Args>[[noreturn]] Return bad_const_call(const void *lambda, Args...) {
+	Unexpected("base::lambda bad_const_call() called!");
+}
 
-template <typename Return, typename... Args>
-struct vtable_base {
+template <typename Return, typename... Args> struct vtable_base {
 	using construct_copy_other_type = void (*)(void *, const void *); // dst, src
 	using construct_move_other_type = void (*)(void *, void *); // dst, src
 	using const_call_type = Return (*)(const void *, Args...);

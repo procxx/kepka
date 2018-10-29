@@ -61,7 +61,8 @@ public:
 private:
 	[[noreturn]] Callable fail_construct() {
 		Unexpected("Attempt to copy-construct a move-only type.");
-	}[[noreturn]] moveable_callable_wrap &fail_assign() {
+	}
+	[[noreturn]] moveable_callable_wrap &fail_assign() {
 		Unexpected("Attempt to copy-assign a move-only type.");
 	}
 
