@@ -50,7 +50,7 @@ QImage LoadLogoNoMargin() {
 	return QImage(qsl(":/gui/art/logo_256_no_margin.png"));
 }
 
-QIcon CreateOfficialIcon() {
+QIcon CreateUnofficialIcon() {
 	auto useNoMarginLogo = (cPlatform() == dbipMac);
 	if (auto messenger = Messenger::InstancePointer()) {
 		return QIcon(App::pixmapFromImageInPlace(useNoMarginLogo ? messenger->logoNoMargin() : messenger->logo()));
@@ -59,7 +59,7 @@ QIcon CreateOfficialIcon() {
 }
 
 QIcon CreateIcon() {
-	auto result = CreateOfficialIcon();
+	auto result = CreateUnofficialIcon();
 	if (cPlatform() == dbipLinux32 || cPlatform() == dbipLinux64) {
 		return QIcon::fromTheme("telegram", result);
 	}

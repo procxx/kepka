@@ -163,7 +163,7 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 "lng_pinned_unpin" = "Unpin";
 "lng_pinned_notify" = "Notify all members";
 
-"lng_intro_about" = "Welcome to the official Telegram Desktop app.\nIt's fast and secure.";
+"lng_intro_about" = "Welcome to Kepka - the unofficial telegram app.\nIt's fast and secure.";
 "lng_start_msgs" = "START MESSAGING";
 
 "lng_intro_next" = "NEXT";
@@ -1142,8 +1142,8 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 "lng_box_leave" = "Leave";
 
 "lng_about_version" = "version {version}";
-"lng_about_text_1" = "Official free messaging app based on [a href=\"https://core.telegram.org/api\"]Telegram API[/a]\nfor speed and security.";
-"lng_about_text_2" = "This software is licensed under [a href=\"https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE\"]GNU GPL[/a] version 3.\nSource code is available on [a href=\"https://github.com/telegramdesktop/tdesktop\"]GitHub[/a].";
+"lng_about_text_1" = "Unofficial free messaging app based on [a href=\"https://core.telegram.org/api\"]Telegram API[/a]\nfor speed and security.";
+"lng_about_text_2" = "This software is licensed under [a href=\"https://github.com/procxx/kepka/blob/dev/LICENSE\"]GNU GPL[/a] version 3.\nSource code is available on [a href=\"https://github.com/procxx/kepka\"]GitHub[/a].";
 "lng_about_text_3" = "Visit {faq_open}Telegram FAQ{faq_close} for more info.";
 "lng_about_done" = "Done";
 
