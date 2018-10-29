@@ -905,29 +905,30 @@ textSerializeInit += '\
 # module itself
 
 header = '\
-/*\n\
-WARNING! All changes made in this file will be lost!\n\
-Created from \'' + os.path.basename(input_file) + '\' by \'codegen_scheme\'\n\
-\n\
-This file is part of Telegram Desktop,\n\
-the official desktop version of Telegram messaging app, see https://telegram.org\n\
-\n\
-Telegram Desktop is free software: you can redistribute it and/or modify\n\
-it under the terms of the GNU General Public License as published by\n\
-the Free Software Foundation, either version 3 of the License, or\n\
-(at your option) any later version.\n\
-\n\
-It is distributed in the hope that it will be useful,\n\
-but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n\
-GNU General Public License for more details.\n\
-\n\
-In addition, as a special exception, the copyright holders give permission\n\
-to link the code of portions of this program with the OpenSSL library.\n\
-\n\
-Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE\n\
-Copyright (c) 2014 John Preston, https://desktop.telegram.org\n\
-*/\n\
+// WARNING! All changes made in this file will be lost!\n\
+// Created from \'' + os.path.basename(input_file) + '\' by \'codegen_scheme\'\n\
+//\n\
+// This file is part of Kepka,\n\
+// an unofficial desktop version of Telegram messaging app,\n\
+// see https://github.com/procxx/kepka\n\
+//\n\
+// Kepka is free software: you can redistribute it and/or modify\n\
+// it under the terms of the GNU General Public License as published by\n\
+// the Free Software Foundation, either version 3 of the License, or\n\
+// (at your option) any later version.\n\
+//\n\
+// It is distributed in the hope that it will be useful,\n\
+// but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n\
+// GNU General Public License for more details.\n\
+//\n\
+// In addition, as a special exception, the copyright holders give permission\n\
+// to link the code of portions of this program with the OpenSSL library.\n\
+//\n\
+// Full license: https://github.com/procxx/kepka/blob/master/LICENSE\n\
+// Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org\n\
+// Copyright (c) 2017- Kepka Contributors, https://github.com/procxx\n\
+//\n\
 #pragma once\n\
 \n\
 #include "mtproto/core_types.h"\n\
@@ -969,26 +970,30 @@ enum {\n\
 void mtpTextSerializeType(MTPStringLogger &to, const mtpPrime *&from, const mtpPrime *end, mtpPrime cons, quint32 level, mtpPrime vcons);\n'
 
 source = '\
-/*\n\
-WARNING! All changes made in this file will be lost!\n\
-Created from \'' + os.path.basename(input_file) + '\' by \'codegen_scheme\'\n\
-\n\
-This file is part of Telegram Desktop,\n\
-the official desktop version of Telegram messaging app, see https://telegram.org\n\
-\n\
-Telegram Desktop is free software: you can redistribute it and/or modify\n\
-it under the terms of the GNU General Public License as published by\n\
-the Free Software Foundation, either version 3 of the License, or\n\
-(at your option) any later version.\n\
-\n\
-It is distributed in the hope that it will be useful,\n\
-but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n\
-GNU General Public License for more details.\n\
-\n\
-Full license: https://github.com/telegramdesktop/tdesktop/blob/master/LICENSE\n\
-Copyright (c) 2014 John Preston, https://desktop.telegram.org\n\
-*/\n\
+// WARNING! All changes made in this file will be lost!\n\
+// Created from \'' + os.path.basename(input_file) + '\' by \'codegen_scheme\'\n\
+//\n\
+// This file is part of Kepka,\n\
+// an unofficial desktop version of Telegram messaging app,\n\
+// see https://github.com/procxx/kepka\n\
+//\n\
+// Kepka is free software: you can redistribute it and/or modify\n\
+// it under the terms of the GNU General Public License as published by\n\
+// the Free Software Foundation, either version 3 of the License, or\n\
+// (at your option) any later version.\n\
+//\n\
+// It is distributed in the hope that it will be useful,\n\
+// but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n\
+// GNU General Public License for more details.\n\
+//\n\
+// In addition, as a special exception, the copyright holders give permission\n\
+// to link the code of portions of this program with the OpenSSL library.\n\
+//\n\
+// Full license: https://github.com/procxx/kepka/blob/master/LICENSE\n\
+// Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org\n\
+// Copyright (c) 2017- Kepka Contributors, https://github.com/procxx\n\
+//\n\
 #include "base/assertion.h"\n\
 #include "scheme.h"\n\
 \n\
