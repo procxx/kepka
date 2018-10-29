@@ -38,6 +38,7 @@ exts = {
     '.m'=>[license, orig_license],
     '.mm'=>[license, orig_license],
     '.strings'=>[license, orig_license],
+    '.style'=>[license, orig_license],
     '.s'=>[license.gsub(/^\/\//,";"), orig_license],
     '.rb'=>[license.gsub(/^\/\//,"#"), orig_license],
     '.lua'=>[license.gsub(/^\/\//,"--"), orig_license],
