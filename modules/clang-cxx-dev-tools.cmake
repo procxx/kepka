@@ -19,13 +19,6 @@ if(CLANG_FORMAT)
             -style=file
             ${ALL_CXX_SOURCE_FILES}
     )
-    add_custom_target(
-            clang-format-ci
-            COMMAND clang-format
-            -output-replacements-xml
-            -style=file
-            ${ALL_CXX_SOURCE_FILES}
-    )
 endif()
 
 # Adding clang-tidy target if executable is found
