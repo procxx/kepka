@@ -60,7 +60,7 @@ private:
 	bool writeGetSections();
 	bool writeFindReplace();
 	bool writeFind();
-	bool writeFindFromDictionary(const std::map<QString, int, std::greater<QString>> &dictionary,
+	bool writeFindFromDictionary(const std::map<QString, int, std::greater<QString>> &dictionary, QString dict_name,
 	                             bool skipPostfixes = false);
 	bool writeGetReplacements();
 	void startBinary();
