@@ -1,3 +1,8 @@
+param (
+    $VcpkgPath = 'c:\tools\vcpkg\',
+    $VcpkgPlatform = 'x64-windows'
+)
+
 $ErrorActionPreference = 'Stop'
 
 function Pack-Files($ext, $includeExe, $targetPath, $archiveName) {
@@ -11,6 +16,8 @@ function Pack-Files($ext, $includeExe, $targetPath, $archiveName) {
     Copy-Item $env:QT_DIR\plugins\imageformats\qwebp.$ext $targetPath\imageformats\
     Copy-Item $env:QT_DIR\plugins\imageformats\qjpeg.$ext $targetPath\imageformats\
     Copy-Item $env:QT_DIR\plugins\platforms\qwindows.$ext $targetPath\platforms\
+    Copy-Item $VcpkgPath\installed\$VcpkgPlatform\bin\ssleay32.$ext $targetPath\
+    Copy-Item $VcpkgPath\installed\$VcpkgPlatform\bin\libeay32.$ext $targetPath\
 
     $itemsToPack = @("$targetPath\*.$ext", "$targetPath\platforms\*.$ext", "$targetPath\imageformats\*.$ext")
     if ($includeExe) {
