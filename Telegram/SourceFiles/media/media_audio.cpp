@@ -287,6 +287,7 @@ void Mixer::Track::createStream() {
 	alSource3f(stream.source, AL_POSITION, 0, 0, 0);
 	alSource3f(stream.source, AL_VELOCITY, 0, 0, 0);
 	alSourcei(stream.source, AL_LOOPING, 0);
+	alSourcei(stream.source, AL_DIRECT_CHANNELS_SOFT, 1);
 	alGenBuffers(3, stream.buffers);
 }
 
