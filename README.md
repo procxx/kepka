@@ -25,6 +25,7 @@ This is the complete source code and the build instructions for the Kepka's alph
 * Ability to toggle "typographical" replaces (like replace << to « and another);
 * Packages for Fedora and Arch Linux (packages for Debian and Ubuntu will be done soon);
 * UI based on 1.1.21 before UI "mobilization" which degrades UX (e.g. group settings will be accessible from 5 clicks);
+* Optional Yandex.Maps static API for geolocation preview (should be enabled at CMake configure time via `-DKEPKA_OPTION_USE_YANDEX_MAPS=ON` parameter);
 * More features soon (see our [milestones](https://github.com/procxx/kepka/projects))!
 
 ## Build instructions
