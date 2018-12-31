@@ -6,6 +6,7 @@ project(Kepka
 #    HOMEPAGE_URL "https://github.com/procxx/kepka"
 )
 
+set(PROJECT_COMPANY_NAME "pro.cxx Community")
 set(PROJECT_VERSION_RC 1)
 
 if(PROJECT_VERSION_RC)

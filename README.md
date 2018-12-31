@@ -115,6 +115,8 @@ $ cmake --build . --config RelWithDebInfo
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
 
+The Kepka logo is available by CC-BY-SA 4.0 License. (c) 2018 leha-bot. The full CC-BY-SA 4.0 license text is available [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode). 
+
 ## Supported systems
 
 * Windows 7 - Windows 10 (**not** RT)
