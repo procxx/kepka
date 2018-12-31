@@ -53,7 +53,7 @@ BEGIN
             VALUE "CompanyName", "Telegram Messenger LLP"
             VALUE "FileDescription", "@PROJECT_NAME@"
             VALUE "FileVersion", "@PROJECT_VERSION@"
-            VALUE "LegalCopyright", "Copyright (C) 2014-2017"
+            VALUE "LegalCopyright", "Copyright (C) 2014-2019"
             VALUE "ProductName", "@PROJECT_NAME@"
             VALUE "ProductVersion", "@PROJECT_VERSION@"
         END
