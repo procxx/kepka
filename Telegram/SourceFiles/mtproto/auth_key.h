@@ -98,12 +98,7 @@ public:
 	}
 
 private:
-	void countKeyId() {
-		auto sha1 = hashSha1(_key.data(), _key.size());
-
-		// Lower 64 bits = 8 bytes of 20 byte SHA1 hash.
-		_keyId = *reinterpret_cast<KeyId *>(sha1.data() + 12);
-	}
+	void countKeyId();
 
 	Type _type = Type::Generated;
 	DcId _dcId = 0;

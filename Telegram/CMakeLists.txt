@@ -447,6 +447,7 @@ add_executable(Kepka WIN32 MACOSX_BUNDLE
     SourceFiles/app.cpp
     SourceFiles/application.cpp
     SourceFiles/auth_session.cpp
+    SourceFiles/config.cpp
     SourceFiles/facades.cpp
     SourceFiles/layerwidget.cpp
     SourceFiles/layout.cpp

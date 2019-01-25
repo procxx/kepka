@@ -64,6 +64,13 @@ void AuthKey::prepareAES_oldmtp(const MTPint128 &msgKey, MTPint256 &aesKey, MTPi
 	memcpy(iv + 12 + 8 + 4, sha1_d, 8);
 }
 
+void AuthKey::countKeyId() {
+	auto sha1 = hashSha1(_key.data(), _key.size());
+
+	// Lower 64 bits = 8 bytes of 20 byte SHA1 hash.
+	_keyId = *reinterpret_cast<KeyId *>(sha1.data() + 12);
+}
+
 void AuthKey::prepareAES(const MTPint128 &msgKey, MTPint256 &aesKey, MTPint256 &aesIV, bool send) const {
 	quint32 x = send ? 0 : 8;
 
