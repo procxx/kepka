@@ -38,6 +38,92 @@ constexpr auto kMaxHttpRedirects = 5;
 
 } // namespace
 
+/// @brief Helper interface for getting location map tile and URL.
+///        Used instead of hardcoded URLs.
+class ILocationMapTileHelper {
+public:
+	virtual QString locationUrl(const LocationCoords &loc) = 0;
+	/// @brief Returns image tile URL for requested location loc.
+	/// @param width  Tile width, in px.
+	/// @param height Tile height, in px.
+	/// @param zoom   The world map zoom. Usually varies from 1 to 16.
+	/// @param scale  The map objects' scale for adopting map objects and
+	///               labels for HiDPI / Retina displays.
+	virtual QString locationTileImageUrl(const LocationCoords &loc, int width, int height, int zoom, int scale) = 0;
+	virtual ~ILocationMapTileHelper();
+};
+
+// Note: this dtor has been extracted to avoid the inlining and triggering a
+// warning related to Weak vtables. If this dtor will be inside the class
+// definition, then compiler will have to place multiple copies of vtables
+// which could increase binary size and could make ABI clashes.
+ILocationMapTileHelper::~ILocationMapTileHelper() = default;
+
+/// @brief Yandex.Maps tile helper. Allows to use the Yandex.Maps as backend
+///        for tile images and location URLs.
+class YandexMapsLocationTileHelper : public ILocationMapTileHelper {
+public:
+	QString locationUrl(const LocationCoords &loc) override;
+
+	/// @param zoom World map zoom (from 0 to 17)
+	/// @see   https://tech.yandex.ru/maps/doc/staticapi/1.x/dg/concepts/map_scale_docpage/
+	QString locationTileImageUrl(const LocationCoords &loc, int width, int height, int zoom, int scale) override;
+};
+
+QString YandexMapsLocationTileHelper::locationUrl(const LocationCoords &loc) {
+	// Yandex.Maps accepts ll string in "longitude,latitude" format
+	auto latlon = loc.lonAsString() + "%2C" + loc.latAsString();
+	return qsl("https://maps.yandex.ru/?ll=") + latlon + qsl("&z=16");
+}
+
+QString YandexMapsLocationTileHelper::locationTileImageUrl(const LocationCoords &loc, int width, int height, int zoom,
+                                                           int scale) {
+	// Map marker and API endpoint constants.
+	// See https://tech.yandex.ru/maps/doc/staticapi/1.x/dg/concepts/input_params-docpage/
+	// for API parameters reference.
+	const char *mapsApiUrl = "https://static-maps.yandex.ru/1.x/?ll=";
+	const char *mapsMarkerParams = ",pm2rdl"; // red large marker looking like "9"
+	// Tile image parameters format string
+	QString mapsApiParams = "&z=%1&size=%2,%3&l=map&scale=%4&pt=";
+
+	// Yandex.Maps accepts ll string in "longitude,latitude" format
+	auto coords = loc.lonAsString() + ',' + loc.latAsString();
+
+	QString url =
+	    mapsApiUrl + coords + mapsApiParams.arg(zoom).arg(width).arg(height).arg(scale) + coords + mapsMarkerParams;
+
+	return url;
+}
+
+/// @brief Uses Google Maps Static API. Adopted from old upstream code.
+class GoogleMapsLocationTileHelper : public ILocationMapTileHelper {
+public:
+	QString locationUrl(const LocationCoords &loc) override;
+	QString locationTileImageUrl(const LocationCoords &loc, int width, int height, int zoom, int scale) override;
+};
+
+QString GoogleMapsLocationTileHelper::locationUrl(const LocationCoords &loc) {
+	auto latlon = loc.latAsString() + ',' + loc.lonAsString();
+	return qsl("https://maps.google.com/maps?q=") + latlon + qsl("&ll=") + latlon + qsl("&z=16");
+}
+
+QString GoogleMapsLocationTileHelper::locationTileImageUrl(const LocationCoords &loc, int width, int height, int zoom,
+                                                           int scale) {
+	// Map marker, API options and endpoint constants.
+	const char *mapsApiUrl = "https://maps.googleapis.com/maps/api/staticmap?center=";
+	// additional marker params
+	const char *mapsMarkerParams = "&sensor=false";
+	// API format string with basic marker params (red and big)
+	QString mapsApiParams = "&zoom=%1&size=%2,%3&maptype=roadmap&scale=%4&markers=color:red|size:big|";
+
+	// Google uses lat,lon in query URLs
+	auto coords = loc.latAsString() + ',' + loc.lonAsString();
+
+	QString url =
+	    mapsApiUrl + coords + mapsApiParams.arg(zoom).arg(width).arg(height).arg(scale) + coords + mapsMarkerParams;
+	return url;
+}
+
 QString LocationClickHandler::copyToClipboardContextItemText() const {
 	return lang(lng_context_copy_link);
 }
