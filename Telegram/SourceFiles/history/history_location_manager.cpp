@@ -33,7 +33,6 @@
 
 namespace {
 
-constexpr auto kCoordPrecision = 8;
 constexpr auto kMaxHttpRedirects = 5;
 
 } // namespace
@@ -147,7 +146,7 @@ QString LocationClickHandler::copyToClipboardContextItemText() const {
 	return lang(lng_context_copy_link);
 }
 
-void LocationClickHandler::onClick(Qt::MouseButton button) const {
+void LocationClickHandler::onClick([[maybe_unused]] Qt::MouseButton button) const {
 	if (!psLaunchMaps(_coords)) {
 		QDesktopServices::openUrl(_text);
 	}
@@ -158,23 +157,23 @@ void LocationClickHandler::setup() {
 }
 
 void initLocationManager() {
-	if (!locationManager) {
+	if (locationManager == nullptr) {
 		locationManager = new LocationManager();
 		locationManager->init();
 	}
-	if (!locationMapTileHelper) {
+	if (locationMapTileHelper == nullptr) {
 		locationMapTileHelper = new LocationMapTileHelper();
 	}
 }
 
 void reinitLocationManager() {
-	if (locationManager) {
+	if (locationManager != nullptr) {
 		locationManager->reinit();
 	}
 }
 
 void deinitLocationManager() {
-	if (locationManager) {
+	if (locationManager != nullptr) {
 		locationManager->deinit();
 		delete locationManager;
 		locationManager = nullptr;
@@ -185,7 +184,7 @@ void deinitLocationManager() {
 }
 
 void LocationManager::init() {
-	if (manager) delete manager;
+	delete manager;
 	manager = new QNetworkAccessManager();
 	App::setProxySettings(*manager);
 
@@ -197,7 +196,7 @@ void LocationManager::init() {
 #endif // OS_MAC_OLD
 	connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(onFinished(QNetworkReply *)));
 
-	if (notLoadedPlaceholder) {
+	if (notLoadedPlaceholder != nullptr) {
 		delete notLoadedPlaceholder->v();
 		delete notLoadedPlaceholder;
 	}
@@ -208,15 +207,17 @@ void LocationManager::init() {
 }
 
 void LocationManager::reinit() {
-	if (manager) App::setProxySettings(*manager);
+	if (manager != nullptr) {
+		App::setProxySettings(*manager);
+	}
 }
 
 void LocationManager::deinit() {
-	if (manager) {
+	if (manager != nullptr) {
 		delete manager;
 		manager = nullptr;
 	}
-	if (notLoadedPlaceholder) {
+	if (notLoadedPlaceholder != nullptr) {
 		delete notLoadedPlaceholder->v();
 		delete notLoadedPlaceholder;
 		notLoadedPlaceholder = nullptr;
@@ -226,7 +227,7 @@ void LocationManager::deinit() {
 }
 
 void LocationManager::getData(LocationData *data) {
-	if (!manager) {
+	if (manager == nullptr) {
 		DEBUG_LOG(("App Error: getting image link data without manager init!"));
 		return failed(data);
 	}
@@ -246,8 +247,12 @@ void LocationManager::getData(LocationData *data) {
 }
 
 void LocationManager::onFinished(QNetworkReply *reply) {
-	if (!manager) return;
-	if (reply->error() != QNetworkReply::NoError) return onFailed(reply);
+	if (manager == nullptr) {
+		return;
+	}
+	if (reply->error() != QNetworkReply::NoError) {
+		return onFailed(reply);
+	}
 
 	QVariant statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
 	if (statusCode.isValid()) {
@@ -268,7 +273,8 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 					dataLoadings.erase(i);
 					dataLoadings.insert(manager->get(QNetworkRequest(loc)), d);
 					return;
-				} else if ((i = imageLoadings.find(reply)) != imageLoadings.cend()) {
+				}
+				if ((i = imageLoadings.find(reply)) != imageLoadings.cend()) {
 					LocationData *d = i.value();
 					if (serverRedirects.constFind(d) == serverRedirects.cend()) {
 						serverRedirects.insert(d, 1);
@@ -289,7 +295,7 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 		}
 	}
 
-	LocationData *d = 0;
+	LocationData *d = nullptr;
 	QMap<QNetworkReply *, LocationData *>::iterator i = dataLoadings.find(reply);
 	if (i != dataLoadings.cend()) {
 		d = i.value();
@@ -303,7 +309,9 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 		}
 		failed(d);
 
-		if (App::main()) App::main()->update();
+		if (App::main() != nullptr) {
+			App::main()->update();
+		}
 	} else {
 		i = imageLoadings.find(reply);
 		if (i != imageLoadings.cend()) {
@@ -322,20 +330,26 @@ void LocationManager::onFinished(QNetworkReply *reply) {
 				thumb = QPixmap::fromImageReader(&reader, Qt::ColorOnly);
 				format = reader.format();
 				thumb.setDevicePixelRatio(cRetinaFactor());
-				if (format.isEmpty()) format = QByteArray("JPG");
+				if (format.isEmpty()) {
+					format = QByteArray("JPG");
+				}
 			}
 			d->loading = false;
 			d->thumb = thumb.isNull() ? (*notLoadedPlaceholder) : ImagePtr(thumb, format);
 			serverRedirects.remove(d);
-			if (App::main()) App::main()->update();
+			if (App::main() != nullptr) {
+				App::main()->update();
+			}
 		}
 	}
 }
 
 void LocationManager::onFailed(QNetworkReply *reply) {
-	if (!manager) return;
+	if (manager == nullptr) {
+		return;
+	}
 
-	LocationData *d = 0;
+	LocationData *d = nullptr;
 	QMap<QNetworkReply *, LocationData *>::iterator i = dataLoadings.find(reply);
 	if (i != dataLoadings.cend()) {
 		d = i.value();
@@ -351,7 +365,7 @@ void LocationManager::onFailed(QNetworkReply *reply) {
 	              .arg(d ? d->coords.latAsString() : QString())
 	              .arg(d ? d->coords.lonAsString() : QString())
 	              .arg(reply->errorString()));
-	if (d) {
+	if (d != nullptr) {
 		failed(d);
 	}
 }
@@ -363,11 +377,15 @@ void LocationManager::failed(LocationData *data) {
 }
 
 void LocationData::load() {
-	if (!thumb->isNull()) return thumb->load(false, false);
-	if (loading) return;
+	if (!thumb->isNull()) {
+		return thumb->load(false, false);
+	}
+	if (loading) {
+		return;
+	}
 
 	loading = true;
-	if (locationManager) {
+	if (locationManager != nullptr) {
 		locationManager->getData(this);
 	}
 }
