@@ -16,7 +16,7 @@ endif()
 ##================================================
 ## Build customizations
 ##================================================
-option(KEPKA_OPTION_USE_YANDEX_MAPS "Use Yandex.Maps static API for locations (instead Google Maps)" OFF)
+option(KEPKA_OPTION_USE_YANDEX_MAPS "Use Yandex.Maps static API for locations (instead Google Maps)" ON)
 
 if(KEPKA_OPTION_USE_YANDEX_MAPS)
 	add_definitions("-DKEPKA_USE_YANDEX_MAPS")
