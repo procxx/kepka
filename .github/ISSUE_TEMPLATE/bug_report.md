@@ -1,3 +1,8 @@
+---
+name: Bug report
+about: Create a report to help us improve
+
+---
 <!--
 Thanks for reporting issues of Kepka!
 
