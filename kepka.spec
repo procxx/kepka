@@ -1,3 +1,11 @@
+# Allow to use Clang compiler...
+%global clang 0
+
+# Applying workaround to RHBZ#1559007...
+%if 0%{?clang}
+%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g')
+%endif
+
 Name: kepka
 Version: 2.0.0
 Release: 1%{?dist}
@@ -19,6 +27,13 @@ BuildRequires: ninja-build
 BuildRequires: gcc-c++
 BuildRequires: cmake
 BuildRequires: gcc
+
+# Clang compiler and tools if enabled...
+%if 0%{?clang}
+BuildRequires: compiler-rt
+BuildRequires: clang
+BuildRequires: llvm
+%endif
 
 # Development packages for main application...
 BuildRequires: guidelines-support-library-devel
@@ -58,6 +73,12 @@ personal or business messaging needs.
 mkdir -p %{_target_platform}
 
 %build
+# Overriding compiler settings...
+%if 0%{?clang}
+export CC=clang
+export CXX=clang++
+%endif
+
 # Configuring application...
 pushd %{_target_platform}
     %cmake -G Ninja -DPACKAGED_BUILD=1 -DCMAKE_BUILD_TYPE=Release ..
