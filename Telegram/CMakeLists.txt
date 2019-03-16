@@ -565,7 +565,6 @@ if (WIN32)
         -DHAVE_STDINT_H -DNOMINMAX)
 endif()
 
-add_definitions(-DAL_LIBTYPE_STATIC)
 add_definitions(-DAL_ALEXT_PROTOTYPES)
 
 if (LINUX)
