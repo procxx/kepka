@@ -1,5 +1,6 @@
-# Allow to use Clang compiler...
+# Setting some build conditions...
 %global clang 0
+%global ipo 1
 
 # Applying workaround to RHBZ#1559007...
 %if 0%{?clang}
@@ -81,7 +82,13 @@ export CXX=clang++
 
 # Configuring application...
 pushd %{_target_platform}
-    %cmake -G Ninja -DPACKAGED_BUILD=1 -DCMAKE_BUILD_TYPE=Release ..
+    %cmake -G Ninja \
+    -DPACKAGED_BUILD:BOOL=ON \
+%if 0%{?ipo}
+    -DENABLE_IPO:BOOL=ON \
+%endif
+    -DCMAKE_BUILD_TYPE=Release \
+    ..
 popd
 
 # Building application...
