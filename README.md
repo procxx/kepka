@@ -20,6 +20,7 @@ This is the complete source code and the build instructions for the Kepka's alph
  - remove some Qt and custom types in favor of using C++ Standard Library types and classes;
  - clang-format;
  - fix almost all warnings;
+ - optional inter-procedural optimizations on \*nix (enabled using CMake's `-DENABLE_IPO:BOOL=ON` flag; improves performance but could degrade compile times);
 * Ability to toggle "typographical" replaces (like replace << to « and another);
 * Packages for Fedora and Arch Linux (packages for Debian and Ubuntu will be done soon);
 * UI based on 1.1.21 before UI "mobilization" which degrades UX (e.g. group settings will be accessible from 5 clicks);
