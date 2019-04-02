@@ -96,6 +96,7 @@ if (CCACHE)
 endif()
 
 option(ENABLE_IPO "Enable IPO optimizations." OFF)
+option(PACKAGED_BUILD "Enable packaged build." OFF)
 
 option(BUILD_DOC "Build documentation" OFF)
 mark_as_advanced(BUILD_DOC)
