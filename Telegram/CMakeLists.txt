@@ -259,6 +259,7 @@ add_executable(Kepka WIN32 MACOSX_BUNDLE
 
     SourceFiles/data/data_abstract_structure.cpp
     SourceFiles/data/data_drafts.cpp
+    SourceFiles/data/data_photo.cpp
 
     SourceFiles/dialogs/dialogs_indexed_list.cpp
     SourceFiles/dialogs/dialogs_inner_widget.cpp
