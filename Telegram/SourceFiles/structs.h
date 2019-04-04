@@ -31,6 +31,7 @@
 #include "ui/images.h"
 #include "ui/text/text.h"
 #include "ui/twidget.h"
+#include "data/data_photo.h"
 
 using MediaKey = QPair<quint64, quint64>;
 
@@ -177,7 +178,6 @@ inline TimeId dateFromMessage(const MTPmessage &msg) {
 	return 0;
 }
 
-using PhotoId = quint64;
 using VideoId = quint64;
 using AudioId = quint64;
 using DocumentId = quint64;
@@ -1117,88 +1117,6 @@ inline bool PeerData::canWrite() const {
 enum ActionOnLoad { ActionOnLoadNone, ActionOnLoadOpen, ActionOnLoadOpenWith, ActionOnLoadPlayInline };
 
 typedef QMap<char, QPixmap> PreparedPhotoThumbs;
-class PhotoData {
-public:
-	PhotoData(const PhotoId &id, const quint64 &access = 0, qint32 date = 0, const ImagePtr &thumb = ImagePtr(),
-	          const ImagePtr &medium = ImagePtr(), const ImagePtr &full = ImagePtr());
-
-	void automaticLoad(const HistoryItem *item);
-	void automaticLoadSettingsChanged();
-
-	void download();
-	bool loaded() const;
-	bool loading() const;
-	bool displayLoading() const;
-	void cancel();
-	double progress() const;
-	qint32 loadOffset() const;
-	bool uploading() const;
-
-	void forget();
-	ImagePtr makeReplyPreview();
-
-	PhotoId id;
-	quint64 access;
-	qint32 date;
-	ImagePtr thumb, replyPreview;
-	ImagePtr medium;
-	ImagePtr full;
-
-	PeerData *peer = nullptr; // for chat and channel photos connection
-	// geo, caption
-
-	struct UploadingData {
-		UploadingData(int size)
-		    : size(size) {}
-		int offset = 0;
-		int size = 0;
-	};
-	std::unique_ptr<UploadingData> uploadingData;
-
-private:
-	void notifyLayoutChanged() const;
-};
-
-class PhotoClickHandler : public LeftButtonClickHandler {
-public:
-	PhotoClickHandler(not_null<PhotoData *> photo, PeerData *peer = nullptr)
-	    : _photo(photo)
-	    , _peer(peer) {}
-	not_null<PhotoData *> photo() const {
-		return _photo;
-	}
-	PeerData *peer() const {
-		return _peer;
-	}
-
-private:
-	not_null<PhotoData *> _photo;
-	PeerData *_peer;
-};
-
-class PhotoOpenClickHandler : public PhotoClickHandler {
-public:
-	using PhotoClickHandler::PhotoClickHandler;
-
-protected:
-	void onClickImpl() const override;
-};
-
-class PhotoSaveClickHandler : public PhotoClickHandler {
-public:
-	using PhotoClickHandler::PhotoClickHandler;
-
-protected:
-	void onClickImpl() const override;
-};
-
-class PhotoCancelClickHandler : public PhotoClickHandler {
-public:
-	using PhotoClickHandler::PhotoClickHandler;
-
-protected:
-	void onClickImpl() const override;
-};
 
 enum FileStatus {
 	FileDownloadFailed = -2,
