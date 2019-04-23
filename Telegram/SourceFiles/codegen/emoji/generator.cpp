@@ -611,23 +611,12 @@ EmojiPack GetSection(Section section) {\n\
 
 bool Generator::writeFindReplace() {
 	source_->stream() << "\
-const std::map<QString, int> ReplaceMap = {\n\
-\n";
-
-	for (auto &item : data_.replaces) {
-		source_->stream() << "{\"" << item.first << "\"," << item.second << "},\n";
-	}
-	source_->stream() << "\
-\n\
-};\n";
-
-	source_->stream() << "\
 \n\
 int FindReplaceIndex(const QChar *start, const QChar *end, int *outLength) {\n\
 	auto ch = start;\n\
 \n";
 
-	if (!writeFindFromDictionary(data_.replaces, "ReplaceMap")) {
+	if (!writeFindFromDictionary(data_.replaces)) {
 		return false;
 	}
 
@@ -639,22 +628,12 @@ int FindReplaceIndex(const QChar *start, const QChar *end, int *outLength) {\n\
 
 bool Generator::writeFind() {
 	source_->stream() << "\
-const std::map<QString, int> EmojiMap = {\n\
-\n";
-
-	for (auto &item : data_.map) {
-		source_->stream() << "{\"" << item.first << "\"," << item.second << "},\n";
-	}
-	source_->stream() << "\
-\n\
-};\n";
-	source_->stream() << "\
 \n\
 int FindIndex(const QChar *start, const QChar *end, int *outLength) {\n\
 	auto ch = start;\n\
 \n";
 
-	if (!writeFindFromDictionary(data_.map, "EmojiMap", true)) {
+	if (!writeFindFromDictionary(data_.map, true)) {
 		return false;
 	}
 
@@ -664,41 +643,126 @@ int FindIndex(const QChar *start, const QChar *end, int *outLength) {\n\
 
 	return true;
 }
-bool Generator::writeFindFromDictionary(const std::map<QString, int, std::greater<QString>> &dictionary,
-                                        QString dict_name, bool skipPostfixes) {
-	source_->stream() << R"code(	QString full_str(start, end-start), str="";
-)code";
 
-	auto max_el = std::max_element(dictionary.begin(), dictionary.end(),
-	                               [](const auto &a, const auto &b) { return a.first.size() < b.first.size(); });
-	auto max_length = max_el->first.size();
-	source_->stream() << "\tstd::array<size_t, " << max_length + 1 << "> sizes;\n";
-	if (skipPostfixes) {
-		source_->stream() << "\tfor (int i=0,l=0; i<str.size() && l < " << max_length << R"code(; ++i) {
-		if (str[i] == kPostfix) {continue;}
-		++l;
-		sizes[l]=i;
-		str+=full_str[i];
+bool Generator::writeFindFromDictionary(const std::map<QString, int, std::greater<QString>> &dictionary,
+                                        bool skipPostfixes) {
+	auto tabs = [](int size) { return QString(size, '\t'); };
+
+	std::map<int, int> uniqueFirstChars;
+	auto foundMax = 0, foundMin = 65535;
+	for (auto &item : dictionary) {
+		auto ch = item.first[0].unicode();
+		if (foundMax < ch) foundMax = ch;
+		if (foundMin > ch) foundMin = ch;
+		uniqueFirstChars[ch] = 0;
 	}
-)code";
-	} else {
-		source_->stream() << "\tstd::iota(sizes.begin(), sizes.end(), 0);\n";
-		source_->stream() << "\tstr = full_str.mid(0," << max_length << ");\n";
-	}
-	source_->stream() << R"code(	for (int curr_len = str.size(); curr_len>0; --curr_len) {
-		QString substr = str.mid(0,curr_len);
-		if ()code" << dict_name
-	                  << ".find(substr) !=" << dict_name << R"code(.end()) {
-			if (outLength) *outLength = sizes[curr_len];
-			return )code"
-	                  << dict_name << R"code(.at(substr);
+
+	enum class UsedCheckType {
+		Switch,
+		If,
+	};
+	auto checkTypes = QVector<UsedCheckType>();
+	auto chars = QString();
+	auto tabsUsed = 1;
+	auto lengthsCounted = std::map<QString, bool>();
+
+	auto writeSkipPostfix = [this, &tabs, skipPostfixes](int tabsCount) {
+		if (skipPostfixes) {
+			source_->stream() << tabs(tabsCount) << "if (++ch != end && ch->unicode() == kPostfix) ++ch;\n";
+		} else {
+			source_->stream() << tabs(tabsCount) << "++ch;\n";
 		}
+	};
+
+	// Returns true if at least one check was finished.
+	auto finishChecksTillKey = [this, &chars, &checkTypes, &tabsUsed, tabs](const QString &key) {
+		auto result = false;
+		while (!chars.isEmpty() && key.midRef(0, chars.size()) != chars) {
+			result = true;
+
+			auto wasType = checkTypes.back();
+			chars.resize(chars.size() - 1);
+			checkTypes.pop_back();
+			if (wasType == UsedCheckType::Switch || wasType == UsedCheckType::If) {
+				--tabsUsed;
+				if (wasType == UsedCheckType::Switch) {
+					source_->stream() << tabs(tabsUsed) << "break;\n";
+				}
+				if ((!chars.isEmpty() && key.midRef(0, chars.size()) != chars) || key == chars) {
+					source_->stream() << tabs(tabsUsed) << "}\n";
+				}
+			}
+		}
+		return result;
+	};
+
+	// Check if we can use "if" for a check on "charIndex" in "it" (otherwise only "switch")
+	auto canUseIfForCheck = [](auto it, auto end, int charIndex) {
+		auto key = it->first;
+		auto i = it;
+		auto keyStart = key.mid(0, charIndex);
+		for (++i; i != end; ++i) {
+			auto nextKey = i->first;
+			if (nextKey.mid(0, charIndex) != keyStart) {
+				return true;
+			} else if (nextKey.size() > charIndex && nextKey[charIndex] != key[charIndex]) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	for (auto i = dictionary.cbegin(), e = dictionary.cend(); i != e; ++i) {
+		auto &item = *i;
+		auto key = item.first;
+		auto weContinueOldSwitch = finishChecksTillKey(key);
+		while (chars.size() != key.size()) {
+			auto checking = chars.size();
+			auto partialKey = key.mid(0, checking);
+			if (dictionary.find(partialKey) != dictionary.cend()) {
+				if (lengthsCounted.find(partialKey) == lengthsCounted.cend()) {
+					lengthsCounted.insert(std::make_pair(partialKey, true));
+					source_->stream() << tabs(tabsUsed) << "if (outLength) *outLength = (ch - start);\n";
+				}
+			}
+
+			auto keyChar = key[checking];
+			auto keyCharString = "0x" + QString::number(keyChar.unicode(), 16);
+			auto usedIfForCheck = !weContinueOldSwitch && canUseIfForCheck(i, e, checking);
+			if (weContinueOldSwitch) {
+				weContinueOldSwitch = false;
+			} else if (!usedIfForCheck) {
+				source_->stream() << tabs(tabsUsed) << "if (ch != end) switch (ch->unicode()) {\n";
+			}
+			if (usedIfForCheck) {
+				source_->stream() << tabs(tabsUsed) << "if (ch != end && ch->unicode() == " << keyCharString << ") {\n";
+				checkTypes.push_back(UsedCheckType::If);
+			} else {
+				source_->stream() << tabs(tabsUsed) << "case " << keyCharString << ":\n";
+				checkTypes.push_back(UsedCheckType::Switch);
+			}
+			writeSkipPostfix(++tabsUsed);
+			chars.push_back(keyChar);
+		}
+		if (lengthsCounted.find(key) == lengthsCounted.cend()) {
+			lengthsCounted.insert(std::make_pair(key, true));
+			source_->stream() << tabs(tabsUsed) << "if (outLength) *outLength = (ch - start);\n";
+		}
+
+		// While IsReplaceEdge() currently is always true we just return the value.
+		// source_->stream() << tabs(1 + chars.size()) << "if (ch + " << chars.size() << " == end || IsReplaceEdge(*(ch
+		// + " << chars.size() << ")) || (ch + " << chars.size() << ")->unicode() == ' ') {\n"; source_->stream() <<
+		// tabs(1 + chars.size()) << "\treturn &Items[" << item.second << "];\n"; source_->stream() << tabs(1 +
+		// chars.size()) << "}\n";
+		source_->stream() << tabs(tabsUsed) << "return " << (item.second + 1) << ";\n";
 	}
-	return 0;
-)code";
+	finishChecksTillKey(QString());
+
+	source_->stream() << "\
+\n\
+	return 0;\n";
 	return true;
 }
-
 
 bool Generator::writeSuggestionsSource() {
 	suggestionsSource_ = std::make_unique<common::CppFile>(suggestionsPath_ + ".cpp", project_);
