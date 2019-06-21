@@ -64,6 +64,7 @@ void writeLicense(QTextStream &stream, const ProjectInfo &project) {
 CppFile::CppFile(const QString &path, const ProjectInfo &project)
     : stream_(&content_)
     , forceReGenerate_(project.forceReGenerate) {
+	stream_.setCodec("UTF-8");
 	bool cpp = path.toLower().endsWith(".cpp");
 
 	QFileInfo info(path);
