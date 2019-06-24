@@ -7,6 +7,18 @@ if (LINUX)
     endif()
 endif()
 
+##================================================
+## API tokens
+##================================================
+if (DEFINED ENV{API_ID} AND DEFINED ENV{API_HASH})
+    set(API_ID ENV{API_ID})
+    set(API_HASH ENV{API_HASH})
+else()
+    message(WARNING "No custom API tokens detected. You must grab your own tokens from https://core.telegram.org/api/obtaining_api_id and export them using environment options. Will use default for testing purposes.")
+    set(API_ID 17349)
+    set(API_HASH "344583e45741c457fe1862106095a5eb")
+endif()
+
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -H")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 ##================================================
