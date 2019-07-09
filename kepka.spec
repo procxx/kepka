@@ -1,10 +1,10 @@
 # Setting some build conditions...
-%global clang 0
-%global ipo 1
+%bcond_with clang
+%bcond_without ipo
 
 # Applying workaround to RHBZ#1559007...
-%if 0%{?clang}
-%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g')
+%if %{with clang}
+%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g' -e 's/$/-Qunused-arguments -Wno-unknown-warning-option/')
 %endif
 
 Name: kepka
@@ -31,7 +31,7 @@ BuildRequires: cmake
 BuildRequires: gcc
 
 # Clang compiler and tools if enabled...
-%if 0%{?clang}
+%if %{with clang}
 BuildRequires: compiler-rt
 BuildRequires: clang
 BuildRequires: llvm
@@ -76,17 +76,24 @@ personal or business messaging needs.
 mkdir -p %{_target_platform}
 
 %build
-# Overriding compiler settings...
-%if 0%{?clang}
-export CC=clang
-export CXX=clang++
-%endif
-
 # Configuring application...
 pushd %{_target_platform}
     %cmake -G Ninja \
+%if %{with clang}
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_AR=%{_bindir}/llvm-ar \
+    -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
+    -DCMAKE_LINKER=%{_bindir}/llvm-ld \
+    -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
+    -DCMAKE_NM=%{_bindir}/llvm-nm \
+%else
+    -DCMAKE_AR=%{_bindir}/gcc-ar \
+    -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
+    -DCMAKE_NM=%{_bindir}/gcc-nm \
+%endif
     -DPACKAGED_BUILD:BOOL=ON \
-%if 0%{?ipo}
+%if %{with ipo}
     -DENABLE_IPO:BOOL=ON \
 %endif
     -DCMAKE_BUILD_TYPE=Release \
