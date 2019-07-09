@@ -18,6 +18,7 @@ Source0: %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 ExclusiveArch: i686 x86_64
 
 # Additional runtime requirements...
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 Requires: qt5-qtimageformats%{?_isa}
 Requires: hicolor-icon-theme
 
@@ -38,6 +39,7 @@ BuildRequires: llvm
 
 # Development packages for main application...
 BuildRequires: guidelines-support-library-devel
+BuildRequires: qt5-qtbase-private-devel
 BuildRequires: libappindicator-devel
 BuildRequires: mapbox-variant-devel
 BuildRequires: ffmpeg-devel >= 3.1
