@@ -31,28 +31,19 @@
 #include "ui/images.h"
 #include "ui/text/text.h"
 #include "ui/twidget.h"
+#include "data/data_types.h"
 #include "data/data_photo.h"
-
-using MediaKey = QPair<quint64, quint64>;
 
 inline quint64 mediaMix32To64(qint32 a, qint32 b) {
 	return (quint64(*reinterpret_cast<quint32 *>(&a)) << 32) | quint64(*reinterpret_cast<quint32 *>(&b));
 }
-
-enum LocationType {
-	UnknownFileLocation = 0,
-	// 1, 2, etc are used as "version" value in mediaKey() method.
-
-	DocumentFileLocation = 0x4e45abe9, // mtpc_inputDocumentFileLocation
-	AudioFileLocation = 0x74dc404d, // mtpc_inputAudioFileLocation
-	VideoFileLocation = 0x3d0364ec, // mtpc_inputVideoFileLocation
-};
 
 // Old method, should not be used anymore.
 // inline MediaKey mediaKey(LocationType type, qint32 dc, const quint64 &id) {
 //	return MediaKey(mediaMix32To64(type, dc), id);
 //}
 // New method when version was introduced, type is not relevant anymore (all files are Documents).
+
 inline MediaKey mediaKey(LocationType type, qint32 dc, const quint64 &id, qint32 version) {
 	return (version > 0) ? MediaKey(mediaMix32To64(version, dc), id) : MediaKey(mediaMix32To64(type, dc), id);
 }
@@ -60,21 +51,6 @@ inline MediaKey mediaKey(LocationType type, qint32 dc, const quint64 &id, qint32
 inline StorageKey mediaKey(const MTPDfileLocation &location) {
 	return storageKey(location.vdc_id.v, location.vvolume_id.v, location.vlocal_id.v);
 }
-
-typedef qint32 UserId;
-typedef qint32 ChatId;
-typedef qint32 ChannelId;
-static const ChannelId NoChannel = 0;
-
-typedef qint32 MsgId;
-struct FullMsgId {
-	FullMsgId() = default;
-	FullMsgId(ChannelId channel, MsgId msg)
-	    : channel(channel)
-	    , msg(msg) {}
-	ChannelId channel = NoChannel;
-	MsgId msg = 0;
-};
 
 typedef quint64 PeerId;
 static const quint64 PeerIdMask = 0xFFFFFFFFULL;
@@ -197,18 +173,9 @@ inline bool operator<(const FullMsgId &a, const FullMsgId &b) {
 	return a.channel < b.channel;
 }
 
-constexpr const MsgId StartClientMsgId = -0x7FFFFFFF;
-constexpr const MsgId EndClientMsgId = -0x40000000;
 inline constexpr bool isClientMsgId(MsgId id) {
 	return id >= StartClientMsgId && id < EndClientMsgId;
 }
-constexpr const MsgId ShowAtTheEndMsgId = -0x40000000;
-constexpr const MsgId SwitchAtTopMsgId = -0x3FFFFFFF;
-constexpr const MsgId ShowAtProfileMsgId = -0x3FFFFFFE;
-constexpr const MsgId ShowAndStartBotMsgId = -0x3FFFFFD;
-constexpr const MsgId ShowAtGameShareMsgId = -0x3FFFFFC;
-constexpr const MsgId ServerMaxMsgId = 0x3FFFFFFF;
-constexpr const MsgId ShowAtUnreadMsgId = 0;
 
 struct NotifySettings {
 	NotifySettings()
@@ -1114,8 +1081,6 @@ inline bool PeerData::canWrite() const {
 	                     (isChat() ? asChat()->canWrite() : (isUser() ? asUser()->canWrite() : false));
 }
 
-enum ActionOnLoad { ActionOnLoadNone, ActionOnLoadOpen, ActionOnLoadOpenWith, ActionOnLoadPlayInline };
-
 typedef QMap<char, QPixmap> PreparedPhotoThumbs;
 
 enum FileStatus {
@@ -1589,27 +1554,3 @@ struct MessageCursor {
 inline bool operator==(const MessageCursor &a, const MessageCursor &b) {
 	return (a.position == b.position) && (a.anchor == b.anchor) && (a.scroll == b.scroll);
 }
-
-struct SendAction {
-	enum class Type {
-		Typing,
-		RecordVideo,
-		UploadVideo,
-		RecordVoice,
-		UploadVoice,
-		RecordRound,
-		UploadRound,
-		UploadPhoto,
-		UploadFile,
-		ChooseLocation,
-		ChooseContact,
-		PlayGame,
-	};
-	SendAction(Type type, TimeMs until, int progress = 0)
-	    : type(type)
-	    , until(until)
-	    , progress(progress) {}
-	Type type;
-	TimeMs until;
-	int progress;
-};
