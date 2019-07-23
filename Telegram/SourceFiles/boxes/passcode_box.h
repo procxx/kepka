@@ -23,6 +23,7 @@
 #pragma once
 
 #include "boxes/abstract_box.h"
+#include "ui/text/text.h"
 
 namespace Ui {
 class InputField;

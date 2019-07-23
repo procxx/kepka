@@ -23,6 +23,7 @@
 #pragma once
 
 #include "core/single_timer.h"
+#include "core/click_handler.h"
 #include "platform/platform_main_window.h"
 #include "platform/platform_specific.h"
 #include <QCheckBox>
@@ -32,9 +33,12 @@
 #include <QPaintEvent>
 #include <QPushButton>
 #include <QSystemTrayIcon>
+#include <QTextEdit>
 
 #include "layerwidget.h"
+
 #include "ui/twidget.h"
+#include "ui/text/text_entity.h"
 
 class PasscodeWidget;
 class MainWidget;

@@ -24,6 +24,8 @@
 
 #include "boxes/abstract_box.h"
 
+#include "structs.h" // temporarily, need PeerId.
+
 class PhotoCropBox : public BoxContent {
 	Q_OBJECT
 
