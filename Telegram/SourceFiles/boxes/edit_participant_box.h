@@ -23,6 +23,10 @@
 #pragma once
 
 #include "boxes/abstract_box.h"
+#include "core/basic_types.h"
+#include "data/data_types.h"
+
+#include "structs.h" // temporarily. (ChannelData
 
 namespace Ui {
 class FlatLabel;

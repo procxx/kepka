@@ -25,6 +25,9 @@
 #include "base/observer.h"
 #include "boxes/abstract_box.h"
 #include "ui/effects/round_checkbox.h"
+#include "ui/text/text.h"
+
+#include "structs.h" // temporarily: FullMsgId, CharData
 
 namespace Dialogs {
 class Row;

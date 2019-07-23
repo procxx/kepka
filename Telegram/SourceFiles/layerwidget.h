@@ -24,9 +24,11 @@
 
 #include <QMouseEvent>
 
-#include "structs.h"
+// #include "structs.h"
 #include "ui/animation.h"
 #include "ui/twidget.h"
+
+class PhotoData;
 
 class BoxContent;
 
