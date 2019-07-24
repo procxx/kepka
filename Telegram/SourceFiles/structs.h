@@ -158,7 +158,6 @@ using VideoId = quint64;
 using AudioId = quint64;
 using DocumentId = quint64;
 using WebPageId = quint64;
-using GameId = quint64;
 static const WebPageId CancelledWebPageId = 0xFFFFFFFFFFFFFFFFULL;
 
 inline bool operator==(const FullMsgId &a, const FullMsgId &b) {
@@ -1498,23 +1497,6 @@ struct WebPageData {
 	PhotoData *photo;
 	DocumentData *document;
 	qint32 pendingTill;
-};
-
-struct GameData {
-	GameData(const GameId &id, const quint64 &accessHash = 0, const QString &shortName = QString(),
-	         const QString &title = QString(), const QString &description = QString(), PhotoData *photo = nullptr,
-	         DocumentData *doc = nullptr);
-
-	void forget() {
-		if (document) document->forget();
-		if (photo) photo->forget();
-	}
-
-	GameId id;
-	quint64 accessHash;
-	QString shortName, title, description;
-	PhotoData *photo;
-	DocumentData *document;
 };
 
 QString saveFileName(const QString &title, const QString &filter, const QString &prefix, QString name, bool savingAs,

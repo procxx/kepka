@@ -2113,16 +2113,6 @@ WebPageData::WebPageData(const WebPageId &id, WebPageType type, const QString &u
     , document(document)
     , pendingTill(pendingTill) {}
 
-GameData::GameData(const GameId &id, const quint64 &accessHash, const QString &shortName, const QString &title,
-                   const QString &description, PhotoData *photo, DocumentData *document)
-    : id(id)
-    , accessHash(accessHash)
-    , shortName(shortName)
-    , title(title)
-    , description(description)
-    , photo(photo)
-    , document(document) {}
-
 MsgId clientMsgId() {
 	static MsgId currentClientMsgId = StartClientMsgId;
 	Assert(currentClientMsgId < EndClientMsgId);
