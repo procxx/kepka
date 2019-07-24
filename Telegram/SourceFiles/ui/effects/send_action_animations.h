@@ -22,7 +22,8 @@
 //
 #pragma once
 
-#include "structs.h"
+#include "data/data_types.h"
+#include "ui/twidget.h"
 
 namespace Ui {
 

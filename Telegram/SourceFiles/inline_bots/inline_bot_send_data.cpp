@@ -20,8 +20,9 @@
 // Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 // Copyright (c) 2017- Kepka Contributors, https://github.com/procxx
 //
-#include "inline_bots/inline_bot_send_data.h"
 #include "app.h"
+#include "data/data_game.h"
+#include "inline_bots/inline_bot_send_data.h"
 #include "inline_bots/inline_bot_result.h"
 #include "lang/lang_keys.h"
 #include "storage/localstorage.h"

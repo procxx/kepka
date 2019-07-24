@@ -23,11 +23,17 @@
 #pragma once
 
 #include "core/basic_types.h"
-#include "structs.h"
+#include "data/data_types.h"
+#include "ui/images.h"
+#include "scheme.h"
 
 class FileLoader;
 class History;
 class LocationCoords;
+class DocumentData;
+class PhotoData;
+
+struct GameData;
 
 namespace InlineBots {
 

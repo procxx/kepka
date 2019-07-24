@@ -25,6 +25,9 @@
 
 #include "data/data_types.h"
 
+class PhotoData;
+class DocumentData;
+
 struct GameData {
 	GameData(const GameId &id)
 	    : id(id) {}

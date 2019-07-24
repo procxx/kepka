@@ -28,6 +28,10 @@
 #include "dialogs/dialogs_common.h" // For Dialogs::Mode
 #include "ui/animation.h" // For BasicAnimation
 #include "ui/effects/send_action_animations.h" // For SendActionAnimation
+#include "ui/text/text.h"
+#include "data/data_photo.h"
+#include "data/data_game.h"
+#include "structs.h"
 
 void HistoryInit();
 
