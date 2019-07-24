@@ -27,6 +27,7 @@
 #include "auth_session.h"
 #include "boxes/confirm_box.h"
 #include "core/file_utilities.h"
+#include "data/data_document.h"
 #include "history/history_media_types.h"
 #include "inline_bots/inline_bot_layout_item.h"
 #include "lang/lang_keys.h"

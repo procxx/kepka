@@ -37,15 +37,6 @@ using MediaKey = QPair<quint64, quint64>;
 
 enum ActionOnLoad { ActionOnLoadNone, ActionOnLoadOpen, ActionOnLoadOpenWith, ActionOnLoadPlayInline };
 
-enum LocationType {
-	UnknownFileLocation = 0,
-	// 1, 2, etc are used as "version" value in mediaKey() method.
-
-	DocumentFileLocation = 0x4e45abe9, // mtpc_inputDocumentFileLocation
-	AudioFileLocation = 0x74dc404d, // mtpc_inputAudioFileLocation
-	VideoFileLocation = 0x3d0364ec, // mtpc_inputVideoFileLocation
-};
-
 typedef qint32 UserId;
 typedef qint32 ChatId;
 typedef qint32 ChannelId;
