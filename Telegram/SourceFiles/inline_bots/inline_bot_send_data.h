@@ -23,10 +23,11 @@
 #pragma once
 
 #include "core/basic_types.h"
+#include "data/data_types.h"
 #include "history/history_location_manager.h"
 #include "mtproto/type_utils.h"
-#include "structs.h"
 
+struct GameData;
 class History;
 namespace InlineBots {
 

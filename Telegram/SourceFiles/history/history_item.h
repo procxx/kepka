@@ -24,9 +24,9 @@
 
 #include "base/flags.h"
 #include "base/runtime_composer.h"
+#include "core/basic_types.h"
 #include "core/click_handler.h"
 #include "history/history.h"
-#include "structs.h"
 #include "ui/animation.h"
 #include "ui/text/text.h"
 
@@ -40,6 +40,7 @@ struct RippleAnimation;
 } // namespace style
 
 class HistoryItem;
+class History;
 
 class HistoryElement {
 public:

@@ -24,6 +24,7 @@
 
 #include <qglobal.h>
 #include <QPair>
+#include "core/utils.h" // TimeMs and stuff
 
 using VideoId = quint64;
 using AudioId = quint64;

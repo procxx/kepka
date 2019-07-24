@@ -22,7 +22,9 @@
 //
 #include "inline_bots/inline_bot_result.h"
 
+#include "app.h"
 #include "core/file_utilities.h"
+#include "data/data_game.h"
 #include "inline_bots/inline_bot_layout_item.h"
 #include "inline_bots/inline_bot_send_data.h"
 #include "mainwidget.h"
@@ -188,7 +190,7 @@ std::unique_ptr<Result> Result::create(quint64 queryId, const MTPBotInlineResult
 		}
 	} break;
 
-	default: { badAttachment = true; } break;
+	default: badAttachment = true; break;
 	}
 
 	if (badAttachment || !result->sendData || !result->sendData->isValid()) {
