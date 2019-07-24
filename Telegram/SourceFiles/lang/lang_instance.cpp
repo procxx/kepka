@@ -273,7 +273,7 @@ void Instance::fillFromSerialized(const QByteArray &data) {
 	qint32 version = 0;
 	QString customFilePathAbsolute, customFilePathRelative;
 	QByteArray customFileContent;
-	qint32 nonDefaultValuesCount = 0;
+	quint32 nonDefaultValuesCount = 0;
 	stream >> id >> version;
 	stream >> customFilePathAbsolute >> customFilePathRelative >> customFileContent;
 	stream >> nonDefaultValuesCount;
@@ -297,7 +297,7 @@ void Instance::fillFromSerialized(const QByteArray &data) {
 
 	std::vector<QByteArray> nonDefaultStrings;
 	nonDefaultStrings.reserve(2 * nonDefaultValuesCount);
-	for (auto i = 0; i != nonDefaultValuesCount; ++i) {
+	for (size_t i = 0; i != nonDefaultValuesCount; ++i) {
 		QByteArray key, value;
 		stream >> key >> value;
 		if (stream.status() != QDataStream::Ok) {
@@ -315,7 +315,7 @@ void Instance::fillFromSerialized(const QByteArray &data) {
 	_customFilePathRelative = customFilePathRelative;
 	_customFileContent = customFileContent;
 	LOG(("Lang Info: Loaded cached, keys: %1").arg(nonDefaultValuesCount));
-	for (auto i = 0, count = nonDefaultValuesCount * 2; i != count; i += 2) {
+	for (size_t i = 0, count = nonDefaultValuesCount * 2; i != count; i += 2) {
 		applyValue(nonDefaultStrings[i], nonDefaultStrings[i + 1]);
 	}
 	updatePluralRules();
