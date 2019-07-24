@@ -69,7 +69,10 @@ enum class RegExOption {
 	InvertedGreediness = QRegularExpression::InvertedGreedinessOption,
 	DontCapture = QRegularExpression::DontCaptureOption,
 	UseUnicodeProperties = QRegularExpression::UseUnicodePropertiesOption,
-#ifndef OS_MAC_OLD
+#if (!defined(OS_MAC_OLD) && ((QT_VERSION < QT_VERSION_CHECK(5, 12, 0)) && (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))))
+	/// @note These flags are introduced since Qt 5.4 and become deprecated in Qt 5.12, so we must
+	///       drop it conditionally.
+	///       See https://doc.qt.io/QT-5/qregularexpression.html#PatternOption-enum for details.
 	OptimizeOnFirstUsage = QRegularExpression::OptimizeOnFirstUsageOption,
 	DontAutomaticallyOptimize = QRegularExpression::DontAutomaticallyOptimizeOption,
 #endif // OS_MAC_OLD
