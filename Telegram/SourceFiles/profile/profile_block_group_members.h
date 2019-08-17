@@ -24,8 +24,8 @@
 
 #include "QTimer"
 #include "core/click_handler.h"
+#include "data/data_peer.h" // PeerData, UserData
 #include "profile/profile_block_peer_list.h"
-#include "structs.h"
 
 class UserData;
 class ChannelData;

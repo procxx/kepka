@@ -24,7 +24,7 @@
 
 #include "dialogs/dialogs_common.h"
 #include "dialogs/dialogs_list.h"
-#include "structs.h"
+#include "data/data_peer.h" // PeerData and inner
 
 class History;
 

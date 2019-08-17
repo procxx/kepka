@@ -23,7 +23,7 @@
 #pragma once
 
 #include "base/observer.h"
-#include "structs.h"
+#include "data/data_peer.h" // BotCommand
 #include "ui/animation.h"
 #include "ui/twidget.h"
 #include <QTimer>

@@ -29,6 +29,7 @@
 #include "ui/animation.h" // For BasicAnimation
 #include "ui/effects/send_action_animations.h" // For SendActionAnimation
 #include "ui/text/text.h"
+#include "data/data_peer.h"
 #include "data/data_photo.h"
 #include "data/data_game.h"
 #include "structs.h"
