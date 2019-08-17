@@ -23,7 +23,7 @@
 #pragma once
 
 #include "base/timer.h"
-#include "structs.h"
+#include "data/data_peer.h"
 
 namespace Storage {
 class Downloader;
