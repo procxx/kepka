@@ -30,7 +30,6 @@
 #include "mtproto/core_types.h"
 #include "mtproto/rpc_sender.h"
 #include "mtproto/sender.h"
-#include "structs.h"
 #include <QtCore/QObject>
 
 class AuthSession;
