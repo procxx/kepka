@@ -37,7 +37,7 @@
 
 #include "scheme.h"
 
-#include "private/qfixed_p.h" // QFIXED_MAX, warn: temporary, should be eliminated.
+class QTextEdit;
 
 class HistoryItem;
 
@@ -522,6 +522,7 @@ QString saveFileName(const QString &title, const QString &filter, const QString 
 MsgId clientMsgId();
 
 struct MessageCursor {
+	static const int kMaxScroll;
 	MessageCursor() = default;
 	MessageCursor(int position, int anchor, int scroll)
 	    : position(position)
@@ -530,13 +531,7 @@ struct MessageCursor {
 	MessageCursor(const QTextEdit *edit) {
 		fillFrom(edit);
 	}
-	void fillFrom(const QTextEdit *edit) {
-		QTextCursor c = edit->textCursor();
-		position = c.position();
-		anchor = c.anchor();
-		QScrollBar *s = edit->verticalScrollBar();
-		scroll = (s && (s->value() != s->maximum())) ? s->value() : QFIXED_MAX;
-	}
+	void fillFrom(const QTextEdit *edit);
 	void applyTo(QTextEdit *edit) {
 		auto cursor = edit->textCursor();
 		cursor.setPosition(anchor, QTextCursor::MoveAnchor);
@@ -548,7 +543,7 @@ struct MessageCursor {
 	}
 	int position = 0;
 	int anchor = 0;
-	int scroll = QFIXED_MAX;
+	int scroll = kMaxScroll;
 };
 
 inline bool operator==(const MessageCursor &a, const MessageCursor &b) {

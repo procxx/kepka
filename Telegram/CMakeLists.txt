@@ -258,6 +258,7 @@ add_executable(Kepka WIN32 MACOSX_BUNDLE
     SourceFiles/core/utils.cpp
 
     SourceFiles/data/data_abstract_structure.cpp
+    SourceFiles/data/data_document.cpp
     SourceFiles/data/data_drafts.cpp
     SourceFiles/data/data_game.cpp
     SourceFiles/data/data_photo.cpp
