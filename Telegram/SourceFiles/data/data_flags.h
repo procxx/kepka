@@ -46,19 +46,19 @@ public:
         void set(FlagsType which) {
                 if (auto diff = which ^ _value) {
                         _value = which;
-                        updated(diff);
+                        //updated(diff);
                 }
         }
         void add(FlagsType which) {
                 if (auto diff = which & ~_value) {
                         _value |= which;
-                        updated(diff);
+                        //updated(diff);
                 }
         }
         void remove(FlagsType which) {
                 if (auto diff = which & _value) {
                         _value &= ~which;
-                        updated(diff);
+                        //updated(diff);
                 }
         }
         FlagsType current() const {
@@ -74,11 +74,11 @@ public:
 //        }
 
 private:
-        void updated(FlagsType diff) {
-                if ((diff &= FlagsType::from_raw(kEssential))) {
-                        _changes.fire({ diff, _value });
-                }
-        }
+//        void updated(FlagsType diff) {
+//                if ((diff &= FlagsType::from_raw(kEssential))) {
+//                        _changes.fire({ diff, _value });
+//                }
+//        }
 
         FlagsType _value = 0;
         //rpl::event_stream<Change> _changes;
