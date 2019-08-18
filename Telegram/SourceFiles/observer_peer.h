@@ -24,9 +24,9 @@
 
 #include "base/flags.h"
 #include "base/observer.h"
+#include "data/data_document.h"
 
 #include "history/history.h"
-#include "structs.h"
 
 namespace Notify {
 

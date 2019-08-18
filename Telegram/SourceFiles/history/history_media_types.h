@@ -22,6 +22,7 @@
 //
 #pragma once
 
+#include "data/data_document.h"
 #include "history/history_media.h"
 #include "ui/effects/radial_animation.h"
 
