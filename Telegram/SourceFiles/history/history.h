@@ -32,7 +32,6 @@
 #include "data/data_peer.h"
 #include "data/data_photo.h"
 #include "data/data_game.h"
-#include "structs.h"
 
 void HistoryInit();
 
