@@ -126,15 +126,14 @@ The Kepka logo is available by CC-BY-SA 4.0 License. (c) 2018 leha-bot. The full
 * Mac OS X 10.8 - Mac OS X 10.11
 * Mac OS X 10.6 - Mac OS X 10.7 (separate build)
 * Ubuntu 12.04 - Ubuntu 16.04
-* Fedora 22 - Fedora 24
+* Fedora 28 - Fedora 30 (Older version may works, but we can't guarantee);
 
 ## Third-party
 
 * [CMake 3.10+][cmake-build]
 * Qt 5.9+ ([LGPL](http://doc.qt.io/qt-5/lgpl.html))
-* OpenSSL 1.0.1g ([OpenSSL License](https://www.openssl.org/source/license.html))
-* zlib 1.2.8 ([zlib License](http://www.zlib.net/zlib_license.html))
-* Ninja ([Apache License 2.0](https://github.com/ninja-build/ninja/blob/master/COPYING))
+* OpenSSL 1.0.1g+ ([OpenSSL License](https://www.openssl.org/source/license.html))
+* zlib 1.2.8+ ([zlib License](http://www.zlib.net/zlib_license.html))
 * OpenAL Soft ([LGPL](http://kcat.strangesoft.net/openal.html))
 * Opus codec ([BSD License](http://www.opus-codec.org/license/))
 * FFmpeg ([LGPL](https://www.ffmpeg.org/legal.html))
