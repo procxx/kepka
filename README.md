@@ -114,6 +114,32 @@ $ set PATH=%QTDIR%\bin;%PATH%
 $ cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE="%VCPKG%\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 $ cmake --build . --config RelWithDebInfo
 ```
+
+### Sailfish OS (Experimental, install only instruction)
+Note: this manual is written by @custodian (got from Telegram chat @sailfishos) and translated to English for your convenience.
+1. Add repository (please note that it is the ARM v7hl version, the x86 version located in sibling folder - end note):
+```sh
+# ssu ar mer-custodian-td http://repo.merproject.org/obs/home:/custodian:/tg/sailfishos_latest_armv7hl/
+# pkcon ref
+```
+2. Install Kepka
+```sh
+# pkcon install kepka
+```
+The source of this fork is here: https://github.com/custodian/kepka/tree/sailfishos
+The downstream changes are:
+- fix 200% scaling to properly render dialogs and contacts lists; some another dialogs could overflow though;
+- patch SPEC file for SFOS;
+
+Known problems:
+Keyboard/smiles/stickers rendering problems;
+
+Remove:
+```sh
+pkcon remove kepka
+ssu rr mer-custodian-td
+```
+
 ![Preview of Telegram Desktop][preview_image]
 
 The source code is published under GPLv3 with OpenSSL exception, the license is available [here][license].
