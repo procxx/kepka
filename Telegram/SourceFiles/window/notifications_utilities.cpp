@@ -23,6 +23,7 @@
 #include "window/notifications_utilities.h"
 
 #include "messenger.h"
+#include "data/data_peer.h"
 #include "platform/platform_specific.h"
 #include "styles/style_window.h"
 

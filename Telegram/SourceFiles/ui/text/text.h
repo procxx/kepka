@@ -28,7 +28,7 @@
 
 #include "base/flags.h"
 #include "core/click_handler.h"
-#include "private/qfixed_p.h"
+#include "private/qfixed_p.h" // QFixed
 #include "styles/style_basic.h"
 #include "ui/emoji_config.h"
 #include "ui/text/text_entity.h"

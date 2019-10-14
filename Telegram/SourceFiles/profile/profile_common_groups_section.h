@@ -22,7 +22,7 @@
 //
 #pragma once
 
-#include "structs.h"
+#include "data/data_peer.h" // PeerData, UserData
 #include "ui/effects/ripple_animation.h"
 #include "ui/text/text.h"
 #include "window/section_memento.h"

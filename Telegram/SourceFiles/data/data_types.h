@@ -26,6 +26,7 @@
 #include <QPair>
 #include "core/utils.h" // TimeMs and stuff
 
+using PhotoId = quint64;
 using VideoId = quint64;
 using AudioId = quint64;
 using DocumentId = quint64;

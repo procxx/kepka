@@ -17,20 +17,21 @@
 // to link the code of portions of this program with the OpenSSL library.
 //
 // Full license: https://github.com/procxx/kepka/blob/master/LICENSE
-// Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
-// Copyright (c) 2017- Kepka Contributors, https://github.com/procxx
+// Copyright (c) 2019- Kepka Contributors, https://github.com/procxx
 //
-#pragma once
+/// @file data/data_document.cpp Implementation and internals (and Qt QFixed)
+/// @todo Get rid of QFixed.
 
-#include <QPair>
-#include <QScrollBar>
-#include <QTextCursor>
+#include "data/data_document.h"
+#include "private/qfixed_p.h"
 #include <QTextEdit>
 
-#include "scheme.h"
-#include "ui/images.h"
-#include "ui/text/text.h"
-#include "ui/twidget.h"
-#include "data/data_types.h"
-#include "data/data_photo.h"
-#include "data/data_document.h"
+void MessageCursor::fillFrom(const QTextEdit *edit) {
+	QTextCursor c = edit->textCursor();
+	position = c.position();
+	anchor = c.anchor();
+	QScrollBar *s = edit->verticalScrollBar();
+	scroll = (s && (s->value() != s->maximum())) ? s->value() : QFIXED_MAX;
+}
+
+const int MessageCursor::kMaxScroll = QFIXED_MAX;
