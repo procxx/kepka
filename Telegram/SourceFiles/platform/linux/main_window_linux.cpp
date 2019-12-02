@@ -28,8 +28,6 @@
 #include "lang/lang_keys.h"
 #include "mainwindow.h"
 #include "messenger.h"
-#include "platform/linux/linux_desktop_environment.h"
-#include "platform/linux/linux_libs.h"
 #include "platform/platform_notifications_manager.h"
 #include "storage/localstorage.h"
 #include "styles/style_window.h"
@@ -37,20 +35,15 @@
 namespace Platform {
 namespace {
 
-bool noQtTrayIcon = false, tryAppIndicator = false;
-
-
 qint32 _trayIconSize = 22;
 bool _trayIconMuted = true;
 qint32 _trayIconCount = 0;
 QImage _trayIconImageBack, _trayIconImage;
 
-
 #define QT_RED 0
 #define QT_GREEN 1
 #define QT_BLUE 2
 #define QT_ALPHA 3
-
 
 QImage _trayIconImageGen() {
 	qint32 counter = App::histories().unreadBadge(),
@@ -117,90 +110,56 @@ QString _trayIconImageFile() {
 	return QString();
 }
 
-
 } // namespace
-
-MainWindow::MainWindow() {
-	connect(&_psCheckStatusIconTimer, SIGNAL(timeout()), this, SLOT(psStatusIconCheck()));
-	_psCheckStatusIconTimer.setSingleShot(false);
-
-	connect(&_psUpdateIndicatorTimer, SIGNAL(timeout()), this, SLOT(psUpdateIndicator()));
-	_psUpdateIndicatorTimer.setSingleShot(true);
-}
 
 bool MainWindow::hasTrayIcon() const {
 	return trayIcon;
 }
 
-void MainWindow::psStatusIconCheck() {
-	if (cSupportTray() || !--_psCheckStatusIconLeft) {
-		_psCheckStatusIconTimer.stop();
-		return;
-	}
-}
-
-void MainWindow::psShowTrayMenu() {}
-
-void MainWindow::psTrayMenuUpdated() {}
-
 void MainWindow::psSetupTrayIcon() {
-	if (noQtTrayIcon) {
-		if (!cSupportTray()) return;
-		updateIconCounters();
-	} else {
-		LOG(("Using Qt tray icon."));
-		if (!trayIcon) {
-			trayIcon = new QSystemTrayIcon(this);
-			QIcon icon;
-			QFileInfo iconFile(_trayIconImageFile());
-			if (iconFile.exists()) {
-				QByteArray path = QFile::encodeName(iconFile.absoluteFilePath());
-				icon = QIcon(path.constData());
-			} else {
-				icon = Window::CreateIcon();
-			}
-			trayIcon->setIcon(icon);
-
-			trayIcon->setToolTip(str_const_toString(AppName));
-			connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
-			        SLOT(toggleTray(QSystemTrayIcon::ActivationReason)), Qt::UniqueConnection);
-
-			// This is very important for native notifications via libnotify!
-			// Some notification servers compose several notifications with a "Reply"
-			// action into one and after that a click on "Reply" button does not call
-			// the specified callback from any of the sent notification - libnotify
-			// just ignores ibus messages, but Qt tray icon at least emits this signal.
-			connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(showFromTray()));
-
-			App::wnd()->updateTrayMenu();
+	if (!trayIcon) {
+		trayIcon = new QSystemTrayIcon(this);
+		QIcon icon;
+		QFileInfo iconFile(_trayIconImageFile());
+		if (iconFile.exists()) {
+			QByteArray path = QFile::encodeName(iconFile.absoluteFilePath());
+			icon = QIcon(path.constData());
+		} else {
+			icon = Window::CreateIcon();
 		}
-		updateIconCounters();
+		trayIcon->setIcon(icon);
 
-		trayIcon->show();
+		trayIcon->setToolTip(str_const_toString(AppName));
+		connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this,
+				SLOT(toggleTray(QSystemTrayIcon::ActivationReason)), Qt::UniqueConnection);
+
+		// This is very important for native notifications via libnotify!
+		// Some notification servers compose several notifications with a "Reply"
+		// action into one and after that a click on "Reply" button does not call
+		// the specified callback from any of the sent notification - libnotify
+		// just ignores ibus messages, but Qt tray icon at least emits this signal.
+		connect(trayIcon, SIGNAL(messageClicked()), this, SLOT(showFromTray()));
+
+		App::wnd()->updateTrayMenu();
 	}
+	updateIconCounters();
+
+	trayIcon->show();
 }
 
 void MainWindow::workmodeUpdated(DBIWorkMode mode) {
 	if (!cSupportTray()) return;
 
 	if (mode == dbiwmWindowOnly) {
-		if (noQtTrayIcon) {
-		} else {
-			if (trayIcon) {
-				trayIcon->setContextMenu(0);
-				trayIcon->deleteLater();
-			}
-			trayIcon = 0;
+		if (trayIcon) {
+			trayIcon->setContextMenu(0);
+			trayIcon->deleteLater();
 		}
+		trayIcon = 0;
 	} else {
-		if (noQtTrayIcon) {
-		} else {
-			psSetupTrayIcon();
-		}
+		psSetupTrayIcon();
 	}
 }
-
-void MainWindow::psUpdateIndicator() {}
 
 void MainWindow::unreadCounterChangedHook() {
 	setWindowTitle(titleText());
@@ -210,8 +169,7 @@ void MainWindow::unreadCounterChangedHook() {
 void MainWindow::updateIconCounters() {
 	updateWindowIcon();
 
-	if (noQtTrayIcon) {
-	} else if (trayIcon) {
+	if (trayIcon) {
 		QIcon icon;
 		QFileInfo iconFile(_trayIconImageFile());
 		if (iconFile.exists()) {
@@ -230,27 +188,14 @@ void MainWindow::updateIconCounters() {
 	}
 }
 
-void MainWindow::LibsLoaded() {
-	noQtTrayIcon = !DesktopEnvironment::TryQtTrayIcon();
-
-	LOG(("Tray Icon: Try Qt = %1, Prefer appindicator = %2").arg(Logs::b(!noQtTrayIcon)).arg(Logs::b(tryAppIndicator)));
-
-	if (noQtTrayIcon) cSetSupportTray(false);
-}
-
 void MainWindow::psCreateTrayIcon() {
-	if (!noQtTrayIcon) {
-		LOG(("Tray Icon: Using Qt tray icon, available: %1").arg(Logs::b(QSystemTrayIcon::isSystemTrayAvailable())));
-		cSetSupportTray(QSystemTrayIcon::isSystemTrayAvailable());
-		return;
-	}
+	LOG(("Tray Icon: Using Qt tray icon, available: %1").arg(Logs::b(QSystemTrayIcon::isSystemTrayAvailable())));
+	cSetSupportTray(QSystemTrayIcon::isSystemTrayAvailable());
+	return;
 }
 
 void MainWindow::psFirstShow() {
 	psCreateTrayIcon();
-
-	psUpdateMargins();
-
 	show();
 
 	if (cWindowPos().maximized) {
@@ -271,11 +216,5 @@ void MainWindow::psFirstShow() {
 
 	setPositionInited();
 }
-
-void MainWindow::psInitSysMenu() {}
-
-void MainWindow::psUpdateMargins() {}
-
-MainWindow::~MainWindow() {}
 
 } // namespace Platform

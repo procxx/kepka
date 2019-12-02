@@ -38,6 +38,8 @@ class LocationCoords;
 
 namespace Platform {
 
+inline void start() {}
+
 inline void SetWatchingMediaKeys(bool watching) {}
 
 inline void StartTranslucentPaint(QPainter &p, QPaintEvent *e) {}
@@ -50,6 +52,13 @@ inline void ReInitOnTopPanel(QWidget *panel) {}
 
 QString CurrentExecutablePath(int argc, char *argv[]);
 
+namespace ThirdParty {
+
+inline void start() {}
+
+inline void finish() {}
+
+} // namespace ThirdParty
 } // namespace Platform
 
 inline QString psServerPrefix() {
@@ -62,7 +71,7 @@ inline void psCheckLocalSocket(const QString &serverName) {
 	}
 }
 
-void psWriteDump();
+inline void psWriteDump() {}
 QString psPrepareCrashDump(const QByteArray &crashdump, QString dumpfile);
 
 void psDeleteDir(const QString &dir);
@@ -78,8 +87,8 @@ void psActivateProcess(quint64 pid = 0);
 QString psLocalServerPrefix();
 QString psAppDataPath();
 QString psDownloadPath();
-void psAutoStart(bool start, bool silent = false);
-void psSendToMenu(bool send, bool silent = false);
+inline void psAutoStart(bool start, bool silent = false) {}
+inline void psSendToMenu(bool send, bool silent = false) {}
 
 QRect psDesktopRect();
 void psShowOverAll(QWidget *w, bool canFocus = true);
@@ -95,7 +104,7 @@ QAbstractNativeEventFilter *psNativeEventFilter();
 
 void psNewVersion();
 
-void psUpdateOverlayed(QWidget *widget);
+inline void psUpdateOverlayed(QWidget *widget) {}
 inline QByteArray psDownloadPathBookmark(const QString &path) {
 	return QByteArray();
 }

@@ -27,7 +27,6 @@
 #include "mainwidget.h"
 #include "mainwindow.h"
 #include "platform/linux/file_utilities_linux.h"
-#include "platform/linux/linux_libs.h"
 #include "platform/platform_notifications_manager.h"
 #include "storage/localstorage.h"
 
@@ -110,8 +109,6 @@ QAbstractNativeEventFilter *psNativeEventFilter() {
 	_psEventFilter = new _PsEventFilter();
 	return _psEventFilter;
 }
-
-void psWriteDump() {}
 
 QString demanglestr(const QString &mangled) {
 	if (mangled.isEmpty()) return mangled;
@@ -359,20 +356,13 @@ int psCleanup() {
 	return 0;
 }
 
-void psDoFixPrevious() {}
-
 int psFixPrevious() {
-	psDoFixPrevious();
 	return 0;
 }
 
 namespace Platform {
 
-void start() {}
-
 void finish() {
-	Notifications::Finish();
-
 	delete _psEventFilter;
 	_psEventFilter = nullptr;
 }
@@ -416,17 +406,6 @@ QString SystemCountry() {
 QString SystemLanguage() {
 	return QString();
 }
-
-namespace ThirdParty {
-
-void start() {
-	Libs::start();
-	MainWindow::LibsLoaded();
-}
-
-void finish() {}
-
-} // namespace ThirdParty
 
 } // namespace Platform
 
@@ -485,7 +464,6 @@ void psRegisterCustomScheme() {
 			s << "Exec=" << EscapeShell(QFile::encodeName(cExeDir() + cExeName())) << " -- %u\n";
 			s << "Icon=telegram\n";
 			s << "Terminal=false\n";
-			s << "StartupWMClass=Kepka\n";
 			s << "StartupWMClass=" << str_const_toString(AppName) << '\n';
 			s << "Type=Application\n";
 			s << "Categories=Network;InstantMessaging;Qt;\n";
@@ -516,12 +494,8 @@ void psRegisterCustomScheme() {
 	}
 
 	DEBUG_LOG(("App Info: placing .protocol file"));
-	QString services;
-	if (QDir(home + qsl(".kde4/")).exists()) {
-		services = home + qsl(".kde4/share/kde4/services/");
-	} else if (QDir(home + qsl(".kde/")).exists()) {
-		services = home + qsl(".kde/share/kde4/services/");
-	}
+	QString services = home + qsl(".local/share/kservices5/");
+
 	if (!services.isEmpty()) {
 		if (!QDir(services).exists()) QDir().mkpath(services);
 
@@ -648,12 +622,6 @@ void psExecTelegram(const QString &crashreport) {
 bool psShowOpenWithMenu(int x, int y, const QString &file) {
 	return false;
 }
-
-void psAutoStart(bool start, bool silent) {}
-
-void psSendToMenu(bool send, bool silent) {}
-
-void psUpdateOverlayed(QWidget *widget) {}
 
 bool linuxMoveFile(const char *from, const char *to) {
 	FILE *ffrom = fopen(from, "rb"), *fto = fopen(to, "wb");
