@@ -79,6 +79,10 @@ find_package(FFmpeg REQUIRED)
 find_package(Opus REQUIRED)
 find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)
 
+if(PACKAGED_BUILD)
+    find_package(MiniZIP REQUIRED)
+endif()
+
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.12.0")
     find_package(Python3 REQUIRED)
 else()

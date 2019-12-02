@@ -551,11 +551,15 @@ if (APPLE)
     target_include_directories(Kepka PRIVATE ThirdParty/SPMediaKeyTap)
 endif()
 
-target_sources(Kepka PRIVATE
-    ThirdParty/minizip/ioapi.c
-    ThirdParty/minizip/zip.c
-    ThirdParty/minizip/unzip.c
+if(NOT PACKAGED_BUILD)
+    target_sources(Kepka PRIVATE
+        ThirdParty/minizip/ioapi.c
+        ThirdParty/minizip/zip.c
+        ThirdParty/minizip/unzip.c
+    )
+endif()
 
+target_sources(Kepka PRIVATE
     ThirdParty/emoji_suggestions/emoji_suggestions.cpp
 )
 
@@ -645,6 +649,10 @@ endif()
 target_include_directories(Kepka PRIVATE ${OPENAL_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR}
     ${OPUS_INCLUDE_DIR} ${FFMPEG_INCLUDE_DIRS} ${ALSA_INCLUDE_DIRS} ${PULSEAUDIO_INCLUDE_DIR} )
 
+if(PACKAGED_BUILD)
+    target_include_directories(Kepka PRIVATE ${MINIZIP_INCLUDE_DIR})
+endif()
+
 target_link_libraries(Kepka
     Qt5::Core
     Qt5::Widgets
@@ -661,6 +669,12 @@ target_link_libraries(Kepka
     ${OPUS_LIBRARIES}
     ${CONAN_LIBS}
 ) # crashpad::crashpad_client)
+
+if(PACKAGED_BUILD)
+    target_link_libraries(Kepka
+        ${MINIZIP_LIBRARIES}
+    )
+endif()
 
 if (APPLE)
     add_dependencies(Kepka iconset_output)
