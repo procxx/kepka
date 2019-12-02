@@ -22,13 +22,6 @@
 //
 #include "platform/linux/notifications_manager_linux.h"
 
-#include "base/task_queue.h"
-#include "config.h"
-#include "lang/lang_keys.h"
-#include "platform/linux/linux_libnotify.h"
-#include "platform/linux/linux_libs.h"
-#include "window/notifications_utilities.h"
-
 namespace Platform {
 namespace Notifications {
 
@@ -39,8 +32,6 @@ bool Supported() {
 std::unique_ptr<Window::Notifications::Manager> Create(Window::Notifications::System *system) {
 	return nullptr;
 }
-
-void Finish() {}
 
 } // namespace Notifications
 } // namespace Platform

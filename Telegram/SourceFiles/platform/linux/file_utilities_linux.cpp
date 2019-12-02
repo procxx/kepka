@@ -22,17 +22,12 @@
 //
 #include "platform/linux/file_utilities_linux.h"
 
-// #include <private/qguiapplication_p.h>
 #include "facades.h"
 #include "mainwindow.h"
 #include "messenger.h"
-#include "platform/linux/linux_gdk_helper.h"
-#include "platform/linux/linux_libs.h"
 #include "storage/localstorage.h"
 
 #include <QProcess>
-
-QStringList qt_make_filter_list(const QString &filter);
 
 namespace Platform {
 namespace File {
@@ -113,20 +108,5 @@ bool Get(QStringList &files, QByteArray &remoteContent, const QString &caption, 
 	return ::FileDialog::internal::GetDefault(files, remoteContent, caption, filter, type, startFile);
 }
 
-namespace {
-
-const char *filterRegExp = "^(.*)\\(([a-zA-Z0-9_.,*? +;#\\-\\[\\]@\\{\\}/!<>\\$%&=^~:\\|]*)\\)$";
-
-// Makes a list of filters from a normal filter string "Image Files (*.png *.jpg)"
-QStringList cleanFilterList(const QString &filter) {
-	QRegExp regexp(QString::fromLatin1(filterRegExp));
-	Q_ASSERT(regexp.isValid());
-	QString f = filter;
-	int i = regexp.indexIn(f);
-	if (i >= 0) f = regexp.cap(2);
-	return f.split(QLatin1Char(' '), QString::SkipEmptyParts);
-}
-
-} // namespace
 } // namespace FileDialog
 } // namespace Platform

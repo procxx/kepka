@@ -43,9 +43,6 @@ int main(int argc, char *argv[]) {
 	Logs::start(); // must be started before Platform is started
 	Platform::start(); // must be started before QApplication is created
 
-	qputenv("QT_STYLE_OVERRIDE", "qwerty");
-	qunsetenv("QT_QPA_PLATFORMTHEME");
-
 	int result = 0;
 	{
 		Application app(argc, argv);

@@ -25,9 +25,4 @@
 #ifdef Q_OS_WIN
 Q_IMPORT_PLUGIN(QWebpPlugin)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
-#elif defined Q_OS_MAC // Q_OS_WIN
-// Q_IMPORT_PLUGIN(QWebpPlugin)
-// Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
-// Q_IMPORT_PLUGIN(QGenericEnginePlugin)
-#elif defined Q_OS_LINUX // Q_OS_WIN | Q_OS_MAC
-#endif // Q_OS_WIN | Q_OS_MAC | Q_OS_LINUX
+#endif // Q_OS_WIN

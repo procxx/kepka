@@ -520,10 +520,6 @@ endif()
 if (LINUX)
     target_sources(Kepka PRIVATE
         SourceFiles/platform/linux/file_utilities_linux.cpp
-        SourceFiles/platform/linux/linux_desktop_environment.cpp
-        SourceFiles/platform/linux/linux_gdk_helper.cpp
-        SourceFiles/platform/linux/linux_libnotify.cpp
-        SourceFiles/platform/linux/linux_libs.cpp
         SourceFiles/platform/linux/main_window_linux.cpp
         SourceFiles/platform/linux/notifications_manager_linux.cpp
         SourceFiles/platform/linux/specific_linux.cpp
@@ -706,7 +702,7 @@ if(WIN32)
 endif()
 
 if (LINUX)
-    target_link_libraries(Kepka Qt5::DBus dl ${ALSA_LIBRARIES} ${PULSEAUDIO_LIBRARIES})
+    target_link_libraries(Kepka Qt5::DBus dl)
 endif()
 
 # Enable LTO optimizations...
