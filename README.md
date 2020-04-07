@@ -51,6 +51,11 @@ You most likely have to rebuild ffmpeg with `--enable-swresample --enable-swscal
 After that, go to the [next section](#configuring-and-building).
 
 #### Fedora:
+For more convenient work with building on Fedora, it's recommended to build it from our [RPM spec file][RPM].
+
+<details>
+ <summary>1. Installing and configuring RPM tools</summary>
+
 ```console
 # dnf install rpm-build rpmdevtools mock mock-rpmfusion-free
 ```
@@ -69,21 +74,23 @@ Create RPM build base directories:
 ```bash
 rpmdev-setuptree
 ```
+</details>
 
-Download sources:
+2. Download sources:
 ```bash
 spectool -g -R kepka.spec
 ```
 
-Generate SRPM:
+3. Generate SRPM (Source RPM for building from sources):
 ```bash
 rpmbuild -bs kepka.spec
 ```
 
-Start mock build sequence:
+4. Start mock build sequence:
 ```bash
 mock -r fedora-$(rpm -E %fedora)-$(uname -m)-rpmfusion_free --rebuild ~/rpmbuild/SRPMS/kepka*.src.rpm
 ```
+
 
 #### Configuring and building
 
@@ -157,3 +164,4 @@ The Kepka logo is available by CC-BY-SA 4.0 License. (c) 2018 leha-bot. The full
 [preview_image]: docs/assets/preview.png
 [vcpkg]: https://github.com/Microsoft/vcpkg
 [visual-studio]: https://www.visualstudio.com/
+[RPM]: https://rpm.org/
