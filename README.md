@@ -122,11 +122,11 @@ The Kepka logo is available by CC-BY-SA 4.0 License. (c) 2018 leha-bot. The full
 
 ## Supported systems
 
-* Windows 7 - Windows 10 (**not** RT)
-* Mac OS X 10.8 - Mac OS X 10.11
-* Mac OS X 10.6 - Mac OS X 10.7 (separate build)
-* Ubuntu 12.04 - Ubuntu 16.04
-* Fedora 22 - Fedora 24
+* Windows 7 - Windows 10 (**not** RT);
+* Mac OS X 10.8 - Mac OS X 10.11 (not regularly tested);
+* Mac OS X 10.6 - Mac OS X 10.7 (separate build, not tested);
+* Ubuntu 12.04 - Ubuntu 16.04 (not regularly tested);
+* Fedora 28 - Fedora 32 (old versions were retired).
 
 ## Third-party
 
