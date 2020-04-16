@@ -22,41 +22,15 @@ Copyright (c) 2014-2017 John Preston, https://desktop.telegram.org
 
 #include <vector>
 #include <string.h>
+#include <string>
 
 namespace Ui {
 namespace Emoji {
 
 static_assert(sizeof(char16_t) == 2, "Bad UTF-16 character size.");
 
-// @todo kill this off, use std::u16string instead
-class utf16string {
-public:
-	utf16string() = default;
-	utf16string(const char16_t *data, std::size_t size) : data_(data), size_(size) {
-	}
-	utf16string(const utf16string &other) = default;
-	utf16string &operator=(const utf16string &other) = default;
-
-	const char16_t *data() const {
-		return data_;
-	}
-	std::size_t size() const {
-		return size_;
-	}
-
-	char16_t operator[](int index) const {
-		return data_[index];
-	}
-
-private:
-	const char16_t *data_ = nullptr;
-	std::size_t size_ = 0;
-
-};
-
-inline bool operator==(utf16string a, utf16string b) {
-	return (a.size() == b.size()) && (!a.size() || !memcmp(a.data(), b.data(), a.size() * sizeof(char16_t)));
-}
+/// @brief Alias for std::u16string. It was the class in upstream code.
+using utf16string = std::u16string;
 
 namespace internal {
 
