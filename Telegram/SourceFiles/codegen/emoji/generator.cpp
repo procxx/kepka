@@ -643,7 +643,7 @@ const std::map<QString, int> EmojiMap = {\n\
 \n";
 
 	for (auto &item : data_.map) {
-		source_->stream() << "{QString(\"" << item.first << "\")," << item.second << "},\n";
+		source_->stream() << "{\"" << item.first << "\"," << item.second << "},\n";
 	}
 	source_->stream() << "\
 \n\
@@ -674,10 +674,10 @@ bool Generator::writeFindFromDictionary(const std::map<QString, int, std::greate
 	auto max_length = max_el->first.size();
 	source_->stream() << "\tstd::array<size_t, " << max_length + 1 << "> sizes;\n";
 	if (skipPostfixes) {
-		source_->stream() << "\tfor (int i=0,l=0; i<full_str.size() && l < " << max_length << R"code(; ++i) {
-		if (full_str[i] == kPostfix) {continue;}
+		source_->stream() << "\tfor (int i=0,l=0; i<str.size() && l < " << max_length << R"code(; ++i) {
+		if (str[i] == kPostfix) {continue;}
 		++l;
-		sizes[l]=i+1;
+		sizes[l]=i;
 		str+=full_str[i];
 	}
 )code";
