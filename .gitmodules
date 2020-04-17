@@ -1,75 +1,75 @@
 [submodule "Telegram/ThirdParty/libtgvoip"]
 	path = Telegram/ThirdParty/libtgvoip
-	url = https://github.com/telegramdesktop/libtgvoip
+	url = https://github.com/kepka-app/libtgvoip.git
 [submodule "Telegram/ThirdParty/variant"]
 	path = Telegram/ThirdParty/variant
-	url = https://github.com/desktop-app/variant.git
+	url = https://github.com/mapbox/variant.git
 [submodule "Telegram/ThirdParty/GSL"]
 	path = Telegram/ThirdParty/GSL
 	url = https://github.com/Microsoft/GSL.git
 [submodule "Telegram/ThirdParty/Catch"]
 	path = Telegram/ThirdParty/Catch
-	url = https://github.com/philsquared/Catch
+	url = https://github.com/philsquared/Catch.git
 [submodule "Telegram/ThirdParty/xxHash"]
 	path = Telegram/ThirdParty/xxHash
 	url = https://github.com/Cyan4973/xxHash.git
 [submodule "Telegram/ThirdParty/rlottie"]
 	path = Telegram/ThirdParty/rlottie
-	url = https://github.com/desktop-app/rlottie.git
+	url = https://github.com/kepka-app/rlottie.git
 [submodule "Telegram/ThirdParty/lz4"]
 	path = Telegram/ThirdParty/lz4
 	url = https://github.com/lz4/lz4.git
 [submodule "Telegram/lib_crl"]
 	path = Telegram/lib_crl
-	url = https://github.com/desktop-app/lib_crl.git
+	url = https://github.com/kepka-app/lib_crl.git
 [submodule "Telegram/lib_rpl"]
 	path = Telegram/lib_rpl
-	url = https://github.com/desktop-app/lib_rpl.git
+	url = https://github.com/kepka-app/lib_rpl.git
 [submodule "Telegram/lib_base"]
 	path = Telegram/lib_base
-	url = https://github.com/desktop-app/lib_base.git
+	url = https://github.com/kepka-app/lib_base.git
 [submodule "Telegram/codegen"]
 	path = Telegram/codegen
-	url = https://github.com/desktop-app/codegen.git
+	url = https://github.com/kepka-app/codegen.git
 [submodule "Telegram/lib_ui"]
 	path = Telegram/lib_ui
-	url = https://github.com/desktop-app/lib_ui.git
+	url = https://github.com/kepka-app/lib_ui.git
 [submodule "Telegram/lib_rlottie"]
 	path = Telegram/lib_rlottie
-	url = https://github.com/desktop-app/lib_rlottie.git
+	url = https://github.com/kepka-app/lib_rlottie.git
 [submodule "Telegram/lib_lottie"]
 	path = Telegram/lib_lottie
-	url = https://github.com/desktop-app/lib_lottie.git
+	url = https://github.com/kepka-app/lib_lottie.git
 [submodule "Telegram/lib_tl"]
 	path = Telegram/lib_tl
-	url = https://github.com/desktop-app/lib_tl.git
+	url = https://github.com/kepka-app/lib_tl.git
 [submodule "Telegram/lib_spellcheck"]
 	path = Telegram/lib_spellcheck
-	url = https://github.com/desktop-app/lib_spellcheck
+	url = https://github.com/kepka-app/lib_spellcheck.git
 [submodule "Telegram/lib_storage"]
 	path = Telegram/lib_storage
-	url = https://github.com/desktop-app/lib_storage.git
+	url = https://github.com/kepka-app/lib_storage.git
 [submodule "cmake"]
 	path = cmake
-	url = https://github.com/desktop-app/cmake_helpers.git
+	url = https://github.com/kepka-app/cmake_helpers.git
 [submodule "Telegram/ThirdParty/expected"]
 	path = Telegram/ThirdParty/expected
-	url = https://github.com/TartanLlama/expected
+	url = https://github.com/TartanLlama/expected.git
 [submodule "Telegram/ThirdParty/QR"]
 	path = Telegram/ThirdParty/QR
-	url = https://github.com/nayuki/QR-Code-generator
+	url = https://github.com/nayuki/QR-Code-generator.git
 [submodule "Telegram/lib_qr"]
 	path = Telegram/lib_qr
-	url = https://github.com/desktop-app/lib_qr.git
+	url = https://github.com/kepka-app/lib_qr.git
 [submodule "Telegram/ThirdParty/libdbusmenu-qt"]
 	path = Telegram/ThirdParty/libdbusmenu-qt
-	url = https://github.com/desktop-app/libdbusmenu-qt.git
+	url = https://github.com/kepka-app/libdbusmenu-qt.git
 [submodule "Telegram/ThirdParty/hunspell"]
 	path = Telegram/ThirdParty/hunspell
-	url = https://github.com/hunspell/hunspell
+	url = https://github.com/hunspell/hunspell.git
 [submodule "Telegram/ThirdParty/materialdecoration"]
 	path = Telegram/ThirdParty/materialdecoration
-	url = https://github.com/desktop-app/materialdecoration.git
+	url = https://github.com/kepka-app/materialdecoration.git
 [submodule "Telegram/ThirdParty/range-v3"]
 	path = Telegram/ThirdParty/range-v3
 	url = https://github.com/ericniebler/range-v3.git
@@ -84,7 +84,7 @@
 	url = https://github.com/hime-ime/hime.git
 [submodule "Telegram/ThirdParty/qt5ct"]
 	path = Telegram/ThirdParty/qt5ct
-	url = https://github.com/desktop-app/qt5ct.git
+	url = https://github.com/kepka-app/qt5ct.git
 [submodule "Telegram/ThirdParty/lxqt-qtplugin"]
 	path = Telegram/ThirdParty/lxqt-qtplugin
 	url = https://github.com/lxqt/lxqt-qtplugin.git
