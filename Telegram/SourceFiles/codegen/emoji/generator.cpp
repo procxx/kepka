@@ -704,6 +704,7 @@ bool Generator::writeSuggestionsSource() {
 	suggestionsSource_ = std::make_unique<common::CppFile>(suggestionsPath_ + ".cpp", project_);
 	suggestionsSource_->stream() << "\
 #include <map>\n\
+#include <stdint.h>\n\
 \n";
 	suggestionsSource_->pushNamespace("Ui").pushNamespace("Emoji").pushNamespace("internal").pushNamespace();
 	suggestionsSource_->stream() << "\
